@@ -36,7 +36,7 @@ CREATE INDEX IF NOT EXISTS ix_leads_next_followup_at ON leads (next_followup_at)
 CREATE INDEX IF NOT EXISTS ix_leads_phone ON leads (phone);
 CREATE INDEX IF NOT EXISTS ix_leads_created_at ON leads (created_at);
 
-CREATE TABLE IF NOT EXISTS conversations (
+CREATE TABLE IF NOT EXISTS sales_conversations (
     id                  BIGSERIAL PRIMARY KEY,
     lead_id             BIGINT NOT NULL REFERENCES leads(id) ON DELETE CASCADE,
     channel             TEXT NOT NULL DEFAULT 'whatsapp'
@@ -49,11 +49,11 @@ CREATE TABLE IF NOT EXISTS conversations (
     updated_at          TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE INDEX IF NOT EXISTS ix_conversations_lead_id ON conversations (lead_id);
+CREATE INDEX IF NOT EXISTS ix_conversations_lead_id ON sales_conversations (lead_id);
 
 CREATE TABLE IF NOT EXISTS messages (
     id                  BIGSERIAL PRIMARY KEY,
-    conversation_id     BIGINT REFERENCES conversations(id) ON DELETE CASCADE,
+    conversation_id     BIGINT REFERENCES sales_conversations(id) ON DELETE CASCADE,
     lead_id             BIGINT NOT NULL REFERENCES leads(id) ON DELETE CASCADE,
     direction           TEXT NOT NULL CHECK (direction IN ('OUTBOUND','INBOUND')),
     channel             TEXT NOT NULL DEFAULT 'whatsapp'
@@ -134,7 +134,7 @@ CREATE TABLE IF NOT EXISTS proposals (
 
 CREATE INDEX IF NOT EXISTS ix_proposals_lead_id ON proposals (lead_id);
 
-CREATE TABLE IF NOT EXISTS customers (
+CREATE TABLE IF NOT EXISTS sales_customers (
     id                  BIGSERIAL PRIMARY KEY,
     lead_id             BIGINT UNIQUE REFERENCES leads(id) ON DELETE SET NULL,
     company_name        TEXT NOT NULL,

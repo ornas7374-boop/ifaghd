@@ -63,10 +63,16 @@ explicitly flip that setting and wire the auto-send path yourself.
 
 ### Database
 
-PostgreSQL, same instance your n8n "Postgres account" credential already points at.
-Schema lives in [`db/001_init.sql`](db/001_init.sql) (idempotent — safe to re-run) and
-defines: `leads`, `conversations`, `messages`, `activities`, `followups`,
-`appointments`, `proposals`, `customers`, `settings`.
+PostgreSQL, same instance your n8n "Postgres account" credential already points at
+(the same Supabase project used by the Afaq Al-Fikr support bot). Schema lives in
+[`db/001_init.sql`](db/001_init.sql) (idempotent — safe to re-run) and defines:
+`leads`, `sales_conversations`, `messages`, `activities`, `followups`,
+`appointments`, `proposals`, `sales_customers`, `settings`.
+
+> The tables are named `sales_conversations` / `sales_customers` (not just
+> `conversations` / `customers`) because that database already had tables with those
+> names from the Afaq Al-Fikr support bot, with a completely different schema. Every
+> other table name was free to use as-is.
 
 `settings` holds the configurable knobs, edit them directly in Postgres (or add a
 future admin UI):
@@ -80,10 +86,13 @@ future admin UI):
 | `demo_booking_url` | fallback demo link |
 | `notification_channel` | where human-handoff / demo-booked alerts go (email + optional Telegram chat id) |
 
-> ⚠️ The migration workflow (`Sales - DB Schema Setup`, kept in n8n for re-runs) hit a
-> **DNS "Host not found"** error on the existing Postgres credential when this was
-> built — the Supabase host may be paused or the credential stale. Fix the credential
-> in n8n, then re-run that workflow once (Execute → manual) before using the system.
+The schema has been applied and the full webhook → insert → scoring pipeline has been
+tested end to end successfully. The migration workflow (`Sales - DB Schema Setup`) is
+kept in n8n so you can re-run it (Execute → manual) any time you change the schema —
+it's idempotent. (If you ever see a Postgres "Host not found" or `ENETUNREACH` error
+again: the Supabase project may have auto-paused from inactivity — restore it from the
+Supabase dashboard — or the credential needs the Session Pooler host, not the direct
+connection host, since this n8n instance only has IPv4 egress.)
 
 ### n8n workflows (all prefixed `Sales -`)
 
