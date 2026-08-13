@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MASSIF — مرسم تصميم وتنفيذ</title>
+<meta name="description" content="مرسم تصميم وتنفيذ لبيوت تستغرق عشر سنوات في التخيّل ومئة سنة في التقادم الجميل. سعر ثابت. رقم واحد. تاريخ واحد." />
+<meta name="theme-color" content="#0a0a0b" />
+
+<meta property="og:title" content="MASSIF — مرسم تصميم وتنفيذ" />
+<meta property="og:description" content="نبني ما يبقى بعد أن يزول المخطط. اثنان وأربعون مسكنًا، وصفر أوامر تغيير." />
+<meta property="og:image" content="../assets/img/dusk-site.jpg" />
+<meta property="og:type" content="website" />
+<link rel="alternate" hreflang="en" href="../index.html" />
+
+<link rel="preload" as="font" type="font/woff2" href="../assets/fonts/tajawal-ar-500.woff2" crossorigin />
+<link rel="preload" as="font" type="font/woff2" href="../assets/fonts/tajawal-ar-300.woff2" crossorigin />
+<link rel="stylesheet" href="../assets/css/fonts.css" />
+<link rel="stylesheet" href="../assets/css/fonts-ar.css" />
+<link rel="stylesheet" href="../assets/css/style.css" />
+<link rel="stylesheet" href="../assets/css/rtl.css" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230a0a0b'/%3E%3Cpath d='M6 24V8l10 9 10-9v16' fill='none' stroke='%23c8a15a' stroke-width='2.4'/%3E%3C/svg%3E" />
+<script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+<div class="cursor" aria-hidden="true"><span class="cursor__dot"></span><span class="cursor__ring"></span></div>
+
+<div class="preloader" id="preloader" aria-hidden="true">
+  <div class="preloader__inner">
+    <span class="preloader__mark">MASSIF</span>
+    <span class="preloader__count" id="preCount">00</span>
+  </div>
+  <div class="preloader__bar"><i id="preBar"></i></div>
+</div>
+
+<a class="skip" href="#main">تخطَّ إلى المحتوى</a>
+
+<!-- ══ nav ══ -->
+<header class="nav" id="nav">
+  <a class="nav__mark" href="#top" data-cursor="link">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 25V7l12 11L28 7v18"/></svg>
+    <span>MASSIF</span>
+  </a>
+  <nav class="nav__links" aria-label="التنقّل الرئيسي">
+    <a href="#condition" data-cursor="link"><i>01</i> الحال</a>
+    <a href="#capabilities" data-cursor="link"><i>02</i> القدرات</a>
+    <a href="#record" data-cursor="link"><i>03</i> السجل</a>
+    <a href="#method" data-cursor="link"><i>04</i> المنهج</a>
+    <a href="#engagements" data-cursor="link"><i>05</i> التعاقدات</a>
+  </nav>
+  <a class="btn btn--pill" href="#begin" data-cursor="link" data-magnetic>
+    <span>ابدأ الدراسة</span>
+  </a>
+  <a class="nav__lang" href="../index.html" hreflang="en" lang="en" data-cursor="link">EN</a>
+  <button class="burger" id="burger" aria-expanded="false" aria-controls="menu"
+          data-open="إغلاق" data-closed="القائمة" data-cursor="link">
+    <span class="burger__bars" aria-hidden="true"><i></i><i></i></span>
+    <span class="burger__txt">القائمة</span>
+  </button>
+</header>
+
+<!-- ══ mobile menu ══ -->
+<div class="menu" id="menu" inert>
+  <nav class="menu__nav" aria-label="قائمة الجوال">
+    <a href="#condition"><i>01</i><span>الحال</span></a>
+    <a href="#capabilities"><i>02</i><span>القدرات</span></a>
+    <a href="#record"><i>03</i><span>السجل</span></a>
+    <a href="#method"><i>04</i><span>المنهج</span></a>
+    <a href="#engagements"><i>05</i><span>التعاقدات</span></a>
+    <a href="#begin"><i>06</i><span>ابدأ</span></a>
+  </nav>
+  <div class="menu__foot">
+    <p>1140 شارع بيرالتا<br />أوكلاند، كاليفورنيا</p>
+    <p><a href="mailto:studio@massif.build" lang="en" dir="ltr">studio@massif.build</a></p>
+    <p><a class="menu__lang" href="../index.html" hreflang="en" lang="en">ENGLISH</a></p>
+  </div>
+</div>
+
+<main id="main">
+
+<!-- ═══════════ 01 · الواجهة ═══════════ -->
+<section class="hero" id="top">
+  <div class="hero__media" id="heroMedia">
+    <div class="hero__imgwrap">
+      <img src="../assets/img/dusk-site.jpg" alt="مسكن حديث من الخشب والزجاج مضاء من الداخل عند الغسق، وحفّارة واقفة في تراب موقعه غير المكتمل." fetchpriority="high" />
+    </div>
+    <div class="hero__scrim"></div>
+  </div>
+
+  <div class="hero__body">
+    <p class="eyebrow reveal-up"><span class="rule"></span>مرسم تصميم وتنفيذ · منذ 2009</p>
+
+    <h1 class="hero__title">
+      <span class="mask"><span>نبني ما يبقى</span></span>
+      <span class="mask"><span>بعد أن <em>يزول</em></span></span>
+      <span class="mask"><span>المخطط.</span></span>
+    </h1>
+
+    <div class="hero__foot">
+      <p class="lede reveal-up">
+        نحن واحد وأربعون شخصًا نرسم ونهندس ونصنّع ونصبّ البيت نفسه — فلا يضيع
+        شيء بين الأيدي. عقد واحد. رقم واحد. وتاريخ لا يتزحزح.
+      </p>
+      <div class="hero__actions reveal-up">
+        <a class="btn btn--solid" href="#begin" data-cursor="link" data-magnetic><span>ابدأ الدراسة</span></a>
+        <a class="btn btn--ghost" href="#record" data-cursor="link"><span>اطّلع على السجل</span></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero__meta">
+    <div class="hero__coord" dir="ltr"><i>N 38°17'</i><i>W 122°27'</i></div>
+    <a class="scrollcue" href="#condition" aria-label="انتقل إلى القسم التالي" data-cursor="link">
+      <span class="scrollcue__line"></span><span class="scrollcue__txt">مرّر</span>
+    </a>
+  </div>
+
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker__track">
+      <span>سعر ثابت</span><b></b><span>صفر أوامر تغيير</span><b></b><span>هندسة إنشائية داخلية</span><b></b><span>خرسانة مصبوبة بالألواح</span><b></b><span>اثنان وأربعون مسكنًا</span><b></b>
+      <span>سعر ثابت</span><b></b><span>صفر أوامر تغيير</span><b></b><span>هندسة إنشائية داخلية</span><b></b><span>خرسانة مصبوبة بالألواح</span><b></b><span>اثنان وأربعون مسكنًا</span><b></b>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 02 · الحال ═══════════ -->
+<section class="condition" id="condition">
+  <div class="wrap">
+    <header class="sechead">
+      <p class="label reveal-up"><i>01</i> الحال</p>
+      <h2 class="display reveal-lines">
+        <span class="mask"><span>أغلب البيوت تسقط في</span></span>
+        <span class="mask"><span>الفجوة بين الرسم</span></span>
+        <span class="mask"><span>و<em>الصبّ</em>.</span></span>
+      </h2>
+    </header>
+
+    <div class="condition__grid">
+      <article class="stance stance--problem reveal-up">
+        <p class="stance__tag">التسليم التقليدي</p>
+        <ol class="faults">
+          <li><span>i</span>معماري يرسم ما يضطر المنفّذ إلى إعادة تأويله.</li>
+          <li><span>ii</span>العطاء تخمين يرتدي هيئة رقم.</li>
+          <li><span>iii</span>كل مجهول يصير أمر تغيير، يُسعَّر بعد أن تكون قد التزمت.</li>
+          <li><span>iv</span>موعد الإنجاز ينزاح فصلًا، ثم عامًا.</li>
+        </ol>
+      </article>
+
+      <div class="condition__spine" aria-hidden="true"><span></span></div>
+
+      <article class="stance stance--answer reveal-up">
+        <p class="stance__tag stance__tag--gold">منهج MASSIF</p>
+        <p class="stance__body">
+          أزلنا التسليم بين الأيدي. المهندس الذي يحسب مقطع الجسر يجلس على بُعد
+          أحد عشر مترًا من الورشة التي تلحمه، ومن المشرف الذي يركّبه. لا شيء
+          يُترجَم، فلا شيء يضيع — والسعر الذي نسلّمك إياه في الشهر الثاني هو
+          السعر الذي تدفعه في الشهر العشرين.
+        </p>
+        <ul class="proofs">
+          <li><b>1</b> عقد واحد، من الرسم إلى المفاتيح</li>
+          <li><b>0</b> أوامر تغيير مفوترة منذ 2016</li>
+          <li><b>18</b> أسبوعًا من الفحص قبل أول حفر</li>
+        </ul>
+      </article>
+    </div>
+
+    <!-- المقارنة: مرحلة الهيكل على اليمين، التسليم على اليسار -->
+    <figure class="compare reveal-up" id="compare">
+      <div class="compare__frame">
+        <div class="compare__layer compare__layer--a">
+          <img src="../assets/img/dusk-site.jpg" alt="المسكن بعد اكتماله عند الغسق، وضوء دافئ خلف زجاج بارتفاع كامل، وآخر آلة ما تزال في الموقع." />
+          <figcaption class="compare__cap compare__cap--a"><i>التسليم · اليوم 512</i>كازا فيرّيير</figcaption>
+        </div>
+        <div class="compare__layer compare__layer--b" id="compareB">
+          <img src="../assets/img/frame-villa.jpg" alt="بيت في مرحلة الهيكل: بلاطات خرسانية مكشوفة وأعمدة فولاذية وحديد تسليح تحت سماء رمادية." />
+          <figcaption class="compare__cap compare__cap--b"><i>الهيكل · اليوم 214</i>فيلا أومبرا</figcaption>
+        </div>
+        <button class="compare__handle" id="compareHandle" role="slider"
+                aria-label="اسحب لكشف مرحلة الهيكل" aria-valuemin="0" aria-valuemax="100" aria-valuenow="52">
+          <span class="compare__grip"><i></i><i></i></span>
+        </button>
+      </div>
+      <figcaption class="compare__note">اسحب — مشروعان، مرحلتان، ومنهج واحد. سُلّم كلاهما في التاريخ المكتوب في العقد.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ═══════════ 03 · القدرات ═══════════ -->
+<section class="caps" id="capabilities">
+  <div class="wrap caps__wrap">
+    <aside class="caps__side">
+      <p class="label reveal-up"><i>02</i> القدرات</p>
+      <h2 class="display display--sm reveal-lines">
+        <span class="mask"><span>أربع صنائع،</span></span>
+        <span class="mask"><span>سقف <em>واحد</em>.</span></span>
+      </h2>
+      <p class="caps__note reveal-up">
+        أغلب المكاتب تُسنِد من الباطن تحديدًا تلك الأجزاء التي تقرّر إن كان
+        البيت سيبقى جميلًا في عامه الأربعين. نحن أبقيناها داخل المبنى.
+      </p>
+    </aside>
+
+    <ol class="caps__list" id="capsList">
+      <li class="cap" data-img="../assets/img/detail-earth.jpg">
+        <a href="#begin" data-cursor="hidden">
+          <span class="cap__num">01</span>
+          <span class="cap__name">فحص الموقع</span>
+          <span class="cap__desc">الجيولوجيا، والتصريف، ومسارات الشمس، وثمانية عشر أسبوعًا من الإصغاء إلى الأرض قبل أن يُنفَق شيء.</span>
+          <span class="cap__arrow" aria-hidden="true"><svg class="ico-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 13L13 3M13 3H5.5M13 3v7.5"/></svg></span>
+        </a>
+      </li>
+      <li class="cap" data-img="../assets/img/detail-steel.jpg">
+        <a href="#begin" data-cursor="hidden">
+          <span class="cap__num">02</span>
+          <span class="cap__name">الإنشاء</span>
+          <span class="cap__desc">مهندسون إنشائيون لدينا. كل جسر يرسمه من سيقف تحته يوم يُركَّب.</span>
+          <span class="cap__arrow" aria-hidden="true"><svg class="ico-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 13L13 3M13 3H5.5M13 3v7.5"/></svg></span>
+        </a>
+      </li>
+      <li class="cap" data-img="../assets/img/detail-glass.jpg">
+        <a href="#begin" data-cursor="hidden">
+          <span class="cap__num">03</span>
+          <span class="cap__name">التصنيع</span>
+          <span class="cap__desc">ورشتنا في أوكلاند — فولاذ مُسوَّد، وخشب جوز، وخرسانة مصبوبة بالألواح، وزجاج يُركَّب بدقة الملّيمتر.</span>
+          <span class="cap__arrow" aria-hidden="true"><svg class="ico-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 13L13 3M13 3H5.5M13 3v7.5"/></svg></span>
+        </a>
+      </li>
+      <li class="cap" data-img="../assets/img/detail-frame.jpg">
+        <a href="#begin" data-cursor="hidden">
+          <span class="cap__num">04</span>
+          <span class="cap__name">التسليم</span>
+          <span class="cap__desc">مشرف واحد من الحفر إلى المفاتيح. رقم واحد. وتاريخ واحد مكتوب في العقد.</span>
+          <span class="cap__arrow" aria-hidden="true"><svg class="ico-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 13L13 3M13 3H5.5M13 3v7.5"/></svg></span>
+        </a>
+      </li>
+    </ol>
+
+    <div class="caps__peek" id="capsPeek" aria-hidden="true"><img alt="" /></div>
+  </div>
+</section>
+
+<!-- ═══════════ 04 · السجل ═══════════ -->
+<section class="record" id="record">
+  <div class="wrap">
+    <p class="label label--light reveal-up"><i>03</i> السجل</p>
+
+    <div class="stats">
+      <div class="stat reveal-up">
+        <span class="stat__num" data-count="42">0</span>
+        <span class="stat__cap">مسكنًا سُلِّم<i>2009 — 2026</i></span>
+      </div>
+      <div class="stat reveal-up">
+        <span class="stat__num" data-count="0" data-zero="00">0</span>
+        <span class="stat__cap">أمر تغيير مفوتر<i>منذ مارس 2016</i></span>
+      </div>
+      <div class="stat reveal-up">
+        <span class="stat__num" data-count="100" data-suffix="%">0</span>
+        <span class="stat__cap">سُلِّم في تاريخ العقد<i>آخر 29 مشروعًا</i></span>
+      </div>
+      <div class="stat reveal-up">
+        <span class="stat__num" data-count="511">0</span>
+        <span class="stat__cap">وسيط الأيام من الحفر إلى المفاتيح<i>4,100 — 11,800 قدم مربعة</i></span>
+      </div>
+    </div>
+
+    <blockquote class="quote">
+      <p class="reveal-lines">
+        <span class="mask"><span>«سلّمونا المفاتيح في التاريخ</span></span>
+        <span class="mask"><span>المطبوع في عقد وقّعناه قبل تسعة</span></span>
+        <span class="mask"><span>عشر شهرًا. ما زلت لا <em>أصدّق</em>».</span></span>
+      </p>
+      <footer class="reveal-up">
+        <span class="quote__who">إيلينا ماركيتي</span>
+        <span class="quote__what">كازا فيرّيير · سونوما، كاليفورنيا</span>
+      </footer>
+    </blockquote>
+
+    <div class="clients" aria-label="مختارات من المتعاونين">
+      <div class="clients__track">
+        <span>فيرّو أركيتكتوس</span><i>·</i><span>هالدن ورو</span><i>·</i><span>استوديو أنسلم</span><i>·</i><span>ناكاغاوا إيشي</span><i>·</i><span>بوفور للتنسيق</span><i>·</i><span>معهد ميس</span><i>·</i>
+        <span>فيرّو أركيتكتوس</span><i>·</i><span>هالدن ورو</span><i>·</i><span>استوديو أنسلم</span><i>·</i><span>ناكاغاوا إيشي</span><i>·</i><span>بوفور للتنسيق</span><i>·</i><span>معهد ميس</span><i>·</i>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 05 · المنهج ═══════════ -->
+<section class="method" id="method">
+  <div class="wrap method__wrap">
+    <header class="method__head">
+      <p class="label reveal-up"><i>04</i> المنهج</p>
+      <h2 class="display display--sm reveal-lines">
+        <span class="mask"><span>أربع مراحل.</span></span>
+        <span class="mask"><span>بلا <em>وسطاء</em>.</span></span>
+      </h2>
+    </header>
+
+    <div class="method__body">
+      <ol class="stages" id="stages">
+        <li class="stage is-active">
+          <button type="button" data-stage="0" data-cursor="link">
+            <span class="stage__i">01</span>
+            <span class="stage__t">الدراسة</span>
+            <span class="stage__d">ثمانية عشر أسبوعًا. جيولوجيا، وماء، وضوء، ومظروف سعري ثابت تحاسبنا عليه قبل أن تلتزم.</span>
+            <span class="stage__w">الأسابيع 1 — 18</span>
+          </button>
+        </li>
+        <li class="stage">
+          <button type="button" data-stage="1" data-cursor="link">
+            <span class="stage__i">02</span>
+            <span class="stage__t">الهيكل</span>
+            <span class="stage__d">القواعد، والأعمدة، والنوى الخرسانية المصبوبة بالألواح. يصير البيت صادقًا إنشائيًا قبل أن يصير جميلًا.</span>
+            <span class="stage__w">الأسابيع 19 — 46</span>
+          </button>
+        </li>
+        <li class="stage">
+          <button type="button" data-stage="2" data-cursor="link">
+            <span class="stage__i">03</span>
+            <span class="stage__t">الغلاف</span>
+            <span class="stage__d">البلاطات، والزجاج، والسقف. تسعون يومًا من عمل ورشتنا تصل على الشاحنات، وتُركَّب بدقة الملّيمتر.</span>
+            <span class="stage__w">الأسابيع 47 — 63</span>
+          </button>
+        </li>
+        <li class="stage">
+          <button type="button" data-stage="3" data-cursor="link">
+            <span class="stage__i">04</span>
+            <span class="stage__t">التسليم</span>
+            <span class="stage__d">الأعمال الخشبية، والتشغيل التجريبي، وجولة من أربعمئة نقطة، ودليل مُجلَّد لمئة عام قادمة من عمر البيت.</span>
+            <span class="stage__w">الأسابيع 64 — 73</span>
+          </button>
+        </li>
+      </ol>
+
+      <div class="method__stage">
+        <div class="canvaswrap">
+          <canvas id="frameCanvas" aria-hidden="true"></canvas>
+          <div class="canvas__hud">
+            <span id="hudLabel">الدراسة</span>
+            <span class="canvas__hud-sep"></span>
+            <span id="hudPct">25%</span>
+          </div>
+          <div class="canvas__glow" aria-hidden="true"></div>
+        </div>
+        <p class="method__cap">نموذج إنشائي حيّ — كازا فيرّيير، 1:180</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 06 · التعاقدات ═══════════ -->
+<section class="engage" id="engagements">
+  <div class="wrap">
+    <header class="sechead sechead--split">
+      <p class="label reveal-up"><i>05</i> التعاقدات</p>
+      <h2 class="display display--sm reveal-lines">
+        <span class="mask"><span>ثلاث طرق</span></span>
+        <span class="mask"><span><em>للبدء</em>.</span></span>
+      </h2>
+      <p class="engage__note reveal-up">كل تعاقد يُثبَّت كتابةً قبل أن يبدأ. نقبل أحد عشر بيتًا في العام.</p>
+    </header>
+
+    <div class="tiers" id="tiers">
+      <article class="tier reveal-up">
+        <div class="tier__row">
+          <span class="tier__i">i</span>
+          <h3 class="tier__name">الدراسة</h3>
+          <p class="tier__line">دراسة جدوى، وجيولوجيا، ودراسات كتلية، ومظروف تكلفة مُلزِم.</p>
+          <p class="tier__price">18,000 دولار<i>ثابت</i></p>
+          <span class="tier__go" aria-hidden="true"><svg class="ico-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 13L13 3M13 3H5.5M13 3v7.5"/></svg></span>
+        </div>
+        <div class="tier__more">
+          <ul>
+            <li>فحص موقع على مدى ثمانية عشر أسبوعًا</li>
+            <li>ثلاث صيغ كتلية، مُجسَّدة بالرسم</li>
+            <li>تصميم إنشائي أولي ودراسة تربة</li>
+            <li>مظروف تكلفة بهامش ±4%، مُلزِم اثني عشر شهرًا</li>
+            <li>يُخصم بالكامل من قيمة «المرسم»</li>
+          </ul>
+        </div>
+        <a class="tier__link" href="#begin" aria-label="ابدأ تعاقد الدراسة" data-cursor="link"></a>
+      </article>
+
+      <article class="tier tier--feature reveal-up">
+        <div class="tier__row">
+          <span class="tier__i">ii</span>
+          <h3 class="tier__name">المرسم<em>أغلب التكليفات</em></h3>
+          <p class="tier__line">البيت كاملًا — نرسمه ونهندسه ونصنّعه ونسلّمه بأنفسنا.</p>
+          <p class="tier__price">من 2.4 مليون دولار<i>سعر ثابت</i></p>
+          <span class="tier__go" aria-hidden="true"><svg class="ico-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 13L13 3M13 3H5.5M13 3v7.5"/></svg></span>
+        </div>
+        <div class="tier__more">
+          <ul>
+            <li>كل ما في الدراسة</li>
+            <li>العمارة والتصميم الداخلي كاملين</li>
+            <li>هندسة إنشائية داخلية</li>
+            <li>تصنيع في ورشة أوكلاند — فولاذ وخشب وحجر</li>
+            <li>مشرف واحد، من الحفر إلى المفاتيح</li>
+            <li>تاريخ إنجاز تعاقدي، بشرط جزائي</li>
+            <li>ضمان إنشائي عشر سنوات</li>
+          </ul>
+        </div>
+        <a class="tier__link" href="#begin" aria-label="ابدأ تعاقد المرسم" data-cursor="link"></a>
+      </article>
+
+      <article class="tier reveal-up">
+        <div class="tier__row">
+          <span class="tier__i">iii</span>
+          <h3 class="tier__name">الرعاية</h3>
+          <p class="tier__line">نعود مرتين كل عام، ما دام البيت قائمًا.</p>
+          <p class="tier__price">6,500 دولار<i>سنويًا</i></p>
+          <span class="tier__go" aria-hidden="true"><svg class="ico-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 13L13 3M13 3H5.5M13 3v7.5"/></svg></span>
+        </div>
+        <div class="tier__more">
+          <ul>
+            <li>فحص نصف سنوي للغلاف والأنظمة</li>
+            <li>صيانة التشطيبات والحجر والخشب</li>
+            <li>أولوية في وقت الورشة لأي تعديل</li>
+            <li>ينتقل مع سند الملكية</li>
+          </ul>
+        </div>
+        <a class="tier__link" href="#begin" aria-label="ابدأ تعاقد الرعاية" data-cursor="link"></a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 07 · ابدأ ═══════════ -->
+<section class="cta" id="begin">
+  <div class="cta__glow" id="ctaGlow" aria-hidden="true"></div>
+  <div class="wrap cta__wrap">
+    <p class="label label--light reveal-up"><i>06</i> ابدأ</p>
+    <h2 class="cta__title">
+      <span class="mask"><span>هيّا نبني</span></span>
+      <span class="mask"><span>شيئًا</span></span>
+      <span class="mask"><span><em>يدوم.</em></span></span>
+    </h2>
+    <div class="cta__actions reveal-up">
+      <a class="btn btn--big" href="mailto:studio@massif.build?subject=%D8%B7%D9%84%D8%A8%20%D8%AF%D8%B1%D8%A7%D8%B3%D8%A9" data-cursor="link" data-magnetic>
+        <span>ابدأ الدراسة</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19L19 5M19 5H9M19 5v10"/></svg>
+      </a>
+      <p class="cta__sub">أحد عشر تكليفًا في العام. بقي اثنان لعام 2027.</p>
+    </div>
+  </div>
+
+  <footer class="foot">
+    <div class="wrap foot__wrap">
+      <div class="foot__col">
+        <a class="nav__mark" href="#top" data-cursor="link">
+          <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 25V7l12 11L28 7v18"/></svg>
+          <span>MASSIF</span>
+        </a>
+        <p>مرسم تصميم وتنفيذ<br />منذ 2009</p>
+      </div>
+      <div class="foot__col">
+        <h4>المرسم</h4>
+        <p>1140 شارع بيرالتا<br />أوكلاند، كاليفورنيا</p>
+      </div>
+      <div class="foot__col">
+        <h4>للتواصل</h4>
+        <p>
+          <a href="mailto:studio@massif.build" lang="en" dir="ltr" data-cursor="link">studio@massif.build</a><br />
+          <a href="tel:+15105550140" lang="en" dir="ltr" data-cursor="link">+1 510 555 0140</a>
+        </p>
+      </div>
+      <div class="foot__col">
+        <h4>الفهرس</h4>
+        <p>
+          <a href="#condition" data-cursor="link">الحال</a><br />
+          <a href="#capabilities" data-cursor="link">القدرات</a><br />
+          <a href="#method" data-cursor="link">المنهج</a><br />
+          <a href="../index.html" hreflang="en" lang="en" data-cursor="link">English</a>
+        </p>
+      </div>
+      <p class="foot__legal">© 2026 مرسم MASSIF · رخصة CSLB 1048221 · جميع الحقوق محفوظة</p>
+    </div>
+  </footer>
+</section>
+
+</main>
+
+<script src="../assets/js/main.js" defer></script>
+</body>
+</html>

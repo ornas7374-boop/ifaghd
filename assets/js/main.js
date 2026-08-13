@@ -11,6 +11,7 @@ const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const lerp  = (a, b, t) => a + (b - a) * t;
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const FINE    = matchMedia('(hover: hover) and (pointer: fine)').matches;
+const RTL     = document.documentElement.dir === 'rtl';
 
 /* ── preloader ─────────────────────────────────────────── */
 function preload(done){
@@ -71,7 +72,8 @@ function menu(){
   const set = open => {
     document.body.classList.toggle('is-menu', open);
     btn.setAttribute('aria-expanded', String(open));
-    btn.querySelector('.burger__txt').textContent = open ? 'Close' : 'Menu';
+    const txt = btn.querySelector('.burger__txt');
+    txt.textContent = open ? (btn.dataset.open || 'Close') : (btn.dataset.closed || 'Menu');
     open ? panel.removeAttribute('inert') : panel.setAttribute('inert', '');
   };
   btn.addEventListener('click', () => set(!document.body.classList.contains('is-menu')));
@@ -186,7 +188,8 @@ function capsPeek(){
     if (on){
       const w = peek.offsetWidth || 260;
       peek.style.top  = cy + 'px';
-      peek.style.left = Math.min(cx + w * .72, innerWidth - w * .58) + 'px';
+      peek.style.left = RTL ? Math.max(cx - w * .72, w * .58) + 'px'
+                            : Math.min(cx + w * .72, innerWidth - w * .58) + 'px';
     }
     requestAnimationFrame(loop);
   })();
@@ -218,7 +221,7 @@ function methodModel(){
   const ctx = cv.getContext('2d');
   const hudL = $('#hudLabel'), hudP = $('#hudPct');
   const stages = $$('.stage');
-  const NAMES = ['Survey', 'Frame', 'Envelope', 'Delivery'];
+  const NAMES = stages.map(s => ($('.stage__t', s) || {}).textContent || '');
 
   /* ── geometry ──────────────────────────────────────────
      a two-volume house: a grounded plinth and a cantilevered

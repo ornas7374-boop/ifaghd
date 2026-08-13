@@ -1,0 +1,18 @@
+/* self-hosted arabic subset — Tajawal, one family across the whole page.
+   latin characters and digits fall through to the latin faces in fonts.css. */
+
+@font-face{
+  font-family:"Tajawal";
+  font-style:normal; font-weight:300; font-display:swap;
+  src:url("../fonts/tajawal-ar-300.woff2") format("woff2");
+}
+@font-face{
+  font-family:"Tajawal";
+  font-style:normal; font-weight:500; font-display:swap;
+  src:url("../fonts/tajawal-ar-500.woff2") format("woff2");
+}
+@font-face{
+  font-family:"Tajawal";
+  font-style:normal; font-weight:700; font-display:swap;
+  src:url("../fonts/tajawal-ar-700.woff2") format("woff2");
+}

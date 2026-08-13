@@ -1,0 +1,157 @@
+/* ============================================================
+   MASSIF — arabic / RTL layer
+   loaded after style.css on the arabic page only.
+   two jobs: flip everything physical, and re-set the type
+   for Tajawal (arabic never takes letter-spacing or italics).
+   ============================================================ */
+
+[dir="rtl"]{
+  /* digits and latin still come from the latin faces — the arabic
+     subset carries no latin glyphs, so each script picks its own */
+  --serif: "Bodoni Moda", "Tajawal", Georgia, serif;
+  --sans:  "Tajawal", "Inter Tight", system-ui, sans-serif;
+  --mono:  "JetBrains Mono", "Tajawal", ui-monospace, monospace;
+}
+
+/* ── 01 · type ───────────────────────────────────────────── */
+[dir="rtl"] body{ font-weight:300; line-height:1.85; }
+
+/* letter-spacing severs arabic joins — off by default, restored
+   only where the text is latin or numeric */
+[dir="rtl"] *{ letter-spacing:0; }
+[dir="rtl"] .nav__mark span,
+[dir="rtl"] .preloader__mark,
+[dir="rtl"] .label i,
+[dir="rtl"] .cap__num,
+[dir="rtl"] .tier__i,
+[dir="rtl"] .stage__i,
+[dir="rtl"] .hero__coord,
+[dir="rtl"] .nav__lang{ letter-spacing:.22em; }
+
+/* display: Tajawal medium, never the italic — arabic has no italic,
+   so the accent is carried by colour alone */
+[dir="rtl"] .display,
+[dir="rtl"] .hero__title,
+[dir="rtl"] .cta__title,
+[dir="rtl"] .quote p,
+[dir="rtl"] .cap__name,
+[dir="rtl"] .tier__name,
+[dir="rtl"] .stage__t,
+[dir="rtl"] .menu__nav a,
+[dir="rtl"] .proofs b{
+  font-family:var(--sans); font-weight:300; font-style:normal;
+}
+/* Tajawal has no true italic, so the thick/thin contrast Bodoni gives the
+   english page is carried here by weight instead: light ground, bold accent */
+[dir="rtl"] .cap__name,
+[dir="rtl"] .tier__name,
+[dir="rtl"] .stage__t,
+[dir="rtl"] .menu__nav a{ font-weight:500; }
+[dir="rtl"] .display em,
+[dir="rtl"] .hero__title em,
+[dir="rtl"] .cta__title em,
+[dir="rtl"] .quote em,
+[dir="rtl"] .menu__nav a:last-child span{ font-style:normal; font-weight:700; }
+
+[dir="rtl"] .hero__title{ font-size:clamp(2.4rem,8.6vw,9.6rem); line-height:1.16; letter-spacing:-.01em; }
+[dir="rtl"] .display{ font-size:clamp(2.1rem,5.9vw,5.6rem); line-height:1.2; }
+[dir="rtl"] .display--sm{ font-size:clamp(1.9rem,4.6vw,4.2rem); }
+[dir="rtl"] .cta__title{ font-size:clamp(2.4rem,8vw,8.4rem); line-height:1.12; }
+[dir="rtl"] .quote p{ font-size:clamp(1.4rem,3.4vw,3.1rem); line-height:1.5; font-weight:300; }
+[dir="rtl"] .cap__name{ font-size:clamp(1.7rem,3.4vw,3.1rem); line-height:1.3; }
+[dir="rtl"] .tier__name{ font-size:clamp(1.5rem,2.8vw,2.5rem); line-height:1.3; }
+[dir="rtl"] .stage__t{ font-size:clamp(1.4rem,2.3vw,2.1rem); line-height:1.35; }
+[dir="rtl"] .menu__nav a{ font-size:clamp(1.7rem,7vw,2.8rem); line-height:1.35; }
+[dir="rtl"] .preloader__count{ line-height:1; }
+
+/* numerals stay on the latin serif — arabic text around them shrinks a little */
+[dir="rtl"] .stat__num{ font-family:"Bodoni Moda",serif; }
+[dir="rtl"] .stat__cap,
+[dir="rtl"] .tier__price i,
+[dir="rtl"] .stance__tag,
+[dir="rtl"] .compare__cap,
+[dir="rtl"] .canvas__hud,
+[dir="rtl"] .method__cap,
+[dir="rtl"] .cta__sub,
+[dir="rtl"] .foot h4,
+[dir="rtl"] .quote footer,
+[dir="rtl"] .stage__w{ font-family:var(--sans); font-weight:500; font-size:12px; }
+[dir="rtl"] .label,[dir="rtl"] .eyebrow{ font-family:var(--sans); font-weight:500; font-size:12px; }
+[dir="rtl"] .btn{ font-family:var(--sans); font-weight:500; font-size:13px; }
+[dir="rtl"] .ticker span,[dir="rtl"] .clients span{ font-family:var(--sans); font-weight:500; font-size:12px; }
+[dir="rtl"] .nav__links a{ font-size:14px; }
+[dir="rtl"] .burger{ font-family:var(--sans); font-weight:500; font-size:13px; }
+[dir="rtl"] .foot__legal{ font-family:var(--sans); font-size:11px; }
+[dir="rtl"] .compare__note{ font-family:var(--sans); font-size:12px; }
+[dir="rtl"] .menu__foot{ font-family:var(--sans); font-size:12px; }
+[dir="rtl"] .skip{ font-family:var(--sans); }
+[dir="rtl"] .lede{ line-height:1.85; }
+[dir="rtl"] .faults li,[dir="rtl"] .cap__desc,[dir="rtl"] .stage__d,
+[dir="rtl"] .tier__line,[dir="rtl"] .tier__more li{ line-height:1.8; }
+
+/* arabic descenders are shallower than bodoni's italics — tighten the
+   line-mask breathing room so the display rhythm stays even */
+[dir="rtl"] .mask{ padding:.06em .1em .2em; margin:-.06em -.1em -.2em; }
+
+/* ── 02 · direction flips ────────────────────────────────── */
+[dir="rtl"] .skip{ left:auto; right:12px; }
+[dir="rtl"] .btn--ghost::before{ transform-origin:right; }
+[dir="rtl"] .nav__links a::after{ transform-origin:left; }
+[dir="rtl"] .nav__links a:hover::after{ transform-origin:right; }
+
+[dir="rtl"] .hero__title .mask:nth-child(2){ padding-left:0; padding-right:clamp(0px,7vw,150px); }
+[dir="rtl"] .hero__title .mask:nth-child(3){ padding-left:0; padding-right:clamp(0px,3vw,64px); }
+@media (max-width:860px){
+  [dir="rtl"] .hero__title .mask:nth-child(2),
+  [dir="rtl"] .hero__title .mask:nth-child(3){ padding-right:0; }
+}
+
+/* the scrim has to darken the side the type sits on */
+[dir="rtl"] .hero__scrim{
+  background:
+    radial-gradient(120% 80% at 22% 34%, rgba(200,161,90,.14), transparent 58%),
+    linear-gradient(180deg, rgba(10,10,11,.86) 0%, rgba(10,10,11,.24) 32%, rgba(10,10,11,.62) 68%, var(--ink) 99%),
+    linear-gradient(270deg, rgba(10,10,11,.74) 0%, transparent 62%);
+}
+[dir="rtl"] .hero__imgwrap img{ object-position:38% 55%; }
+[dir="rtl"] .condition::before{ background:radial-gradient(90% 60% at 88% 0%, rgba(200,161,90,.13), transparent 60%); }
+[dir="rtl"] .method::before{ background:radial-gradient(70% 55% at 22% 30%, rgba(200,161,90,.09), transparent 62%); }
+[dir="rtl"] .menu::before{ background:radial-gradient(80% 60% at 20% 10%, rgba(200,161,90,.12), transparent 60%); }
+[dir="rtl"] .canvaswrap{ background:linear-gradient(200deg, rgba(236,231,221,.035), rgba(236,231,221,0) 55%), var(--ink); }
+
+/* marquees run the other way */
+[dir="rtl"] .ticker__track,[dir="rtl"] .clients__track{ animation-name:slide-rtl; }
+@keyframes slide-rtl{ to{ transform:translateX(50%) } }
+
+[dir="rtl"] .stance__tag--gold::after{ left:auto; right:0; }
+[dir="rtl"] .quote__what{ padding-left:0; padding-right:18px; border-left:0;
+  border-right:1px solid rgba(10,10,11,.2); }
+
+[dir="rtl"] .cap:hover .cap__name{ transform:translateX(calc(-1 * clamp(8px,1.4vw,22px))); }
+[dir="rtl"] .cap:hover .cap__arrow{ transform:translate(-6px,-6px); }
+[dir="rtl"] .tier:hover .tier__go{ transform:translate(-6px,-6px); }
+[dir="rtl"] .ico-arrow,[dir="rtl"] .btn--big svg{ transform:scaleX(-1); }
+
+[dir="rtl"] .stage button{ text-align:right; }
+[dir="rtl"] .stage button::after{ transform-origin:right; }
+[dir="rtl"] .canvas__hud{ left:auto; right:18px; }
+
+[dir="rtl"] .engage__note{ text-align:left; }
+[dir="rtl"] .tier--feature::before{ left:auto; right:0; }
+[dir="rtl"] .tier__more li{ padding-left:0; padding-right:60px; }
+@media (max-width:900px){ [dir="rtl"] .tier__more li{ padding-right:48px; } }
+
+/* the comparator itself is physical on purpose: the drag axis stays
+   left↔right, and the arabic page swaps which phase sits on which side */
+[dir="rtl"] .compare__cap--b{ text-align:right; }
+
+/* ── 03 · language switch ────────────────────────────────── */
+.nav__lang{
+  display:inline-flex; align-items:center; gap:8px;
+  font:500 11px/1 var(--mono); letter-spacing:.22em; color:var(--bone-dim);
+  padding:10px 0; position:relative; transition:color .35s;
+}
+.nav__lang::before{ content:""; width:1px; height:12px; background:rgba(236,231,221,.24); }
+.nav__lang:hover{ color:var(--brass); }
+.menu__lang{ font:500 12px/1 var(--mono); letter-spacing:.22em; color:var(--brass); }
+@media (max-width:620px){ .nav__lang{ display:none } }

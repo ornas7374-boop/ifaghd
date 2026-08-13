@@ -4,6 +4,13 @@ A single-page, art-directed marketing site for a fictional design–build
 construction studio, built as a static site with no framework, no build step
 and no third-party runtime requests.
 
+The site ships in two languages, each a static page over the same assets:
+
+| | |
+|---|---|
+| English | `index.html` — LTR, Bodoni Moda + Inter Tight |
+| العربية | `ar/index.html` — RTL, Tajawal |
+
 Open `index.html` in a browser, or serve the folder:
 
 ```bash
@@ -28,6 +35,27 @@ python3 -m http.server 8000
 5. **The method** — four-stage stepper driving a live isometric structural model on `<canvas>`
 6. **Engagements** — full-width pricing rows that expand on hover, not cards
 7. **Begin** — oversized CTA with a cursor-following brass glow, then the footer
+
+## The Arabic edition
+
+`ar/index.html` is a full translation, not a mirrored layout — the copy was
+written in Arabic rather than run through the English sentence by sentence.
+`assets/css/rtl.css` carries the whole language layer on top of `style.css`:
+
+- **Direction.** Every physical rule is flipped: scrims and radial washes move
+  to the side the type now sits on, marquees run the other way, underline and
+  wipe transforms swap origin, and the ↗ arrows mirror to ↖.
+- **Type.** Tajawal replaces the latin display face, and the thick/thin
+  contrast Bodoni gives the English page is carried here by weight instead —
+  a light 300 ground with a bold 700 accent word, since Arabic has no italic.
+  Letter-spacing is zeroed globally (it severs the cursive joins) and restored
+  only on latin and numeric runs.
+- **Numerals** stay on Bodoni Moda: the arabic subset carries no latin glyphs,
+  so each script resolves to its own face inside one font stack.
+- **The comparator** keeps its physical drag axis, but the two phases swap
+  sides so the "before" sits on the right, where Arabic reading starts.
+- Stage names for the canvas model are read from the DOM, so each language
+  labels its own model.
 
 ## Implementation notes
 
