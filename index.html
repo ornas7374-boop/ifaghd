@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MASSIF — Design–Build Atelier</title>
+<meta name="description" content="Massif is a design–build atelier for houses that take ten years to imagine and a hundred to age well. Fixed price. One number. One date." />
+<meta name="theme-color" content="#0a0a0b" />
+
+<meta property="og:title" content="MASSIF — Design–Build Atelier" />
+<meta property="og:description" content="Built to outlast the drawing. Forty-two residences, zero change orders." />
+<meta property="og:image" content="assets/img/dusk-site.jpg" />
+<meta property="og:type" content="website" />
+
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/bodoni-moda-var.woff2" crossorigin />
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/inter-tight-var.woff2" crossorigin />
+<link rel="stylesheet" href="assets/css/fonts.css" />
+<link rel="stylesheet" href="assets/css/style.css" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230a0a0b'/%3E%3Cpath d='M6 24V8l10 9 10-9v16' fill='none' stroke='%23c8a15a' stroke-width='2.4'/%3E%3C/svg%3E" />
+<script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+
+<!-- ══ grain + vignette ══ -->
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ══ cursor ══ -->
+<div class="cursor" aria-hidden="true"><span class="cursor__dot"></span><span class="cursor__ring"></span></div>
+
+<!-- ══ preloader ══ -->
+<div class="preloader" id="preloader" aria-hidden="true">
+  <div class="preloader__inner">
+    <span class="preloader__mark">MASSIF</span>
+    <span class="preloader__count" id="preCount">00</span>
+  </div>
+  <div class="preloader__bar"><i id="preBar"></i></div>
+</div>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- ══ nav ══ -->
+<header class="nav" id="nav">
+  <a class="nav__mark" href="#top" data-cursor="link">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 25V7l12 11L28 7v18"/></svg>
+    <span>MASSIF</span>
+  </a>
+  <nav class="nav__links" aria-label="Primary">
+    <a href="#condition" data-cursor="link"><i>01</i> Condition</a>
+    <a href="#capabilities" data-cursor="link"><i>02</i> Capabilities</a>
+    <a href="#record" data-cursor="link"><i>03</i> Record</a>
+    <a href="#method" data-cursor="link"><i>04</i> Method</a>
+    <a href="#engagements" data-cursor="link"><i>05</i> Engagements</a>
+  </nav>
+  <a class="btn btn--pill" href="#begin" data-cursor="link" data-magnetic>
+    <span>Begin a survey</span>
+  </a>
+  <button class="burger" id="burger" aria-expanded="false" aria-controls="menu" data-cursor="link">
+    <span class="burger__bars" aria-hidden="true"><i></i><i></i></span>
+    <span class="burger__txt">Menu</span>
+  </button>
+</header>
+
+<!-- ══ mobile menu ══ -->
+<div class="menu" id="menu" inert>
+  <nav class="menu__nav" aria-label="Mobile">
+    <a href="#condition"><i>01</i><span>Condition</span></a>
+    <a href="#capabilities"><i>02</i><span>Capabilities</span></a>
+    <a href="#record"><i>03</i><span>Record</span></a>
+    <a href="#method"><i>04</i><span>Method</span></a>
+    <a href="#engagements"><i>05</i><span>Engagements</span></a>
+    <a href="#begin"><i>06</i><span>Begin</span></a>
+  </nav>
+  <div class="menu__foot">
+    <p>1140 Peralta Street<br />Oakland, California</p>
+    <p><a href="mailto:studio@massif.build">studio@massif.build</a></p>
+  </div>
+</div>
+
+<main id="main">
+
+<!-- ═══════════ 01 · HERO ═══════════ -->
+<section class="hero" id="top">
+  <div class="hero__media" id="heroMedia">
+    <div class="hero__imgwrap">
+      <img src="assets/img/dusk-site.jpg" alt="A modern timber-and-glass residence lit from within at dusk, an excavator standing in the churned earth of its unfinished site." fetchpriority="high" />
+    </div>
+    <div class="hero__scrim"></div>
+  </div>
+
+  <div class="hero__body">
+    <p class="eyebrow reveal-up"><span class="rule"></span>Design–build atelier · Est. 2009</p>
+
+    <h1 class="hero__title">
+      <span class="mask"><span>Built to</span></span>
+      <span class="mask"><span><em>outlast</em></span></span>
+      <span class="mask"><span>the drawing.</span></span>
+    </h1>
+
+    <div class="hero__foot">
+      <p class="lede reveal-up">
+        We are forty-one people who draw, engineer, fabricate and pour the same
+        house — so nothing is lost in the handoff. One contract. One number.
+        One date that does not move.
+      </p>
+      <div class="hero__actions reveal-up">
+        <a class="btn btn--solid" href="#begin" data-cursor="link" data-magnetic><span>Begin a survey</span></a>
+        <a class="btn btn--ghost" href="#record" data-cursor="link"><span>See the record</span></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero__meta">
+    <div class="hero__coord"><i>N 38°17'</i><i>W 122°27'</i></div>
+    <a class="scrollcue" href="#condition" aria-label="Scroll to next section" data-cursor="link">
+      <span class="scrollcue__line"></span><span class="scrollcue__txt">Scroll</span>
+    </a>
+  </div>
+
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker__track">
+      <span>Fixed price</span><b></b><span>Zero change orders</span><b></b><span>In-house structure</span><b></b><span>Board-formed concrete</span><b></b><span>Forty-two residences</span><b></b>
+      <span>Fixed price</span><b></b><span>Zero change orders</span><b></b><span>In-house structure</span><b></b><span>Board-formed concrete</span><b></b><span>Forty-two residences</span><b></b>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 02 · CONDITION (problem / solution) ═══════════ -->
+<section class="condition" id="condition">
+  <div class="wrap">
+    <header class="sechead">
+      <p class="label reveal-up"><i>01</i> The condition</p>
+      <h2 class="display reveal-lines">
+        <span class="mask"><span>Most houses fail in</span></span>
+        <span class="mask"><span>the gap between the</span></span>
+        <span class="mask"><span>render and <em>the pour</em>.</span></span>
+      </h2>
+    </header>
+
+    <div class="condition__grid">
+      <article class="stance stance--problem reveal-up">
+        <p class="stance__tag">Conventional delivery</p>
+        <ol class="faults">
+          <li><span>i</span>An architect draws what a builder must reinterpret.</li>
+          <li><span>ii</span>The bid is a guess dressed as a number.</li>
+          <li><span>iii</span>Every unknown becomes a change order, priced after you are committed.</li>
+          <li><span>iv</span>The finish date drifts by a season, then by a year.</li>
+        </ol>
+      </article>
+
+      <div class="condition__spine" aria-hidden="true"><span></span></div>
+
+      <article class="stance stance--answer reveal-up">
+        <p class="stance__tag stance__tag--gold">The Massif method</p>
+        <p class="stance__body">
+          We removed the handoff. The engineer who sizes the beam sits eleven
+          metres from the shop that welds it and the superintendent who sets it.
+          Nothing is translated, so nothing is lost — and the price we hand you
+          in month two is the price you pay in month twenty.
+        </p>
+        <ul class="proofs">
+          <li><b>1</b> contract, drawings through keys</li>
+          <li><b>0</b> change orders billed since 2016</li>
+          <li><b>18</b> weeks of forensics before a shovel</li>
+        </ul>
+      </article>
+    </div>
+
+    <!-- comparator -->
+    <figure class="compare reveal-up" id="compare">
+      <div class="compare__frame">
+        <div class="compare__layer compare__layer--a">
+          <img src="assets/img/frame-villa.jpg" alt="A house in structural phase: exposed concrete decks, steel columns and rebar under a grey sky." />
+          <figcaption class="compare__cap compare__cap--a"><i>Structure · day 214</i>Villa Ombra</figcaption>
+        </div>
+        <div class="compare__layer compare__layer--b" id="compareB">
+          <img src="assets/img/dusk-site.jpg" alt="A finished residence at dusk, warm interior light behind full-height glazing, the last machine still on site." />
+          <figcaption class="compare__cap compare__cap--b"><i>Delivery · day 512</i>Casa Verrière</figcaption>
+        </div>
+        <button class="compare__handle" id="compareHandle" role="slider"
+                aria-label="Reveal the finished residence" aria-valuemin="0" aria-valuemax="100" aria-valuenow="52">
+          <span class="compare__grip"><i></i><i></i></span>
+        </button>
+      </div>
+      <figcaption class="compare__note">Drag — two commissions, two stages, one method. Both handed over on the contract date.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ═══════════ 03 · CAPABILITIES ═══════════ -->
+<section class="caps" id="capabilities">
+  <div class="wrap caps__wrap">
+    <aside class="caps__side">
+      <p class="label reveal-up"><i>02</i> Capabilities</p>
+      <h2 class="display display--sm reveal-lines">
+        <span class="mask"><span>Four trades,</span></span>
+        <span class="mask"><span>one <em>roof</em>.</span></span>
+      </h2>
+      <p class="caps__note reveal-up">
+        Most firms subcontract the parts that decide whether a house is
+        beautiful in year forty. We kept those in the building.
+      </p>
+    </aside>
+
+    <ol class="caps__list" id="capsList">
+      <li class="cap" data-img="assets/img/detail-earth.jpg">
+        <a href="#begin" data-cursor="hidden">
+          <span class="cap__num">01</span>
+          <span class="cap__name">Site forensics</span>
+          <span class="cap__desc">Geology, drainage, sun paths and eighteen weeks of listening to the land before a dollar moves.</span>
+          <span class="cap__arrow" aria-hidden="true"><svg class="ico-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 13L13 3M13 3H5.5M13 3v7.5"/></svg></span>
+        </a>
+      </li>
+      <li class="cap" data-img="assets/img/detail-steel.jpg">
+        <a href="#begin" data-cursor="hidden">
+          <span class="cap__num">02</span>
+          <span class="cap__name">Structure</span>
+          <span class="cap__desc">In-house engineers. Every beam drawn by the people who will stand under it while it is set.</span>
+          <span class="cap__arrow" aria-hidden="true"><svg class="ico-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 13L13 3M13 3H5.5M13 3v7.5"/></svg></span>
+        </a>
+      </li>
+      <li class="cap" data-img="assets/img/detail-glass.jpg">
+        <a href="#begin" data-cursor="hidden">
+          <span class="cap__num">03</span>
+          <span class="cap__name">Fabrication</span>
+          <span class="cap__desc">Our Oakland shop — blackened steel, rift walnut, board-formed concrete, glass set to a millimetre.</span>
+          <span class="cap__arrow" aria-hidden="true"><svg class="ico-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 13L13 3M13 3H5.5M13 3v7.5"/></svg></span>
+        </a>
+      </li>
+      <li class="cap" data-img="assets/img/detail-frame.jpg">
+        <a href="#begin" data-cursor="hidden">
+          <span class="cap__num">04</span>
+          <span class="cap__name">Delivery</span>
+          <span class="cap__desc">One superintendent from excavation to keys. One number. One date, written into the contract.</span>
+          <span class="cap__arrow" aria-hidden="true"><svg class="ico-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 13L13 3M13 3H5.5M13 3v7.5"/></svg></span>
+        </a>
+      </li>
+    </ol>
+
+    <div class="caps__peek" id="capsPeek" aria-hidden="true"><img src="" alt="" /></div>
+  </div>
+</section>
+
+<!-- ═══════════ 04 · RECORD ═══════════ -->
+<section class="record" id="record">
+  <div class="wrap">
+    <p class="label label--light reveal-up"><i>03</i> The record</p>
+
+    <div class="stats">
+      <div class="stat reveal-up">
+        <span class="stat__num" data-count="42">0</span>
+        <span class="stat__cap">Residences delivered<i>2009 — 2026</i></span>
+      </div>
+      <div class="stat reveal-up">
+        <span class="stat__num" data-count="0" data-zero="00">0</span>
+        <span class="stat__cap">Change orders billed<i>since March 2016</i></span>
+      </div>
+      <div class="stat reveal-up">
+        <span class="stat__num" data-count="100" data-suffix="%">0</span>
+        <span class="stat__cap">Delivered on contract date<i>last 29 projects</i></span>
+      </div>
+      <div class="stat reveal-up">
+        <span class="stat__num" data-count="511">0</span>
+        <span class="stat__cap">Median days, ground to keys<i>4,100–11,800 sq ft</i></span>
+      </div>
+    </div>
+
+    <blockquote class="quote">
+      <p class="reveal-lines">
+        <span class="mask"><span>“They handed us keys on the date</span></span>
+        <span class="mask"><span>printed in a contract signed nineteen</span></span>
+        <span class="mask"><span>months earlier. I still don’t <em>believe it</em>.”</span></span>
+      </p>
+      <footer class="reveal-up">
+        <span class="quote__who">Elena Marchetti</span>
+        <span class="quote__what">Casa Verrière · Sonoma, CA</span>
+      </footer>
+    </blockquote>
+
+    <div class="clients" aria-label="Selected collaborators">
+      <div class="clients__track">
+        <span>Ferro Arquitectos</span><i>·</i><span>Halden &amp; Rowe</span><i>·</i><span>Studio Anselm</span><i>·</i><span>Nakagawa Ishii</span><i>·</i><span>Beaufort Landscape</span><i>·</i><span>Mies Institute</span><i>·</i>
+        <span>Ferro Arquitectos</span><i>·</i><span>Halden &amp; Rowe</span><i>·</i><span>Studio Anselm</span><i>·</i><span>Nakagawa Ishii</span><i>·</i><span>Beaufort Landscape</span><i>·</i><span>Mies Institute</span><i>·</i>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 05 · METHOD (interactive) ═══════════ -->
+<section class="method" id="method">
+  <div class="wrap method__wrap">
+    <header class="method__head">
+      <p class="label reveal-up"><i>04</i> The method</p>
+      <h2 class="display display--sm reveal-lines">
+        <span class="mask"><span>Four stages.</span></span>
+        <span class="mask"><span>No <em>handoffs</em>.</span></span>
+      </h2>
+    </header>
+
+    <div class="method__body">
+      <ol class="stages" id="stages">
+        <li class="stage is-active">
+          <button type="button" data-stage="0" data-cursor="link">
+            <span class="stage__i">01</span>
+            <span class="stage__t">Survey</span>
+            <span class="stage__d">Eighteen weeks. Geology, water, light, and a fixed-price envelope you can hold us to before you commit.</span>
+            <span class="stage__w">Weeks 1 — 18</span>
+          </button>
+        </li>
+        <li class="stage">
+          <button type="button" data-stage="1" data-cursor="link">
+            <span class="stage__i">02</span>
+            <span class="stage__t">Frame</span>
+            <span class="stage__d">Footings, columns, board-formed cores. The house becomes structurally honest before it becomes beautiful.</span>
+            <span class="stage__w">Weeks 19 — 46</span>
+          </button>
+        </li>
+        <li class="stage">
+          <button type="button" data-stage="2" data-cursor="link">
+            <span class="stage__i">03</span>
+            <span class="stage__t">Envelope</span>
+            <span class="stage__d">Decks, glazing, roof. Ninety days of our shop's work arriving on flatbeds, set to the millimetre.</span>
+            <span class="stage__w">Weeks 47 — 63</span>
+          </button>
+        </li>
+        <li class="stage">
+          <button type="button" data-stage="3" data-cursor="link">
+            <span class="stage__i">04</span>
+            <span class="stage__t">Delivery</span>
+            <span class="stage__d">Millwork, commissioning, a 400-point walk, and a bound manual for the next hundred years of the house.</span>
+            <span class="stage__w">Weeks 64 — 73</span>
+          </button>
+        </li>
+      </ol>
+
+      <div class="method__stage">
+        <div class="canvaswrap">
+          <canvas id="frameCanvas" aria-hidden="true"></canvas>
+          <div class="canvas__hud">
+            <span id="hudLabel">Survey</span>
+            <span class="canvas__hud-sep"></span>
+            <span id="hudPct">25%</span>
+          </div>
+          <div class="canvas__glow" aria-hidden="true"></div>
+        </div>
+        <p class="method__cap">Live structural model — Casa Verrière, 1:180</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 06 · ENGAGEMENTS ═══════════ -->
+<section class="engage" id="engagements">
+  <div class="wrap">
+    <header class="sechead sechead--split">
+      <p class="label reveal-up"><i>05</i> Engagements</p>
+      <h2 class="display display--sm reveal-lines">
+        <span class="mask"><span>Three ways</span></span>
+        <span class="mask"><span>to <em>begin</em>.</span></span>
+      </h2>
+      <p class="engage__note reveal-up">Every engagement is fixed in writing before it starts. We take eleven houses a year.</p>
+    </header>
+
+    <div class="tiers" id="tiers">
+      <article class="tier reveal-up">
+        <div class="tier__row">
+          <span class="tier__i">i</span>
+          <h3 class="tier__name">Survey</h3>
+          <p class="tier__line">Feasibility, geology, massing studies and a binding cost envelope.</p>
+          <p class="tier__price">$18,000<i>fixed</i></p>
+          <span class="tier__go" aria-hidden="true"><svg class="ico-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 13L13 3M13 3H5.5M13 3v7.5"/></svg></span>
+        </div>
+        <div class="tier__more">
+          <ul>
+            <li>Eighteen-week site forensics</li>
+            <li>Three massing schemes, rendered</li>
+            <li>Structural pre-design &amp; soils</li>
+            <li>Cost envelope, ±4%, binding for 12 months</li>
+            <li>Credited in full against Atelier</li>
+          </ul>
+        </div>
+        <a class="tier__link" href="#begin" aria-label="Begin the Survey engagement" data-cursor="link"></a>
+      </article>
+
+      <article class="tier tier--feature reveal-up">
+        <div class="tier__row">
+          <span class="tier__i">ii</span>
+          <h3 class="tier__name">Atelier<em>Most commissions</em></h3>
+          <p class="tier__line">The whole house — drawn, engineered, fabricated and delivered by us.</p>
+          <p class="tier__price">from $2.4M<i>fixed price</i></p>
+          <span class="tier__go" aria-hidden="true"><svg class="ico-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 13L13 3M13 3H5.5M13 3v7.5"/></svg></span>
+        </div>
+        <div class="tier__more">
+          <ul>
+            <li>Everything in Survey</li>
+            <li>Full architecture &amp; interiors</li>
+            <li>In-house structural engineering</li>
+            <li>Oakland shop fabrication — steel, walnut, stone</li>
+            <li>One superintendent, ground to keys</li>
+            <li>Contract completion date, liquidated</li>
+            <li>Ten-year structural warranty</li>
+          </ul>
+        </div>
+        <a class="tier__link" href="#begin" aria-label="Begin the Atelier engagement" data-cursor="link"></a>
+      </article>
+
+      <article class="tier reveal-up">
+        <div class="tier__row">
+          <span class="tier__i">iii</span>
+          <h3 class="tier__name">Stewardship</h3>
+          <p class="tier__line">We come back twice a year, for as long as the house stands.</p>
+          <p class="tier__price">$6,500<i>per year</i></p>
+          <span class="tier__go" aria-hidden="true"><svg class="ico-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 13L13 3M13 3H5.5M13 3v7.5"/></svg></span>
+        </div>
+        <div class="tier__more">
+          <ul>
+            <li>Biannual envelope &amp; systems inspection</li>
+            <li>Finish, stone and timber maintenance</li>
+            <li>Priority shop time for alterations</li>
+            <li>Transfers with the deed</li>
+          </ul>
+        </div>
+        <a class="tier__link" href="#begin" aria-label="Begin the Stewardship engagement" data-cursor="link"></a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 07 · CTA ═══════════ -->
+<section class="cta" id="begin">
+  <div class="cta__glow" id="ctaGlow" aria-hidden="true"></div>
+  <div class="wrap cta__wrap">
+    <p class="label label--light reveal-up"><i>06</i> Begin</p>
+    <h2 class="cta__title">
+      <span class="mask"><span>Let’s build</span></span>
+      <span class="mask"><span>something</span></span>
+      <span class="mask"><span><em>permanent.</em></span></span>
+    </h2>
+    <div class="cta__actions reveal-up">
+      <a class="btn btn--big" href="mailto:studio@massif.build?subject=Survey%20enquiry" data-cursor="link" data-magnetic>
+        <span>Begin a survey</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19L19 5M19 5H9M19 5v10"/></svg>
+      </a>
+      <p class="cta__sub">Eleven commissions a year. Two remain for 2027.</p>
+    </div>
+  </div>
+
+  <footer class="foot">
+    <div class="wrap foot__wrap">
+      <div class="foot__col">
+        <a class="nav__mark" href="#top" data-cursor="link">
+          <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 25V7l12 11L28 7v18"/></svg>
+          <span>MASSIF</span>
+        </a>
+        <p>Design–build atelier<br />Est. 2009</p>
+      </div>
+      <div class="foot__col">
+        <h4>Studio</h4>
+        <p>1140 Peralta Street<br />Oakland, California</p>
+      </div>
+      <div class="foot__col">
+        <h4>Contact</h4>
+        <p>
+          <a href="mailto:studio@massif.build" data-cursor="link">studio@massif.build</a><br />
+          <a href="tel:+15105550140" data-cursor="link">+1 510 555 0140</a>
+        </p>
+      </div>
+      <div class="foot__col">
+        <h4>Index</h4>
+        <p>
+          <a href="#condition" data-cursor="link">Condition</a><br />
+          <a href="#capabilities" data-cursor="link">Capabilities</a><br />
+          <a href="#method" data-cursor="link">Method</a>
+        </p>
+      </div>
+      <p class="foot__legal">© 2026 Massif Atelier LLC · CSLB 1048221 · All rights reserved</p>
+    </div>
+  </footer>
+</section>
+
+</main>
+
+<script src="assets/js/main.js" defer></script>
+</body>
+</html>
