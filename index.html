@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Vantage — Brand &amp; Product Studio</title>
+  <meta name="description" content="Vantage is a strategic design studio building brand systems, digital products and campaigns for companies with something to prove." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%230a0a0b%22/><text x=%2250%22 y=%2266%22 font-size=%2258%22 text-anchor=%22middle%22 fill=%22%23c9a869%22 font-family=%22Georgia,serif%22>V</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div id="grain" aria-hidden="true"></div>
+  <div class="cursor" aria-hidden="true">
+    <div class="cursor__dot"></div>
+    <div class="cursor__ring"></div>
+  </div>
+
+  <div class="progress-rail" aria-hidden="true"><div class="progress-rail__fill" id="scrollFill"></div></div>
+
+  <header class="nav" data-reveal>
+    <a href="#hero" class="nav__mark">Vantage<span>&reg;</span></a>
+    <nav class="nav__links">
+      <a href="#work" data-hover>Work</a>
+      <a href="#process" data-hover>Process</a>
+      <a href="#pricing" data-hover>Engagements</a>
+      <a href="#contact" class="nav__cta" data-hover>Start a project</a>
+    </nav>
+    <button class="nav__toggle" id="menuToggle" aria-label="Open menu" data-hover>
+      <span></span><span></span>
+    </button>
+  </header>
+
+  <div class="menu-overlay" id="menuOverlay">
+    <div class="menu-overlay__inner">
+      <nav class="menu-overlay__links">
+        <a href="#hero" data-hover><span>01</span>Studio</a>
+        <a href="#work" data-hover><span>02</span>Work</a>
+        <a href="#process" data-hover><span>03</span>Process</a>
+        <a href="#pricing" data-hover><span>04</span>Engagements</a>
+        <a href="#contact" data-hover><span>05</span>Contact</a>
+      </nav>
+      <div class="menu-overlay__foot">
+        <p>Los Angeles — Copenhagen — Remote</p>
+        <p>hello@vantage.studio</p>
+      </div>
+    </div>
+  </div>
+
+  <main>
+
+    <!-- 1 — HERO -->
+    <section class="hero" id="hero">
+      <div class="hero__field" aria-hidden="true">
+        <div class="hero__orb hero__orb--a"></div>
+        <div class="hero__orb hero__orb--b"></div>
+        <div class="hero__grid"></div>
+      </div>
+
+      <div class="hero__top">
+        <span class="eyebrow" data-reveal>Design &amp; Brand Studio — Est. 2016</span>
+        <span class="hero__index" data-reveal>N&deg;001</span>
+      </div>
+
+      <h1 class="hero__headline">
+        <span class="line" data-line><span class="line__inner">We build brands</span></span>
+        <span class="line" data-line><span class="line__inner"><em>that feel</em> inevitable.</span></span>
+      </h1>
+
+      <div class="hero__bottom">
+        <p class="hero__lede" data-reveal>
+          Vantage partners with founders and category leaders to design identity systems,
+          digital products and campaigns engineered to outlast trends.
+        </p>
+        <a href="#work" class="hero__scroll" data-hover data-reveal>
+          <span class="hero__scroll-track"><span class="hero__scroll-dot"></span></span>
+          Scroll to explore
+        </a>
+      </div>
+
+      <div class="hero__panel" data-parallax aria-hidden="true">
+        <div class="hero__panel-grid"></div>
+        <div class="hero__panel-glow"></div>
+        <span class="hero__panel-mark">V</span>
+      </div>
+    </section>
+
+    <!-- 2 — PROBLEM / SOLUTION -->
+    <section class="intro" id="studio">
+      <div class="intro__row">
+        <div class="intro__label" data-reveal>
+          <span class="eyebrow">The Problem</span>
+        </div>
+        <h2 class="intro__statement" data-reveal>
+          Most brands look expensive for a launch,
+          then quietly dissolve into the noise
+          of everyone else's Figma file.
+        </h2>
+      </div>
+
+      <div class="intro__divider" data-draw><span></span></div>
+
+      <div class="intro__row intro__row--reverse">
+        <h2 class="intro__statement intro__statement--accent" data-reveal>
+          We design the version that compounds — a system
+          rigorous enough to hold a decade of decisions.
+        </h2>
+        <div class="intro__label" data-reveal>
+          <span class="eyebrow">Our Position</span>
+          <p>Every engagement pairs a senior strategist with a senior designer. No juniors learning on your budget.</p>
+        </div>
+      </div>
+
+      <div class="intro__stats" data-reveal>
+        <div class="stat">
+          <span class="stat__num" data-count="147">0</span>
+          <span class="stat__label">Brand systems shipped</span>
+        </div>
+        <div class="stat">
+          <span class="stat__num" data-count="9" data-suffix="yrs">0</span>
+          <span class="stat__label">Average client tenure</span>
+        </div>
+        <div class="stat">
+          <span class="stat__num" data-count="41">0</span>
+          <span class="stat__label">Industry awards</span>
+        </div>
+        <div class="stat">
+          <span class="stat__num" data-count="3" data-suffix="B" data-prefix="$">0</span>
+          <span class="stat__label">Client value raised post-rebrand</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 — FEATURE SHOWCASE -->
+    <section class="features" id="work">
+      <div class="features__head">
+        <span class="eyebrow" data-reveal>Capabilities</span>
+        <h2 data-reveal>One studio.<br />Four disciplines.<br /><em>A single point of view.</em></h2>
+      </div>
+
+      <div class="features__body">
+        <div class="features__list">
+          <article class="feature" data-feature data-visual="visual1" tabindex="0">
+            <div class="feature__row">
+              <span class="feature__num">01</span>
+              <h3 class="feature__title">Brand Strategy</h3>
+              <span class="feature__arrow" aria-hidden="true">&#8594;</span>
+            </div>
+            <p class="feature__desc">Positioning, narrative architecture and naming built on research, not vibes — the spine everything else hangs from.</p>
+          </article>
+
+          <article class="feature" data-feature data-visual="visual2" tabindex="0">
+            <div class="feature__row">
+              <span class="feature__num">02</span>
+              <h3 class="feature__title">Identity Systems</h3>
+              <span class="feature__arrow" aria-hidden="true">&#8594;</span>
+            </div>
+            <p class="feature__desc">Mark, type, color and motion codified into a system your team can run without us in the room.</p>
+          </article>
+
+          <article class="feature" data-feature data-visual="visual3" tabindex="0">
+            <div class="feature__row">
+              <span class="feature__num">03</span>
+              <h3 class="feature__title">Product &amp; Interface</h3>
+              <span class="feature__arrow" aria-hidden="true">&#8594;</span>
+            </div>
+            <p class="feature__desc">Interfaces designed at the intersection of brand and usability — shipped alongside your engineers.</p>
+          </article>
+
+          <article class="feature" data-feature data-visual="visual4" tabindex="0">
+            <div class="feature__row">
+              <span class="feature__num">04</span>
+              <h3 class="feature__title">Campaign &amp; Film</h3>
+              <span class="feature__arrow" aria-hidden="true">&#8594;</span>
+            </div>
+            <p class="feature__desc">Launch films, key art and paid systems that carry the identity into the world at full volume.</p>
+          </article>
+        </div>
+
+        <div class="features__visual">
+          <div class="features__visual-frame">
+            <div class="fv fv--1 is-active" data-fv="visual1"></div>
+            <div class="fv fv--2" data-fv="visual2"></div>
+            <div class="fv fv--3" data-fv="visual3"></div>
+            <div class="fv fv--4" data-fv="visual4"></div>
+            <div class="features__visual-glow"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 — SOCIAL PROOF -->
+    <section class="proof" id="proof">
+      <div class="proof__marquee" aria-hidden="true">
+        <div class="proof__marquee-track">
+          <span>Halcyon Systems</span><span>Marlowe &amp; Co.</span><span>North Field</span><span>Obsidian Labs</span><span>Verity Health</span><span>Ledger Capital</span><span>Solis Energy</span>
+          <span>Halcyon Systems</span><span>Marlowe &amp; Co.</span><span>North Field</span><span>Obsidian Labs</span><span>Verity Health</span><span>Ledger Capital</span><span>Solis Energy</span>
+        </div>
+      </div>
+
+      <blockquote class="proof__quote" data-reveal>
+        <p>&ldquo;Vantage didn&rsquo;t just redesign our brand — they rewired how the
+        entire company talks about itself. Revenue conversations changed
+        within a quarter.&rdquo;</p>
+        <footer>
+          <span class="proof__name">Renata Cole</span>
+          <span class="proof__role">CEO, Halcyon Systems</span>
+        </footer>
+      </blockquote>
+
+      <div class="proof__grid">
+        <div class="proof__card" data-reveal>
+          <span class="proof__metric">+212%</span>
+          <p>Organic demand-gen lift in six months post-rebrand for a B2B infrastructure client.</p>
+        </div>
+        <div class="proof__card" data-reveal>
+          <span class="proof__metric">4.9 / 5</span>
+          <p>Average client satisfaction across 34 engagements tracked since 2019.</p>
+        </div>
+        <div class="proof__card" data-reveal>
+          <span class="proof__metric">6 wks</span>
+          <p>Median time from kickoff to a shippable, tested identity system.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 — PROCESS (pinned horizontal) -->
+    <section class="process" id="process">
+      <div class="process__head">
+        <span class="eyebrow" data-reveal>How We Work</span>
+        <h2 data-reveal>Four phases. Zero guesswork.</h2>
+      </div>
+
+      <div class="process__pin">
+        <div class="process__track" id="processTrack">
+          <article class="process__panel">
+            <span class="process__num">01</span>
+            <h3>Discover</h3>
+            <p>Stakeholder immersion, competitive audit and market research compressed into a two-week strategic sprint.</p>
+            <span class="process__tag">Week 1&ndash;2</span>
+          </article>
+          <article class="process__panel">
+            <span class="process__num">02</span>
+            <h3>Define</h3>
+            <p>Positioning territory, narrative pillars and creative direction — reviewed and stress-tested with your leadership team.</p>
+            <span class="process__tag">Week 3&ndash;4</span>
+          </article>
+          <article class="process__panel">
+            <span class="process__num">03</span>
+            <h3>Design</h3>
+            <p>Full system build — identity, product surfaces, campaign assets — developed in parallel, not sequence.</p>
+            <span class="process__tag">Week 5&ndash;8</span>
+          </article>
+          <article class="process__panel">
+            <span class="process__num">04</span>
+            <h3>Deploy</h3>
+            <p>Launch orchestration, team enablement and a governance system so the brand holds after we leave the room.</p>
+            <span class="process__tag">Week 9&ndash;10</span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 — PRICING / OFFER -->
+    <section class="pricing" id="pricing">
+      <div class="pricing__head">
+        <span class="eyebrow" data-reveal>Engagements</span>
+        <h2 data-reveal>Built for the size of the problem, not a price sheet.</h2>
+      </div>
+
+      <div class="pricing__grid">
+        <div class="tier" data-reveal>
+          <span class="tier__name">Sprint</span>
+          <p class="tier__desc">A focused two-week engagement for a single, well-scoped problem.</p>
+          <span class="tier__price">from $18,000</span>
+          <ul class="tier__list">
+            <li>Brand or product audit</li>
+            <li>One core deliverable</li>
+            <li>Async collaboration</li>
+          </ul>
+          <a href="#contact" class="tier__cta" data-hover>Enquire &#8594;</a>
+        </div>
+
+        <div class="tier tier--signature" data-reveal>
+          <span class="tier__ribbon">Most Engaged</span>
+          <span class="tier__name">Full System</span>
+          <p class="tier__desc">Our signature engagement — strategy through launch, one senior team, ten weeks.</p>
+          <span class="tier__price">from $85,000</span>
+          <ul class="tier__list">
+            <li>Strategy &amp; positioning</li>
+            <li>Full identity &amp; product system</li>
+            <li>Launch campaign &amp; film</li>
+            <li>90 days of post-launch support</li>
+          </ul>
+          <a href="#contact" class="tier__cta tier__cta--solid" data-hover>Start a project &#8594;</a>
+        </div>
+
+        <div class="tier" data-reveal>
+          <span class="tier__name">Partnership</span>
+          <p class="tier__desc">Ongoing embedded creative direction for teams shipping continuously.</p>
+          <span class="tier__price">bespoke retainer</span>
+          <ul class="tier__list">
+            <li>Dedicated creative director</li>
+            <li>Quarterly system reviews</li>
+            <li>Priority campaign support</li>
+          </ul>
+          <a href="#contact" class="tier__cta" data-hover>Enquire &#8594;</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 — FINAL CTA -->
+    <section class="cta" id="contact">
+      <div class="cta__inner">
+        <span class="eyebrow eyebrow--light" data-reveal>Currently booking Q1 2027</span>
+        <h2 class="cta__headline" data-reveal>
+          Let&rsquo;s build the brand<br />
+          your <em>next decade</em> deserves.
+        </h2>
+        <a href="mailto:hello@vantage.studio" class="cta__button" data-hover data-magnetic>
+          <span>Start a conversation</span>
+        </a>
+        <p class="cta__sub" data-reveal>Or write directly — hello@vantage.studio</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="footer__top">
+      <span class="footer__word">Vantage</span>
+    </div>
+    <div class="footer__row">
+      <div class="footer__col">
+        <span class="eyebrow">Studio</span>
+        <p>Los Angeles<br />Copenhagen<br />Remote — Global</p>
+      </div>
+      <div class="footer__col">
+        <span class="eyebrow">Sitemap</span>
+        <a href="#hero" data-hover>Studio</a>
+        <a href="#work" data-hover>Work</a>
+        <a href="#process" data-hover>Process</a>
+        <a href="#pricing" data-hover>Engagements</a>
+      </div>
+      <div class="footer__col">
+        <span class="eyebrow">Connect</span>
+        <a href="mailto:hello@vantage.studio" data-hover>hello@vantage.studio</a>
+        <a href="#" data-hover>Instagram</a>
+        <a href="#" data-hover>LinkedIn</a>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>&copy; 2026 Vantage Studio. All rights reserved.</span>
+      <span>Design &amp; build in-house.</span>
+    </div>
+  </footer>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
