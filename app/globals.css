@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #060606;
+  --color-paper: #ede8e0;
+  --color-accent: #c4a47c;
+
+  --font-serif: var(--font-editorial), "Cormorant Garamond", Georgia, serif;
+  --font-sans: var(--font-grotesk), ui-sans-serif, system-ui, sans-serif;
+
+  --ease-maison: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  background-color: #060606;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: #060606;
+  color: #ede8e0;
+  font-family: var(--font-sans);
+  font-synthesis-weight: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(196, 164, 124, 0.24);
+  color: #ede8e0;
+}
+
+/* A single hairline used everywhere a rule is needed, instead of cards. */
+.rule {
+  border-color: rgba(237, 232, 224, 0.14);
+}
+
+/* Small uppercase labels — generous tracking, never bold. */
+.label {
+  font-family: var(--font-sans);
+  font-size: 0.625rem;
+  font-weight: 400;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(237, 232, 224, 0.42);
+}
+
+.display {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  letter-spacing: -0.015em;
+  line-height: 1.02;
+}
+
+/* Editorial body copy sits at reduced opacity rather than a grey hex, so it
+   stays keyed to the paper colour. */
+.copy {
+  color: rgba(237, 232, 224, 0.62);
+  line-height: 1.85;
+  font-weight: 300;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
