@@ -12,6 +12,9 @@ const nextConfig: NextConfig = {
   basePath,
   assetPrefix: basePath,
   images: { unoptimized: true },
+  // Mirrors basePath into the client bundle so hardcoded asset paths (see
+  // lib/basePath.ts) can prefix themselves the same way Next does internally.
+  env: { NEXT_PUBLIC_BASE_PATH: basePath },
 };
 
 export default nextConfig;

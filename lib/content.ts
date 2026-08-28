@@ -1,5 +1,7 @@
 /** Every word on the page, kept out of the components. */
 
+import { withBasePath } from "@/lib/basePath";
+
 export const NAV_LINKS = [
   { label: "The Car", href: "#the-car" },
   { label: "Performance", href: "#performance" },
@@ -78,14 +80,14 @@ export const SPECIFICATIONS = [
 ];
 
 export const DETAILS = [
-  { src: "/detail/grille.jpg", caption: "The horseshoe", alt: "The horseshoe radiator grille, machined and set low into the nose." },
-  { src: "/detail/headlight.jpg", caption: "Quad-element light", alt: "A quad-element LED headlight signature lit against black." },
-  { src: "/detail/carbon.jpg", caption: "Exposed weave", alt: "Exposed carbon-fibre weave across the front splitter." },
-  { src: "/detail/wheel.jpg", caption: "Forged alloy", alt: "A forged alloy wheel over a gold brake caliper." },
-  { src: "/detail/cline.jpg", caption: "The C-line", alt: "The signature C-line arc sweeping the flank of the car." },
-  { src: "/detail/intake.jpg", caption: "Air, invited in", alt: "A side intake feeding air along the flank of the car." },
-  { src: "/detail/haunch.jpg", caption: "Rear haunch", alt: "The rear haunch and aerofoil seen from three-quarters behind." },
-  { src: "/detail/canopy.jpg", caption: "Canopy line", alt: "The roofline and canopy drawn in one continuous curve." },
+  { src: withBasePath("/detail/grille.jpg"), caption: "The horseshoe", alt: "The horseshoe radiator grille, machined and set low into the nose." },
+  { src: withBasePath("/detail/headlight.jpg"), caption: "Quad-element light", alt: "A quad-element LED headlight signature lit against black." },
+  { src: withBasePath("/detail/carbon.jpg"), caption: "Exposed weave", alt: "Exposed carbon-fibre weave across the front splitter." },
+  { src: withBasePath("/detail/wheel.jpg"), caption: "Forged alloy", alt: "A forged alloy wheel over a gold brake caliper." },
+  { src: withBasePath("/detail/cline.jpg"), caption: "The C-line", alt: "The signature C-line arc sweeping the flank of the car." },
+  { src: withBasePath("/detail/intake.jpg"), caption: "Air, invited in", alt: "A side intake feeding air along the flank of the car." },
+  { src: withBasePath("/detail/haunch.jpg"), caption: "Rear haunch", alt: "The rear haunch and aerofoil seen from three-quarters behind." },
+  { src: withBasePath("/detail/canopy.jpg"), caption: "Canopy line", alt: "The roofline and canopy drawn in one continuous curve." },
 ];
 
 export const PERFORMANCE_FIGURES = [

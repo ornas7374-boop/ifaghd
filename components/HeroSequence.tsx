@@ -9,6 +9,7 @@ import {
   SequenceLoader,
   type SequenceSet,
 } from "@/lib/sequence";
+import { withBasePath } from "@/lib/basePath";
 import { piecewise } from "@/lib/ramp";
 import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 import { HeroNarrative, StackedNarrative } from "@/components/HeroNarrative";
@@ -46,7 +47,7 @@ function StaticHero() {
       <div className="relative flex min-h-[86svh] items-center justify-center overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/hero-static.jpg"
+          src={withBasePath("/hero-static.jpg")}
           alt="A quad-turbocharged W16 hypercar in three-quarter profile, lit against a black studio void."
           className="w-full max-w-[1800px] select-none"
           draggable={false}

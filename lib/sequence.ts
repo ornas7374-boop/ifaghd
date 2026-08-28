@@ -9,6 +9,8 @@
  * only ever draws frames that are already decoded.
  */
 
+import { withBasePath } from "@/lib/basePath";
+
 export const FRAME_COUNT = 150;
 
 export type SequenceSet = "desktop" | "mobile";
@@ -19,7 +21,7 @@ export const SEQUENCE_SETS: Record<SequenceSet, { width: number; height: number 
 };
 
 export function frameSrc(set: SequenceSet, index: number): string {
-  return `/sequence/${set}/frame_${String(index).padStart(4, "0")}.jpg`;
+  return withBasePath(`/sequence/${set}/frame_${String(index).padStart(4, "0")}.jpg`);
 }
 
 /** Frame indices ordered coarse-to-fine, so early scrubs always find something. */

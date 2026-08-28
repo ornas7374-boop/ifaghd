@@ -3,6 +3,8 @@ import { Cormorant_Garamond, Inter } from "next/font/google";
 
 import "./globals.css";
 
+import { withBasePath } from "@/lib/basePath";
+
 const editorial = Cormorant_Garamond({
   variable: "--font-editorial",
   subsets: ["latin"],
@@ -19,14 +21,14 @@ const grotesk = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://bugatti.example"),
+  metadataBase: new URL("https://ornas7374-boop.github.io"),
   title: "Bugatti — Born to move.",
   description:
     "Where engineering becomes art. A private showroom for the quad-turbocharged W16 hypercar — 1,600 PS, hand-finished, built for those who understand.",
   openGraph: {
     title: "Bugatti — Born to move.",
     description: "Where engineering becomes art.",
-    images: ["/og.jpg"],
+    images: [withBasePath("/og.jpg")],
     type: "website",
   },
 };
