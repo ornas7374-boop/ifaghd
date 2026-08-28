@@ -21,13 +21,18 @@ const PIN_VH = 350;
 const SCRUB_LERP = 0.16;
 
 /** How far the frame may overscan the viewport horizontally before we letterbox
- *  instead. Letterboxing is invisible: the bars are the same #060606 as both the
- *  page and the plate. */
-const MAX_OVERSCAN = { desktop: 1.16, mobile: 1.12 };
+ *  instead. The car runs edge to edge in the reference clip, so any horizontal
+ *  overscan clips the splitter or the rear wing — the frame is fitted to width
+ *  and the leftover height is filled with #060606. Those bars read as a
+ *  cinemascope frame, and they are the same colour as the page behind them.
+ *  Phones get a little zoom because a 2:1 frame fitted to a 390px viewport is
+ *  otherwise a thin strip; 1.16 is the most the car's own extent across the
+ *  clip (roughly 14%-93% of frame width) allows without clipping it. */
+const MAX_OVERSCAN = { desktop: 1, mobile: 1.16 };
 
 /** Where the car sits vertically. On phones it rides high so the narrative can
  *  stack underneath it rather than across it. */
-const ANCHOR_Y = { desktop: 0.5, mobile: 0.36 };
+const ANCHOR_Y = { desktop: 0.46, mobile: 0.42 };
 
 export function HeroSequence() {
   const reducedMotion = usePrefersReducedMotion();
@@ -48,7 +53,7 @@ function StaticHero() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={withBasePath("/hero-static.jpg")}
-          alt="A quad-turbocharged W16 hypercar in three-quarter profile, lit against a black studio void."
+          alt="A quad-turbocharged W16 hypercar in three-quarter profile on a coastal road at sunset."
           className="w-full max-w-[1800px] select-none"
           draggable={false}
         />
@@ -74,6 +79,11 @@ function ScrubbedHero() {
       <div ref={pinRef} style={{ height: `${PIN_VH}vh` }}>
         <div className="sticky top-0 h-[100svh] w-full overflow-hidden">
           <SequenceCanvas progress={scrollYProgress} />
+          {/* The footage is a bright sunset; grading it down under the titles
+              is what keeps the page dark and the type readable. Sits above the
+              canvas and below the narrative, so the per-chapter scrims stack
+              on top of it. */}
+          <div className="pointer-events-none absolute inset-0 bg-[rgba(6,6,6,0.42)]" />
           <HeroNarrative progress={scrollYProgress} />
           <ScrollHint progress={scrollYProgress} />
         </div>
@@ -202,7 +212,7 @@ function SequenceCanvas({ progress }: { progress: MotionValue<number> }) {
   return (
     <canvas
       ref={canvasRef}
-      aria-label="A quad-turbocharged W16 hypercar moving forward and turning into three-quarter profile, scrubbed by scroll."
+      aria-label="A quad-turbocharged W16 hypercar driving a coastal road at sunset, the camera orbiting from a front three-quarter to a rear three-quarter, scrubbed by scroll."
       role="img"
       className="absolute inset-0 h-full w-full bg-ink"
     />

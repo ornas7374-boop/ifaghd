@@ -45,14 +45,16 @@ function useChapterMotion(progress: MotionValue<number>, [start, end]: [number, 
   };
 }
 
-/** Directional scrim that keeps the narrative legible over the bodywork.
- *  A soft cinematic fall-off from the edge the text sits on — not a panel. */
+/** Directional scrim that keeps the narrative legible over the footage.
+ *  A soft cinematic fall-off from the edge the text sits on — not a panel.
+ *  Weighted for a bright sunset frame, on top of the flat veil the hero already
+ *  lays over the canvas. */
 const SCRIM_CLASS: Record<Chapter["align"], string> = {
   center:
-    "bg-[radial-gradient(115%_74%_at_50%_54%,rgba(6,6,6,0.9)_0%,rgba(6,6,6,0.55)_42%,rgba(6,6,6,0)_72%)]",
-  left: "bg-linear-to-r from-[rgba(6,6,6,0.95)] from-[2%] via-[rgba(6,6,6,0.72)] via-[30%] to-transparent to-[62%]",
+    "bg-[radial-gradient(120%_78%_at_50%_54%,rgba(6,6,6,0.94)_0%,rgba(6,6,6,0.7)_38%,rgba(6,6,6,0)_74%)]",
+  left: "bg-linear-to-r from-[rgba(6,6,6,0.97)] from-[2%] via-[rgba(6,6,6,0.82)] via-[28%] to-transparent to-[68%]",
   right:
-    "bg-linear-to-l from-[rgba(6,6,6,0.95)] from-[2%] via-[rgba(6,6,6,0.72)] via-[30%] to-transparent to-[62%]",
+    "bg-linear-to-l from-[rgba(6,6,6,0.97)] from-[2%] via-[rgba(6,6,6,0.82)] via-[28%] to-transparent to-[68%]",
 };
 
 export function HeroNarrative({ progress }: { progress: MotionValue<number> }) {

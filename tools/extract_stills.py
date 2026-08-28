@@ -1,12 +1,12 @@
 """
-Cuts the fixed editorial stills out of the studio plates:
+Cuts the macro photography band (public/detail/*.jpg) out of the studio plates.
 
-  public/detail/*.jpg   the full-bleed macro photography band
-  public/hero-static.jpg the reduced-motion hero
-  public/og.jpg          social card
+These are the only stills still taken from the plates. The hero — the scrubbed
+sequence, the reduced-motion still and the social card — comes from the
+reference clip instead; see tools/extract_clip_frames.py.
 
-Every still is seated on exact #060606 so it butts against the page
-background without an edge.
+Every still is seated on exact #060606 so it butts against the page background
+without an edge.
 """
 from __future__ import annotations
 
@@ -15,8 +15,6 @@ import sys
 
 import numpy as np
 from PIL import Image, ImageFilter
-
-from render_sequence import edge_mask
 
 BG = (6, 6, 6)
 
@@ -56,7 +54,7 @@ def main() -> None:
 
     plates = {
         name: Image.open(os.path.join(src, name)).convert("RGB")
-        for name in {v[0] for v in DETAILS.values()} | {"plate_b.jpg"}
+        for name in {v[0] for v in DETAILS.values()}
     }
 
     for name, (plate_name, cx, cy, w, aspect) in DETAILS.items():
@@ -71,20 +69,6 @@ def main() -> None:
         path = os.path.join(dst, "detail", f"{name}.jpg")
         seat_on_bg(img).save(path, quality=84, optimize=True, progressive=True)
         print(f"detail/{name}.jpg  {DETAIL_WIDTH}x{out_h}")
-
-    # Reduced-motion hero and social card, both from the hero plate.
-    hero = plates["plate_b.jpg"]
-    resized = np.asarray(hero.resize((1800, 1013), Image.LANCZOS)).astype(np.float32)
-    bg = np.array(BG, dtype=np.float32)
-    feathered = bg + np.clip(resized - bg, 0.0, None) * edge_mask(1800, 1013)[:, :, None]
-    static = Image.fromarray(np.clip(feathered, 0, 255).astype(np.uint8))
-    static.save(os.path.join(dst, "hero-static.jpg"), quality=84,
-                optimize=True, progressive=True)
-    print("hero-static.jpg 1800x1013")
-
-    og = hero.crop((100, 130, 1948, 1100)).resize((1200, 630), Image.LANCZOS)
-    seat_on_bg(og).save(os.path.join(dst, "og.jpg"), quality=86, optimize=True)
-    print("og.jpg 1200x630")
 
 
 if __name__ == "__main__":

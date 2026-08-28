@@ -1,6 +1,9 @@
 /**
- * Pre-rendered hero sequence: metadata plus a progressive, off-main-thread
- * frame loader.
+ * Hero sequence: metadata plus a progressive, off-main-thread frame loader.
+ *
+ * The frames are every frame of the reference clip — one continuous 4.2s orbit
+ * of the car, front three-quarter through flank to rear three-quarter. See
+ * tools/extract_clip_frames.py.
  *
  * The loader never blocks scrolling. It fetches a coarse pass across the whole
  * sequence first so scrubbing is usable within the first second, then refines
@@ -11,13 +14,14 @@
 
 import { withBasePath } from "@/lib/basePath";
 
-export const FRAME_COUNT = 150;
+export const FRAME_COUNT = 184;
 
 export type SequenceSet = "desktop" | "mobile";
 
+// Roughly 2:1 — the reference clip's native aspect, kept rather than padded.
 export const SEQUENCE_SETS: Record<SequenceSet, { width: number; height: number }> = {
-  desktop: { width: 1600, height: 900 },
-  mobile: { width: 900, height: 506 },
+  desktop: { width: 1440, height: 724 },
+  mobile: { width: 900, height: 453 },
 };
 
 export function frameSrc(set: SequenceSet, index: number): string {

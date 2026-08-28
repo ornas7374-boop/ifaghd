@@ -1,13 +1,13 @@
 {
-  "frames": 150,
   "sets": {
     "desktop": {
-      "width": 1600,
-      "height": 900
+      "width": 1440,
+      "height": 724
     },
     "mobile": {
       "width": 900,
-      "height": 506
+      "height": 453
     }
-  }
+  },
+  "frames": 184
 }

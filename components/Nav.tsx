@@ -21,7 +21,10 @@ export function Nav() {
         "ease-[cubic-bezier(0.22,1,0.36,1)] border-b",
         scrolled
           ? "border-paper/10 bg-[rgba(6,6,6,0.82)]"
-          : "border-transparent bg-transparent",
+          // At rest the bar is transparent, but the hero behind it is footage,
+          // not a black studio — a soft top-down scrim keeps the wordmark and
+          // links legible against a bright sky without reading as a bar.
+          : "border-transparent bg-linear-to-b from-[rgba(6,6,6,0.7)] to-transparent",
       ].join(" ")}
     >
       <nav

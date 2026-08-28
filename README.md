@@ -15,7 +15,9 @@ npm run build && npm run start
 ## The hero
 
 `components/HeroSequence.tsx` pins a full-viewport `<canvas>` for 350vh of
-scroll and maps scroll position onto a 150-frame pre-rendered image sequence.
+scroll and maps scroll position onto a 184-frame image sequence — every frame
+of a 4.2s reference clip, one continuous orbit of the car from a front
+three-quarter, through the flank, to a rear three-quarter.
 
 - One `requestAnimationFrame` loop owns every canvas write. Scroll position eases
   into the frame index, so the sequence never snaps and reverses just as
@@ -26,12 +28,20 @@ scroll and maps scroll position onto a 150-frame pre-rendered image sequence.
   scrubbable about 0.4s after load and fully resident within a few seconds.
 - Until a given frame is resident the canvas draws the nearest one that is, so a
   partially loaded sequence degrades to a coarser scrub rather than to a blank.
-- Two frame sets are shipped — 1600×900 for desktop, 900×506 for phones — picked
+- Two frame sets are shipped — 1440×724 for desktop, 900×453 for phones — picked
   by `matchMedia` at runtime.
 
-Every frame is seated on exactly `#060606`, the same value as the page
-background, and feathered to it at all four edges. Wherever the canvas
-letterboxes there is no visible edge.
+The clip is roughly 2:1, wider than any common viewport, so the canvas fits it
+to width and fills the leftover height with `#060606` — the same value as the
+page background. Each frame's top and bottom are feathered to that colour, so
+the letterbox reads as a cinemascope frame rather than as an edge. The car runs
+edge to edge in the footage, which is why there is no horizontal overscan on
+desktop; phones get 1.16×, the most the car's own extent across the clip allows
+without clipping it.
+
+The footage is a bright sunset, so the hero lays a flat `rgba(6,6,6,0.42)` veil
+over the canvas and each chapter adds a directional scrim on top. That is what
+keeps the page dark and the type readable.
 
 `lib/ramp.ts` explains why the scroll-driven values use function transforms
 rather than Framer's array ranges.
@@ -44,19 +54,22 @@ dropped and only opacity fades remain.
 
 ## Regenerating the artwork
 
-The frame sequence and the editorial stills are derived from three studio plates
-in `tools/plates/`, and are committed under `public/`. To rebuild them:
+All artwork is committed under `public/`. It comes from two sources.
+
+The hero — the scrubbed sequence, the reduced-motion still and the social card —
+is cut from the reference clip in `tools/clip/hero.mov`:
 
 ```bash
 pip install pillow numpy
-PYTHONPATH=tools python3 tools/extract_stills.py   tools/plates public
-PYTHONPATH=tools python3 tools/render_sequence.py  tools/plates public/sequence
+npm i ffmpeg-static          # or have ffmpeg on PATH
+python3 tools/extract_clip_frames.py tools/clip/hero.mov public/sequence
 ```
 
-`tools/render_sequence.py` registers the three plates onto one dolly curve,
-sweeps a studio key light along the bodywork, ramps the headlights up, and hides
-each plate change inside a dip in the light so the result reads as one
-continuous take.
+The macro photography band is cut from three studio plates in `tools/plates/`:
+
+```bash
+python3 tools/extract_stills.py tools/plates public
+```
 
 ## Notes
 
@@ -65,8 +78,9 @@ continuous take.
   it live.
 - All copy lives in `lib/content.ts`.
 - This is a concept showcase and is not affiliated with Bugatti Automobiles
-  S.A.S. The vehicle imagery is generated, not photographed, and the
-  specifications are illustrative.
+  S.A.S. The specifications are illustrative. The macro band is generated
+  imagery; the hero is the supplied reference clip, whose provenance has not
+  been verified — check you hold the rights before using this anywhere public.
 
 ## n8n-mcp
 
