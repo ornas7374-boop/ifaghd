@@ -1,0 +1,1077 @@
+{
+  "name": "AI Customer Service Agent — WhatsApp",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "whatsapp-inbound",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "5ebcbfea-d0b7-5c2a-bba5-429e10092b02",
+      "name": "WhatsApp Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -320,
+        300
+      ],
+      "webhookId": "dac56d40-3f2d-5cf1-9585-20cda7e43a35"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ received: true }) }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "df90ec73-88d3-5292-bf40-ac2980d213a2",
+      "name": "Respond 200 (ACK)",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -100,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "\n// Validate Request\n// Accepts either shape:\n//   A) the agent service forwarded a normalized message:  { message: {...}, trace_id }\n//   B) Meta posted its raw webhook payload directly:      { object, entry: [...] }\n// Shape B is normalized one node later by the agent's own parser, so n8n and\n// the service never disagree about how a payload is read.\nconst out = [];\n\nfor (const item of $input.all()) {\n  const body = item.json.body ?? item.json;\n\n  if (body && body.message && body.message.external_message_id) {\n    out.push({ json: { shape: 'normalized', message: body.message, trace_id: body.trace_id ?? $execution.id } });\n    continue;\n  }\n\n  if (body && Array.isArray(body.entry)) {\n    out.push({ json: { shape: 'raw_meta', payload: body, trace_id: $execution.id } });\n    continue;\n  }\n\n  // Anything else is not a message we can act on. Emitting nothing here is\n  // deliberate: the webhook has already ACKed, and retrying a malformed body\n  // would never succeed.\n  console.log('Ignoring unrecognised webhook payload');\n}\n\nreturn out;\n"
+      },
+      "id": "c97778fa-fb8d-517d-959a-2ca63a2cbf19",
+      "name": "Validate Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        80,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "60dd3e60-f3ff-5b54-9a1d-b98ee400582a",
+              "leftValue": "={{ $json.shape }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "raw_meta"
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true
+      },
+      "id": "10bc86e1-afc3-5918-9210-428888db47e0",
+      "name": "Raw Meta Payload?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        300,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.AGENT_BASE_URL }}/internal/v1/messages/normalize",
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.AGENT_API_KEY }}"
+            },
+            {
+              "name": "x-trace-id",
+              "value": "={{ $json.trace_id || $execution.id }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          }
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ channel: \"whatsapp\", payload: $json.payload }) }}"
+      },
+      "id": "6bf8e8aa-e827-583c-b343-9d374619a77b",
+      "name": "Normalize via Agent API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        520,
+        180
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "\n// One Meta delivery can carry several messages. Emit one item each so the\n// rest of the workflow always handles exactly one conversation turn.\nconst out = [];\nfor (const item of $input.all()) {\n  for (const message of item.json.messages ?? []) {\n    out.push({ json: { message, trace_id: item.json.trace_id } });\n  }\n}\nreturn out;\n"
+      },
+      "id": "bb80a5b6-29ac-57c5-b4c8-363552d432f4",
+      "name": "Split Messages",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        740,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d1a99c10-fabf-5a6b-a4a0-ef8dd3ba8825",
+              "name": "message",
+              "value": "={{ $json.message }}",
+              "type": "object"
+            },
+            {
+              "id": "d797068a-4605-556f-9134-12fa06d243c5",
+              "name": "trace_id",
+              "value": "={{ $json.trace_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": false
+      },
+      "id": "eefb24ce-20b0-5818-9879-2f84cd0d3e7d",
+      "name": "Use Forwarded Message",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        520,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.AGENT_BASE_URL }}/internal/v1/customers/identify",
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.AGENT_API_KEY }}"
+            },
+            {
+              "name": "x-trace-id",
+              "value": "={{ $json.trace_id || $execution.id }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          }
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ channel: \"whatsapp\", channel_account_external_id: $json.message.channel_account_external_id, phone: $json.message.phone, name: $json.message.name }) }}"
+      },
+      "id": "21329a25-beb7-5050-a070-5f11f852271b",
+      "name": "Identify Customer",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        960,
+        300
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3bbc1d55-f671-527b-81bd-c0deeafbfc58",
+              "leftValue": "={{ $json.customer.is_blocked }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              },
+              "rightValue": ""
+            },
+            {
+              "id": "c97d530e-2811-5809-9c19-8100a1da82ef",
+              "leftValue": "={{ $json.tenant.status }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "suspended"
+            },
+            {
+              "id": "b02bca3e-681d-58ba-a682-99da91558f15",
+              "leftValue": "={{ $json.conversation.handled_by }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "human"
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true
+      },
+      "id": "22168f9d-5d51-5998-9f7d-bc423c52106d",
+      "name": "Blocked or Suspended?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1180,
+        300
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "26266d4c-120f-5a50-8945-cf8b9c16ab3a",
+      "name": "Stop — Do Not Reply",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1400,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.AGENT_BASE_URL }}/internal/v1/conversations/{{ $json.conversation.id }}/context",
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.AGENT_API_KEY }}"
+            },
+            {
+              "name": "x-trace-id",
+              "value": "={{ $json.trace_id || $execution.id }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          }
+        },
+        "sendQuery": true,
+        "specifyQuery": "json",
+        "jsonQuery": "={{ JSON.stringify({ tenant_id: $json.tenant.id }) }}"
+      },
+      "id": "aa322f7c-5380-50dd-9451-a4a2902712fd",
+      "name": "Load Conversation",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1400,
+        420
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.AGENT_BASE_URL }}/internal/v1/intent/classify",
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.AGENT_API_KEY }}"
+            },
+            {
+              "name": "x-trace-id",
+              "value": "={{ $json.trace_id || $execution.id }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          }
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ text: $json.text, conversation_id: $json.conversation_id, tenant_id: $json.tenant_id }) }}"
+      },
+      "id": "cad1c2a9-3f81-5394-a30f-c1afe023d6f7",
+      "name": "Classify Intent",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1840,
+        260
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "fd7cc039-e8f0-5119-9cea-7bf0a4e985cd",
+              "leftValue": "={{ $json.intent }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "talk_to_human"
+            },
+            {
+              "id": "cc77d1cd-2a07-5268-aaa7-c729155a05e3",
+              "leftValue": "={{ $json.sentiment }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "angry"
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true
+      },
+      "id": "59c30dfc-880a-5721-9848-278f83dd7728",
+      "name": "Needs Human Immediately?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2060,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.AGENT_BASE_URL }}/internal/v1/agent/respond",
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.AGENT_API_KEY }}"
+            },
+            {
+              "name": "x-trace-id",
+              "value": "={{ $json.trace_id || $execution.id }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 45000,
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          }
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ tenant_id: $('Identify Customer').item.json.tenant.id, conversation_id: $('Identify Customer').item.json.conversation.id, message: $('Get Message Text').item.json.text, channel_message_id: $('Get Message Text').item.json.external_message_id, store_inbound: true }) }}"
+      },
+      "id": "048693c3-6b24-5877-a6f0-2d791f0c85a0",
+      "name": "AI Agent (Tools + Knowledge Base)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        2280,
+        560
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "onError": "continueErrorOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "\n// Single place that resolves the customer's message text and ids, whichever\n// branch produced it. Every later node reads from here.\nconst identify = $('Identify Customer').item.json;\nconst source = $('Split Messages').isExecuted\n  ? $('Split Messages').item.json\n  : $('Use Forwarded Message').item.json;\n\nreturn [{\n  json: {\n    text: source.message.text,\n    external_message_id: source.message.external_message_id,\n    channel_account_external_id: source.message.channel_account_external_id,\n    trace_id: source.trace_id,\n    tenant_id: identify.tenant.id,\n    customer_id: identify.customer.id,\n    customer_phone: identify.customer.phone,\n    conversation_id: identify.conversation.id,\n  },\n}];\n"
+      },
+      "id": "c4d89e23-843e-58de-89cb-adf9a8a01d92",
+      "name": "Get Message Text",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1620,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.AGENT_BASE_URL }}/internal/v1/handoffs",
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.AGENT_API_KEY }}"
+            },
+            {
+              "name": "x-trace-id",
+              "value": "={{ $json.trace_id || $execution.id }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          }
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ tenant_id: $('Get Message Text').item.json.tenant_id, conversation_id: $('Get Message Text').item.json.conversation_id, customer_id: $('Get Message Text').item.json.customer_id, reason_code: $('Classify Intent').item.json.intent === 'talk_to_human' ? 'customer_request' : 'angry_customer', reason_detail: 'تصعيد تلقائي من n8n بناءً على تصنيف النية', priority: $('Classify Intent').item.json.sentiment === 'angry' ? 'urgent' : 'high', last_customer_message: $('Get Message Text').item.json.text }) }}"
+      },
+      "id": "23e25787-eb33-5fa3-816c-67107ad7d0ff",
+      "name": "Create Handoff",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        2280,
+        260
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.HANDOFF_NOTIFY_URL }}",
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.AGENT_API_KEY }}"
+            },
+            {
+              "name": "x-trace-id",
+              "value": "={{ $json.trace_id || $execution.id }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          }
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ event: \"human_handoff.created\", handoff_id: $json.handoff_id, priority: $json.priority, customer_phone: $('Get Message Text').item.json.customer_phone, conversation_id: $('Get Message Text').item.json.conversation_id, last_message: $('Get Message Text').item.json.text, trace_id: $('Get Message Text').item.json.trace_id }) }}"
+      },
+      "id": "ed82a638-689c-50b4-ba73-0281e644f357",
+      "name": "Notify Employee",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        2500,
+        120
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "\n// Choose what actually gets sent to the customer, per branch:\n//   - escalation branch -> the wording returned by Create Handoff\n//     (Notify Employee sits between, and its response is the notifier's, not ours)\n//   - agent branch      -> the generated reply\n// The agent can also escalate inside its own turn; handed_off carries that\n// through so downstream logging stays accurate.\nconst viaHandoff = $('Create Handoff').isExecuted;\nconst source = viaHandoff\n  ? $('Create Handoff').item.json\n  : $input.first().json;\n\nconst reply = viaHandoff ? source.customer_message : source.reply;\n\nif (!reply) {\n  throw new Error('No reply text produced — refusing to send an empty message');\n}\n\nreturn [{\n  json: {\n    reply,\n    handed_off: viaHandoff || source.handed_off === true,\n    intent: source.intent ?? $('Classify Intent').item.json.intent,\n    handoff_id: source.handoff_id ?? null,\n  },\n}];\n"
+      },
+      "id": "75c6ee28-98af-5b91-bfaa-b2703432ad3b",
+      "name": "Pick Reply Text",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2720,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.AGENT_BASE_URL }}/internal/v1/messages/send",
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.AGENT_API_KEY }}"
+            },
+            {
+              "name": "x-trace-id",
+              "value": "={{ $json.trace_id || $execution.id }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          }
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ channel: \"whatsapp\", to: $('Get Message Text').item.json.customer_phone, text: $json.reply, channel_account_external_id: $('Get Message Text').item.json.channel_account_external_id }) }}"
+      },
+      "id": "e9a94148-c5c0-5296-b540-f124143e3d9e",
+      "name": "Send WhatsApp Message",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        2940,
+        400
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "onError": "continueErrorOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.AGENT_BASE_URL }}/internal/v1/messages/store",
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.AGENT_API_KEY }}"
+            },
+            {
+              "name": "x-trace-id",
+              "value": "={{ $json.trace_id || $execution.id }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          }
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ tenant_id: $('Get Message Text').item.json.tenant_id, conversation_id: $('Get Message Text').item.json.conversation_id, customer_id: $('Get Message Text').item.json.customer_id, direction: \"outbound\", role: \"agent\", content: $('Pick Reply Text').item.json.reply, channel_message_id: $json.external_message_id, intent: $('Pick Reply Text').item.json.intent, metadata: { source: \"n8n\", delivery_status: \"sent\", handed_off: $('Pick Reply Text').item.json.handed_off } }) }}"
+      },
+      "id": "556e308e-6503-5c01-b251-21221208ea65",
+      "name": "Save Conversation",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        3160,
+        320
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "\n// Terminal logging step. The agent service already writes a full audit trail\n// to agent_logs; this is the n8n-side execution record.\nconst ctx = $('Get Message Text').item.json;\nconst picked = $('Pick Reply Text').item.json;\n\nconsole.log(JSON.stringify({\n  trace_id: ctx.trace_id,\n  conversation_id: ctx.conversation_id,\n  intent: picked.intent,\n  handed_off: picked.handed_off,\n  reply_chars: (picked.reply ?? '').length,\n}));\n\nreturn $input.all();\n"
+      },
+      "id": "9e7fece8-b232-596a-8273-14af5101c659",
+      "name": "Log Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3380,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "\n// Anything that reaches here means the customer has NOT been answered.\n// Escalating is the only correct outcome — never leave the message unhandled.\nconst ctx = $('Get Message Text').item.json;\nconst err = $input.first().json.error ?? $input.first().json;\n\nreturn [{\n  json: {\n    tenant_id: ctx.tenant_id,\n    conversation_id: ctx.conversation_id,\n    customer_id: ctx.customer_id,\n    reason_code: 'tool_failure',\n    reason_detail: `فشل في n8n: ${typeof err === 'string' ? err : JSON.stringify(err).slice(0, 300)}`,\n    priority: 'high',\n    last_customer_message: ctx.text,\n  },\n}];\n"
+      },
+      "id": "53eab81f-2d6a-5da4-9763-616a891d2d07",
+      "name": "Build Failure Handoff",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2940,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.AGENT_BASE_URL }}/internal/v1/handoffs",
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.AGENT_API_KEY }}"
+            },
+            {
+              "name": "x-trace-id",
+              "value": "={{ $json.trace_id || $execution.id }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          }
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}"
+      },
+      "id": "798f590d-a8db-55d8-8718-6a7a77f73bcb",
+      "name": "Escalate After Failure",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        3160,
+        760
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "content": "## 🔐 التحقق من التوقيع\n\nتوقيع Meta (X-Hub-Signature-256) يُحسب على **البايتات الخام** للطلب.\nلذلك التحقق يتم في خدمة الوكيل وليس هنا: n8n يعيد تحليل الـJSON فتتغيّر البايتات.\n\n**النمط الموصى به:**\nMeta → خدمة الوكيل (تتحقق من التوقيع + تمنع التكرار) → تُمرّر الرسالة لهذا الـworkflow.\n\nاضبط في الخدمة:\n`WEBHOOK_DELEGATE_TO_N8N=true`\n`N8N_INBOUND_WEBHOOK_URL=<رابط هذا الويبهوك>`\n\nإذا استقبلت من Meta مباشرة هنا، الـworkflow يتعامل مع الشكل الخام أيضاً،\nلكن التوقيع لن يُتحقق منه.",
+        "height": 440,
+        "width": 620,
+        "color": 3
+      },
+      "id": "ae951aba-c9c7-5aef-9279-870479a615e2",
+      "name": "Note — Signature",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        -180
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## ⚙️ متغيرات البيئة المطلوبة في n8n\n\n| المتغير | المثال |\n|---|---|\n| `AGENT_BASE_URL` | `http://agent:3000` |\n| `AGENT_API_KEY` | نفس `INTERNAL_API_KEY` في الخدمة |\n| `HANDOFF_NOTIFY_URL` | رابط إشعار الموظف (Slack/CRM) |\n\nاضبطها في n8n ثم أعد تشغيله.\nالبديل: أنشئ Header Auth credential باسم `x-api-key` واربطها بعقد HTTP.",
+        "height": 300,
+        "width": 560,
+        "color": 5
+      },
+      "id": "f2a263a1-75a2-5507-9805-c71e43dfa24b",
+      "name": "Note — Env",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        340,
+        -180
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 🛡️ منع اختلاق المعلومات\n\nالوكيل لا يجيب من معرفته العامة إطلاقاً:\n- الأدوات (الطلبات/المنتجات/قاعدة المعرفة) هي المصدر الوحيد للحقائق.\n- بعد توليد الرد يمر على فاحص Grounding: أي سعر أو رقم طلب أو موعد\n  غير موجود في نتائج الأدوات → يُحجب الرد ويُصعّد لموظف.\n- ادعاء تنفيذ عملية (إلغاء/استرجاع) محظور ويُحجب تلقائياً.\n\nكل ذلك داخل `POST /internal/v1/agent/respond`.",
+        "height": 280,
+        "width": 520,
+        "color": 6
+      },
+      "id": "4f951be8-bff3-59ed-952f-f618f810eda8",
+      "name": "Note — Anti-hallucination",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1960,
+        860
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## ♻️ معالجة الأخطاء\n\n- كل عقدة HTTP: `retryOnFail` بثلاث محاولات وانتظار متزايد.\n- فشل الوكيل أو فشل الإرسال → مسار الخطأ → إنشاء تصعيد لموظف.\n- العميل لا يُترك بدون رد ولا يُعطى معلومة مخترعة.",
+        "height": 220,
+        "width": 520,
+        "color": 3
+      },
+      "id": "5589e02e-8b9f-5d0b-8f55-2c1cf0e8428a",
+      "name": "Note — Errors",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2440,
+        980
+      ]
+    }
+  ],
+  "connections": {
+    "WhatsApp Webhook": {
+      "main": [
+        [
+          {
+            "node": "Respond 200 (ACK)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond 200 (ACK)": {
+      "main": [
+        [
+          {
+            "node": "Validate Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Request": {
+      "main": [
+        [
+          {
+            "node": "Raw Meta Payload?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Raw Meta Payload?": {
+      "main": [
+        [
+          {
+            "node": "Normalize via Agent API",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Use Forwarded Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize via Agent API": {
+      "main": [
+        [
+          {
+            "node": "Split Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Messages": {
+      "main": [
+        [
+          {
+            "node": "Identify Customer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Use Forwarded Message": {
+      "main": [
+        [
+          {
+            "node": "Identify Customer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Identify Customer": {
+      "main": [
+        [
+          {
+            "node": "Blocked or Suspended?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Blocked or Suspended?": {
+      "main": [
+        [
+          {
+            "node": "Stop — Do Not Reply",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Load Conversation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Conversation": {
+      "main": [
+        [
+          {
+            "node": "Get Message Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Message Text": {
+      "main": [
+        [
+          {
+            "node": "Classify Intent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify Intent": {
+      "main": [
+        [
+          {
+            "node": "Needs Human Immediately?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Needs Human Immediately?": {
+      "main": [
+        [
+          {
+            "node": "Create Handoff",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent (Tools + Knowledge Base)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Handoff": {
+      "main": [
+        [
+          {
+            "node": "Notify Employee",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Employee": {
+      "main": [
+        [
+          {
+            "node": "Pick Reply Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent (Tools + Knowledge Base)": {
+      "main": [
+        [
+          {
+            "node": "Pick Reply Text",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Failure Handoff",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pick Reply Text": {
+      "main": [
+        [
+          {
+            "node": "Send WhatsApp Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send WhatsApp Message": {
+      "main": [
+        [
+          {
+            "node": "Save Conversation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Failure Handoff",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Conversation": {
+      "main": [
+        [
+          {
+            "node": "Log Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Failure Handoff": {
+      "main": [
+        [
+          {
+            "node": "Escalate After Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true,
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "executionTimeout": 300,
+    "timezone": "Asia/Riyadh"
+  },
+  "pinData": {},
+  "tags": [],
+  "meta": {
+    "instanceId": "ifaghd-customer-service-agent"
+  }
+}

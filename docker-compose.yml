@@ -1,0 +1,68 @@
+# Local / single-host deployment: Postgres + the agent + n8n.
+#
+#   cp .env.example .env   # fill it in
+#   docker compose up -d
+#   docker compose exec agent npm run migrate
+#   docker compose exec agent npm run seed
+#
+# For production, run Postgres as a managed service and keep only `agent`
+# (and `n8n`, if you use it) here.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-ifaghd}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-ifaghd}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"   # loopback only; not exposed to the network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-ifaghd} -d ${POSTGRES_DB:-ifaghd}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  agent:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-ifaghd}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-ifaghd}
+    ports:
+      - "3000:3000"
+
+  n8n:
+    image: n8nio/n8n:latest
+    restart: unless-stopped
+    depends_on:
+      - agent
+    environment:
+      N8N_HOST: ${N8N_HOST:-localhost}
+      N8N_PORT: 5678
+      N8N_PROTOCOL: ${N8N_PROTOCOL:-http}
+      WEBHOOK_URL: ${N8N_WEBHOOK_URL:-http://localhost:5678/}
+      GENERIC_TIMEZONE: Asia/Riyadh
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY:?set N8N_ENCRYPTION_KEY in .env}
+      # Consumed by the workflow expressions ($env.*)
+      AGENT_BASE_URL: http://agent:3000
+      AGENT_API_KEY: ${INTERNAL_API_KEY}
+      HANDOFF_NOTIFY_URL: ${HANDOFF_WEBHOOK_URL:-}
+      ONCALL_WEBHOOK_URL: ${ONCALL_WEBHOOK_URL:-}
+      SUPPORT_WEBHOOK_URL: ${SUPPORT_WEBHOOK_URL:-}
+      HELPDESK_WEBHOOK_URL: ${HELPDESK_WEBHOOK_URL:-}
+    ports:
+      - "5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./n8n/workflows:/workflows:ro
+
+volumes:
+  postgres_data:
+  n8n_data:

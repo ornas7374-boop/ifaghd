@@ -1,0 +1,303 @@
+{
+  "name": "Human Handoff — Notify Employee",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "human-handoff",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "3ac86a9a-ffad-5c5d-a4d1-b708a29d62ad",
+      "name": "Handoff Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -300,
+        300
+      ],
+      "webhookId": "a5438a8f-dd64-5805-b7c9-5e13d837e918"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ received: true }) }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "3210b383-3d44-56fb-99eb-fb7bf076a695",
+      "name": "Respond 200 (ACK)",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -80,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "\n// Turn the agent's handoff payload into what a human on shift needs to see.\n// Phone numbers are masked here because chat history is widely readable —\n// the unmasked number stays in the database for whoever claims the ticket.\nconst e = $input.first().json.body ?? $input.first().json;\n\nconst REASONS = {\n  customer_request: 'العميل طلب موظف',\n  angry_customer: 'العميل منزعج',\n  sensitive_issue: 'موضوع حساس',\n  low_confidence: 'الوكيل غير متأكد من الإجابة',\n  tool_failure: 'فشل في جلب البيانات',\n  missing_information: 'المعلومة غير متوفرة',\n  repeated_failure: 'تكرار عدم الحل',\n  policy_violation: 'مخالفة سياسة',\n  manual: 'تصعيد يدوي',\n};\n\nconst mask = (p) => {\n  const d = String(p ?? '').replace(/\\D/g, '');\n  return d.length <= 4 ? '****' : '*'.repeat(d.length - 4) + d.slice(-4);\n};\n\nconst priority = e.priority ?? 'normal';\nconst flag = priority === 'urgent' ? '🔴' : priority === 'high' ? '🟠' : '🟡';\n\nconst lines = [\n  `${flag} *تصعيد جديد* — ${e.tenant?.name ?? 'المتجر'}`,\n  `الأولوية: ${priority}`,\n  `العميل: ${e.customer?.name ?? 'غير معروف'} (${mask(e.customer?.phone ?? e.customer_phone)})`,\n  `السبب: ${REASONS[e.reason_code] ?? e.reason_code}`,\n  e.reason_detail ? `التفاصيل: ${e.reason_detail}` : null,\n  e.last_customer_message ? `آخر رسالة: ${e.last_customer_message}` : null,\n  e.conversation_summary ? `الملخص: ${e.conversation_summary}` : null,\n  `المحادثة: ${e.conversation_id}`,\n  `الوقت: ${new Date().toISOString()}`,\n].filter(Boolean);\n\nreturn [{\n  json: {\n    handoff_id: e.handoff_id,\n    tenant_id: e.tenant?.id ?? e.tenant_id,\n    priority,\n    is_urgent: priority === 'urgent' || priority === 'high',\n    text: lines.join('\\n'),\n    raw: e,\n  },\n}];\n"
+      },
+      "id": "15dfb0c5-ec6a-5b01-9689-ecb1b24b2cff",
+      "name": "Format Escalation",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        140,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a0b1a9d4-e4b4-5ed1-915d-cca1f59f2b4d",
+              "leftValue": "={{ $json.is_urgent }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              },
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true
+      },
+      "id": "57026116-2046-5fc2-adee-fad2b956f006",
+      "name": "Urgent?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        360,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.ONCALL_WEBHOOK_URL }}",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ text: \"🚨 عاجل\\n\" + $json.text }) }}",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "212fcf5f-4325-55ca-a564-331863dc5dd6",
+      "name": "Alert On-Call (Urgent)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        600,
+        180
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPPORT_WEBHOOK_URL }}",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ text: $json.text }) }}",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "7bbec745-5a41-5960-bd14-713ae1f04ade",
+      "name": "Notify Support Channel",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        600,
+        420
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.HELPDESK_WEBHOOK_URL }}",
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.AGENT_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ external_id: $('Format Escalation').item.json.handoff_id, priority: $('Format Escalation').item.json.priority, summary: $('Format Escalation').item.json.text, payload: $('Format Escalation').item.json.raw }) }}",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "657ef17d-658e-581f-a6d8-1c1abb353593",
+      "name": "Create Task in Helpdesk",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        840,
+        300
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "\n// The escalation row already exists in Postgres before this workflow runs, so\n// a failure here never loses the ticket — it only loses the notification, and\n// the ticket still shows up in v_pending_handoffs for whoever is on shift.\nconsole.log(JSON.stringify({\n  handoff_id: $('Format Escalation').item.json.handoff_id,\n  priority: $('Format Escalation').item.json.priority,\n  notified_at: new Date().toISOString(),\n}));\nreturn $input.all();\n"
+      },
+      "id": "4d3ff9ad-ed88-5fc5-a7fa-a7e15e534649",
+      "name": "Log Notification",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1080,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 🔔 إشعار التصعيد\n\nيستقبل هذا الـworkflow حدث `human_handoff.created` من خدمة الوكيل.\n\n**التفعيل في الخدمة:**\n```\nHANDOFF_NOTIFY_CHANNEL=webhook\nHANDOFF_WEBHOOK_URL=<رابط ويبهوك هذا الـworkflow>\n```\n\n**متغيرات n8n:**\n- `ONCALL_WEBHOOK_URL` — للحالات العاجلة\n- `SUPPORT_WEBHOOK_URL` — قناة الدعم العامة\n- `HELPDESK_WEBHOOK_URL` — نظام التذاكر (اختياري)\n- `AGENT_API_KEY`\n\n⚠️ سجل التصعيد محفوظ في قاعدة البيانات **قبل** إرسال الإشعار،\nفلو فشل الإشعار لا يضيع الطلب — يظهر في `v_pending_handoffs`.",
+        "height": 460,
+        "width": 520,
+        "color": 5
+      },
+      "id": "077d0e9f-6e4e-50b8-a1d9-2d92d7806c3c",
+      "name": "Note — Purpose",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -300,
+        -220
+      ]
+    }
+  ],
+  "connections": {
+    "Handoff Webhook": {
+      "main": [
+        [
+          {
+            "node": "Respond 200 (ACK)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond 200 (ACK)": {
+      "main": [
+        [
+          {
+            "node": "Format Escalation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Escalation": {
+      "main": [
+        [
+          {
+            "node": "Urgent?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Urgent?": {
+      "main": [
+        [
+          {
+            "node": "Alert On-Call (Urgent)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notify Support Channel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Alert On-Call (Urgent)": {
+      "main": [
+        [
+          {
+            "node": "Create Task in Helpdesk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Support Channel": {
+      "main": [
+        [
+          {
+            "node": "Create Task in Helpdesk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Task in Helpdesk": {
+      "main": [
+        [
+          {
+            "node": "Log Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "executionTimeout": 120,
+    "timezone": "Asia/Riyadh"
+  },
+  "pinData": {},
+  "tags": [],
+  "meta": {
+    "instanceId": "ifaghd-human-handoff"
+  }
+}

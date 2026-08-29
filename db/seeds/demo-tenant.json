@@ -1,0 +1,92 @@
+{
+  "_readme": "بيانات تجريبية لتشغيل واختبار النظام محلياً. استبدلها ببيانات متجرك الحقيقية أو اربط النظام بقاعدة بيانات المتجر. لا تشغّل هذا الملف في بيئة الإنتاج.",
+  "tenant": {
+    "slug": "demo-store",
+    "name": "متجر ديمو",
+    "timezone": "Asia/Riyadh",
+    "locale": "ar-SA",
+    "settings": {
+      "brandName": "متجر ديمو",
+      "supportHours": "يومياً من ٩ صباحاً إلى ٩ مساءً",
+      "supportPhone": "920000000",
+      "supportEmail": "support@demo-store.example",
+      "personaNotes": "استخدم لهجة سعودية ودّية ومختصرة. ناد العميل باسمه مرة وحدة في بداية المحادثة فقط.",
+      "alwaysEscalateIntents": [],
+      "disabledTools": []
+    }
+  },
+  "channel_accounts": [
+    {
+      "channel": "whatsapp",
+      "external_id": "TEST_PHONE_NUMBER_ID",
+      "display_name": "متجر ديمو - واتساب",
+      "config": { "note": "استبدل external_id بـ phone_number_id الحقيقي من Meta Developer Console" }
+    }
+  ],
+  "products": [
+    { "sku": "HP-001", "name": "سماعة بلوتوث لاسلكية", "name_en": "Wireless Bluetooth Headphones", "category": "الكترونيات", "brand": "SoundMax", "price": 349.00, "sale_price": 299.00, "stock_quantity": 42, "description": "سماعة لاسلكية مع عزل ضوضاء وبطارية تدوم ٣٠ ساعة." },
+    { "sku": "HP-002", "name": "سماعة سلكية للألعاب", "name_en": "Wired Gaming Headset", "category": "الكترونيات", "brand": "SoundMax", "price": 199.00, "sale_price": null, "stock_quantity": 0, "description": "سماعة ألعاب مع مايك قابل للفصل." },
+    { "sku": "WT-100", "name": "ساعة ذكية رياضية", "name_en": "Smart Sports Watch", "category": "الكترونيات", "brand": "FitPro", "price": 549.00, "sale_price": null, "stock_quantity": 15, "description": "ساعة ذكية مقاومة للماء مع تتبع النوم ونبض القلب." },
+    { "sku": "BG-210", "name": "حقيبة ظهر للابتوب", "name_en": "Laptop Backpack", "category": "حقائب", "brand": "UrbanCarry", "price": 189.00, "sale_price": 149.00, "stock_quantity": 88, "description": "حقيبة ظهر تتسع للابتوب ١٥.٦ بوصة مع منفذ شحن USB." },
+    { "sku": "PF-050", "name": "عطر شرقي فاخر", "name_en": "Oriental Luxury Perfume", "category": "عطور", "brand": "Amber House", "price": 429.00, "sale_price": null, "stock_quantity": 7, "description": "عطر شرقي بنفحات العود والعنبر، حجم ١٠٠ مل." }
+  ],
+  "customers": [
+    { "phone": "966500000001", "name": "سعود", "email": "saud@example.com", "external_ref": "CUST-1001" },
+    { "phone": "966500000002", "name": "نورة", "email": null, "external_ref": "CUST-1002" }
+  ],
+  "orders": [
+    {
+      "order_number": "SA-10231",
+      "customer_phone": "966500000001",
+      "status": "shipped",
+      "payment_status": "paid",
+      "payment_method": "mada",
+      "total_amount": 448.00,
+      "shipping_company": "سمسا",
+      "tracking_number": "SM8842190233",
+      "tracking_url": "https://www.smsaexpress.com/ar/trackingdetails?tracknumbers=SM8842190233",
+      "shipping_address": { "city": "الرياض", "district": "حي الملقا", "country": "SA" },
+      "estimated_delivery_in_days": 2,
+      "placed_days_ago": 3,
+      "items": [
+        { "sku": "HP-001", "name": "سماعة بلوتوث لاسلكية", "quantity": 1, "unit_price": 299.00 },
+        { "sku": "BG-210", "name": "حقيبة ظهر للابتوب", "quantity": 1, "unit_price": 149.00 }
+      ]
+    },
+    {
+      "order_number": "SA-10244",
+      "customer_phone": "966500000001",
+      "status": "delivered",
+      "payment_status": "paid",
+      "payment_method": "apple_pay",
+      "total_amount": 549.00,
+      "shipping_company": "أرامكس",
+      "tracking_number": "ARX7712008841",
+      "tracking_url": null,
+      "shipping_address": { "city": "الرياض", "district": "حي الملقا", "country": "SA" },
+      "estimated_delivery_in_days": 0,
+      "placed_days_ago": 20,
+      "delivered_days_ago": 17,
+      "items": [
+        { "sku": "WT-100", "name": "ساعة ذكية رياضية", "quantity": 1, "unit_price": 549.00 }
+      ]
+    },
+    {
+      "order_number": "SA-10310",
+      "customer_phone": "966500000002",
+      "status": "processing",
+      "payment_status": "paid",
+      "payment_method": "tabby",
+      "total_amount": 429.00,
+      "shipping_company": null,
+      "tracking_number": null,
+      "tracking_url": null,
+      "shipping_address": { "city": "جدة", "district": "حي الروضة", "country": "SA" },
+      "estimated_delivery_in_days": 4,
+      "placed_days_ago": 1,
+      "items": [
+        { "sku": "PF-050", "name": "عطر شرقي فاخر", "quantity": 1, "unit_price": 429.00 }
+      ]
+    }
+  ]
+}
