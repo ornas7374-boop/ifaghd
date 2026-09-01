@@ -1,24 +1,108 @@
-# ifaghd
+# صفحة الهدية المجانية
 
-## n8n-mcp
+نظام Landing Page كامل لتوزيع هدية مجانية مقابل الإيميل فقط:
 
-This project is configured to use [n8n-mcp](https://github.com/czlonkowski/n8n-mcp), a Model Context Protocol server that gives AI assistants structured access to n8n's nodes, documentation, and workflow validation tools.
+```
+الزائر يدخل إيميله → SUBMIT → ينفتح له /gift فورًا
+```
 
-The server is registered in [`.mcp.json`](.mcp.json) and runs via `npx n8n-mcp`, so no separate install step is required — Claude Code (or any MCP-compatible client) will fetch and launch it automatically.
+بدون OTP، بدون تسجيل دخول، بدون موافقة يدوية. الإيميل يُحفظ تلقائيًا، وملف الهدية محمي خلف رابط موقّع (Signed URL) قصير الصلاحية.
 
-By default it runs in **docs-only mode**: node search, documentation lookup, and workflow validation tools work out of the box with no n8n instance required.
+## الستاك
 
-To enable the additional tools that create/deploy workflows against a live n8n instance, `.mcp.json` reads `N8N_API_URL` and `N8N_API_KEY` from your environment (`${N8N_API_URL}` / `${N8N_API_KEY}`) rather than hardcoding them, since this repository is public and these are sensitive credentials.
+- **Next.js 16** (App Router + TypeScript) — عرض وسيرفر في مشروع واحد
+- **SQLite** (`better-sqlite3`) — قاعدة بيانات ملف واحد، صفر إعداد خارجي
+- **Tailwind CSS v4** — تصميم Mobile-first و RTL كامل
+- لا اعتماديات خارجية إضافية (لا حساب Auth، لا خدمة بريد، لا تخزين سحابي) — كل شي يشتغل من الصندوق
 
-1. Copy `.env` (already present locally, git-ignored) or create your own with:
+## كيف تشغّله محليًا
+
+```bash
+npm install
+cp .env.example .env
+```
+
+افتح `.env` وحط قيمة عشوائية طويلة لـ `APP_SECRET` (تقدر تولّدها بـ `openssl rand -hex 32`).
+
+```bash
+npm run make:placeholder-gift   # ينشئ ملف PDF تجريبي فقط لأول تشغيل — احذفه واستبدله بملفك الحقيقي
+npm run dev
+```
+
+افتح `http://localhost:3000`. جرّب الرحلة كاملة: أدخل إيميل → تنتقل تلقائيًا لـ `/gift` → تشوف الملف.
+
+## كيف تضيف رابط/ملف الهدية الحقيقي
+
+**الحالة الشائعة — ملف (PDF مثلًا):**
+انسخ ملفك الحقيقي إلى `private-gift/gift.pdf` (بنفس الاسم)، أو خلّه بأي اسم وعدّل `.env`:
+
+```
+GIFT_FILE_PATH=./private-gift/الخريطة.pdf
+GIFT_FILE_NAME=خريطتي.pdf
+```
+
+الملف **ما يظهر أبدًا** كرابط مباشر في أي صفحة — يتسلّم فقط عبر `/api/gift-file` برابط موقّع (HMAC) صالح لـ ١٠ دقائق ومربوط بإيميل الشخص نفسه، ويتجدد تلقائيًا كل مرة يفتح فيها `/gift`.
+
+**إذا كانت الهدية رابط خارجي** (ملف Google Drive، خريطة أونلاين، إلخ) بدل ملف تستضيفه بنفسك:
+
+```
+GIFT_EXTERNAL_URL=https://example.com/your-gift-link
+```
+
+لما تحط هذا المتغير، صفحة `/gift` تعرض زر يفتح الرابط مباشرة بدل عرض ملف محلي.
+
+## كيف تشوف الإيميلات المسجلة
+
+```bash
+npm run subscribers
+```
+
+يطبع جدول فيه كل إيميل، تاريخ التسجيل، هل فتح الهدية، وكم مرة. قاعدة البيانات ملف عادي على `data/app.db` — تقدر أيضًا تفتحه بأي برنامج SQLite (مثل DB Browser for SQLite) لو تبي تصفح البيانات بصريًا أو تصدّرها CSV.
+
+## آلية الحماية
+
+1. بعد إرسال الإيميل، السيرفر يحط كوكي موقّع (HttpOnly + Secure + SameSite=Lax) يثبت إن هذا المتصفح فعلاً سجّل بإيميل صحيح.
+2. صفحة `/gift` تتحقق من الكوكي على السيرفر قبل ما تعرض أي شي — بدون كوكي صالح، يرجعك لـ `/` تلقائيًا.
+3. رابط الملف نفسه يحمل توقيع HMAC + وقت انتهاء (10 دقائق)، مربوط بإيميلك تحديدًا — نسخ الرابط ومشاركته مع شخص ثاني ما ينفع، وبعد ١٠ دقائق يصير غير صالح تلقائيًا.
+4. الإيميل الواحد ما يتكرر أبدًا في قاعدة البيانات (قيد UNIQUE)، وإعادة إدخاله يعيد تسجيل الدخول فقط بدون إنشاء صف جديد.
+
+## النشر على الإنترنت
+
+هذا التطبيق يخزّن قاعدة بياناته كملف SQLite على القرص، فيحتاج استضافة عندها **قرص دائم (persistent disk)** — وليس دوال Serverless عادية (مثل Vercel Functions) اللي تمسح ملفاتها بعد كل طلب.
+
+أسهل خيارات مجانية/رخيصة ومناسبة:
+
+### Railway (الأسهل)
+1. أنشئ مشروع جديد → اربطه بهذا المستودع والفرع.
+2. أضف Volume صغير (١ جيجا كافي) وثبّته على مسار `/data`.
+3. عيّن متغيرات البيئة (تحت "Environment Variables"):
    ```
-   N8N_API_URL=https://your-n8n-instance.com
-   N8N_API_KEY=your-api-key
+   APP_SECRET=<قيمة عشوائية طويلة>
+   DB_PATH=/data/app.db
    ```
-2. Load it into your shell before starting your MCP client, e.g.:
-   ```bash
-   set -a && source .env && set +a
-   ```
-3. Restart your MCP client (or run `/mcp` in Claude Code) to pick up the change.
+4. ارفع ملف الهدية الحقيقي ضمن الكود قبل النشر (`private-gift/gift.pdf`) أو استخدم `GIFT_EXTERNAL_URL`.
+5. أوامر البناء والتشغيل الافتراضية تكفي: `npm install && npm run build` ثم `npm run start`.
 
-**Never commit `.env`** — it's listed in `.gitignore` for exactly this reason. If this repository is ever made private, credentials can instead be hardcoded directly in `.mcp.json` if preferred.
+### Render
+نفس الفكرة: "Web Service" (وليس Static Site) + Disk مرفق على `/data` + نفس متغيرات البيئة.
+
+### إذا تصر على Vercel
+لازم تستبدل SQLite بقاعدة بيانات مُستضافة (مثل Postgres على Vercel/Supabase/Neon) لأن نظام الملفات فيه مؤقت. هذا يحتاج تعديل بسيط في `src/lib/db.ts` فقط — بقية الكود (التحقق، التوقيع، الصفحات) ما يتغيّر.
+
+## المتغيرات البيئية
+
+| المتغير | إلزامي | الوصف |
+|---|---|---|
+| `APP_SECRET` | ✅ نعم | مفتاح توقيع الكوكي ورابط الملف الموقّع. ولّده بـ `openssl rand -hex 32` ولا تشاركه أبدًا. |
+| `DB_PATH` | لا | مسار ملف قاعدة البيانات. افتراضي: `./data/app.db` |
+| `GIFT_FILE_PATH` | لا | مسار ملف الهدية على القرص. افتراضي: `./private-gift/gift.pdf` |
+| `GIFT_FILE_NAME` | لا | اسم الملف اللي يظهر للمستخدم عند التحميل |
+| `GIFT_EXTERNAL_URL` | لا | إذا معبّى، الهدية تصير رابط خارجي بدل ملف محلي |
+
+## خطوات متبقية منك
+
+1. **استبدل** `private-gift/gift.pdf` بملفك الحقيقي (أو عيّن `GIFT_EXTERNAL_URL`).
+2. **ولّد** `APP_SECRET` حقيقي وحطه في بيئة الإنتاج (لا تستخدم القيمة التجريبية من جهازك).
+3. **اختر استضافة** فيها قرص دائم (Railway أو Render أعلاه) واربطها بهذا الفرع.
+4. **اختبر الرابط النهائي** بعد النشر بنفس الخطوات: إيميل صحيح → إيميل خاطئ → نفس الإيميل مرتين → تحميل الهدية من الجوال.
+5. بعدها الرابط جاهز للنشر في TikTok / Instagram / X.
