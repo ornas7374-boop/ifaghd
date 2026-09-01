@@ -7,8 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "subscribers": "node scripts/view-subscribers.mjs",
-    "make:placeholder-gift": "node scripts/make-placeholder-gift.mjs"
+    "subscribers": "node scripts/view-subscribers.mjs"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",

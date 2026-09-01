@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Tajawal } from "next/font/google";
 import "./globals.css";
+import { courseConfig } from "@/config/course";
 
 const tajawal = Tajawal({
   subsets: ["arabic"],
@@ -9,8 +10,8 @@ const tajawal = Tajawal({
 });
 
 export const metadata: Metadata = {
-  title: "هديتك المجانية جاهزة 🎁",
-  description: "أدخل إيميلك وخذ الهدية مباشرة — بدون تسجيل ولا خطوات معقدة.",
+  title: `${courseConfig.courseName} — مجانًا`,
+  description: courseConfig.courseDescription,
 };
 
 export default function RootLayout({

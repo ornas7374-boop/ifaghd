@@ -1,0 +1,31 @@
+import Link from "next/link";
+import { courseConfig } from "@/config/course";
+
+// صفحة نجاح احتياطية — تُستخدم كبديل لو احتجنا نوجّه الشخص لصفحة تأكيد
+// بدل التحويل التلقائي المباشر لصفحة الكورس (مثلًا من رابط إيميل تأكيد لاحقًا).
+export default function SuccessPage() {
+  return (
+    <main className="flex min-h-dvh flex-col items-center justify-center px-5 py-12">
+      <div className="w-full max-w-sm text-center">
+        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-3xl bg-emerald-100 text-3xl">
+          ✅
+        </div>
+
+        <h1 className="text-2xl font-black leading-tight text-slate-900 sm:text-3xl">
+          تم تسجيلك بنجاح!
+        </h1>
+
+        <p className="mx-auto mt-4 max-w-xs text-base leading-relaxed text-slate-600">
+          إيميلك محفوظ، وكورس «{courseConfig.courseName}» جاهز لك الآن.
+        </p>
+
+        <Link
+          href="/course"
+          className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-amber-500 px-5 py-4 text-base font-bold text-white shadow-lg shadow-amber-500/25 transition hover:bg-amber-600 active:scale-[0.99]"
+        >
+          انتقل إلى الكورس
+        </Link>
+      </div>
+    </main>
+  );
+}
