@@ -27,12 +27,17 @@ export async function POST(req: NextRequest) {
 
   const email = normalizeEmail(rawEmail);
 
+  let sessionToken: string;
   try {
     // Unique constraint on email means a repeat submission never creates a
     // duplicate row — it just re-authenticates the same subscriber.
     upsertSubscriber(email);
+    sessionToken = signSession(email);
   } catch (err) {
-    console.error("subscribe: db error", err);
+    // Covers both a DB failure and a misconfigured server (e.g. APP_SECRET
+    // not set yet) — either way the visitor gets a clean JSON error instead
+    // of a bare 500, and the real cause lands in the server logs.
+    console.error("subscribe: failed to register", err);
     return NextResponse.json(
       { ok: false, error: "صار خطأ بسيط، جرّب مرة ثانية." },
       { status: 500 }
@@ -40,7 +45,7 @@ export async function POST(req: NextRequest) {
   }
 
   const res = NextResponse.json({ ok: true });
-  res.cookies.set(COOKIE_NAME, signSession(email), {
+  res.cookies.set(COOKIE_NAME, sessionToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
