@@ -1,13 +1,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Baby, HeartCrack, PawPrint, Wheat } from "lucide-react";
+import { Baby, HeartCrack, Wheat } from "lucide-react";
 import { StatCard } from "@/components/StatCard";
 import { Filters } from "@/components/Filters";
 import { EmptyState } from "@/components/EmptyState";
 import { DeltaBadge } from "@/components/DeltaBadge";
 import { BarByYear } from "@/components/charts/BarByYear";
 import { GroupedByAnimalType } from "@/components/charts/GroupedByAnimalType";
+import { DonutChart } from "@/components/charts/DonutChart";
 import { MultiLineByYear } from "@/components/charts/MultiLineByYear";
 import { accentColorVar, seriesColorVar } from "@/lib/colors";
 import { percentChange } from "@/lib/format";
@@ -136,10 +137,10 @@ export function DashboardClient({
         />
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard label="إجمالي المواليد" value={totals.births} icon={Baby} accent="good" />
-          <StatCard label="إجمالي النفوق" value={totals.deaths} icon={HeartCrack} accent="critical" />
-          <StatCard label="إجمالي كمية الأعلاف" value={totals.feedQuantity} icon={Wheat} accent="warning" unit="كجم" />
-          <StatCard label="عدد أنواع الحيوانات" value={totals.typeCount} icon={PawPrint} accent="series-1" />
+          <StatCard label="إجمالي المواليد" value={totals.births} accent="good" />
+          <StatCard label="إجمالي النفوق" value={totals.deaths} accent="critical" />
+          <StatCard label="إجمالي كمية الأعلاف" value={totals.feedQuantity} accent="warning" unit="كجم" />
+          <StatCard label="عدد أنواع الحيوانات" value={totals.typeCount} accent="series-1" />
         </div>
       )}
 
@@ -161,7 +162,7 @@ export function DashboardClient({
         })}
       </div>
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <ChartCard
           title={`مقارنة سنوية — ${activeMetric.label}`}
           subtitle="عبر كل السنوات المتوفرة"
@@ -181,6 +182,14 @@ export function DashboardClient({
         <ChartCard title={`مقارنة الأنواع — ${activeMetric.label}`} subtitle={year ? `لسنة ${year}` : "لكل السنوات مجتمعة"}>
           {animalComparison.some((d) => d.value > 0) ? (
             <GroupedByAnimalType data={animalComparison} unit={activeMetric.unit} />
+          ) : (
+            <ChartEmptyNote />
+          )}
+        </ChartCard>
+
+        <ChartCard title={`توزيع ${activeMetric.label} حسب النوع`} subtitle={year ? `لسنة ${year}` : "لكل السنوات مجتمعة"}>
+          {animalComparison.some((d) => d.value > 0) ? (
+            <DonutChart data={animalComparison} unit={activeMetric.unit} />
           ) : (
             <ChartEmptyNote />
           )}
@@ -209,8 +218,10 @@ export function DashboardClient({
 
 function PageHeading() {
   return (
-    <div>
-      <h2 className="text-xl font-bold text-ink sm:text-2xl">لوحة قسم الإنتاج الحيواني</h2>
+    <div className="rounded-2xl border border-hairline bg-surface px-5 py-4">
+      <h2 className="text-xl font-extrabold text-[var(--series-1)] sm:text-2xl">
+        لوحة قسم الإنتاج الحيواني
+      </h2>
       <p className="mt-1 text-sm text-ink-secondary">
         نظرة عامة على بيانات الإنتاج الحيواني في محطة الأبحاث والتجارب
       </p>
