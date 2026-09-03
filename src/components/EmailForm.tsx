@@ -30,7 +30,7 @@ export default function EmailForm() {
         return;
       }
 
-      router.push("/course");
+      router.push("/success");
     } catch {
       setError("صار خطأ بسيط، جرّب مرة ثانية.");
       setStatus("error");
@@ -60,7 +60,7 @@ export default function EmailForm() {
         disabled={status === "loading"}
         className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl bg-amber-500 px-5 py-4 text-base font-bold text-white shadow-lg shadow-amber-500/25 transition hover:bg-amber-600 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70"
       >
-        {status === "loading" ? "لحظة…" : "استلم الكورس مجانًا"}
+        {status === "loading" ? "لحظة…" : "احصل على الهدية مجانًا"}
       </button>
 
       {error && (
@@ -71,7 +71,7 @@ export default function EmailForm() {
 
       <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-xs text-slate-500">
         <span aria-hidden>🔒</span>
-        الكورس مجاني ١٠٠٪ — ما نحتاج منك إلا إيميلك للوصول له.
+        ما نحتاج منك إلا إيميلك للوصول للهدية.
       </p>
     </form>
   );
