@@ -46,9 +46,10 @@ const markAccessedStmt = db.prepare(
 );
 
 /** Insert the email if it's new, otherwise leave the existing row untouched. Never creates a duplicate. */
-export function upsertSubscriber(email: string): Subscriber {
-  insertStmt.run(email);
-  return selectStmt.get(email) as Subscriber;
+export function upsertSubscriber(email: string): { subscriber: Subscriber; isNew: boolean } {
+  const result = insertStmt.run(email);
+  const subscriber = selectStmt.get(email) as Subscriber;
+  return { subscriber, isNew: result.changes > 0 };
 }
 
 export function getSubscriber(email: string): Subscriber | undefined {
