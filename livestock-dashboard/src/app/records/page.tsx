@@ -2,6 +2,8 @@ import { listAnimalTypes, listRecords } from "@/lib/queries";
 import { mergeYears } from "@/lib/years";
 import { RecordsClient } from "./RecordsClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function RecordsPage() {
   const animalTypes = listAnimalTypes();
   const records = listRecords();
