@@ -55,3 +55,18 @@ export function verifyFileAccess(email: string, exp: number, sig: string): boole
   if (!Number.isFinite(exp) || exp < Date.now()) return false;
   return timingSafeEqual(hmac(`${email}:${exp}`), sig);
 }
+
+/** Timing-safe string comparison, exposed for checking the admin password. */
+export function safeCompare(a: string, b: string): boolean {
+  return timingSafeEqual(a, b);
+}
+
+/** Signed cookie value proving this browser passed the admin password check. */
+export function signAdminSession(): string {
+  return hmac("admin-authenticated");
+}
+
+export function verifyAdminSession(token: string | undefined | null): boolean {
+  if (!token) return false;
+  return timingSafeEqual(token, hmac("admin-authenticated"));
+}
