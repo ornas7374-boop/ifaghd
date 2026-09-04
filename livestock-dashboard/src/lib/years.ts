@@ -1,4 +1,4 @@
-export const DEFAULT_YEARS = [2023, 2024, 2025, 2026];
+export const DEFAULT_YEARS = [2024, 2025, 2026];
 
 export function mergeYears(existing: number[]): number[] {
   const currentYear = new Date().getFullYear();

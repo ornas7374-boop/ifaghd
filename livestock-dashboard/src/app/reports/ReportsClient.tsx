@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { Baby, BarChart3, CalendarRange, Download, HeartCrack, PawPrint, Wheat } from "lucide-react";
 import { EmptyState } from "@/components/EmptyState";
+import { InstitutionInfo } from "@/components/InstitutionInfo";
 import { DeltaBadge } from "@/components/DeltaBadge";
 import { BarByYear } from "@/components/charts/BarByYear";
 import { GroupedByAnimalType } from "@/components/charts/GroupedByAnimalType";
@@ -46,6 +47,7 @@ export function ReportsClient({
     return (
       <div className="flex flex-col gap-6">
         <PageHeading />
+        <InstitutionInfo />
         <EmptyState
           description="التقارير تُبنى تلقائيًا من البيانات المدخلة. أدخل بيانات أولًا لعرض التقارير هنا."
           actionHref="/data-entry"
@@ -58,6 +60,7 @@ export function ReportsClient({
   return (
     <div className="flex flex-col gap-6">
       <PageHeading />
+      <InstitutionInfo />
 
       <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-hairline bg-surface p-1.5">
         {TABS.map((t) => (

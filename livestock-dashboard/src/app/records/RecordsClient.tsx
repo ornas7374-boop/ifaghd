@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { Filters } from "@/components/Filters";
+import { InstitutionInfo } from "@/components/InstitutionInfo";
 import { RecordsTable } from "@/components/RecordsTable";
 import { RecordFormModal } from "@/components/RecordFormModal";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
@@ -67,6 +68,8 @@ export function RecordsClient({
           كل بيانات الإنتاج الحيواني المسجلة — قابلة للبحث والتصفية والتعديل
         </p>
       </div>
+
+      <InstitutionInfo />
 
       <div className="flex flex-col gap-3 rounded-2xl border border-hairline bg-surface p-4 sm:flex-row sm:items-center sm:justify-between">
         <Filters
