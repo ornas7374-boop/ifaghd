@@ -30,7 +30,7 @@ export default function EmailForm() {
         return;
       }
 
-      router.push("/success");
+      router.push("/gift");
     } catch {
       setError("صار خطأ بسيط، جرّب مرة ثانية.");
       setStatus("error");

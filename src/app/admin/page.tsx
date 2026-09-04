@@ -36,7 +36,7 @@ export default async function AdminPage() {
             <tr>
               <th className="px-4 py-3 text-start font-bold">الإيميل</th>
               <th className="px-4 py-3 text-start font-bold">تاريخ التسجيل</th>
-              <th className="px-4 py-3 text-start font-bold">فتح الكورس</th>
+              <th className="px-4 py-3 text-start font-bold">فتح الهدية</th>
               <th className="px-4 py-3 text-start font-bold">عدد المرات</th>
             </tr>
           </thead>

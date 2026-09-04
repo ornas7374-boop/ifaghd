@@ -1,17 +1,23 @@
 import crypto from "node:crypto";
 
-const SECRET = process.env.APP_SECRET;
-
-if (!SECRET || SECRET.length < 16) {
-  throw new Error(
-    "APP_SECRET is missing or too short. Set a random 32+ character value " +
-      "in your environment (see .env.example) — it signs the access cookie " +
-      "and the gift file's signed URL."
-  );
+// Read lazily (not at module load) so `next build` can collect route data
+// without APP_SECRET set — hosts often build in one step and inject runtime
+// secrets in another. It's still required and validated before any request
+// is actually signed or verified.
+function getSecret(): string {
+  const secret = process.env.APP_SECRET;
+  if (!secret || secret.length < 16) {
+    throw new Error(
+      "APP_SECRET is missing or too short. Set a random 32+ character value " +
+        "in your environment (see .env.example) — it signs the access cookie " +
+        "and the gift file's signed URL."
+    );
+  }
+  return secret;
 }
 
 function hmac(input: string): string {
-  return crypto.createHmac("sha256", SECRET as string).update(input).digest("base64url");
+  return crypto.createHmac("sha256", getSecret()).update(input).digest("base64url");
 }
 
 function timingSafeEqual(a: string, b: string): boolean {
