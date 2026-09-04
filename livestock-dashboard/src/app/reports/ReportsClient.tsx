@@ -8,7 +8,7 @@ import { DeltaBadge } from "@/components/DeltaBadge";
 import { BarByYear } from "@/components/charts/BarByYear";
 import { GroupedByAnimalType } from "@/components/charts/GroupedByAnimalType";
 import { accentColorVar, seriesColorVar } from "@/lib/colors";
-import { formatNumber, percentChange } from "@/lib/format";
+import { currentMonthLabel, formatNumber, percentChange } from "@/lib/format";
 import { METRICS, pickMetricValue, type MetricKey } from "@/lib/metrics";
 import type { AnimalType, ProductionRecordWithType } from "@/lib/types";
 
@@ -94,7 +94,12 @@ function PageHeading() {
   return (
     <div className="flex flex-wrap items-start justify-between gap-3">
       <div>
-        <h2 className="text-xl font-bold text-ink sm:text-2xl">التقارير</h2>
+        <div className="flex flex-wrap items-center gap-2">
+          <h2 className="text-xl font-bold text-ink sm:text-2xl">التقارير</h2>
+          <span className="rounded-full border border-hairline bg-surface-2 px-3 py-1 text-xs font-semibold text-ink-secondary">
+            التقرير الشهري: {currentMonthLabel()}
+          </span>
+        </div>
         <p className="mt-1 text-sm text-ink-secondary">تقارير محسوبة تلقائيًا من بيانات الإنتاج الحيواني</p>
       </div>
       <button
