@@ -16,23 +16,3 @@ export function percentChange(previous: number, current: number): number | null 
   if (previous === 0) return current === 0 ? 0 : null;
   return ((current - previous) / previous) * 100;
 }
-
-const ARABIC_MONTHS = [
-  "يناير",
-  "فبراير",
-  "مارس",
-  "أبريل",
-  "مايو",
-  "يونيو",
-  "يوليو",
-  "أغسطس",
-  "سبتمبر",
-  "أكتوبر",
-  "نوفمبر",
-  "ديسمبر",
-];
-
-export function currentMonthLabel(): string {
-  const now = new Date();
-  return `${ARABIC_MONTHS[now.getMonth()]} (${now.getMonth() + 1})`;
-}

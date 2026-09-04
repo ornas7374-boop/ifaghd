@@ -2,6 +2,7 @@
 
 import { Pencil, Trash2 } from "lucide-react";
 import { formatNumber } from "@/lib/format";
+import { monthLabel } from "@/lib/months";
 import type { ProductionRecordWithType } from "@/lib/types";
 import { EmptyState } from "./EmptyState";
 
@@ -28,6 +29,7 @@ export function RecordsTable({
         <thead>
           <tr className="border-b border-hairline text-start text-xs text-ink-muted">
             <th className="px-4 py-3 font-semibold">السنة</th>
+            <th className="px-4 py-3 font-semibold">الشهر</th>
             <th className="px-4 py-3 font-semibold">نوع الحيوان</th>
             <th className="px-4 py-3 font-semibold">المواليد</th>
             <th className="px-4 py-3 font-semibold">النفوق</th>
@@ -39,6 +41,7 @@ export function RecordsTable({
           {records.map((r) => (
             <tr key={r.id} className="border-b border-hairline last:border-0 hover:bg-surface-2/60">
               <td className="px-4 py-3 font-semibold tabular-nums text-ink">{r.year}</td>
+              <td className="px-4 py-3 text-ink-secondary">{monthLabel(r.month)}</td>
               <td className="px-4 py-3 text-ink-secondary">{r.animal_type_name}</td>
               <td className="px-4 py-3 tabular-nums text-ink">{formatNumber(r.births)}</td>
               <td className="px-4 py-3 tabular-nums text-ink">{formatNumber(r.deaths)}</td>

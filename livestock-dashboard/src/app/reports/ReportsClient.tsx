@@ -1,14 +1,15 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Baby, BarChart3, CalendarRange, Download, HeartCrack, PawPrint, Wheat } from "lucide-react";
+import { Baby, BarChart3, CalendarDays, CalendarRange, Download, HeartCrack, PawPrint, Wheat } from "lucide-react";
 import { EmptyState } from "@/components/EmptyState";
 import { InstitutionInfo } from "@/components/InstitutionInfo";
 import { DeltaBadge } from "@/components/DeltaBadge";
 import { BarByYear } from "@/components/charts/BarByYear";
 import { GroupedByAnimalType } from "@/components/charts/GroupedByAnimalType";
 import { accentColorVar, seriesColorVar } from "@/lib/colors";
-import { currentMonthLabel, formatNumber, percentChange } from "@/lib/format";
+import { formatNumber, percentChange } from "@/lib/format";
+import { MONTH_OPTIONS, YEARLY_TOTAL_MONTH, monthLabel } from "@/lib/months";
 import { METRICS, pickMetricValue, type MetricKey } from "@/lib/metrics";
 import type { AnimalType, ProductionRecordWithType } from "@/lib/types";
 
@@ -18,10 +19,11 @@ const METRIC_ICONS: Record<MetricKey, typeof Baby> = {
   feedQuantity: Wheat,
 };
 
-type Tab = "annual" | "years" | "animals";
+type Tab = "annual" | "monthly" | "years" | "animals";
 
 const TABS: { key: Tab; label: string; icon: typeof Baby }[] = [
   { key: "annual", label: "التقرير السنوي", icon: CalendarRange },
+  { key: "monthly", label: "التقرير الشهري", icon: CalendarDays },
   { key: "years", label: "مقارنة السنوات", icon: BarChart3 },
   { key: "animals", label: "مقارنة أنواع الحيوانات", icon: PawPrint },
 ];
@@ -82,6 +84,9 @@ export function ReportsClient({
       {tab === "annual" && (
         <AnnualReport animalTypes={animalTypes} records={records} yearsWithData={yearsWithData} metric={metric} />
       )}
+      {tab === "monthly" && (
+        <MonthlyReport animalTypes={animalTypes} records={records} metric={metric} />
+      )}
       {tab === "years" && <YearsComparison records={records} metric={metric} />}
       {tab === "animals" && (
         <AnimalsComparison animalTypes={animalTypes} records={records} years={years} metric={metric} />
@@ -94,12 +99,7 @@ function PageHeading() {
   return (
     <div className="flex flex-wrap items-start justify-between gap-3">
       <div>
-        <div className="flex flex-wrap items-center gap-2">
-          <h2 className="text-xl font-bold text-ink sm:text-2xl">التقارير</h2>
-          <span className="rounded-full border border-hairline bg-surface-2 px-3 py-1 text-xs font-semibold text-ink-secondary">
-            التقرير الشهري: {currentMonthLabel()}
-          </span>
-        </div>
+        <h2 className="text-xl font-bold text-ink sm:text-2xl">التقارير</h2>
         <p className="mt-1 text-sm text-ink-secondary">تقارير محسوبة تلقائيًا من بيانات الإنتاج الحيواني</p>
       </div>
       <button
@@ -167,12 +167,12 @@ function AnnualReport({
   const rows = useMemo(
     () =>
       animalTypes.map((type) => {
-        const record = records.find((r) => r.year === year && r.animal_type_id === type.id);
+        const matching = records.filter((r) => r.year === year && r.animal_type_id === type.id);
         return {
           type,
-          births: record?.births ?? 0,
-          deaths: record?.deaths ?? 0,
-          feedQuantity: record?.feed_quantity ?? 0,
+          births: matching.reduce((s, r) => s + r.births, 0),
+          deaths: matching.reduce((s, r) => s + r.deaths, 0),
+          feedQuantity: matching.reduce((s, r) => s + r.feed_quantity, 0),
         };
       }),
     [animalTypes, records, year]
@@ -243,6 +243,139 @@ function AnnualReport({
         </Card>
 
         <Card title={`${activeMetric.label} حسب النوع — سنة ${year}`}>
+          <GroupedByAnimalType data={chartData} unit={activeMetric.unit} />
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+function MonthlyReport({
+  animalTypes,
+  records,
+  metric,
+}: {
+  animalTypes: AnimalType[];
+  records: ProductionRecordWithType[];
+  metric: MetricKey;
+}) {
+  const activeMetric = METRICS.find((m) => m.key === metric)!;
+  const now = new Date();
+
+  const monthlyRecords = useMemo(() => records.filter((r) => r.month !== YEARLY_TOTAL_MONTH), [records]);
+  const yearsWithMonthlyData = useMemo(
+    () => Array.from(new Set(monthlyRecords.map((r) => r.year))).sort((a, b) => b - a),
+    [monthlyRecords]
+  );
+
+  const [year, setYear] = useState<number>(yearsWithMonthlyData[0] ?? now.getFullYear());
+  const [month, setMonth] = useState<number>(now.getMonth() + 1);
+
+  if (monthlyRecords.length === 0) {
+    return (
+      <EmptyState
+        title="لا توجد بيانات شهرية مدخلة بعد"
+        description='اختر شهرًا محددًا (غير "الإجمالي السنوي") عند إدخال البيانات لتظهر التقارير الشهرية هنا.'
+        actionHref="/data-entry"
+        actionLabel="الذهاب إلى إدخال البيانات"
+      />
+    );
+  }
+
+  const rows = animalTypes.map((type) => {
+    const record = monthlyRecords.find(
+      (r) => r.year === year && r.month === month && r.animal_type_id === type.id
+    );
+    return {
+      type,
+      births: record?.births ?? 0,
+      deaths: record?.deaths ?? 0,
+      feedQuantity: record?.feed_quantity ?? 0,
+    };
+  });
+
+  const totals = rows.reduce(
+    (acc, r) => ({
+      births: acc.births + r.births,
+      deaths: acc.deaths + r.deaths,
+      feedQuantity: acc.feedQuantity + r.feedQuantity,
+    }),
+    { births: 0, deaths: 0, feedQuantity: 0 }
+  );
+
+  const chartData = rows.map((r, i) => ({
+    name: r.type.name_ar,
+    value: pickMetricValue(r, metric),
+    color: seriesColorVar(i),
+  }));
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap items-center gap-3">
+        <label className="flex items-center gap-2 text-sm">
+          <span className="text-ink-secondary">السنة</span>
+          <select
+            value={year}
+            onChange={(e) => setYear(Number(e.target.value))}
+            className="rounded-xl border border-hairline bg-surface px-3 py-2 text-sm font-medium text-ink outline-none focus:border-[var(--series-1)]"
+          >
+            {yearsWithMonthlyData.map((y) => (
+              <option key={y} value={y}>
+                {y}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="flex items-center gap-2 text-sm">
+          <span className="text-ink-secondary">الشهر</span>
+          <select
+            value={month}
+            onChange={(e) => setMonth(Number(e.target.value))}
+            className="rounded-xl border border-hairline bg-surface px-3 py-2 text-sm font-medium text-ink outline-none focus:border-[var(--series-1)]"
+          >
+            {MONTH_OPTIONS.filter((m) => m.value !== YEARLY_TOTAL_MONTH).map((m) => (
+              <option key={m.value} value={m.value}>
+                {m.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <Card title={`تقرير ${monthLabel(month)} ${year}`}>
+          <div className="overflow-x-auto rounded-xl border border-hairline">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-hairline text-xs text-ink-muted">
+                  <th className="px-3 py-2 text-start font-semibold">نوع الحيوان</th>
+                  <th className="px-3 py-2 text-start font-semibold">المواليد</th>
+                  <th className="px-3 py-2 text-start font-semibold">النفوق</th>
+                  <th className="px-3 py-2 text-start font-semibold">الأعلاف (كجم)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r) => (
+                  <tr key={r.type.id} className="border-b border-hairline last:border-0">
+                    <td className="px-3 py-2 font-medium text-ink">{r.type.name_ar}</td>
+                    <td className="px-3 py-2 tabular-nums text-ink-secondary">{formatNumber(r.births)}</td>
+                    <td className="px-3 py-2 tabular-nums text-ink-secondary">{formatNumber(r.deaths)}</td>
+                    <td className="px-3 py-2 tabular-nums text-ink-secondary">{formatNumber(r.feedQuantity)}</td>
+                  </tr>
+                ))}
+                <tr className="bg-surface-2/60 font-bold text-ink">
+                  <td className="px-3 py-2">الإجمالي</td>
+                  <td className="px-3 py-2 tabular-nums">{formatNumber(totals.births)}</td>
+                  <td className="px-3 py-2 tabular-nums">{formatNumber(totals.deaths)}</td>
+                  <td className="px-3 py-2 tabular-nums">{formatNumber(totals.feedQuantity)}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </Card>
+
+        <Card title={`${activeMetric.label} حسب النوع — ${monthLabel(month)} ${year}`}>
           <GroupedByAnimalType data={chartData} unit={activeMetric.unit} />
         </Card>
       </div>

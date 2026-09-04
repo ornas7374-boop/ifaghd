@@ -6,18 +6,20 @@ import { recordInputSchema } from "@/lib/validation";
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const yearParam = searchParams.get("year");
+  const monthParam = searchParams.get("month");
   const animalTypeIdParam = searchParams.get("animalTypeId");
   const lookup = searchParams.get("lookup");
 
   const year = yearParam ? Number(yearParam) : undefined;
+  const month = monthParam !== null ? Number(monthParam) : undefined;
   const animalTypeId = animalTypeIdParam ? Number(animalTypeIdParam) : undefined;
 
-  if (lookup === "1" && year && animalTypeId) {
-    const record = findRecord(year, animalTypeId);
+  if (lookup === "1" && year !== undefined && month !== undefined && animalTypeId) {
+    const record = findRecord(year, month, animalTypeId);
     return NextResponse.json({ data: record ?? null });
   }
 
-  const data = listRecords({ year, animalTypeId });
+  const data = listRecords({ year, month, animalTypeId });
   return NextResponse.json({ data });
 }
 

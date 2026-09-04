@@ -17,6 +17,43 @@ const DEFAULT_ANIMAL_TYPES = [
   { key: "horse", name_ar: "الخيل", sort_order: 4 },
 ];
 
+const PRODUCTION_RECORDS_SCHEMA = `
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  year INTEGER NOT NULL,
+  month INTEGER NOT NULL DEFAULT 0,
+  animal_type_id INTEGER NOT NULL REFERENCES animal_types(id) ON DELETE CASCADE,
+  births INTEGER NOT NULL DEFAULT 0,
+  deaths INTEGER NOT NULL DEFAULT 0,
+  feed_quantity REAL NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE(year, month, animal_type_id)
+`;
+
+function migrateProductionRecordsTable(db: Database.Database) {
+  const columns = db.prepare(`PRAGMA table_info(production_records)`).all() as { name: string }[];
+
+  if (columns.length === 0) {
+    db.exec(`CREATE TABLE production_records (${PRODUCTION_RECORDS_SCHEMA})`);
+    return;
+  }
+
+  const hasMonthColumn = columns.some((c) => c.name === "month");
+  if (hasMonthColumn) return;
+
+  const migrateLegacyTable = db.transaction(() => {
+    db.exec(`ALTER TABLE production_records RENAME TO production_records_legacy`);
+    db.exec(`CREATE TABLE production_records (${PRODUCTION_RECORDS_SCHEMA})`);
+    db.exec(`
+      INSERT INTO production_records (id, year, month, animal_type_id, births, deaths, feed_quantity, created_at, updated_at)
+      SELECT id, year, 0, animal_type_id, births, deaths, feed_quantity, created_at, updated_at
+      FROM production_records_legacy
+    `);
+    db.exec(`DROP TABLE production_records_legacy`);
+  });
+  migrateLegacyTable();
+}
+
 function migrate(db: Database.Database) {
   db.exec(`
     CREATE TABLE IF NOT EXISTS animal_types (
@@ -26,20 +63,13 @@ function migrate(db: Database.Database) {
       sort_order INTEGER NOT NULL DEFAULT 0,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
+  `);
 
-    CREATE TABLE IF NOT EXISTS production_records (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      year INTEGER NOT NULL,
-      animal_type_id INTEGER NOT NULL REFERENCES animal_types(id) ON DELETE CASCADE,
-      births INTEGER NOT NULL DEFAULT 0,
-      deaths INTEGER NOT NULL DEFAULT 0,
-      feed_quantity REAL NOT NULL DEFAULT 0,
-      created_at TEXT NOT NULL DEFAULT (datetime('now')),
-      updated_at TEXT NOT NULL DEFAULT (datetime('now')),
-      UNIQUE(year, animal_type_id)
-    );
+  migrateProductionRecordsTable(db);
 
+  db.exec(`
     CREATE INDEX IF NOT EXISTS idx_records_year ON production_records(year);
+    CREATE INDEX IF NOT EXISTS idx_records_year_month ON production_records(year, month);
     CREATE INDEX IF NOT EXISTS idx_records_animal_type ON production_records(animal_type_id);
   `);
 

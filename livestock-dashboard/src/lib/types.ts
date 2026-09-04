@@ -8,6 +8,7 @@ export interface AnimalType {
 export interface ProductionRecord {
   id: number;
   year: number;
+  month: number;
   animal_type_id: number;
   births: number;
   deaths: number;
@@ -23,6 +24,7 @@ export interface ProductionRecordWithType extends ProductionRecord {
 
 export interface RecordInput {
   year: number;
+  month: number;
   animalTypeId: number;
   births: number;
   deaths: number;

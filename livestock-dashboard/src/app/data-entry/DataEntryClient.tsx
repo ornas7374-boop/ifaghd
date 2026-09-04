@@ -5,6 +5,7 @@ import { Plus, Save, X } from "lucide-react";
 import { useToast } from "@/components/toast";
 import { RecordsTable } from "@/components/RecordsTable";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { MONTH_OPTIONS, YEARLY_TOTAL_MONTH, monthLabel } from "@/lib/months";
 import type { AnimalType, ProductionRecordWithType } from "@/lib/types";
 
 export function DataEntryClient({
@@ -24,6 +25,7 @@ export function DataEntryClient({
   const [year, setYear] = useState<number>(years.includes(currentYear) ? currentYear : years[0] ?? currentYear);
   const [customYear, setCustomYear] = useState("");
   const [useCustomYear, setUseCustomYear] = useState(false);
+  const [month, setMonth] = useState<number>(YEARLY_TOTAL_MONTH);
   const [animalTypeId, setAnimalTypeId] = useState<number | null>(initialAnimalTypes[0]?.id ?? null);
 
   const [addingType, setAddingType] = useState(false);
@@ -37,8 +39,10 @@ export function DataEntryClient({
 
   const existingRecord = useMemo(() => {
     if (!effectiveYear || !animalTypeId) return undefined;
-    return records.find((r) => r.year === effectiveYear && r.animal_type_id === animalTypeId);
-  }, [records, effectiveYear, animalTypeId]);
+    return records.find(
+      (r) => r.year === effectiveYear && r.month === month && r.animal_type_id === animalTypeId
+    );
+  }, [records, effectiveYear, month, animalTypeId]);
 
   async function handleSave(values: { births: number; deaths: number; feedQuantity: number }): Promise<boolean> {
     if (!animalTypeId) {
@@ -54,7 +58,7 @@ export function DataEntryClient({
       const res = await fetch("/api/records", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ year: effectiveYear, animalTypeId, ...values }),
+        body: JSON.stringify({ year: effectiveYear, month, animalTypeId, ...values }),
       });
       const json = await res.json();
       if (!res.ok) {
@@ -66,6 +70,7 @@ export function DataEntryClient({
       const savedRecord: ProductionRecordWithType = {
         id: json.data.id,
         year: effectiveYear,
+        month,
         animal_type_id: animalTypeId,
         births: values.births,
         deaths: values.deaths,
@@ -92,6 +97,7 @@ export function DataEntryClient({
     } else {
       setCustomYear(String(record.year));
     }
+    setMonth(record.month);
     setAnimalTypeId(record.animal_type_id);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -159,7 +165,7 @@ export function DataEntryClient({
       </div>
 
       <div className="rounded-2xl border border-hairline bg-surface p-5">
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-ink-secondary">السنة</label>
             {!useCustomYear ? (
@@ -203,6 +209,21 @@ export function DataEntryClient({
                 </button>
               </div>
             )}
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium text-ink-secondary">الشهر</label>
+            <select
+              value={month}
+              onChange={(e) => setMonth(Number(e.target.value))}
+              className="rounded-xl border border-hairline bg-surface px-3 py-2.5 text-sm font-medium text-ink outline-none focus:border-[var(--series-1)]"
+            >
+              {MONTH_OPTIONS.map((m) => (
+                <option key={m.value} value={m.value}>
+                  {m.label}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="flex flex-col gap-1.5">
@@ -264,7 +285,7 @@ export function DataEntryClient({
         </div>
 
         <EntryFields
-          key={`${effectiveYear}:${animalTypeId}`}
+          key={`${effectiveYear}:${month}:${animalTypeId}`}
           existingRecord={existingRecord}
           onSave={handleSave}
         />
@@ -285,7 +306,7 @@ export function DataEntryClient({
         title="حذف السجل"
         description={
           pendingDelete
-            ? `سيتم حذف بيانات ${pendingDelete.animal_type_name} لسنة ${pendingDelete.year} نهائيًا.`
+            ? `سيتم حذف بيانات ${pendingDelete.animal_type_name} — ${monthLabel(pendingDelete.month)} ${pendingDelete.year} نهائيًا.`
             : undefined
         }
         onConfirm={confirmDelete}
@@ -376,7 +397,7 @@ function EntryFields({
 
       {isEditing && (
         <p className="sm:col-span-2 -mt-2 text-xs text-ink-muted">
-          يوجد سجل محفوظ مسبقًا لهذه السنة ولهذا النوع — سيتم تحديثه بدلًا من إنشاء سجل مكرر.
+          يوجد سجل محفوظ مسبقًا لهذا الاختيار (السنة/الشهر/النوع) — سيتم تحديثه بدلًا من إنشاء سجل مكرر.
         </p>
       )}
     </form>

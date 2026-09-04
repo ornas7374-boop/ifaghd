@@ -2,7 +2,7 @@ import { getDb } from "./db";
 import type { AnimalType, ProductionRecordWithType, RecordInput } from "./types";
 
 const RECORD_SELECT = `
-  SELECT r.id, r.year, r.animal_type_id, r.births, r.deaths, r.feed_quantity,
+  SELECT r.id, r.year, r.month, r.animal_type_id, r.births, r.deaths, r.feed_quantity,
          r.created_at, r.updated_at,
          a.key AS animal_type_key, a.name_ar AS animal_type_name
   FROM production_records r
@@ -43,7 +43,7 @@ export function createAnimalType(nameAr: string): AnimalType {
 }
 
 export function listRecords(
-  filters: { year?: number; animalTypeId?: number } = {}
+  filters: { year?: number; month?: number; animalTypeId?: number } = {}
 ): ProductionRecordWithType[] {
   const db = getDb();
   const clauses: string[] = [];
@@ -52,13 +52,17 @@ export function listRecords(
     clauses.push("r.year = @year");
     params.year = filters.year;
   }
+  if (filters.month !== undefined) {
+    clauses.push("r.month = @month");
+    params.month = filters.month;
+  }
   if (filters.animalTypeId) {
     clauses.push("r.animal_type_id = @animalTypeId");
     params.animalTypeId = filters.animalTypeId;
   }
   const where = clauses.length ? `WHERE ${clauses.join(" AND ")}` : "";
   return db
-    .prepare(`${RECORD_SELECT} ${where} ORDER BY r.year DESC, a.sort_order ASC`)
+    .prepare(`${RECORD_SELECT} ${where} ORDER BY r.year DESC, r.month ASC, a.sort_order ASC`)
     .all(params) as ProductionRecordWithType[];
 }
 
@@ -68,15 +72,19 @@ export function getRecordById(id: number): ProductionRecordWithType | undefined 
     | undefined;
 }
 
-export function findRecord(year: number, animalTypeId: number): ProductionRecordWithType | undefined {
+export function findRecord(
+  year: number,
+  month: number,
+  animalTypeId: number
+): ProductionRecordWithType | undefined {
   return getDb()
-    .prepare(`${RECORD_SELECT} WHERE r.year = ? AND r.animal_type_id = ?`)
-    .get(year, animalTypeId) as ProductionRecordWithType | undefined;
+    .prepare(`${RECORD_SELECT} WHERE r.year = ? AND r.month = ? AND r.animal_type_id = ?`)
+    .get(year, month, animalTypeId) as ProductionRecordWithType | undefined;
 }
 
 export function upsertRecord(input: RecordInput): { id: number; created: boolean } {
   const db = getDb();
-  const existing = findRecord(input.year, input.animalTypeId);
+  const existing = findRecord(input.year, input.month, input.animalTypeId);
   if (existing) {
     db.prepare(
       `UPDATE production_records SET births = ?, deaths = ?, feed_quantity = ?, updated_at = datetime('now') WHERE id = ?`
@@ -85,9 +93,9 @@ export function upsertRecord(input: RecordInput): { id: number; created: boolean
   }
   const info = db
     .prepare(
-      `INSERT INTO production_records (year, animal_type_id, births, deaths, feed_quantity) VALUES (?, ?, ?, ?, ?)`
+      `INSERT INTO production_records (year, month, animal_type_id, births, deaths, feed_quantity) VALUES (?, ?, ?, ?, ?, ?)`
     )
-    .run(input.year, input.animalTypeId, input.births, input.deaths, input.feedQuantity);
+    .run(input.year, input.month, input.animalTypeId, input.births, input.deaths, input.feedQuantity);
   return { id: info.lastInsertRowid as number, created: true };
 }
 

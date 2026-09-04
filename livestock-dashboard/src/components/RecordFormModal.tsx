@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
+import { monthLabel } from "@/lib/months";
 import type { ProductionRecordWithType } from "@/lib/types";
 import { useToast } from "./toast";
 
@@ -80,7 +81,7 @@ function RecordFormModalContent({
           <div>
             <h2 className="font-bold text-ink">تعديل البيانات</h2>
             <p className="text-xs text-ink-muted">
-              {record.animal_type_name} — سنة {record.year}
+              {record.animal_type_name} — {monthLabel(record.month)} {record.year}
             </p>
           </div>
           <button onClick={onClose} className="rounded-lg p-1.5 text-ink-secondary hover:bg-surface-2" aria-label="إغلاق">

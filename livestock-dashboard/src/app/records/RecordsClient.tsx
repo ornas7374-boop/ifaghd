@@ -8,6 +8,7 @@ import { RecordsTable } from "@/components/RecordsTable";
 import { RecordFormModal } from "@/components/RecordFormModal";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { useToast } from "@/components/toast";
+import { MONTH_OPTIONS, monthLabel } from "@/lib/months";
 import type { AnimalType, ProductionRecordWithType } from "@/lib/types";
 
 export function RecordsClient({
@@ -24,6 +25,7 @@ export function RecordsClient({
   const [records, setRecords] = useState<ProductionRecordWithType[]>(initialRecords);
 
   const [year, setYear] = useState<number | null>(null);
+  const [month, setMonth] = useState<number | null>(null);
   const [animalTypeId, setAnimalTypeId] = useState<number | null>(null);
   const [search, setSearch] = useState("");
 
@@ -35,10 +37,19 @@ export function RecordsClient({
     const term = search.trim().toLowerCase();
     return records
       .filter((r) => year === null || r.year === year)
+      .filter((r) => month === null || r.month === month)
       .filter((r) => animalTypeId === null || r.animal_type_id === animalTypeId)
-      .filter((r) => !term || r.animal_type_name.toLowerCase().includes(term) || String(r.year).includes(term))
-      .sort((a, b) => b.year - a.year || a.animal_type_name.localeCompare(b.animal_type_name, "ar"));
-  }, [records, year, animalTypeId, search]);
+      .filter(
+        (r) =>
+          !term ||
+          r.animal_type_name.toLowerCase().includes(term) ||
+          String(r.year).includes(term) ||
+          monthLabel(r.month).toLowerCase().includes(term)
+      )
+      .sort(
+        (a, b) => b.year - a.year || a.month - b.month || a.animal_type_name.localeCompare(b.animal_type_name, "ar")
+      );
+  }, [records, year, month, animalTypeId, search]);
 
   async function confirmDelete() {
     if (!pendingDelete) return;
@@ -71,21 +82,38 @@ export function RecordsClient({
 
       <InstitutionInfo />
 
-      <div className="flex flex-col gap-3 rounded-2xl border border-hairline bg-surface p-4 sm:flex-row sm:items-center sm:justify-between">
-        <Filters
-          years={years}
-          animalTypes={animalTypes}
-          year={year}
-          animalTypeId={animalTypeId}
-          onYearChange={setYear}
-          onAnimalTypeChange={setAnimalTypeId}
-        />
+      <div className="flex flex-col gap-3 rounded-2xl border border-hairline bg-surface p-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <div className="flex flex-wrap items-center gap-3">
+          <Filters
+            years={years}
+            animalTypes={animalTypes}
+            year={year}
+            animalTypeId={animalTypeId}
+            onYearChange={setYear}
+            onAnimalTypeChange={setAnimalTypeId}
+          />
+          <label className="flex items-center gap-2 text-sm">
+            <span className="text-ink-secondary">الشهر</span>
+            <select
+              value={month ?? "all"}
+              onChange={(e) => setMonth(e.target.value === "all" ? null : Number(e.target.value))}
+              className="rounded-xl border border-hairline bg-surface px-3 py-2 text-sm font-medium text-ink outline-none focus:border-[var(--series-1)]"
+            >
+              <option value="all">كل الأشهر</option>
+              {MONTH_OPTIONS.map((m) => (
+                <option key={m.value} value={m.value}>
+                  {m.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
         <div className="relative w-full sm:w-64">
           <Search size={16} className="pointer-events-none absolute top-1/2 -translate-y-1/2 start-3 text-ink-muted" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="ابحث بالسنة أو نوع الحيوان…"
+            placeholder="ابحث بالسنة أو الشهر أو نوع الحيوان…"
             className="w-full rounded-xl border border-hairline bg-surface py-2 ps-9 pe-3 text-sm text-ink outline-none focus:border-[var(--series-1)]"
           />
         </div>
@@ -121,7 +149,7 @@ export function RecordsClient({
         title="حذف السجل"
         description={
           pendingDelete
-            ? `سيتم حذف بيانات ${pendingDelete.animal_type_name} لسنة ${pendingDelete.year} نهائيًا.`
+            ? `سيتم حذف بيانات ${pendingDelete.animal_type_name} — ${monthLabel(pendingDelete.month)} ${pendingDelete.year} نهائيًا.`
             : undefined
         }
         onConfirm={confirmDelete}
