@@ -23,12 +23,29 @@ export default async function AdminPage() {
   }
 
   const subscribers = listSubscribers();
+  const opened = subscribers.filter((s) => s.gift_accessed).length;
+  const totalOpens = subscribers.reduce((sum, s) => sum + s.access_count, 0);
 
   return (
     <main className="mx-auto max-w-3xl px-5 py-12">
       <h1 className="text-2xl font-black text-slate-900">
         الإيميلات المسجلة ({subscribers.length})
       </h1>
+
+      <div className="mt-5 grid grid-cols-3 gap-3">
+        <div className="rounded-2xl border border-slate-200 bg-white px-4 py-4 text-center">
+          <div className="text-2xl font-black text-slate-900">{subscribers.length}</div>
+          <div className="mt-1 text-xs font-medium text-slate-500">إيميلات مسجّلة</div>
+        </div>
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-4 text-center">
+          <div className="text-2xl font-black text-emerald-700">{opened}</div>
+          <div className="mt-1 text-xs font-medium text-emerald-600">دخلوا رابط الهدية</div>
+        </div>
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-center">
+          <div className="text-2xl font-black text-amber-700">{totalOpens}</div>
+          <div className="mt-1 text-xs font-medium text-amber-600">إجمالي مرات الفتح</div>
+        </div>
+      </div>
 
       <div className="mt-6 overflow-x-auto rounded-2xl border border-slate-200 bg-white">
         <table className="w-full text-sm">
