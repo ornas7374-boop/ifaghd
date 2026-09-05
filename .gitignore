@@ -45,3 +45,6 @@ next-env.d.ts
 /data/*.db-journal
 /data/*.db-wal
 /data/*.db-shm
+
+# n8n-course build artifacts
+n8n-course/assets/node_modules/
