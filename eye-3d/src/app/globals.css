@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-ink: #070b14;
+  --color-ink-soft: #0d1424;
+  --color-accent: #2dd4bf;
+  --font-sans: var(--font-tajawal), "Segoe UI", Tahoma, sans-serif;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--color-ink);
+  color: #e2e8f0;
+  overscroll-behavior: none;
+}
+
+/* The 3D canvas owns all touch gestures inside its bounds. */
+canvas {
+  touch-action: none;
+  outline: none;
+}
+
+/* Thin, unobtrusive scrollbars inside the panels. */
+.scroll-slim {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
+}
+.scroll-slim::-webkit-scrollbar {
+  width: 6px;
+}
+.scroll-slim::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.35);
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.animate-rise {
+  animation: rise-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes pulse-ring {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.35);
+  }
+}
+.animate-pulse-ring {
+  animation: pulse-ring 2.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise,
+  .animate-pulse-ring {
+    animation: none;
+  }
+}
