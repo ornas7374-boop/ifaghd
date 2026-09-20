@@ -1,0 +1,24 @@
+{
+  "name": "webora-video",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Webora pitch deck as a Remotion motion-graphics video (no audio)",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render": "remotion render src/index.ts WeboraPitch out/webora-pitch.mp4",
+    "still": "remotion still src/index.ts WeboraPitch out/frame.png --frame=60"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.240",
+    "@remotion/google-fonts": "^4.0.240",
+    "@remotion/renderer": "^4.0.240",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "remotion": "^4.0.240"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.5.0"
+  }
+}
