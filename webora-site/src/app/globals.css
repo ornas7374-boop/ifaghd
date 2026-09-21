@@ -1,0 +1,127 @@
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────────
+   Webora Brand Book v1.0 · design tokens
+   ─────────────────────────────────────────────── */
+:root {
+  --ink: #0A0E27;
+  --ink-2: #050820;
+  --panel: #111535;
+  --panel-2: #161B3F;
+  --violet: #6D28D9;
+  --violet-soft: #8B5CF6;
+  --mint: #3EE8B4;
+  --mint-soft: #7CF4CD;
+  --cream: #F5F3EE;
+  --white: #FFFFFF;
+  --muted: #8B8FA8;
+  --border: rgba(139, 143, 168, 0.15);
+  --danger: #EF4444;
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-panel: var(--panel);
+  --color-violet: var(--violet);
+  --color-mint: var(--mint);
+  --color-cream: var(--cream);
+  --color-muted: var(--muted);
+  --font-display-en: "Space Grotesk", system-ui, sans-serif;
+  --font-display-ar: "IBM Plex Sans Arabic", "Tajawal", system-ui, sans-serif;
+  --font-body: "Inter", "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--ink);
+}
+
+body {
+  background: var(--ink);
+  color: var(--cream);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Bilingual defaults: RTL for [dir=rtl] blocks */
+[dir="rtl"] .num,
+[dir="rtl"] .en {
+  direction: ltr;
+  unicode-bidi: embed;
+}
+
+/* Utility: mint text with subtle glow */
+.mint-glow {
+  color: var(--mint);
+  text-shadow: 0 0 30px rgba(62, 232, 180, 0.35);
+}
+
+/* Utility: gradient text — Ink → Mint on the hero display */
+.grad-text {
+  background: linear-gradient(180deg, var(--white) 0%, var(--mint) 130%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Aura ring pulse (used in buttons + logo) */
+@keyframes aura-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.15); opacity: 0.55; }
+}
+
+@keyframes aura-halo {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.65; }
+}
+
+.aura-pulse { animation: aura-pulse 3s ease-in-out infinite; }
+.aura-halo  { animation: aura-halo  3s ease-in-out infinite; }
+
+/* Slow drifting backdrop */
+@keyframes drift-a { 0%,100% { transform: translate(0,0); } 50% { transform: translate(40px,-30px); } }
+@keyframes drift-b { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-30px,40px); } }
+.drift-a { animation: drift-a 18s ease-in-out infinite; }
+.drift-b { animation: drift-b 22s ease-in-out infinite; }
+
+/* Fine grid overlay (behind hero) */
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(62, 232, 180, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(62, 232, 180, 0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Scrollbar in-brand */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--ink-2); }
+::-webkit-scrollbar-thumb { background: var(--panel-2); border-radius: 999px; border: 2px solid var(--ink-2); }
+::-webkit-scrollbar-thumb:hover { background: var(--violet); }
+
+/* Selection */
+::selection { background: var(--mint); color: var(--ink); }
+
+/* Section rhythm */
+section { scroll-margin-top: 96px; }
+
+/* Marquee for logos row */
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.marquee-track { animation: marquee 32s linear infinite; }
+
+/* Card hover lift */
+.tier-card {
+  transition: transform 400ms cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 400ms ease,
+              border-color 400ms ease;
+}
+.tier-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(62, 232, 180, 0.5);
+  box-shadow: 0 30px 80px rgba(62, 232, 180, 0.08),
+              inset 0 0 0 1px rgba(62, 232, 180, 0.15);
+}
