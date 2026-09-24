@@ -69,12 +69,20 @@ img{max-width:100%;display:block}
 .hero .media{position:absolute;inset:0}
 .hero .media img{transform-origin:50% 60%}
 .hero-shade{position:absolute;inset:0;z-index:2;background:linear-gradient(180deg,rgba(10,11,13,.55) 0%,rgba(10,11,13,0) 30%,rgba(10,11,13,.1) 55%,rgba(10,11,13,.92) 100%)}
-.hero-copy{position:relative;z-index:3;padding-block:0 clamp(48px,8vh,96px);display:grid;grid-template-columns:1fr auto;align-items:end;gap:40px}
+.hero .media img{object-position:58% 55%}
+.hero-shade{background:
+  linear-gradient(90deg,rgba(10,11,13,.72) 0%,rgba(10,11,13,.35) 30%,rgba(10,11,13,0) 52%),
+  linear-gradient(180deg,rgba(10,11,13,.55) 0%,rgba(10,11,13,0) 28%,rgba(10,11,13,0) 55%,rgba(10,11,13,.9) 100%)!important}
+.hero-copy{position:relative;z-index:3;padding-block:0 clamp(48px,8vh,96px);display:grid;grid-template-columns:auto 1fr;align-items:end;gap:40px}
+.hero-copy.wrap{width:100%}
+.hero-text{justify-self:end;max-width:560px}
+.num-cap{display:flex;gap:12px;align-items:center;padding-top:28px;font-size:13.5px;color:var(--muted)}
+.num-cap .wide{font-size:11px;color:var(--blue-text);letter-spacing:.3em}
 .model-name{font-family:var(--f-wide);font-size:13px;letter-spacing:.5em;color:var(--blue-text);margin:0 0 18px;direction:ltr;text-align:right}
 .hero h1{font-family:var(--f-display);font-weight:600;font-size:clamp(46px,7.2vw,104px);line-height:1.15;margin:0 0 18px;text-wrap:balance}
 .hero p.lead{max-width:520px;color:#C5C8CE;margin:0 0 34px;font-size:clamp(16px,1.4vw,19px)}
 .hero-ctas{display:flex;flex-wrap:wrap;gap:12px}
-.hero-meta{display:grid;gap:6px;text-align:left;color:var(--muted);font-size:13px}
+.hero-meta{display:grid;gap:6px;text-align:start;color:var(--muted);font-size:13px}
 .hero-meta b{font-family:var(--f-wide);font-weight:400;font-size:11px;letter-spacing:.2em;color:var(--text);direction:ltr}
 
 /* numbers */
@@ -209,7 +217,9 @@ footer{border-top:1px solid var(--line);padding-block:64px 36px;font-size:14px}
 @media (max-width:767px){
   body{font-size:16px}
   .hero-copy{grid-template-columns:1fr}
+  .hero-text{justify-self:stretch}
   .hero-meta{display:none}
+  .hero-shade{background:linear-gradient(180deg,rgba(10,11,13,.5) 0%,rgba(10,11,13,0) 25%,rgba(10,11,13,.2) 50%,rgba(10,11,13,.95) 100%)!important}
   .engine,.cabin,.cfg,.appt-grid{grid-template-columns:1fr}
   .cabin .media{order:-1}
   .engine .media{aspect-ratio:4/3}
@@ -261,28 +271,29 @@ footer{border-top:1px solid var(--line);padding-block:64px 36px;font-size:14px}
 <!-- HERO -->
 <section class="hero" aria-labelledby="heroTitle">
   <figure class="media" data-label="images/hero.jpg · 2400×1350">
-    <img id="heroImg" src="images/hero.jpg" alt="Bugatti Tourbillon من زاوية أمامية جانبية" fetchpriority="high" onerror="this.remove()">
+    <img id="heroImg" src="images/hero.jpg" alt="Bugatti Chiron بلونين أزرق وفضي على الواجهة البحرية في دبي وقت الغروب" fetchpriority="high" onerror="this.remove()">
   </figure>
   <div class="hero-shade" aria-hidden="true"></div>
   <div class="wrap hero-copy">
-    <div>
-      <p class="model-name">TOURBILLON</p>
+    <div class="hero-meta" aria-hidden="true">
+      <b>MOLSHEIM · FRANCE</b>
+      <span>منذ 1909</span>
+    </div>
+    <div class="hero-text">
+      <p class="model-name">BUGATTI · DUBAI</p>
       <h1 id="heroTitle">صُنعت للأبد.</h1>
-      <p class="lead">محرك <span class="ltr">V16</span> بقوة <span class="ltr">1,800</span> حصان، وعدادات صنعها صانعو ساعات سويسريون. <span class="ltr">250</span> نسخة فقط.</p>
+      <p class="lead">من مولسهايم إلى دبي، كل Bugatti تُبنى يدويًا لمالك واحد. والآن يبدأ جيل جديد مع التوربيون.</p>
       <div class="hero-ctas">
         <a href="#appointment" class="btn btn-solid">اطلب موعدًا خاصًا</a>
         <a href="#tourbillon" class="btn btn-line">اكتشف التوربيون <span class="arrow" aria-hidden="true">←</span></a>
       </div>
-    </div>
-    <div class="hero-meta" aria-hidden="true">
-      <b>MOLSHEIM · FRANCE</b>
-      <span>منذ 1909</span>
     </div>
   </div>
 </section>
 
 <!-- NUMBERS -->
 <section class="numbers" aria-label="أرقام التوربيون">
+  <div class="wrap num-cap"><span class="wide">TOURBILLON</span><span>بالأرقام</span></div>
   <div class="wrap num-grid">
     <div class="num"><b><span data-count="1800">1,800</span><small>PS</small></b><span>قوة إجمالية هجينة</span></div>
     <div class="num"><b><span data-count="445">445</span><small>KM/H</small></b><span>السرعة القصوى</span></div>
