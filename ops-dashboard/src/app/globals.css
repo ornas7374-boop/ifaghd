@@ -1,0 +1,190 @@
+@import "tailwindcss";
+
+/* Theme tokens — dark is default; light is opt-in via <html data-theme="light">. */
+:root {
+  --bg: #08090a;
+  --sidebar: #0b0c0e;
+  --surface: #111214;
+  --surface-2: #18191c;
+  --hover: #1e1f23;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --text: #f7f8f8;
+  --text-muted: #8a8f98;
+  --text-dim: #5c6068;
+  --accent: #7170ff;
+  --accent-solid: #5e5ce6;
+  --accent-hover: #6b69f0;
+  --accent-soft: rgba(113, 112, 255, 0.14);
+  --on-accent: #ffffff;
+  --success: #4cb782;
+  --warning: #f2c94c;
+  --danger: #eb5757;
+  --info: #5e9eff;
+  --neutral: #8a8f98;
+  --chart-grid: rgba(255, 255, 255, 0.06);
+  --chart-compare: #8a8f98;
+  --overlay: rgba(0, 0, 0, 0.55);
+  --shadow-pop: 0 0 0 1px var(--border-strong), 0 16px 48px -8px rgba(0, 0, 0, 0.6);
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --bg: #fcfcfd;
+  --sidebar: #f5f5f7;
+  --surface: #ffffff;
+  --surface-2: #f4f4f6;
+  --hover: #ececf0;
+  --border: rgba(12, 14, 20, 0.08);
+  --border-strong: rgba(12, 14, 20, 0.15);
+  --text: #16171a;
+  --text-muted: #5f636b;
+  --text-dim: #8b8f97;
+  --accent: #5e5ce6;
+  --accent-solid: #5e5ce6;
+  --accent-hover: #5250d6;
+  --accent-soft: rgba(94, 92, 230, 0.1);
+  --success: #2f9e68;
+  --warning: #c28c00;
+  --danger: #d64545;
+  --info: #3b7fe0;
+  --neutral: #6f737b;
+  --chart-grid: rgba(12, 14, 20, 0.07);
+  --chart-compare: #8b8f97;
+  --overlay: rgba(10, 12, 16, 0.25);
+  --shadow-pop: 0 0 0 1px var(--border-strong), 0 16px 40px -12px rgba(10, 12, 20, 0.18);
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-sidebar: var(--sidebar);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-hover: var(--hover);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-fg: var(--text);
+  --color-muted: var(--text-muted);
+  --color-dim: var(--text-dim);
+  --color-accent: var(--accent);
+  --color-accent-solid: var(--accent-solid);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-info: var(--info);
+  --color-neutral: var(--neutral);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+html,
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+body {
+  font-size: 13px;
+  letter-spacing: -0.003em;
+  line-height: 1.5;
+  font-feature-settings: "cv11", "tnum";
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  border-color: var(--border);
+}
+
+::selection {
+  background: var(--accent-soft);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Thin, quiet scrollbars */
+@layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+  }
+}
+
+/* ---------- Motion (transform + opacity only) ---------- */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes pop-in {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(16px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes drop-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.55; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+@keyframes shimmer {
+  0% { opacity: 0.55; }
+  50% { opacity: 1; }
+  100% { opacity: 0.55; }
+}
+
+.anim-fade { animation: fade-in 180ms var(--ease) both; }
+.anim-pop { animation: pop-in 200ms var(--ease) both; }
+.anim-slide-right { animation: slide-in-right 240ms var(--ease) both; }
+.anim-slide-up { animation: slide-up 220ms var(--ease) both; }
+.anim-drop { animation: drop-in 150ms var(--ease) both; }
+.skeleton { background: var(--surface-2); animation: shimmer 1.4s ease-in-out infinite; }
+.pulse-ring { animation: pulse-ring 1.6s var(--ease) infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .pulse-ring { display: none; }
+}
+
+/* Recharts: never draw focus outlines on the svg surface */
+.recharts-wrapper,
+.recharts-surface {
+  outline: none;
+}
+
+/* Keep toasts clear of the 480px detail panel */
+@media (min-width: 768px) {
+  body[data-panel="open"] .toast-region { right: 504px; }
+}
+
+/* Frozen layout behind a page-level error: skeletons stop shimmering */
+.frozen .skeleton { animation: none; }
