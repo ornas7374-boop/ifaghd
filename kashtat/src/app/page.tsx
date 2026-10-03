@@ -10,8 +10,22 @@ import {
 } from "@/components/home/sections";
 import { SiteFooter } from "@/components/site/site-footer";
 import { SiteHeader } from "@/components/site/site-header";
+import { getFeaturedPlaces, type PlaceCard } from "@/lib/db/places";
 
-export default function Home() {
+// تُحدَّث الصفحة من قاعدة البيانات كل 5 دقائق
+export const revalidate = 300;
+
+async function loadFeatured(): Promise<PlaceCard[] | null> {
+  try {
+    return await getFeaturedPlaces(4);
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+}
+
+export default async function Home() {
+  const featured = await loadFeatured();
   return (
     <>
       <a
@@ -24,7 +38,7 @@ export default function Home() {
       <main id="main" className="flex-1">
         <Hero />
         <Categories />
-        <FeaturedPlaces />
+        <FeaturedPlaces places={featured} />
         <HowItWorks />
         <HourlyBooking />
         <Owners />

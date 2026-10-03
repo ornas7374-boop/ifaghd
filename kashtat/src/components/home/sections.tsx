@@ -4,8 +4,8 @@ import { BookingId, StatusBadge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { formatBookingId } from "@/lib/booking-status";
 import { cn } from "@/lib/cn";
-import { FEATURED_PLACES } from "@/data/featured-places";
-import { FavoriteButton } from "./favorite-button";
+import { PlaceCard } from "@/components/places/place-card";
+import type { PlaceCard as PlaceCardData } from "@/lib/db/places";
 
 const sectionTitle = "m-0 text-[clamp(28px,5vw,36px)] leading-[1.45] font-bold";
 
@@ -155,7 +155,7 @@ export function Categories() {
 
 /* ---------- الأماكن المميزة ---------- */
 
-export function FeaturedPlaces() {
+export function FeaturedPlaces({ places }: { places: PlaceCardData[] | null }) {
   return (
     <section
       id="places"
@@ -165,76 +165,23 @@ export function FeaturedPlaces() {
       <h2 id="places-title" className={sectionTitle}>
         أماكن مميزة هذا الأسبوع
       </h2>
-      <ul className="grid grid-cols-[repeat(auto-fill,minmax(270px,1fr))] gap-6">
-        {FEATURED_PLACES.map((pl) => (
-          <li key={pl.slug}>
-            <article className="tilt flex h-full flex-col overflow-hidden rounded-lg border border-border bg-surface-raised">
-              <div className="relative flex h-[180px] items-end justify-center overflow-hidden bg-surface-overlay text-ink-muted">
-                <svg
-                  width="100%"
-                  height="110"
-                  viewBox="0 0 300 110"
-                  preserveAspectRatio="none"
-                  aria-hidden="true"
-                  className="absolute inset-x-0 bottom-0"
-                >
-                  <path d="M0 70 Q60 30 120 62 T240 52 T300 60 V110 H0z" fill="var(--border)" />
-                  <path
-                    d="M0 92 Q80 60 160 88 T300 80 V110 H0z"
-                    fill="var(--surface-raised)"
-                    opacity=".7"
-                  />
-                </svg>
-                <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[13px] font-medium">
-                  صورة المكان
-                </span>
-                {pl.featured && (
-                  <span className="absolute start-3 top-3 rounded-pill bg-sand-subtle px-2.5 py-0.5 text-caption font-semibold text-sand">
-                    مميز
-                  </span>
-                )}
-                <FavoriteButton placeName={pl.name} />
-              </div>
-              <div className="flex grow flex-col gap-2.5 p-4">
-                <div className="flex items-baseline justify-between gap-2">
-                  <h3 className="text-[18px] leading-7 font-bold">{pl.name}</h3>
-                  <span className="text-body-sm font-semibold whitespace-nowrap">
-                    <span aria-hidden="true">★ </span>
-                    <span className="sr-only">التقييم </span>
-                    {pl.rating}
-                  </span>
-                </div>
-                <span className="text-body-sm text-ink-muted">{pl.where}</span>
-                <ul className="flex flex-wrap gap-1.5" aria-label="المرافق">
-                  {pl.tags.map((tg) => (
-                    <li
-                      key={tg}
-                      className="rounded-pill border border-border-strong px-2.5 py-px text-caption text-ink-muted"
-                    >
-                      {tg}
-                    </li>
-                  ))}
-                </ul>
-                <div className="mt-auto flex items-center justify-between gap-2 pt-1.5">
-                  <span className="text-[18px] font-bold">
-                    {pl.price} ر.س{" "}
-                    <span className="text-body-sm font-normal text-ink-muted">/ {pl.unit}</span>
-                  </span>
-                  <ButtonLink
-                    href={`/places/${pl.slug}`}
-                    prefetch={false}
-                    size="sm"
-                    className="h-11 sm:h-10"
-                    aria-label={`احجز ${pl.name}`}
-                  >
-                    احجز
-                  </ButtonLink>
-                </div>
-              </div>
-            </article>
-          </li>
-        ))}
-      </ul>
+      {places === null ? (
+        <p role="status" className="rounded-lg border border-border bg-surface p-6 text-ink-muted">
+          تعذّر تحميل الأماكن الآن. حاول تحديث الصفحة بعد قليل.
+        </p>
+      ) : places.length === 0 ? (
+        <p className="rounded-lg border border-border bg-surface p-6 text-ink-muted">
+          لا توجد أماكن منشورة بعد.
+        </p>
+      ) : (
+        <ul className="grid grid-cols-[repeat(auto-fill,minmax(270px,1fr))] gap-6">
+          {places.map((pl) => (
+            <li key={pl.slug}>
+              <PlaceCard place={pl} />
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }
