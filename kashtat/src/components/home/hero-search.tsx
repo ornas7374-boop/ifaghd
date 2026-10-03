@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Input, Select } from "@/components/ui/field";
+import { stripEmptyFields } from "@/components/ui/get-form";
 import { SearchIcon } from "@/components/ui/icons";
 import { cn } from "@/lib/cn";
 import { addDays, startOfDay } from "@/lib/dates";
@@ -34,6 +35,7 @@ export function HeroSearch() {
       aria-label="ابحث عن مكان"
       action="/places"
       method="get"
+      onSubmit={stripEmptyFields}
       className="pointer-events-auto flex flex-col gap-3.5 rounded-lg border border-border bg-surface-raised p-4 shadow-md"
     >
       <input type="hidden" name="type" value={type} />

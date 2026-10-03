@@ -52,3 +52,17 @@ describe("formatBookingId", () => {
     expect(() => formatBookingId(1.5)).toThrow();
   });
 });
+
+import { addHoursToTime, formatTime12 } from "../dates";
+
+describe("time helpers", () => {
+  it("formats 12-hour Arabic time", () => {
+    expect(formatTime12("16:00")).toBe("4:00 م");
+    expect(formatTime12("00:30")).toBe("12:30 ص");
+    expect(formatTime12("12:00")).toBe("12:00 م");
+  });
+
+  it("adds hours across midnight", () => {
+    expect(addHoursToTime("20:00", 6)).toBe("02:00");
+  });
+});

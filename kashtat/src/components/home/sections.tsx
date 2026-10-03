@@ -54,6 +54,7 @@ function Pill({ tone, children }: { tone: "brand" | "sand"; children: ReactNode 
 const CATEGORIES = [
   {
     title: "كشتات برية",
+    href: "/places?kind=kashta",
     desc: "جلسات وموقد في البر المفتوح",
     tone: "bg-brand-subtle text-brand",
     icon: (
@@ -66,6 +67,7 @@ const CATEGORIES = [
   },
   {
     title: "مخيمات",
+    href: "/places?kind=camp",
     desc: "خيام مجهزة لليلة أو أكثر",
     tone: "bg-sand-subtle text-sand",
     icon: (
@@ -78,6 +80,7 @@ const CATEGORIES = [
   },
   {
     title: "شاليهات",
+    href: "/places",
     desc: "مسابح وخصوصية للعائلة",
     tone: "bg-info-subtle text-info",
     icon: (
@@ -90,6 +93,7 @@ const CATEGORIES = [
   },
   {
     title: "استراحات",
+    href: "/places?type=hour",
     desc: "للسهرات والمناسبات بالساعة",
     tone: "bg-warning-subtle text-warning",
     icon: (
@@ -104,6 +108,7 @@ const CATEGORIES = [
   },
   {
     title: "أماكن ترفيهية",
+    href: "/places?kind=wild",
     desc: "مزارع وإطلالات وأنشطة",
     tone: "bg-brand-subtle text-brand",
     icon: (
@@ -129,7 +134,7 @@ export function Categories() {
           </h2>
           <p className="text-ink-muted">كل الأماكن بتوفر فعلي، تحجزها مباشرة بدون مراسلات.</p>
         </div>
-        <Link href="#places" className="font-semibold text-brand hover:text-brand-hover">
+        <Link href="/places" className="font-semibold text-brand hover:text-brand-hover">
           عرض كل الأماكن ←
         </Link>
       </div>
@@ -137,7 +142,7 @@ export function Categories() {
         {CATEGORIES.map((c) => (
           <li key={c.title}>
             <Link
-              href="#places"
+              href={c.href}
               className="tilt flex h-full flex-col gap-3.5 rounded-lg border border-border bg-surface-raised px-5 py-6 text-ink"
             >
               <span className={cn("grid size-[52px] place-items-center rounded-[12px]", c.tone)}>

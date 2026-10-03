@@ -2,10 +2,8 @@
 
 import { useId, type ComponentProps, type ReactNode } from "react";
 import { cn } from "@/lib/cn";
+import { controlClasses } from "./control-classes";
 import { ChevronDownIcon } from "./icons";
-
-export const controlClasses =
-  "h-12 w-full min-w-0 rounded-md border border-border-strong bg-surface px-3.5 text-body text-ink placeholder:text-ink-muted transition-colors hover:border-ink-muted disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid=true]:border-danger";
 
 type FieldProps = {
   label: string;

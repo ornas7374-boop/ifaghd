@@ -76,3 +76,16 @@ export function monthGrid(month: Date): Array<{ date: Date; inMonth: boolean }> 
     return { date, inMonth: date.getMonth() === month.getMonth() };
   });
 }
+
+/** "16:00" → "4:00 م" */
+export function formatTime12(hhmm: string): string {
+  const [h, m] = hhmm.split(":").map(Number);
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return `${h12}:${String(m).padStart(2, "0")} ${h < 12 ? "ص" : "م"}`;
+}
+
+/** "16:00" + 3 ساعات → "19:00" (يلتف بعد منتصف الليل) */
+export function addHoursToTime(hhmm: string, hours: number): string {
+  const [h, m] = hhmm.split(":").map(Number);
+  return `${String((h + hours) % 24).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+}

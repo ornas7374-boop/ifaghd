@@ -6,7 +6,8 @@ import { FavoriteButton } from "./favorite-button";
 // شارة «مميز» للأماكن ذات التقييم العالي
 const FEATURED_RATING = 4.8;
 
-export function PlaceCard({ place }: { place: PlaceCardData }) {
+/** query: معاملات الحجز من البحث (تاريخ، نوع، عدد) تُمرَّر لصفحة المكان */
+export function PlaceCard({ place, query = "" }: { place: PlaceCardData; query?: string }) {
   return (
     <article className="tilt flex h-full flex-col overflow-hidden rounded-lg border border-border bg-surface-raised">
       <div className="relative flex h-[180px] items-end justify-center overflow-hidden bg-surface-overlay text-ink-muted">
@@ -73,8 +74,7 @@ export function PlaceCard({ place }: { place: PlaceCardData }) {
             <span />
           )}
           <ButtonLink
-            href={`/places/${place.slug}`}
-            prefetch={false}
+            href={`/places/${place.slug}${query}`}
             size="sm"
             className="h-11 sm:h-10"
             aria-label={`احجز ${place.title}`}
