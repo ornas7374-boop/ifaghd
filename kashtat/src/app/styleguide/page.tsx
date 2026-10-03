@@ -65,7 +65,7 @@ export default function StyleguidePage() {
   return (
     <div className="flex-1">
       <header className="sticky top-0 z-20 border-b border-border bg-bg">
-        <div className="mx-auto flex max-w-[1200px] items-center justify-between gap-4 px-4 py-3.5 sm:px-6">
+        <div className="mx-auto flex max-w-[1248px] items-center justify-between gap-4 px-4 py-3.5 sm:px-6">
           <p className="text-[26px] leading-9 font-bold">الكشتات</p>
           <div className="flex items-center gap-3">
             <span className="hidden text-body-sm text-ink-muted sm:inline">دليل المكوّنات</span>
@@ -74,7 +74,7 @@ export default function StyleguidePage() {
         </div>
       </header>
 
-      <main className="mx-auto flex max-w-[1200px] flex-col gap-10 px-4 py-10 sm:px-6 sm:py-16">
+      <main className="mx-auto flex max-w-[1248px] flex-col gap-10 px-4 py-10 sm:px-6 sm:py-16">
         <div className="flex flex-col gap-3">
           <Badge tone="sand" className="self-start">
             المرحلة 1 · الأساس والهوية

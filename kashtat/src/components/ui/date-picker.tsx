@@ -193,6 +193,8 @@ type DatePickerProps = {
   minDate?: Date;
   maxDate?: Date;
   isDisabled?: (d: Date) => boolean;
+  /** اتجاه فتح التقويم: للأسفل افتراضيًا، وللأعلى داخل حاويات مقصوصة */
+  placement?: "bottom" | "top";
   className?: string;
 };
 
@@ -207,6 +209,7 @@ export function DatePicker({
   minDate,
   maxDate,
   isDisabled,
+  placement = "bottom",
   className,
 }: DatePickerProps) {
   const [open, setOpen] = useState(false);
@@ -280,7 +283,10 @@ export function DatePicker({
               close();
             }
           }}
-          className="absolute start-0 top-full z-30 mt-2 rounded-lg border border-border bg-surface-raised p-3 shadow-md"
+          className={cn(
+            "absolute start-0 z-30 rounded-lg border border-border bg-surface-raised p-3 shadow-md",
+            placement === "top" ? "bottom-full mb-2" : "top-full mt-2",
+          )}
         >
           <Calendar
             value={value}

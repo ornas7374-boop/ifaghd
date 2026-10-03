@@ -119,35 +119,38 @@
   --text-label-lg--line-height: 24px;
 }
 
-html {
-  background: var(--bg);
-}
+/* القواعد الأساسية داخل طبقة base حتى تتغلب عليها أصناف Tailwind */
+@layer base {
+  html {
+    background: var(--bg);
+  }
 
-body {
-  background: var(--bg);
-  color: var(--ink);
-  font-family: var(--font-sans);
-  font-size: 16px;
-  line-height: 26px;
-}
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 26px;
+  }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 
-:focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: 2px;
-}
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
 
-::selection {
-  background: var(--brand-subtle);
-  color: var(--ink);
-}
+  ::selection {
+    background: var(--brand-subtle);
+    color: var(--ink);
+  }
 
-dialog::backdrop {
-  background: var(--backdrop);
+  dialog::backdrop {
+    background: var(--backdrop);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -157,4 +160,61 @@ dialog::backdrop {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* حركات الصفحة الرئيسية من التصميم */
+.tilt {
+  transition:
+    transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.45s;
+}
+.tilt:hover {
+  transform: perspective(900px) rotateX(5deg) rotateY(-7deg) translateY(-6px);
+  box-shadow: var(--shadow-md);
+}
+.deck {
+  transform: perspective(1600px) rotateY(-14deg) rotateX(8deg);
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.deck:hover {
+  transform: perspective(1600px) rotateY(-6deg) rotateX(3deg);
+}
+.deck .layer {
+  transform: translateZ(60px);
+}
+.num3d {
+  text-shadow:
+    1px 1px 0 var(--brand-subtle),
+    2px 2px 0 var(--brand-subtle),
+    3px 3px 0 var(--brand-subtle),
+    4px 4px 0 var(--brand-subtle),
+    5px 5px 0 var(--brand-subtle);
+}
+@media (prefers-reduced-motion: reduce) {
+  .tilt:hover {
+    transform: none;
+  }
+}
+@media (max-width: 720px) {
+  .deck,
+  .deck .layer {
+    transform: none;
+  }
+  .deck:hover {
+    transform: none;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+/* الأقسام لا تختفي تحت الشريط العلوي الثابت عند القفز إليها */
+section[id] {
+  scroll-margin-top: 72px;
 }
