@@ -370,7 +370,7 @@ export function Owners() {
             ومستحقاتك الصافية بعد العمولة.
           </p>
           <div className="flex flex-wrap gap-3">
-            <ButtonLink href="/owners/new" prefetch={false} size="lg" className="px-6">
+            <ButtonLink href="/owner/places/new" prefetch={false} size="lg" className="px-6">
               أضف مكانك الآن
             </ButtonLink>
             <ButtonLink href="#how" variant="secondary" size="lg" className="px-6">

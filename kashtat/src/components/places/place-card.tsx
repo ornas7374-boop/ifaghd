@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { ButtonLink } from "@/components/ui/button";
 import { RATE_UNIT_LABEL, type PlaceCard as PlaceCardData } from "@/lib/db/places";
 import { formatSar } from "@/lib/money";
@@ -11,24 +12,36 @@ export function PlaceCard({ place, query = "" }: { place: PlaceCardData; query?:
   return (
     <article className="tilt flex h-full flex-col overflow-hidden rounded-lg border border-border bg-surface-raised">
       <div className="relative flex h-[180px] items-end justify-center overflow-hidden bg-surface-overlay text-ink-muted">
-        <svg
-          width="100%"
-          height="110"
-          viewBox="0 0 300 110"
-          preserveAspectRatio="none"
-          aria-hidden="true"
-          className="absolute inset-x-0 bottom-0"
-        >
-          <path d="M0 70 Q60 30 120 62 T240 52 T300 60 V110 H0z" fill="var(--border)" />
-          <path
-            d="M0 92 Q80 60 160 88 T300 80 V110 H0z"
-            fill="var(--surface-raised)"
-            opacity=".7"
+        {place.cover ? (
+          <Image
+            src={place.cover.src}
+            alt={place.cover.alt}
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 300px"
+            className="object-cover"
           />
-        </svg>
-        <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[13px] font-medium">
-          صورة المكان
-        </span>
+        ) : (
+          <>
+            <svg
+              width="100%"
+              height="110"
+              viewBox="0 0 300 110"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+              className="absolute inset-x-0 bottom-0"
+            >
+              <path d="M0 70 Q60 30 120 62 T240 52 T300 60 V110 H0z" fill="var(--border)" />
+              <path
+                d="M0 92 Q80 60 160 88 T300 80 V110 H0z"
+                fill="var(--surface-raised)"
+                opacity=".7"
+              />
+            </svg>
+            <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[13px] font-medium">
+              صورة المكان
+            </span>
+          </>
+        )}
         {place.rating >= FEATURED_RATING && (
           <span className="absolute start-3 top-3 rounded-pill bg-sand-subtle px-2.5 py-0.5 text-caption font-semibold text-sand">
             مميز

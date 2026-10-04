@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
@@ -120,14 +121,32 @@ export default async function PlacePage(props: PageProps<"/places/[slug]">) {
           </div>
         </header>
 
-        {/* معرض الصور: لا توجد صور مرفوعة بعد */}
-        <div className="relative mb-10 grid h-[240px] grid-cols-4 grid-rows-2 gap-2 overflow-hidden rounded-lg sm:h-[380px]">
-          <div className="col-span-4 row-span-2 flex items-center justify-center bg-surface-overlay text-body-sm text-ink-muted sm:col-span-2">
-            صورة المكان
-          </div>
-          {[0, 1, 2, 3].map((i) => (
-            <div key={i} aria-hidden="true" className="hidden bg-surface-overlay sm:block" />
-          ))}
+        <div className="relative mb-10 grid h-[240px] grid-cols-4 grid-rows-2 gap-2 overflow-hidden rounded-lg sm:h-[400px]">
+          {place.images.length === 0 ? (
+            <div className="col-span-4 row-span-2 flex items-center justify-center bg-surface-overlay text-body-sm text-ink-muted">
+              صورة المكان
+            </div>
+          ) : (
+            place.images.slice(0, 3).map((img, i) => (
+              <div
+                key={img.src}
+                className={
+                  i === 0
+                    ? "relative col-span-4 row-span-2 bg-surface-overlay sm:col-span-3"
+                    : "relative hidden bg-surface-overlay sm:block"
+                }
+              >
+                <Image
+                  src={img.src}
+                  alt={img.alt}
+                  fill
+                  priority={i === 0}
+                  sizes={i === 0 ? "(max-width: 640px) 100vw, 900px" : "300px"}
+                  className="object-cover"
+                />
+              </div>
+            ))
+          )}
           <FavoriteButton placeName={place.title} />
         </div>
 

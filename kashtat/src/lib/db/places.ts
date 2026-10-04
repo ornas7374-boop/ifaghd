@@ -1,5 +1,6 @@
 import "server-only";
 import { createPublicClient } from "@/lib/supabase/public";
+import { toImages, type ImageRow, type PlaceImage } from "@/lib/images";
 import type { PricingMode, RateUnit } from "@/lib/pricing";
 
 export type { RateUnit };
@@ -30,6 +31,7 @@ export type PlaceCard = {
   amenities: string[];
   /** أقل وحدة سعر متاحة للعرض في البطاقة */
   price: { amount: number; unit: RateUnit } | null;
+  cover: PlaceImage | null;
 };
 
 type PriceFields = {
@@ -58,10 +60,11 @@ type PlaceRow = PriceFields & {
   rating_count: number;
   cities: { slug: string; name_ar: string } | null;
   place_amenities: Array<{ amenities: { slug: string; name_ar: string } | null }>;
+  listing_images: ImageRow[];
 };
 
 const CARD_COLUMNS =
-  "slug, title_ar, place_kind, capacity_min, capacity_max, rating_avg, rating_count, price_per_hour, price_per_day, price_per_night, cities(slug, name_ar), place_amenities(amenities(slug, name_ar))";
+  "slug, title_ar, place_kind, capacity_min, capacity_max, rating_avg, rating_count, price_per_hour, price_per_day, price_per_night, cities(slug, name_ar), place_amenities(amenities(slug, name_ar)), listing_images(storage_path, alt_ar, is_cover, sort_order)";
 
 function toCard(r: PlaceRow, prefer?: RateUnit): PlaceCard {
   return {
@@ -74,6 +77,7 @@ function toCard(r: PlaceRow, prefer?: RateUnit): PlaceCard {
     ratingCount: r.rating_count,
     amenities: r.place_amenities.flatMap((pa) => (pa.amenities ? [pa.amenities.name_ar] : [])),
     price: startingPrice(r, prefer),
+    cover: toImages(r.listing_images, r.title_ar)[0] ?? null,
   };
 }
 
@@ -216,6 +220,7 @@ export type PlaceDetail = {
     mode: PricingMode;
   }>;
   reviews: Array<{ id: string; rating: number; body: string; createdAt: string }>;
+  images: PlaceImage[];
 };
 
 type DetailRow = PriceFields & {
@@ -238,6 +243,7 @@ type DetailRow = PriceFields & {
   rules_ar: string | null;
   cities: { slug: string; name_ar: string } | null;
   place_amenities: Array<{ amenities: { slug: string; name_ar: string } | null }>;
+  listing_images: ImageRow[];
   addons: Array<{
     id: string;
     name_ar: string;
@@ -259,7 +265,7 @@ export async function getPlaceBySlug(slug: string): Promise<PlaceDetail | null> 
   const { data, error } = await createPublicClient()
     .from("places")
     .select(
-      "id, slug, title_ar, description_ar, place_kind, address_text, latitude, longitude, capacity_min, capacity_max, check_in_time, check_out_time, turnaround_minutes, price_per_hour, price_per_day, price_per_night, rating_avg, rating_count, cancellation_policy_ar, rules_ar, cities(slug, name_ar), place_amenities(amenities(slug, name_ar)), addons(id, name_ar, description_ar, price, pricing_mode, is_active), reviews(id, rating, body_ar, created_at, is_hidden)",
+      "id, slug, title_ar, description_ar, place_kind, address_text, latitude, longitude, capacity_min, capacity_max, check_in_time, check_out_time, turnaround_minutes, price_per_hour, price_per_day, price_per_night, rating_avg, rating_count, cancellation_policy_ar, rules_ar, cities(slug, name_ar), place_amenities(amenities(slug, name_ar)), addons(id, name_ar, description_ar, price, pricing_mode, is_active), reviews(id, rating, body_ar, created_at, is_hidden), listing_images(storage_path, alt_ar, is_cover, sort_order)",
     )
     .eq("slug", slug)
     .eq("status", "published")
@@ -299,6 +305,7 @@ export async function getPlaceBySlug(slug: string): Promise<PlaceDetail | null> 
         price: a.price,
         mode: a.pricing_mode,
       })),
+    images: toImages(data.listing_images, data.title_ar),
     reviews: data.reviews
       .filter((r) => !r.is_hidden)
       .sort((a, b) => b.created_at.localeCompare(a.created_at))

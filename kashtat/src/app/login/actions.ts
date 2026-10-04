@@ -6,7 +6,13 @@ import { z } from "zod";
 import { safeNext } from "@/lib/auth";
 import { createSupabaseServer } from "@/lib/supabase/server";
 
-export type AuthState = { error?: string; info?: string; fields?: Record<string, string> };
+// nonce يعيد بناء النموذج بعد كل رد حتى تبقى القيم المدخلة
+export type AuthState = {
+  error?: string;
+  info?: string;
+  fields?: Record<string, string>;
+  nonce?: number;
+};
 
 const signInSchema = z.object({
   email: z.email("أدخل بريدًا إلكترونيًا صحيحًا"),
@@ -22,6 +28,7 @@ const signUpSchema = z.object({
     .or(z.literal("")),
   email: z.email("أدخل بريدًا إلكترونيًا صحيحًا"),
   password: z.string().min(8, "كلمة المرور 8 أحرف على الأقل"),
+  isHost: z.boolean(),
 });
 
 // رسائل Supabase الشائعة بالعربي
@@ -52,12 +59,16 @@ function field(form: FormData, name: string) {
 export async function signIn(_: AuthState, form: FormData): Promise<AuthState> {
   const fields = { email: field(form, "email") };
   const parsed = signInSchema.safeParse({ email: fields.email, password: field(form, "password") });
-  if (!parsed.success) return { error: parsed.error.issues[0].message, fields };
+  if (!parsed.success) return { error: parsed.error.issues[0].message, fields, nonce: Date.now() };
 
   const supabase = await createSupabaseServer();
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
   if (error)
-    return { error: authMessage(error.code, "تعذّر تسجيل الدخول، حاول مرة ثانية"), fields };
+    return {
+      error: authMessage(error.code, "تعذّر تسجيل الدخول، حاول مرة ثانية"),
+      fields,
+      nonce: Date.now(),
+    };
 
   redirect(safeNext(form.get("next"), "/bookings"));
 }
@@ -68,8 +79,12 @@ export async function signUp(_: AuthState, form: FormData): Promise<AuthState> {
     phone: field(form, "phone"),
     email: field(form, "email"),
   };
-  const parsed = signUpSchema.safeParse({ ...fields, password: field(form, "password") });
-  if (!parsed.success) return { error: parsed.error.issues[0].message, fields };
+  const parsed = signUpSchema.safeParse({
+    ...fields,
+    password: field(form, "password"),
+    isHost: form.get("isHost") === "on",
+  });
+  if (!parsed.success) return { error: parsed.error.issues[0].message, fields, nonce: Date.now() };
 
   const next = safeNext(form.get("next"), "/bookings");
   const h = await headers();
@@ -80,13 +95,21 @@ export async function signUp(_: AuthState, form: FormData): Promise<AuthState> {
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
-      // الدور دائمًا عميل؛ تعديله ممنوع من قاعدة البيانات
-      data: { full_name: parsed.data.fullName, phone: parsed.data.phone, role: "customer" },
+      // عميل أو مالك فقط (القاعدة ترفض طلب دور المدير)، ولا يمكن تغييره لاحقًا من الحساب
+      data: {
+        full_name: parsed.data.fullName,
+        phone: parsed.data.phone,
+        role: parsed.data.isHost ? "host" : "customer",
+      },
       emailRedirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}`,
     },
   });
   if (error)
-    return { error: authMessage(error.code, "تعذّر إنشاء الحساب، حاول مرة ثانية"), fields };
+    return {
+      error: authMessage(error.code, "تعذّر إنشاء الحساب، حاول مرة ثانية"),
+      fields,
+      nonce: Date.now(),
+    };
 
   // إن كان تأكيد البريد مفعّلًا لا توجد جلسة بعد
   if (!data.session) {

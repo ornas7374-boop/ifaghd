@@ -57,7 +57,11 @@ export function LoginForm({ next, initialMode }: { next: string; initialMode: Mo
       )}
 
       {mode === "signin" ? (
-        <form action={inAction} className="flex flex-col gap-4" key="signin">
+        <form
+          action={inAction}
+          className="flex flex-col gap-4"
+          key={`signin-${inState.nonce ?? 0}`}
+        >
           <input type="hidden" name="next" value={next} />
           <Input
             label="البريد الإلكتروني"
@@ -81,7 +85,11 @@ export function LoginForm({ next, initialMode }: { next: string; initialMode: Mo
           </Button>
         </form>
       ) : (
-        <form action={upAction} className="flex flex-col gap-4" key="signup">
+        <form
+          action={upAction}
+          className="flex flex-col gap-4"
+          key={`signup-${upState.nonce ?? 0}`}
+        >
           <input type="hidden" name="next" value={next} />
           <Input
             label="الاسم"
@@ -119,6 +127,10 @@ export function LoginForm({ next, initialMode }: { next: string; initialMode: Mo
             required
             hint="8 أحرف على الأقل"
           />
+          <label className="flex min-h-11 cursor-pointer items-center gap-2.5">
+            <input type="checkbox" name="isHost" className="size-[18px] accent-[var(--brand)]" />
+            أنا صاحب مكان وأبي أعرض مكاني
+          </label>
           <Button type="submit" size="lg" fullWidth loading={upPending}>
             إنشاء الحساب
           </Button>

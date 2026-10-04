@@ -34,7 +34,7 @@ export function SiteHeader() {
           <AuthNav />
           {/* على الشاشات الضيقة نُبقي زر الدخول فقط */}
           <span className="hidden min-[421px]:contents">
-            <ButtonLink href="/#owners">أضف مكانك</ButtonLink>
+            <ButtonLink href="/owner">أضف مكانك</ButtonLink>
           </span>
         </div>
       </nav>
