@@ -348,7 +348,7 @@ export function HourlyBooking() {
 
 const OWNER_ROWS = [
   { n: 0, when: "الخميس · 4:00 – 8:00 م", status: "confirmed" as const },
-  { n: 1, when: "الجمعة · ليلة كاملة", status: "pending_payment" as const },
+  { n: 1, when: "الجمعة · ليلة كاملة", status: "pending" as const },
   { n: 2, when: "السبت · 2:00 – 6:00 م", status: "completed" as const },
 ];
 

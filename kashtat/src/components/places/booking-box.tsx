@@ -6,14 +6,8 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { controlClasses } from "@/components/ui/control-classes";
 import { ChevronDownIcon } from "@/components/ui/icons";
 import { cn } from "@/lib/cn";
-import {
-  addDays,
-  addHoursToTime,
-  formatDateShort,
-  formatTime12,
-  fromDateKey,
-  startOfDay,
-} from "@/lib/dates";
+import { addDays, formatTime12, fromDateKey, startOfDay } from "@/lib/dates";
+import { describeWindow, UNIT_COUNT } from "@/lib/booking-window";
 import { formatSar } from "@/lib/money";
 import {
   PRICING_MODE_LABEL,
@@ -25,7 +19,6 @@ import {
 
 const UNIT_TAB: Record<RateUnit, string> = { hour: "بالساعة", day: "باليوم", night: "بالليلة" };
 const UNIT_NOUN: Record<RateUnit, string> = { hour: "الساعة", day: "اليوم", night: "الليلة" };
-const UNIT_COUNT: Record<RateUnit, string> = { hour: "ساعة", day: "يوم", night: "ليلة" };
 const DURATION_LABEL: Record<RateUnit, string> = {
   hour: "عدد الساعات",
   day: "عدد الأيام",
@@ -135,16 +128,7 @@ export function BookingBox({
   };
 
   // نافذة الحجز كما تحسبها قاعدة البيانات
-  let windowText = "";
-  if (date) {
-    if (unit === "hour") {
-      windowText = `${formatDateShort(date)} · ${formatTime12(from)} – ${formatTime12(addHoursToTime(from, duration))}`;
-    } else if (unit === "day") {
-      windowText = `من ${formatDateShort(date)} ${formatTime12(checkIn)} إلى ${formatDateShort(addDays(date, duration))} ${formatTime12(checkIn)}`;
-    } else {
-      windowText = `دخول ${formatDateShort(date)} ${formatTime12(checkIn)} · خروج ${formatDateShort(addDays(date, duration))} ${formatTime12(checkOut)}`;
-    }
-  }
+  const windowText = date ? describeWindow({ unit, date, duration, from, checkIn, checkOut }) : "";
 
   return (
     <form

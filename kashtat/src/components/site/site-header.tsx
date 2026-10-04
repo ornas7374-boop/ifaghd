@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { AuthNav } from "./auth-nav";
 
 const NAV = [
   { href: "/#explore", label: "استكشف" },
@@ -30,12 +31,11 @@ export function SiteHeader() {
         </ul>
         <div className="ms-auto flex items-center gap-2.5">
           <ThemeToggle />
+          <AuthNav />
+          {/* على الشاشات الضيقة نُبقي زر الدخول فقط */}
           <span className="hidden min-[421px]:contents">
-            <ButtonLink href="/login" prefetch={false} variant="secondary">
-              تسجيل الدخول
-            </ButtonLink>
+            <ButtonLink href="/#owners">أضف مكانك</ButtonLink>
           </span>
-          <ButtonLink href="/#owners">أضف مكانك</ButtonLink>
         </div>
       </nav>
     </header>
