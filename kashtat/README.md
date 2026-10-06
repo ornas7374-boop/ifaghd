@@ -59,4 +59,15 @@ pnpm dev        # http://localhost:3000
 - [x] 7. لوحة الأدمن (تقارير، اعتماد الأماكن، الأدوار، الحجوزات، إخفاء التقييمات)
 - [ ] 8. SEO والأداء
 - [ ] 9. الجودة والاختبارات
-- [ ] 10. الاستضافة والنشر
+- [x] 10. الاستضافة والنشر
+
+## النشر
+
+- **الرابط:** https://kashtat.vercel.app
+- مشروع Vercel `kashtat` مربوط بالمستودع، و Root Directory = `kashtat`. كل push يبني نسخة جديدة.
+- منطقة الدوال `bom1` (مومباي)، وهي الأقرب لقاعدة Supabase في `ap-south-1`.
+- متغيرات البيئة: `NEXT_PUBLIC_SUPABASE_URL` و `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
+- حماية الدخول مفعّلة على نسخ المعاينة فقط، والإنتاج عام.
+- في Supabase → Authentication → URL Configuration:
+  - Site URL = `https://kashtat.vercel.app`
+  - Redirect URLs تشمل `https://kashtat.vercel.app/auth/callback`
