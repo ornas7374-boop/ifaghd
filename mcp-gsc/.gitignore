@@ -1,0 +1,58 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Environment and credentials
+.env
+*.env
+service_account_credentials.json
+credentials.json
+token.json
+client_secret*.json
+
+# Editor-specific files
+.vscode/
+.idea/
+*.sublime-*
+*.swp
+*.swo
+*~
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Testing and coverage
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.tox/
+nosetests.xml
+coverage.xml
+*.cover
+
+# Documentation
+docs/_build/
+site/
+
+# Logs
+*.log
+
+# Internal fork analysis and planning files — kept local only
+FORK_ANALYSIS.md
+MCP_LEARNINGS.md
+fork-review.html
+issue-triage.html
