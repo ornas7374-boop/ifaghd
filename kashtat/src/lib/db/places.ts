@@ -95,6 +95,34 @@ export async function getFeaturedPlaces(limit = 4): Promise<PlaceCard[]> {
   return data.map((r) => toCard(r));
 }
 
+/* ---------- خريطة الموقع وصفحات المدن ---------- */
+
+export async function getSitemapPlaces(): Promise<
+  Array<{ slug: string; updatedAt: string; citySlug: string }>
+> {
+  const { data, error } = await createPublicClient()
+    .from("places")
+    .select("slug, updated_at, cities(slug)")
+    .eq("status", "published")
+    .returns<Array<{ slug: string; updated_at: string; cities: { slug: string } | null }>>();
+  if (error) throw new Error(`getSitemapPlaces: ${error.message}`);
+  return data.map((p) => ({
+    slug: p.slug,
+    updatedAt: p.updated_at,
+    citySlug: p.cities?.slug ?? "",
+  }));
+}
+
+export async function getCityBySlug(slug: string): Promise<Option | null> {
+  const { data, error } = await createPublicClient()
+    .from("cities")
+    .select("slug, name_ar")
+    .eq("slug", slug)
+    .maybeSingle();
+  if (error) throw new Error(`getCityBySlug: ${error.message}`);
+  return data ? { slug: data.slug, name: data.name_ar } : null;
+}
+
 /* ---------- البحث ---------- */
 
 export type Option = { slug: string; name: string };

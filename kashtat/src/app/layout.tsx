@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Mono, IBM_Plex_Sans_Arabic } from "next/font/google";
 import { ToastProvider } from "@/components/ui/toast";
+import { DEFAULT_OG_IMAGE, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import { themeInitScript } from "@/lib/theme";
 import "./globals.css";
 
@@ -19,12 +20,21 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  applicationName: SITE_NAME,
   title: {
-    default: "الكشتات — احجز كشتتك",
+    default: "الكشتات | احجز كشتات ومخيمات في السعودية",
     template: "%s | الكشتات",
   },
-  description:
-    "اكتشف أماكن الكشتات والمخيمات والشاليهات حولك، واحجز بالساعة أو بالليلة وادفع إلكترونيًا بتأكيد فوري.",
+  description: SITE_DESCRIPTION,
+  openGraph: {
+    type: "website",
+    locale: "ar_SA",
+    siteName: SITE_NAME,
+    images: [{ url: DEFAULT_OG_IMAGE, width: 1200, height: 750 }],
+  },
+  twitter: { card: "summary_large_image" },
+  formatDetection: { telephone: false },
 };
 
 export const viewport: Viewport = {

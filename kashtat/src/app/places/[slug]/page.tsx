@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
+import { breadcrumbLd, JsonLd } from "@/components/seo/json-ld";
 import { BookingBox } from "@/components/places/booking-box";
 import { FavoriteButton } from "@/components/places/favorite-button";
 import { SiteFooter } from "@/components/site/site-footer";
@@ -14,6 +15,8 @@ import { formatTime12 } from "@/lib/dates";
 import { getPlaceBySlug, PLACE_KIND_LABEL, RATE_UNIT_LABEL, startingPrice } from "@/lib/db/places";
 import { formatSar } from "@/lib/money";
 import { parseSearchParams, type RawParams } from "@/lib/search-params";
+import { clip, pageMeta } from "@/lib/seo";
+import { absoluteUrl } from "@/lib/site";
 
 // نفس الطلب يُستخدم في generateMetadata والصفحة
 const loadPlace = cache(getPlaceBySlug);
@@ -26,10 +29,58 @@ const reviewDate = new Intl.DateTimeFormat("ar-SA-u-ca-gregory-nu-latn", {
 export async function generateMetadata(props: PageProps<"/places/[slug]">): Promise<Metadata> {
   const { slug } = await props.params;
   const place = await loadPlace(slug).catch(() => null);
-  if (!place) return { title: "المكان غير موجود" };
+  if (!place) return { title: "المكان غير موجود", robots: { index: false } };
+  const cover = place.images[0];
+  return pageMeta({
+    title: `${place.title}: ${PLACE_KIND_LABEL[place.kind]} في ${place.city.name}`,
+    description: clip(place.description),
+    path: `/places/${place.slug}`,
+    image: cover ? { url: cover.src, alt: cover.alt } : undefined,
+  });
+}
+
+// بيانات منظمة: Campground نوع من LodgingBusiness في schema.org
+function placeLd(place: NonNullable<Awaited<ReturnType<typeof getPlaceBySlug>>>) {
+  const url = absoluteUrl(`/places/${place.slug}`);
+  const prices = [place.rates.hour, place.rates.day, place.rates.night].filter(
+    (n): n is number => n != null,
+  );
   return {
-    title: `${place.title} · ${place.city.name}`,
-    description: place.description.slice(0, 155),
+    "@context": "https://schema.org",
+    "@type": "Campground",
+    "@id": url,
+    url,
+    name: place.title,
+    description: place.description,
+    image: place.images.map((i) => absoluteUrl(i.src)),
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: place.address,
+      addressLocality: place.city.name,
+      addressCountry: "SA",
+    },
+    geo: { "@type": "GeoCoordinates", latitude: place.approx.lat, longitude: place.approx.lng },
+    maximumAttendeeCapacity: place.capacityMax,
+    checkinTime: place.checkIn,
+    checkoutTime: place.checkOut,
+    currenciesAccepted: "SAR",
+    ...(prices.length && {
+      priceRange: `${formatSar(Math.min(...prices))} - ${formatSar(Math.max(...prices))}`,
+    }),
+    amenityFeature: place.amenities.map((a) => ({
+      "@type": "LocationFeatureSpecification",
+      name: a.name,
+      value: true,
+    })),
+    ...(place.ratingCount > 0 && {
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: place.rating.toFixed(1),
+        reviewCount: place.ratingCount,
+        bestRating: 5,
+        worstRating: 1,
+      },
+    }),
   };
 }
 
@@ -77,6 +128,16 @@ export default async function PlacePage(props: PageProps<"/places/[slug]">) {
 
   return (
     <>
+      <JsonLd
+        data={[
+          placeLd(place),
+          breadcrumbLd([
+            { name: "الرئيسية", url: absoluteUrl("/") },
+            { name: place.city.name, url: absoluteUrl(`/cities/${place.city.slug}`) },
+            { name: place.title, url: absoluteUrl(`/places/${place.slug}`) },
+          ]),
+        ]}
+      />
       <SiteHeader />
       <main
         id="main"
@@ -91,7 +152,7 @@ export default async function PlacePage(props: PageProps<"/places/[slug]">) {
             </li>
             <li aria-hidden="true">/</li>
             <li>
-              <Link href={`/places?city=${place.city.slug}`} className="hover:text-brand">
+              <Link href={`/cities/${place.city.slug}`} className="hover:text-brand">
                 {place.city.name}
               </Link>
             </li>

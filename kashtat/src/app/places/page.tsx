@@ -15,11 +15,27 @@ import {
   type SortKey,
 } from "@/lib/db/places";
 import { bookingQuery, parseSearchParams, type RawParams } from "@/lib/search-params";
+import { pageMeta } from "@/lib/seo";
+import { placesCount } from "@/lib/plural";
 
-export const metadata: Metadata = {
-  title: "ابحث عن مكان",
-  description: "كشتات ومخيمات وأماكن برية في السعودية، احجز بالساعة أو اليوم أو الليلة.",
-};
+export async function generateMetadata(props: PageProps<"/places">): Promise<Metadata> {
+  const raw = (await props.searchParams) as RawParams;
+  const keys = Object.keys(raw).filter((k) => raw[k] !== undefined && raw[k] !== "");
+  const base = pageMeta({
+    title: "ابحث عن كشتات ومخيمات في السعودية",
+    description:
+      "تصفح كل الكشتات والمخيمات والمواقع البرية المتاحة في السعودية، وفلتر حسب المدينة والسعر والمرافق، واحجز بالساعة أو اليوم أو الليلة.",
+    path: "/places",
+  });
+  // نتائج الفلاتر نسخ مكررة من نفس الصفحة: لا تُفهرس لكن روابطها تُتبع
+  if (keys.length === 0) return base;
+  const city = typeof raw.city === "string" && keys.length === 1 ? raw.city : null;
+  return {
+    ...base,
+    robots: { index: false, follow: true },
+    alternates: { canonical: city ? `/cities/${city}` : "/places" },
+  };
+}
 
 const SORTS: Array<{ key: SortKey; label: string }> = [
   { key: "rating", label: "الأعلى تقييمًا" },
@@ -36,15 +52,6 @@ function sortHref(raw: RawParams, key: SortKey) {
   if (key !== "rating") qs.set("sort", key);
   const s = qs.toString();
   return s ? `/places?${s}` : "/places";
-}
-
-// صيغ العدد في العربية
-function placesCount(n: number) {
-  if (n === 0) return "لا توجد نتائج";
-  if (n === 1) return "مكان واحد";
-  if (n === 2) return "مكانان";
-  if (n <= 10) return `${n} أماكن`;
-  return `${n} مكانًا`;
 }
 
 type Loaded = { places: PlaceCardData[]; cities: Option[]; amenities: Option[] } | null;

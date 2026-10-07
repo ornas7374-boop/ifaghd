@@ -1,28 +1,25 @@
 import Link from "next/link";
+import { FOOTER_CITIES } from "@/lib/city-content";
 
 const COLUMNS = [
   {
     title: "المنصة",
     links: [
-      { href: "/#explore", label: "استكشف الأماكن" },
+      { href: "/places", label: "كل الأماكن" },
       { href: "/#how", label: "كيف يعمل" },
       { href: "/#hourly", label: "الحجز بالساعة" },
     ],
   },
   {
-    title: "أصحاب الأماكن",
-    links: [
-      { href: "/#owners", label: "أضف مكانك" },
-      { href: "/#owners", label: "لوحة التحكم" },
-      { href: "/#owners", label: "العمولات" },
-    ],
+    title: "كشتات حسب المدينة",
+    links: FOOTER_CITIES.map((c) => ({ href: `/cities/${c.slug}`, label: `كشتات ${c.name}` })),
   },
   {
-    title: "الدعم",
+    title: "أصحاب الأماكن",
     links: [
-      { href: "/faq", label: "الأسئلة الشائعة" },
-      { href: "/cancellation-policy", label: "سياسة الإلغاء" },
-      { href: "/contact", label: "تواصل معنا" },
+      { href: "/#owners", label: "ليش تنضم معنا" },
+      { href: "/owner/places/new", label: "أضف مكانك" },
+      { href: "/owner", label: "لوحة التحكم" },
     ],
   },
 ];
@@ -45,7 +42,7 @@ export function SiteFooter() {
                 <li key={l.label}>
                   <Link
                     href={l.href}
-                    prefetch={l.href.startsWith("/#") ? undefined : false}
+                    prefetch={false}
                     className="inline-block py-0.5 hover:text-brand"
                   >
                     {l.label}

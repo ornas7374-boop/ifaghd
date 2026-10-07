@@ -57,9 +57,21 @@ pnpm dev        # http://localhost:3000
 - [x] 5. الحجز (بدون دفع: نسخة تدريبية)
 - [x] 6. لوحة المالك (إضافة مكان، حظر فترات، الحجوزات والمستحقات)
 - [x] 7. لوحة الأدمن (تقارير، اعتماد الأماكن، الأدوار، الحجوزات، إخفاء التقييمات)
-- [ ] 8. SEO والأداء
+- [x] 8. SEO (sitemap، robots، بيانات منظمة، صفحات المدن)
 - [ ] 9. الجودة والاختبارات
 - [x] 10. الاستضافة والنشر
+
+## SEO
+
+- `sitemap.xml` و `robots.txt` من `src/app/sitemap.ts` و `src/app/robots.ts`. الأماكن الجديدة المعتمدة تدخل الخريطة خلال ساعة.
+- كل صفحة عامة لها canonical و Open Graph عبر `pageMeta` في `src/lib/seo.ts`.
+- بيانات منظمة (JSON-LD):
+  - الرئيسية: WebSite (مع مربع بحث) و Organization.
+  - صفحة المكان: Campground و BreadcrumbList.
+  - صفحة المدينة: ItemList و FAQPage و BreadcrumbList.
+- صفحات المدن `/cities/[slug]` تستهدف بحث «كشتات الرياض» وأمثاله. نصوصها التعريفية في `src/lib/city-content.ts`.
+- نتائج البحث المفلترة `noindex, follow`، وفلتر المدينة وحده يشير (canonical) إلى صفحة المدينة.
+- لتغيير الدومين: ضع `NEXT_PUBLIC_SITE_URL` في Vercel.
 
 ## النشر
 
