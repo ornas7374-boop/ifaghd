@@ -1,0 +1,26 @@
+{
+  "name": "openseo",
+  "displayName": "OpenSEO",
+  "version": "1.0.18",
+  "description": "Research keywords and competitors, audit sites, track rankings and AI visibility, and use connected Search Console data from your AI assistant.",
+  "author": {
+    "name": "OpenSEO",
+    "url": "https://openseo.so"
+  },
+  "homepage": "https://openseo.so",
+  "privacyPolicyUrl": "https://openseo.so/privacy",
+  "icon": "./assets/icon.png",
+  "repository": "https://github.com/every-app/open-seo",
+  "license": "MIT",
+  "keywords": [
+    "seo",
+    "keyword-research",
+    "serp",
+    "site-audit",
+    "backlinks",
+    "search-console",
+    "rank-tracking",
+    "local-seo",
+    "ai-visibility"
+  ]
+}

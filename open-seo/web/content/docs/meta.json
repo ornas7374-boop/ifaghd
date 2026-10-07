@@ -1,0 +1,11 @@
+{
+  "pages": [
+    "agent-setup",
+    "mcp",
+    "ai-visibility",
+    "claude-code-plugin",
+    "codex-plugin",
+    "skills",
+    "self-hosting"
+  ]
+}

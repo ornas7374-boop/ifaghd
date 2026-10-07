@@ -1,0 +1,359 @@
+import { waitUntil } from "cloudflare:workers";
+import type { BillingCustomerContext } from "@/server/billing/subscription";
+import { createDataforseoClient } from "@/server/lib/dataforseo";
+import { resolveLatestLlmModelName } from "@/server/lib/dataforseo/llm-models";
+import type { LlmResponseResult } from "@/server/lib/dataforseoLlmSchemas";
+import { AppError } from "@/server/lib/errors";
+import { assertPaidAiSearchPlan } from "./access";
+import {
+  AI_SEARCH_PROMPT_CACHE_NAMESPACE,
+  buildCacheKey,
+  getCached,
+  setCached,
+} from "@/server/lib/r2-cache";
+import {
+  formatCountryLabel,
+  formatModelLabel,
+} from "@/shared/prompt-explorer-labels";
+import { supportsWebSearchCountry } from "@/shared/prompt-search-countries";
+import { safeHostname, safeHttpUrl } from "@/shared/safe-url";
+import {
+  promptExplorerModelResultSchema,
+  type PromptExplorerCitation,
+  type PromptExplorerInput,
+  type PromptExplorerModel,
+  type PromptExplorerModelResult,
+  type PromptExplorerResult,
+} from "@/types/schemas/ai-search";
+
+/**
+ * Prompt Explorer asks one prompt across one-to-four LLM models and renders
+ * the answers side by side. Each (prompt, model) tuple is cached in R2 for 7
+ * days because LLM responses are expensive and reasonably stable over short
+ * windows.
+ *
+ * Per-model errors are isolated: a Claude API failure must not prevent
+ * ChatGPT/Gemini/Perplexity results from rendering. We use Promise.allSettled
+ * to enforce that.
+ */
+
+/** LLM responses are stable enough for a 7-day cache. */
+const PROMPT_RESPONSE_TTL_SECONDS = 7 * 24 * 60 * 60;
+
+/**
+ * Hard cap on response length. Set to the DataForSEO per-call maximum because
+ * reasoning models (gpt-5, gemini-2.5-pro) count hidden chain-of-thought
+ * tokens against this budget — at 1024 ChatGPT regularly burns the whole
+ * budget on reasoning and returns a near-empty visible message.
+ */
+const PROMPT_RESPONSE_MAX_TOKENS = 4096;
+
+type DataforseoClient = ReturnType<typeof createDataforseoClient>;
+
+export async function explorePrompt(
+  input: PromptExplorerInput,
+  billingCustomer: BillingCustomerContext,
+): Promise<PromptExplorerResult> {
+  await assertPaidAiSearchPlan(
+    billingCustomer.organizationId,
+    "Prompt Explorer",
+  );
+  const dataforseo = createDataforseoClient(billingCustomer);
+  const highlightBrand = input.highlightBrand?.trim() || null;
+
+  // Dedupe models so a request like ["claude","claude"] doesn't fan out to two
+  // paid upstream calls for the same answer.
+  const uniqueModels = Array.from(new Set(input.models));
+
+  const settled = await Promise.allSettled(
+    uniqueModels.map((model) =>
+      runModel({
+        model,
+        input,
+        highlightBrand,
+        billingCustomer,
+        dataforseo,
+      }),
+    ),
+  );
+
+  const results: PromptExplorerModelResult[] = settled.map(
+    (settledResult, index) => {
+      const model = uniqueModels[index];
+      if (settledResult.status === "fulfilled") return settledResult.value;
+      return mapErrorToResult(model, settledResult.reason);
+    },
+  );
+
+  return {
+    prompt: input.prompt,
+    highlightBrand,
+    fetchedAt: new Date().toISOString(),
+    results,
+  };
+}
+
+type RunModelArgs = {
+  model: PromptExplorerModel;
+  input: PromptExplorerInput;
+  highlightBrand: string | null;
+  billingCustomer: BillingCustomerContext;
+  dataforseo: DataforseoClient;
+};
+
+async function runModel(
+  args: RunModelArgs,
+): Promise<PromptExplorerModelResult> {
+  const country = args.input.webSearch
+    ? args.input.webSearchCountryCode
+    : undefined;
+  if (country && !supportsWebSearchCountry(args.model, country)) {
+    const modelLabel = formatModelLabel(args.model);
+    const limitation =
+      args.model === "gemini"
+        ? `${modelLabel} doesn’t support country selection.`
+        : `${modelLabel} doesn’t support ${formatCountryLabel(country)} as a search country.`;
+    return {
+      status: "error",
+      model: args.model,
+      errorCode: "UNSUPPORTED_COUNTRY",
+      message: `${limitation} Select “No country preference” above, then run again to include ${modelLabel}.`,
+    };
+  }
+  // Part of the cache key so a model upgrade refetches rather than serving
+  // cached answers from the previous model.
+  const modelName = await resolveLatestLlmModelName(args.model);
+  const cacheKey = await buildCacheKey(AI_SEARCH_PROMPT_CACHE_NAMESPACE, {
+    organizationId: args.billingCustomer.organizationId,
+    projectId: args.input.projectId,
+    model: args.model,
+    modelName,
+    // Collapse only whitespace differences. Casing is deliberately preserved:
+    // prompts like "Compare Go vs go" or case-sensitive code snippets must
+    // not collide with their lowercase twins.
+    prompt: normalizePromptForCache(args.input.prompt),
+    webSearch: args.input.webSearch,
+    webSearchCountryCode: country ?? null,
+    // Bumped when prompt/payload shape changes — busts stale cache entries.
+    systemPromptV: 7,
+  });
+
+  const cached = promptExplorerModelResultSchema.safeParse(
+    await getCached(cacheKey),
+  );
+  if (cached.success && cached.data.status === "success") {
+    // highlightBrand is not part of the cache key — re-apply it so the same
+    // cached response can power different brand highlights for free.
+    return reapplyHighlightBrand(cached.data, args.highlightBrand);
+  }
+
+  let rawResponse = await fetchModelResponse(args, modelName);
+  // `web_search: true` only permits searching; models the upstream can't
+  // force (Claude is the only one that accepts `force_web_search` — see
+  // dataforseo/ai.ts) regularly answer from memory and return zero citations
+  // (~40% search rate observed for gpt-5). The browse decision is
+  // non-deterministic per call, so one paid retry meaningfully raises the
+  // odds of a cited answer; keep the retry only if it actually searched.
+  // A failed retry keeps the first answer, which is already paid for.
+  if (args.input.webSearch && !rawResponse.web_search) {
+    const retried = await fetchModelResponse(args, modelName).catch((err) => {
+      console.error(
+        `ai-search.prompt-response.${args.model}.retry failed:`,
+        err,
+      );
+      return null;
+    });
+    if (retried?.web_search) rawResponse = retried;
+  }
+  const shaped = {
+    ...shapeSuccess(args.model, rawResponse),
+    webSearchCountryCode: country ?? null,
+  };
+
+  waitUntil(
+    setCached(cacheKey, shaped, PROMPT_RESPONSE_TTL_SECONDS, {
+      organizationId: args.billingCustomer.organizationId,
+    }).catch((err) => {
+      console.error("ai-search.prompt-response.cache-write failed:", err);
+    }),
+  );
+
+  return reapplyHighlightBrand(shaped, args.highlightBrand);
+}
+
+function fetchModelResponse(
+  args: RunModelArgs,
+  modelName: string,
+): Promise<LlmResponseResult> {
+  return args.dataforseo.aiSearch.llmResponse({
+    modelSlug: args.model,
+    modelName,
+    userPrompt: args.input.prompt,
+    webSearch: args.input.webSearch,
+    webSearchCountryCode: args.input.webSearchCountryCode,
+    maxOutputTokens: PROMPT_RESPONSE_MAX_TOKENS,
+  });
+}
+
+/**
+ * Shape a raw LLM response into the brand-agnostic success payload we cache.
+ * Brand-specific fields (`matchedBrand`, `brandMentioned`) are computed
+ * separately by `reapplyHighlightBrand` on every read so one cache entry can
+ * serve requests with different `highlightBrand` values.
+ */
+function shapeSuccess(
+  model: PromptExplorerModel,
+  response: LlmResponseResult,
+): PromptExplorerModelResult {
+  const text = extractText(response);
+  const citations = extractCitations(response);
+  const fanOutQueries = (response.fan_out_queries ?? []).slice(0, 20);
+
+  return {
+    status: "success" as const,
+    model,
+    modelName: response.model_name ?? null,
+    text,
+    citations,
+    fanOutQueries,
+    brandMentioned: null,
+    outputTokens:
+      response.output_tokens != null
+        ? Math.round(response.output_tokens)
+        : null,
+    webSearch: response.web_search ?? false,
+    webSearchCountryCode: null,
+  };
+}
+
+function reapplyHighlightBrand(
+  result: PromptExplorerModelResult,
+  highlightBrand: string | null,
+): PromptExplorerModelResult {
+  if (result.status !== "success") return result;
+  const citations = result.citations.map((citation) => ({
+    ...citation,
+    matchedBrand: matchesBrand(citation.url, citation.title, highlightBrand),
+  }));
+  return {
+    ...result,
+    citations,
+    brandMentioned: computeBrandMentioned(
+      result.text,
+      citations,
+      highlightBrand,
+    ),
+  };
+}
+
+function extractText(response: LlmResponseResult): string {
+  const textParts: string[] = [];
+  for (const item of response.items ?? []) {
+    if (item.type !== "message") continue;
+    for (const section of item.sections ?? []) {
+      if (typeof section.text === "string" && section.text.length > 0) {
+        textParts.push(section.text);
+      }
+    }
+  }
+  return textParts.join("\n\n").trim();
+}
+
+export function extractCitations(
+  response: LlmResponseResult,
+): PromptExplorerCitation[] {
+  const seen = new Set<string>();
+  const citations: PromptExplorerCitation[] = [];
+
+  for (const item of response.items ?? []) {
+    if (item.type !== "message") continue;
+    for (const section of item.sections ?? []) {
+      for (const annotation of section.annotations ?? []) {
+        // DataForSEO annotations are untyped `{ title, url }` reference
+        // objects (AnnotationInfo) — there is no citation-type discriminator
+        // to filter on. Guard on URL safety only: LLMs can be coaxed into
+        // emitting `javascript:` payloads, and we render these as <a href>.
+        const safeUrl = safeHttpUrl(annotation.url);
+        if (!safeUrl || seen.has(safeUrl)) continue;
+        seen.add(safeUrl);
+        citations.push({
+          url: safeUrl,
+          domain: safeHostname(safeUrl),
+          title: annotation.title ?? null,
+          matchedBrand: false,
+        });
+      }
+    }
+  }
+
+  return citations.slice(0, 25);
+}
+
+function computeBrandMentioned(
+  text: string,
+  citations: PromptExplorerCitation[],
+  highlightBrand: string | null,
+): boolean | null {
+  if (!highlightBrand) return null;
+  if (citations.some((c) => c.matchedBrand)) return true;
+  return mentionRegex(highlightBrand).test(text);
+}
+
+function matchesBrand(
+  url: string,
+  title: string | null | undefined,
+  highlightBrand: string | null,
+): boolean {
+  if (!highlightBrand) return false;
+  const needle = highlightBrand.toLowerCase();
+  const haystack = `${url} ${title ?? ""}`.toLowerCase();
+  return haystack.includes(needle);
+}
+
+function mentionRegex(brand: string): RegExp {
+  // Case-insensitive match on the brand string with word-boundary guards only
+  // on sides that end in a word char — otherwise \b fails for brands like
+  // "C++" or "AT&T" where the terminal char is non-word. When a boundary char
+  // is non-word we guard with a negative lookaround against that same char so
+  // "C++" doesn't match "C+++".
+  const escaped = brand.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const firstEscaped = brand[0].replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const lastEscaped = brand[brand.length - 1].replace(
+    /[.*+?^${}()|[\]\\]/g,
+    "\\$&",
+  );
+  const leading = /^\w/.test(brand) ? "\\b" : `(?<!${firstEscaped})`;
+  const trailing = /\w$/.test(brand) ? "\\b" : `(?!${lastEscaped})`;
+  return new RegExp(`${leading}${escaped}${trailing}`, "i");
+}
+
+function normalizePromptForCache(prompt: string): string {
+  return prompt.trim().replace(/\s+/g, " ");
+}
+
+function mapErrorToResult(
+  model: PromptExplorerModel,
+  reason: unknown,
+): PromptExplorerModelResult {
+  if (
+    reason instanceof AppError &&
+    (reason.code === "INSUFFICIENT_CREDITS" ||
+      reason.code === "AI_SEARCH_BILLING_ISSUE")
+  ) {
+    // These account-level failures apply to every model, so surface one clear
+    // error instead of silently degrading to per-model failures.
+    throw reason;
+  }
+
+  // Log full upstream detail server-side; surface only a generic message to
+  // the client. Upstream error bodies sometimes echo request paths or
+  // diagnostic fields we don't want to leak to the browser.
+  console.error(`ai-search.prompt-response.${model}.error:`, reason);
+
+  return {
+    status: "error" as const,
+    model,
+    errorCode: "UPSTREAM_ERROR",
+    message: "This model is temporarily unavailable. Please try again.",
+  };
+}

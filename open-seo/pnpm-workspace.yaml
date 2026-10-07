@@ -1,0 +1,96 @@
+minimumReleaseAge: 11520
+minimumReleaseAgeExclude:
+  - "@every-app/*"
+  # TEMPORARY (remove after 2026-10-01): DOMPurify security fix, GHSA-p98j-92pf-mc4p.
+  - "dompurify@3.4.16"
+  # TEMPORARY (remove after 2026-10-08): latest TanStack Start release
+  # requested for the security refresh. Exempt only these matching versions.
+  - "@tanstack/react-router@1.170.41"
+  - "@tanstack/react-start-client@1.168.39"
+  - "@tanstack/react-start-rsc@0.1.59"
+  - "@tanstack/react-start-server@1.167.46"
+  - "@tanstack/react-start@1.168.60"
+  - "@tanstack/react-store@0.11.2"
+  - "@tanstack/router-core@1.171.34"
+  - "@tanstack/router-generator@1.167.40"
+  - "@tanstack/router-plugin@1.168.42"
+  - "@tanstack/start-client-core@1.170.34"
+  - "@tanstack/start-plugin-core@1.171.49"
+  - "@tanstack/start-server-core@1.169.39"
+  - "@tanstack/start-storage-context@1.167.36"
+  - "@tanstack/store@0.11.2"
+  # TEMPORARY (remove after 2026-09-05): the chat-agent framework upgrade
+  # (@cloudflare/think 0.17.0, agents 0.22.0) was published 2026-08-27 —
+  # hours shy of the 8-day window. Needed for the unconditional
+  # durable-chat-recovery release that SAM's OOM guard (`onChatRecovery`
+  # returning `{ continue: false }`) is written against.
+  - "@cloudflare/think"
+  - "agents"
+  # TEMPORARY (remove after 2026-08-15): workers-oauth-provider 0.10.2 was
+  # published 2026-08-07; needed for the MCP SDK v2 migration plus the
+  # ChatGPT DCR client-auth-negotiation fix.
+  - "@cloudflare/workers-oauth-provider"
+  # TEMPORARY (remove after 2026-08-09): security releases published
+  # 2026-07-30/31; required to clear current high-severity advisories.
+  - "brace-expansion"
+  - "fast-uri"
+  - "js-yaml"
+  # TEMPORARY (remove after 2026-07-16): alchemy 2.0.0-beta.61 and its
+  # matching @distilled.cloud/*@0.28.2 published 2026-07-08 — 2 days shy of
+  # the window. Exact-pinned in package.json.
+  - "alchemy"
+  - "@distilled.cloud/*"
+
+# Security floors for transitive dependencies with published advisories.
+# Overrides outside a parent's declared range are scoped and noted below. Ranges are
+# major-bounded (^) on purpose: an override REPLACES the parent's range, so an
+# open-ended >= floor would let a future major (e.g. hono 5) get forced onto a
+# parent that only supports the current one.
+#
+# To prune once a parent catches up: delete the line, run `pnpm install`, and
+# keep it deleted if `pnpm audit` stays clean.
+overrides:
+  # GHSA-4x5r-pxfx-6jf8 — waiting on @tanstack/devtools-vite
+  "@babel/core": "^7.29.6"
+  # September 2026 recursion/CPU DoS fixes plus earlier advisories — just-bash/shadcn
+  brace-expansion: "^5.0.12"
+  # GHSA-737v-mqg7-c878 — waiting on better-auth
+  defu: "^6.1.5"
+  # GHSA-p98j-92pf-mc4p plus earlier XSS advisories — waiting on posthog-js
+  dompurify: "^3.4.16"
+  # GHSA-v2hh-gcrm-f6hx, GHSA-7p8r-x3mc-p8w7, GHSA-4c8g-83qw-93j6 — waiting on @modelcontextprotocol/sdk
+  fast-uri: "^3.1.6"
+  # 9 advisories incl. GHSA-88fw-hqm2-52qc (CORS) — waiting on @modelcontextprotocol/sdk
+  hono: "^4.13.5"
+  # GHSA-mwp4-54f8-5fhr plus September 2026 subnet/classification fixes
+  ip-address: "^10.7.1"
+  # GHSA-5p4m-2wfm-xmqj — waiting on @tanstack/start-plugin-core
+  js-yaml: "^4.3.2"
+  # GHSA-v6wh-96g9-6wx3 — waiting on @tanstack/devtools-vite
+  launch-editor: "^2.14.1"
+  # GHSA-qx2v-qp2m-jg93, GHSA-r28c-9q8g-f849 — waiting on vite
+  postcss: "^8.5.23"
+  # GHSA-q8mj-m7cp-5q26 — waiting on @modelcontextprotocol/sdk
+  qs: "^6.16.0"
+  # GHSA-w7jw-789q-3m8p — waiting on @tanstack/devtools-vite
+  shell-quote: "^1.8.4"
+  # GHSA-v3rj-xjv7-4jmq — waiting on knip
+  smol-toml: "^1.7.1"
+  # September 2026 TLS/cache/DoS fixes plus earlier advisories — cheerio/miniflare
+  undici: "^7.29.1"
+  # GHSA-67mh-4wv8-2f99 — update drizzle-kit's legacy loader instead of ignoring it.
+  "@esbuild-kit/core-utils>esbuild": "^0.25.12"
+  # GHSA-rgj7-g3m4-5g8c — Miniflare 4 pins 0.34.5; 0.35.4 fixes bundled libheif.
+  "miniflare>sharp": "0.35.4"
+  # September 2026 advisories: keep these fixes within each supported major.
+  "@ai-sdk/provider-utils@4": "^4.0.33"
+  "@hono/node-server@1": "^1.19.15"
+  "body-parser@2": "^2.3.0"
+  browserslist: "^4.28.7"
+  baseline-browser-mapping: "^2.11.0"
+  # autumn-js uses query-string 9, which supports the patched ESM decoder.
+  "query-string>decode-uri-component": "^0.5.0"
+  "fflate@0.4": "~0.4.9"
+  mysql2: "^3.23.1"
+  "nanoid@3": "^3.3.18"
+  "toml@4": "^4.2.0"
