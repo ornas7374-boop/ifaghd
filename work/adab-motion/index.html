@@ -68,6 +68,33 @@
       #arcs path { fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; }
       #cam svg { position: absolute; inset: 0; z-index: 4; }
 
+
+      #beat { position: absolute; inset: 0; transform-origin: 52% 40%; }
+
+      /* Series chip: rebuilds the burned-in hashtag so something is always alive on screen */
+      #chip { position: absolute; left: -10px; top: 36px; height: 46px; z-index: 6; display: flex; direction: rtl; }
+      #chip .hash { width: 46px; height: 46px; background: var(--red); color: var(--ink); font-weight: 900; font-size: 30px; display: flex; align-items: center; justify-content: center; }
+      #chip .lbl { position: relative; overflow: hidden; height: 46px; padding: 0 16px 0 62px; background: var(--plate); color: var(--ink); font-weight: 700; font-size: 22px; display: flex; align-items: center; transform-origin: 100% 50%; white-space: nowrap; }
+      #chip .shine { position: absolute; top: 0; bottom: 0; left: 0; width: 60px; background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.55), rgba(255,255,255,0)); }
+
+      /* Focus brackets around the speaker */
+      .brk { position: absolute; z-index: 4; }
+      .brk .bi { position: absolute; inset: 0; }
+      .brk i { position: absolute; width: 38px; height: 38px; border-color: #fff; border-style: solid; border-width: 0; }
+      .brk .c1 { top: 0; left: 0; border-top-width: 3px; border-left-width: 3px; }
+      .brk .c2 { top: 0; right: 0; border-top-width: 3px; border-right-width: 3px; border-color: var(--red); }
+      .brk .c3 { bottom: 0; left: 0; border-bottom-width: 3px; border-left-width: 3px; border-color: var(--red); }
+      .brk .c4 { bottom: 0; right: 0; border-bottom-width: 3px; border-right-width: 3px; }
+
+      /* Orbit rings */
+      .orb { position: absolute; inset: 0; z-index: 3; }
+      .orb .o1 { fill: none; stroke: rgba(255,255,255,0.7); stroke-width: 1.5; }
+      .orb .o2 { fill: none; stroke: var(--red); stroke-width: 3; stroke-dasharray: 46 22; stroke-linecap: round; }
+
+      /* Light sweep */
+      .sweep { position: absolute; inset: 0; z-index: 8; overflow: hidden; pointer-events: none; }
+      .sweep .band { position: absolute; top: -20%; bottom: -20%; left: 0; width: 360px; transform: skewX(-18deg); background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.16), rgba(255,255,255,0)); }
+
       /* Cut flash */
       #flash { position: absolute; inset: 0; z-index: 9; background: #fff; }
 
@@ -84,6 +111,7 @@
   <body>
     <div id="root" data-composition-id="main" data-start="0" data-duration="58.5" data-width="1296" data-height="864">
       <div id="cam">
+        <div id="beat">
         <video id="footage" class="clip" src="assets/video/source.mp4" data-start="0" data-duration="58.5" data-track-index="0" playsinline data-has-audio="true" data-volume="1"></video>
 
         <!-- Keyword plates: each sits over the original caption's box (source px × 1.5) and holds its timing. -->
@@ -160,16 +188,53 @@
           <div class="bg"></div><div class="bar"></div><div class="ring"></div>
           <div class="t"><span class="w">لا يستقبل</span><span class="r">الباب</span></div>
         </div>
+
+        <!-- Series chip (covers the source hashtag) -->
+        <div id="chip" class="clip" data-start="0.12" data-duration="58.38" data-track-index="10">
+          <div class="hash">#</div>
+          <div class="lbl">آداب عامة<div class="shine"></div></div>
+        </div>
+        <div id="brk-1" class="brk clip" data-start="8.55" data-duration="2.5" data-track-index="11" style="left:640px;top:80px;width:330px;height:430px" data-layout-ignore>
+          <div class="bi"><i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="c4"></i></div>
+        </div>
+        <div id="brk-2" class="brk clip" data-start="14.9" data-duration="1.15" data-track-index="12" style="left:640px;top:80px;width:330px;height:430px" data-layout-ignore>
+          <div class="bi"><i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="c4"></i></div>
+        </div>
+        <div id="brk-3" class="brk clip" data-start="22.75" data-duration="1.6" data-track-index="11" style="left:668px;top:120px;width:168px;height:210px" data-layout-ignore>
+          <div class="bi"><i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="c4"></i></div>
+        </div>
+        <div id="brk-4" class="brk clip" data-start="51.5" data-duration="1.85" data-track-index="12" style="left:630px;top:85px;width:310px;height:400px" data-layout-ignore>
+          <div class="bi"><i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="c4"></i></div>
+        </div>
+        <svg id="orb-1" class="orb clip" data-start="9.0" data-duration="6.8" data-track-index="13" viewBox="0 0 1296 864" data-layout-ignore data-cx="805" data-cy="295">
+          <g class="og"><circle class="o1" cx="805" cy="295" r="268" /><circle class="o2" cx="805" cy="295" r="282" /></g>
+        </svg>
+        <svg id="orb-2" class="orb clip" data-start="28.2" data-duration="1.65" data-track-index="13" viewBox="0 0 1296 864" data-layout-ignore data-cx="752" data-cy="225">
+          <g class="og"><circle class="o1" cx="752" cy="225" r="165" /><circle class="o2" cx="752" cy="225" r="179" /></g>
+        </svg>
+        <svg id="orb-3" class="orb clip" data-start="52.0" data-duration="1.4" data-track-index="13" viewBox="0 0 1296 864" data-layout-ignore data-cx="786" data-cy="283">
+          <g class="og"><circle class="o1" cx="786" cy="283" r="262" /><circle class="o2" cx="786" cy="283" r="276" /></g>
+        </svg>
+        </div>
       </div>
 
-      <!-- Thin arcs drawn at each shot change -->
+      <!-- Thin arcs drawn at each shot change, plus extra arcs in quiet stretches -->
       <svg id="arcs" class="clip" data-start="0" data-duration="58.5" data-track-index="6" viewBox="0 0 1296 864" data-layout-ignore>
         <path id="arc-0" d="M -20 640 C 160 560, 240 260, 90 -20" />
         <path id="arc-1" d="M 1320 120 C 1120 220, 1180 620, 1320 760" />
         <path id="arc-2" d="M -20 300 C 220 360, 300 720, 140 890" />
         <path id="arc-3" d="M 1320 600 C 1100 520, 1060 160, 1240 -20" />
         <path id="arc-4" d="M -20 760 C 300 640, 260 200, 520 -20" />
+        <path id="arc-5" d="M 1320 820 C 1060 760, 980 420, 1180 -20" />
+        <path id="arc-6" d="M -20 120 C 260 160, 380 520, 200 890" />
+        <path id="arc-7" d="M 1320 300 C 1080 360, 1020 700, 1140 890" />
+        <path id="arc-8" d="M 400 -20 C 360 240, 120 380, -20 420" />
       </svg>
+
+      <div id="sweep-1" class="sweep clip" data-start="11.1" data-duration="0.9" data-track-index="14"><div class="band"></div></div>
+      <div id="sweep-2" class="sweep clip" data-start="29.0" data-duration="0.9" data-track-index="14"><div class="band"></div></div>
+      <div id="sweep-3" class="sweep clip" data-start="52.6" data-duration="0.9" data-track-index="14"><div class="band"></div></div>
+      <div id="sweep-4" class="sweep clip" data-start="19.0" data-duration="0.9" data-track-index="14"><div class="band"></div></div>
 
       <div id="flash" class="clip" data-start="0" data-duration="58.5" data-track-index="7"></div>
 
@@ -179,6 +244,77 @@
         <div class="uline"></div>
       </div>
       <div id="iris" class="clip" data-start="57.7" data-duration="0.8" data-track-index="9"></div>
+
+      <!-- Sound design: light SFX under the original audio (Pixabay licence, see assets/sfx/CREDITS.md) -->
+      <audio id="sfx-00" class="clip" src="assets/sfx/pop.mp3" data-start="0.25" data-duration="0.72" data-volume="0.22" data-track-index="20"></audio>
+      <audio id="sfx-01" class="clip" src="assets/sfx/whoosh-short.mp3" data-start="0.35" data-duration="0.57" data-volume="0.16" data-track-index="21"></audio>
+      <audio id="sfx-02" class="clip" src="assets/sfx/pop.mp3" data-start="0.56" data-duration="0.72" data-volume="0.26" data-track-index="22"></audio>
+      <audio id="sfx-03" class="clip" src="assets/sfx/click-soft.mp3" data-start="2.35" data-duration="0.37" data-volume="0.42" data-track-index="20"></audio>
+      <audio id="sfx-04" class="clip" src="assets/sfx/whoosh-short.mp3" data-start="4.25" data-duration="0.57" data-volume="0.16" data-track-index="20"></audio>
+      <audio id="sfx-05" class="clip" src="assets/sfx/pop.mp3" data-start="4.46" data-duration="0.72" data-volume="0.26" data-track-index="21"></audio>
+      <audio id="sfx-06" class="clip" src="assets/sfx/click-soft.mp3" data-start="5.25" data-duration="0.37" data-volume="0.42" data-track-index="20"></audio>
+      <audio id="sfx-07" class="clip" src="assets/sfx/whoosh-short.mp3" data-start="6.3" data-duration="0.57" data-volume="0.16" data-track-index="20"></audio>
+      <audio id="sfx-08" class="clip" src="assets/sfx/pop.mp3" data-start="6.4" data-duration="0.72" data-volume="0.26" data-track-index="21"></audio>
+      <audio id="sfx-09" class="clip" src="assets/sfx/click.mp3" data-start="8.55" data-duration="0.37" data-volume="0.32" data-track-index="20"></audio>
+      <audio id="sfx-10" class="clip" src="assets/sfx/whoosh-short.mp3" data-start="9.0" data-duration="0.57" data-volume="0.1" data-track-index="20"></audio>
+      <audio id="sfx-11" class="clip" src="assets/sfx/click-soft.mp3" data-start="10.05" data-duration="0.37" data-volume="0.42" data-track-index="20"></audio>
+      <audio id="sfx-12" class="clip" src="assets/sfx/sparkle.mp3" data-start="11.25" data-duration="1.8" data-volume="0.1" data-track-index="20"></audio>
+      <audio id="sfx-13" class="clip" src="assets/sfx/click-soft.mp3" data-start="12.15" data-duration="0.37" data-volume="0.42" data-track-index="21"></audio>
+      <audio id="sfx-14" class="clip" src="assets/sfx/pop.mp3" data-start="12.8" data-duration="0.72" data-volume="0.16" data-track-index="21"></audio>
+      <audio id="sfx-15" class="clip" src="assets/sfx/click-soft.mp3" data-start="13.9" data-duration="0.37" data-volume="0.42" data-track-index="20"></audio>
+      <audio id="sfx-16" class="clip" src="assets/sfx/click.mp3" data-start="14.9" data-duration="0.37" data-volume="0.32" data-track-index="20"></audio>
+      <audio id="sfx-17" class="clip" src="assets/sfx/whoosh.mp3" data-start="16.01" data-duration="0.57" data-volume="0.3" data-track-index="20"></audio>
+      <audio id="sfx-18" class="clip" src="assets/sfx/pop.mp3" data-start="16.34" data-duration="0.72" data-volume="0.26" data-track-index="21"></audio>
+      <audio id="sfx-19" class="clip" src="assets/sfx/click-soft.mp3" data-start="17.75" data-duration="0.37" data-volume="0.42" data-track-index="20"></audio>
+      <audio id="sfx-20" class="clip" src="assets/sfx/sparkle.mp3" data-start="19.15" data-duration="1.8" data-volume="0.1" data-track-index="20"></audio>
+      <audio id="sfx-21" class="clip" src="assets/sfx/whoosh-short.mp3" data-start="19.9" data-duration="0.57" data-volume="0.16" data-track-index="21"></audio>
+      <audio id="sfx-22" class="clip" src="assets/sfx/pop.mp3" data-start="20.11" data-duration="0.72" data-volume="0.26" data-track-index="22"></audio>
+      <audio id="sfx-23" class="clip" src="assets/sfx/click-soft.mp3" data-start="21.55" data-duration="0.37" data-volume="0.42" data-track-index="20"></audio>
+      <audio id="sfx-24" class="clip" src="assets/sfx/click-soft.mp3" data-start="22.7" data-duration="0.37" data-volume="0.42" data-track-index="20"></audio>
+      <audio id="sfx-25" class="clip" src="assets/sfx/click.mp3" data-start="22.75" data-duration="0.37" data-volume="0.32" data-track-index="21"></audio>
+      <audio id="sfx-26" class="clip" src="assets/sfx/whoosh-short.mp3" data-start="24.4" data-duration="0.57" data-volume="0.16" data-track-index="20"></audio>
+      <audio id="sfx-27" class="clip" src="assets/sfx/pop.mp3" data-start="24.5" data-duration="0.72" data-volume="0.26" data-track-index="21"></audio>
+      <audio id="sfx-28" class="clip" src="assets/sfx/click-soft.mp3" data-start="25.4" data-duration="0.37" data-volume="0.42" data-track-index="20"></audio>
+      <audio id="sfx-29" class="clip" src="assets/sfx/click-soft.mp3" data-start="27.25" data-duration="0.37" data-volume="0.42" data-track-index="20"></audio>
+      <audio id="sfx-30" class="clip" src="assets/sfx/click-soft.mp3" data-start="28.1" data-duration="0.37" data-volume="0.42" data-track-index="20"></audio>
+      <audio id="sfx-31" class="clip" src="assets/sfx/whoosh-short.mp3" data-start="28.2" data-duration="0.57" data-volume="0.1" data-track-index="21"></audio>
+      <audio id="sfx-32" class="clip" src="assets/sfx/pop.mp3" data-start="28.6" data-duration="0.72" data-volume="0.16" data-track-index="20"></audio>
+      <audio id="sfx-33" class="clip" src="assets/sfx/sparkle.mp3" data-start="29.15" data-duration="1.8" data-volume="0.1" data-track-index="21"></audio>
+      <audio id="sfx-34" class="clip" src="assets/sfx/whoosh-short.mp3" data-start="29.9" data-duration="0.57" data-volume="0.16" data-track-index="20"></audio>
+      <audio id="sfx-35" class="clip" src="assets/sfx/pop.mp3" data-start="30.0" data-duration="0.72" data-volume="0.26" data-track-index="22"></audio>
+      <audio id="sfx-36" class="clip" src="assets/sfx/click-soft.mp3" data-start="30.6" data-duration="0.37" data-volume="0.42" data-track-index="20"></audio>
+      <audio id="sfx-37" class="clip" src="assets/sfx/whoosh-short.mp3" data-start="31.9" data-duration="0.57" data-volume="0.16" data-track-index="20"></audio>
+      <audio id="sfx-38" class="clip" src="assets/sfx/pop.mp3" data-start="32.0" data-duration="0.72" data-volume="0.26" data-track-index="21"></audio>
+      <audio id="sfx-39" class="clip" src="assets/sfx/whoosh-short.mp3" data-start="32.35" data-duration="0.57" data-volume="0.16" data-track-index="22"></audio>
+      <audio id="sfx-40" class="clip" src="assets/sfx/pop.mp3" data-start="32.45" data-duration="0.72" data-volume="0.26" data-track-index="23"></audio>
+      <audio id="sfx-41" class="clip" src="assets/sfx/whoosh.mp3" data-start="33.61" data-duration="0.57" data-volume="0.3" data-track-index="20"></audio>
+      <audio id="sfx-42" class="clip" src="assets/sfx/click-soft.mp3" data-start="35.6" data-duration="0.37" data-volume="0.42" data-track-index="20"></audio>
+      <audio id="sfx-43" class="clip" src="assets/sfx/whoosh-short.mp3" data-start="36.4" data-duration="0.57" data-volume="0.16" data-track-index="20"></audio>
+      <audio id="sfx-44" class="clip" src="assets/sfx/pop.mp3" data-start="36.5" data-duration="0.72" data-volume="0.26" data-track-index="21"></audio>
+      <audio id="sfx-45" class="clip" src="assets/sfx/whoosh-short.mp3" data-start="36.9" data-duration="0.57" data-volume="0.16" data-track-index="22"></audio>
+      <audio id="sfx-46" class="clip" src="assets/sfx/pop.mp3" data-start="37.11" data-duration="0.72" data-volume="0.26" data-track-index="20"></audio>
+      <audio id="sfx-47" class="clip" src="assets/sfx/whoosh.mp3" data-start="37.61" data-duration="0.57" data-volume="0.3" data-track-index="21"></audio>
+      <audio id="sfx-48" class="clip" src="assets/sfx/pop.mp3" data-start="37.85" data-duration="0.72" data-volume="0.2" data-track-index="20"></audio>
+      <audio id="sfx-49" class="clip" src="assets/sfx/click-soft.mp3" data-start="39.65" data-duration="0.37" data-volume="0.42" data-track-index="20"></audio>
+      <audio id="sfx-50" class="clip" src="assets/sfx/whoosh.mp3" data-start="41.2" data-duration="0.57" data-volume="0.24" data-track-index="20"></audio>
+      <audio id="sfx-51" class="clip" src="assets/sfx/click-soft.mp3" data-start="43.3" data-duration="0.37" data-volume="0.42" data-track-index="20"></audio>
+      <audio id="sfx-52" class="clip" src="assets/sfx/pop.mp3" data-start="43.96" data-duration="0.72" data-volume="0.2" data-track-index="20"></audio>
+      <audio id="sfx-53" class="clip" src="assets/sfx/pop.mp3" data-start="44.0" data-duration="0.72" data-volume="0.12" data-track-index="21"></audio>
+      <audio id="sfx-54" class="clip" src="assets/sfx/pop.mp3" data-start="45.08" data-duration="0.72" data-volume="0.2" data-track-index="20"></audio>
+      <audio id="sfx-55" class="clip" src="assets/sfx/click-soft.mp3" data-start="45.55" data-duration="0.37" data-volume="0.42" data-track-index="21"></audio>
+      <audio id="sfx-56" class="clip" src="assets/sfx/pop.mp3" data-start="45.64" data-duration="0.72" data-volume="0.2" data-track-index="22"></audio>
+      <audio id="sfx-57" class="clip" src="assets/sfx/pop.mp3" data-start="47.34" data-duration="0.72" data-volume="0.22" data-track-index="20"></audio>
+      <audio id="sfx-58" class="clip" src="assets/sfx/whoosh.mp3" data-start="47.41" data-duration="0.57" data-volume="0.3" data-track-index="21"></audio>
+      <audio id="sfx-59" class="clip" src="assets/sfx/click-soft.mp3" data-start="49.2" data-duration="0.37" data-volume="0.42" data-track-index="20"></audio>
+      <audio id="sfx-60" class="clip" src="assets/sfx/click-soft.mp3" data-start="51.45" data-duration="0.37" data-volume="0.42" data-track-index="20"></audio>
+      <audio id="sfx-61" class="clip" src="assets/sfx/click.mp3" data-start="51.5" data-duration="0.37" data-volume="0.32" data-track-index="21"></audio>
+      <audio id="sfx-62" class="clip" src="assets/sfx/whoosh-short.mp3" data-start="52.0" data-duration="0.57" data-volume="0.1" data-track-index="20"></audio>
+      <audio id="sfx-63" class="clip" src="assets/sfx/sparkle.mp3" data-start="52.75" data-duration="1.8" data-volume="0.1" data-track-index="20"></audio>
+      <audio id="sfx-64" class="clip" src="assets/sfx/whoosh-short.mp3" data-start="53.4" data-duration="0.57" data-volume="0.16" data-track-index="21"></audio>
+      <audio id="sfx-65" class="clip" src="assets/sfx/pop.mp3" data-start="53.61" data-duration="0.72" data-volume="0.26" data-track-index="22"></audio>
+      <audio id="sfx-66" class="clip" src="assets/sfx/click-soft.mp3" data-start="54.4" data-duration="0.37" data-volume="0.42" data-track-index="21"></audio>
+      <audio id="sfx-67" class="clip" src="assets/sfx/impact-bass-1.mp3" data-start="56.05" data-duration="2.12" data-volume="0.12" data-track-index="20"></audio>
+      <audio id="sfx-68" class="clip" src="assets/sfx/whoosh-short.mp3" data-start="57.72" data-duration="0.57" data-volume="0.16" data-track-index="21"></audio>
     </div>
 
     <script>
@@ -271,6 +407,58 @@
       tl.fromTo("#endcard .b", { scale: 1.4 }, { scale: 1, duration: 0.6, ease: "back.out(2)" }, 56.22);
       tl.fromTo("#endcard .uline", { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power3.inOut" }, 56.4);
       tl.fromTo("#iris", { "--r": "120%" }, { "--r": "0%", duration: 0.75, ease: "power2.in" }, 57.72);
+
+      // Beat punches: a small zoom + nudge on stressed syllables so the frame never sits still.
+      const BEATS = [2.35, 5.25, 10.05, 12.15, 13.9, 17.75, 21.55, 22.7, 25.4, 27.25, 28.1, 30.6, 35.6, 39.65, 43.3, 45.55, 49.2, 51.45, 54.4];
+      tl.set("#beat", { scale: 1, x: 0 }, 0);
+      BEATS.forEach((t, i) => {
+        tl.fromTo("#beat", { scale: 1.045, x: i % 2 ? 9 : -9 }, { scale: 1, x: 0, duration: 0.7, ease: "power3.out", immediateRender: false }, t);
+      });
+
+      // Series chip: builds in under the opening flash, then re-pulses in quiet stretches.
+      tl.fromTo("#chip .hash", { scale: 0 }, { scale: 1, duration: 0.4, ease: "back.out(2.5)" }, 0.15);
+      tl.fromTo("#chip .lbl", { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: "expo.out" }, 0.25);
+      tl.set("#chip .shine", { x: -80 }, 0);
+      [0.7, 12.8, 28.6, 44.0, 52.6].forEach((t) => {
+        tl.fromTo("#chip .shine", { x: -80 }, { x: 200, duration: 0.6, ease: "power2.inOut", immediateRender: false }, t);
+        tl.fromTo("#chip .hash", { scale: 1.25 }, { scale: 1, duration: 0.45, ease: "back.out(3)", immediateRender: false }, t);
+      });
+
+      // Focus brackets: snap in, breathe, fade.
+      document.querySelectorAll(".brk").forEach((el) => {
+        const s = parseFloat(el.dataset.start), e = s + parseFloat(el.dataset.duration);
+        const bi = el.querySelector(".bi");
+        tl.fromTo(bi, { scale: 1.3, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.35, ease: "back.out(2)" }, s);
+        tl.fromTo(bi, { scale: 1 }, { scale: 1.04, duration: Math.max(0.3, e - s - 0.6), ease: "sine.inOut", immediateRender: false }, s + 0.35);
+        tl.to(bi, { opacity: 0, scale: 0.92, duration: 0.22, ease: "power2.in" }, e - 0.24);
+      });
+
+      // Orbit rings: white ring draws on, red dashed ring rotates around the speaker.
+      document.querySelectorAll(".orb").forEach((el) => {
+        const s = parseFloat(el.dataset.start), d = parseFloat(el.dataset.duration), e = s + d;
+        const cx = el.dataset.cx, cy = el.dataset.cy;
+        const o1 = el.querySelector(".o1"), o2 = el.querySelector(".o2"), g = el.querySelector(".og");
+        const c1 = 2 * Math.PI * parseFloat(o1.getAttribute("r"));
+        tl.fromTo(o1, { strokeDasharray: c1, strokeDashoffset: c1 }, { strokeDashoffset: 0, duration: 0.9, ease: "power2.inOut" }, s);
+        tl.fromTo(o2, { opacity: 0 }, { opacity: 0.9, duration: 0.4 }, s + 0.2);
+        tl.fromTo(g, { rotation: -30, svgOrigin: cx + " " + cy }, { rotation: 30 + d * 22, svgOrigin: cx + " " + cy, duration: d, ease: "none" }, s);
+        tl.to([o1, o2], { opacity: 0, duration: 0.3, ease: "power1.in" }, e - 0.32);
+      });
+
+      // Light sweeps
+      document.querySelectorAll(".sweep").forEach((el) => {
+        const s = parseFloat(el.dataset.start);
+        tl.fromTo(el.querySelector(".band"), { x: -500 }, { x: 1500, duration: 0.85, ease: "power2.inOut" }, s);
+      });
+
+      // Extra arcs in the quiet stretches
+      [[5, 9.6], [6, 14.35], [7, 23.0], [8, 40.2]].forEach(([n, t]) => {
+        const p = document.getElementById("arc-" + n);
+        const len = p.getTotalLength();
+        gsap.set(p, { strokeDasharray: len, strokeDashoffset: len, opacity: 0.7 });
+        tl.fromTo(p, { strokeDashoffset: len, opacity: 0.7 }, { strokeDashoffset: 0, duration: 1.2, ease: "power2.inOut", immediateRender: false }, t);
+        tl.to(p, { opacity: 0, duration: 0.5, ease: "power1.in" }, t + 1.7);
+      });
 
       window.__timelines["main"] = tl;
     </script>
