@@ -5,17 +5,26 @@
     <meta name="viewport" content="width=1296, height=864" />
     <script src="assets/vendor/gsap.min.js"></script>
     <style>
-      @font-face { font-family: "Cairo"; font-weight: 300; src: url("assets/fonts/cairo-arabic-300-normal.woff2") format("woff2"); }
-      @font-face { font-family: "Cairo"; font-weight: 400; src: url("assets/fonts/cairo-arabic-400-normal.woff2") format("woff2"); }
-      @font-face { font-family: "Cairo"; font-weight: 700; src: url("assets/fonts/cairo-arabic-700-normal.woff2") format("woff2"); }
-      @font-face { font-family: "Cairo"; font-weight: 900; src: url("assets/fonts/cairo-arabic-900-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Reem Kufi"; font-weight: 500; src: url("assets/fonts/reem-kufi-arabic-500-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Reem Kufi"; font-weight: 700; src: url("assets/fonts/reem-kufi-arabic-700-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Tajawal"; font-weight: 300; src: url("assets/fonts/tajawal-arabic-300-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Tajawal"; font-weight: 500; src: url("assets/fonts/tajawal-arabic-500-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Tajawal"; font-weight: 800; src: url("assets/fonts/tajawal-arabic-800-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Amiri"; font-weight: 400; src: url("assets/fonts/amiri-arabic-400-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Amiri"; font-weight: 700; src: url("assets/fonts/amiri-arabic-700-normal.woff2") format("woff2"); }
 
-      /* Palette taken from the reference: near-black, signal red, white. */
+      /* Palette from the two supplied photos: moss-black rock, waterfall teal, crowned-pigeon blue, its red eye as the spark. */
       :root {
-        --ink: #ffffff;
-        --red: #e5141b;
-        --plate: rgba(11, 11, 12, 0.985);
-        --font: "Cairo", sans-serif;
+        --ink: #f4f1ea;
+        --teal: #4fb8ae;
+        --teal-lt: #8fdcd2;
+        --blue: #4c7fb8;
+        --red: #e0242c;
+        --plate: rgba(9, 19, 16, 0.985);
+        --grad: linear-gradient(120deg, #2f8f88 0%, #3f6fa6 100%);
+        --font: "Tajawal", sans-serif;
+        --display: "Reem Kufi", sans-serif;
+        --quote: "Amiri", serif;
       }
       * { margin: 0; padding: 0; box-sizing: border-box; }
       html, body { width: 1296px; height: 864px; overflow: hidden; background: #000; }
@@ -28,19 +37,20 @@
       /* Keyword plate */
       .kw { position: absolute; z-index: 5; }
       .kw .bg { position: absolute; inset: 0; background: var(--plate); border-radius: 4px; transform-origin: 100% 50%; }
-      .kw.inv .bg { background: var(--red); }
-      .kw .bar { position: absolute; top: 0; bottom: 0; right: 0; width: 6px; background: var(--red); transform-origin: 50% 0%; }
+      .kw.inv .bg { background: var(--grad); }
+      .kw .bar { position: absolute; top: 0; bottom: 0; right: 0; width: 6px; background: var(--teal); transform-origin: 50% 0%; }
       .kw.inv .bar { background: var(--ink); }
       .kw .t {
         position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 0.28em;
         color: var(--ink); font-size: var(--fs, 40px); line-height: 1; white-space: nowrap; padding: 0 18px 0 12px;
       }
       .kw .w { display: inline-block; font-weight: 300; }
-      .kw .r { display: inline-block; font-weight: 900; color: var(--red); }
+      .kw.inv .bar { background: var(--red); }
+      .kw .r { display: inline-block; font-family: var(--display); font-weight: 700; color: var(--teal); }
       .kw.inv .r { color: var(--ink); }
       .kw .ring {
         position: absolute; left: -26px; top: 50%; width: 52px; height: 52px; margin-top: -26px;
-        border: 3px solid var(--red); border-radius: 50%;
+        border: 3px solid var(--teal); border-radius: 50%;
       }
 
       /* Hadith panel */
@@ -48,20 +58,20 @@
       #hadith .bg {
         position: absolute; inset: 0; border-radius: 0 6px 6px 0; transform-origin: 0% 50%;
         background:
-          repeating-linear-gradient(0deg, rgba(255,255,255,0.045) 0 1px, transparent 1px 34px),
-          repeating-linear-gradient(90deg, rgba(255,255,255,0.045) 0 1px, transparent 1px 34px),
-          rgba(9, 9, 10, 0.99);
+          linear-gradient(90deg, rgba(6, 16, 14, 0.78) 0%, rgba(6, 16, 14, 0.9) 55%, rgba(6, 16, 14, 0.96) 100%),
+          url("assets/images/waterfall.jpg") 30% 62% / 120% auto no-repeat,
+          #08120f;
       }
-      #hadith .bar { position: absolute; top: 0; bottom: 0; right: 0; width: 7px; background: var(--red); transform-origin: 50% 0%; }
-      #hadith .q { position: absolute; left: 44px; top: 4px; font-size: 150px; font-weight: 900; color: var(--red); opacity: 0.18; line-height: 1; }
+      #hadith .bar { position: absolute; top: 0; bottom: 0; right: 0; width: 7px; background: var(--grad); transform-origin: 50% 0%; }
+      #hadith .q { position: absolute; left: 44px; top: 4px; font-family: var(--quote); font-size: 160px; font-weight: 700; color: var(--teal); opacity: 0.18; line-height: 1; }
       #hadith .head { position: absolute; right: 34px; top: 16px; display: flex; align-items: baseline; gap: 14px; color: var(--ink); }
-      #hadith .head .big { font-size: 54px; font-weight: 900; color: var(--red); line-height: 1.1; }
-      #hadith .head .who { font-size: 24px; font-weight: 400; }
+      #hadith .head .big { font-family: var(--display); font-size: 54px; font-weight: 700; color: var(--teal); line-height: 1.1; }
+      #hadith .head .who { font-size: 24px; font-weight: 500; }
       #hadith .rule { position: absolute; right: 34px; top: 92px; width: 560px; height: 2px; background: rgba(255,255,255,0.35); transform-origin: 100% 50%; }
-      #hadith .lines { position: absolute; right: 34px; top: 104px; width: 570px; color: var(--ink); font-size: 27px; line-height: 1.6; font-weight: 400; }
+      #hadith .lines { position: absolute; right: 34px; top: 104px; width: 570px; color: var(--ink); font-family: var(--quote); font-size: 28px; line-height: 1.55; font-weight: 400; }
       #hadith .lines .line { display: block; white-space: nowrap; }
       #hadith .lines span { display: inline-block; }
-      #hadith .lines .hl { color: var(--red); font-weight: 900; }
+      #hadith .lines .hl { color: var(--teal-lt); font-weight: 700; }
 
       /* Decorative line work (reference: thin white arcs drawn across the frame) */
       #arcs { position: absolute; inset: 0; z-index: 7; pointer-events: none; }
@@ -73,8 +83,8 @@
 
       /* Series chip: rebuilds the burned-in hashtag so something is always alive on screen */
       #chip { position: absolute; left: -10px; top: 36px; height: 46px; z-index: 6; display: flex; direction: rtl; }
-      #chip .hash { width: 46px; height: 46px; background: var(--red); color: var(--ink); font-weight: 900; font-size: 30px; display: flex; align-items: center; justify-content: center; }
-      #chip .lbl { position: relative; overflow: hidden; height: 46px; padding: 0 16px 0 62px; background: var(--plate); color: var(--ink); font-weight: 700; font-size: 22px; display: flex; align-items: center; transform-origin: 100% 50%; white-space: nowrap; }
+      #chip .hash { width: 46px; height: 46px; background: var(--grad); color: var(--ink); font-family: var(--display); font-weight: 700; font-size: 30px; display: flex; align-items: center; justify-content: center; }
+      #chip .lbl { position: relative; overflow: hidden; height: 46px; padding: 0 16px 0 62px; background: var(--plate); color: var(--ink); font-family: var(--display); font-weight: 500; font-size: 22px; display: flex; align-items: center; transform-origin: 100% 50%; white-space: nowrap; }
       #chip .shine { position: absolute; top: 0; bottom: 0; left: 0; width: 60px; background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.55), rgba(255,255,255,0)); }
 
       /* Focus brackets around the speaker */
@@ -82,14 +92,14 @@
       .brk .bi { position: absolute; inset: 0; }
       .brk i { position: absolute; width: 38px; height: 38px; border-color: #fff; border-style: solid; border-width: 0; }
       .brk .c1 { top: 0; left: 0; border-top-width: 3px; border-left-width: 3px; }
-      .brk .c2 { top: 0; right: 0; border-top-width: 3px; border-right-width: 3px; border-color: var(--red); }
-      .brk .c3 { bottom: 0; left: 0; border-bottom-width: 3px; border-left-width: 3px; border-color: var(--red); }
+      .brk .c2 { top: 0; right: 0; border-top-width: 3px; border-right-width: 3px; border-color: var(--teal); }
+      .brk .c3 { bottom: 0; left: 0; border-bottom-width: 3px; border-left-width: 3px; border-color: var(--teal); }
       .brk .c4 { bottom: 0; right: 0; border-bottom-width: 3px; border-right-width: 3px; }
 
       /* Orbit rings */
       .orb { position: absolute; inset: 0; z-index: 3; }
       .orb .o1 { fill: none; stroke: rgba(255,255,255,0.7); stroke-width: 1.5; }
-      .orb .o2 { fill: none; stroke: var(--red); stroke-width: 3; stroke-dasharray: 46 22; stroke-linecap: round; }
+      .orb .o2 { fill: none; stroke: var(--teal); stroke-width: 3; stroke-dasharray: 46 22; stroke-linecap: round; }
 
       /* Light sweep */
       .sweep { position: absolute; inset: 0; z-index: 8; overflow: hidden; pointer-events: none; }
@@ -100,11 +110,23 @@
 
       /* End card */
       #endcard { position: absolute; inset: 0; z-index: 8; }
-      #endcard .scrim { position: absolute; inset: 0; background: linear-gradient(270deg, rgba(0,0,0,0) 30%, rgba(0,0,0,0.82) 72%); }
-      #endcard .title { position: absolute; left: 90px; top: 330px; width: 520px; text-align: right; color: var(--ink); line-height: 1; }
-      #endcard .title .a { display: inline-block; font-size: 120px; font-weight: 900; }
-      #endcard .title .b { display: inline-block; font-size: 120px; font-weight: 300; color: var(--red); margin-right: 18px; }
-      #endcard .uline { position: absolute; left: 90px; top: 500px; width: 520px; height: 6px; background: var(--red); transform-origin: 100% 50%; }
+      #endcard .panel { position: absolute; left: 0; top: 0; width: 620px; height: 864px; overflow: hidden; transform-origin: 0% 50%; }
+      #endcard .panel img { position: absolute; left: 0; top: -60px; width: 620px; height: 930px; object-fit: cover; }
+      #endcard .panel .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(6,16,14,0.25) 0%, rgba(6,16,14,0.55) 45%, rgba(6,16,14,0.85) 100%); }
+      #endcard .edge { position: absolute; left: 616px; top: 0; width: 6px; height: 864px; background: var(--grad); transform-origin: 50% 0%; }
+      #endcard .title { position: absolute; left: 60px; top: 520px; width: 500px; text-align: right; color: var(--ink); line-height: 1; font-family: var(--display); }
+      #endcard .title .a { display: inline-block; font-size: 112px; font-weight: 700; }
+      #endcard .title .b { display: inline-block; font-size: 112px; font-weight: 500; color: var(--teal-lt); margin-right: 18px; }
+      #endcard .uline { position: absolute; left: 60px; top: 680px; width: 500px; height: 5px; background: var(--grad); transform-origin: 100% 50%; }
+      #endcard .dot { position: absolute; left: 548px; top: 676px; width: 13px; height: 13px; border-radius: 50%; background: var(--red); }
+
+      /* Photo cards (reference: tilted framed photos that pop into quiet moments) */
+      .pol { position: absolute; z-index: 7; }
+      .pol .card { position: absolute; inset: 0; background: #f4f1ea; padding: 12px 12px 46px; box-shadow: 0 24px 50px rgba(0,0,0,0.45); }
+      .pol .ph { position: relative; width: 100%; height: 100%; overflow: hidden; }
+      .pol .ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+      .pol .tag { position: absolute; left: 12px; right: 12px; bottom: 10px; height: 26px; display: flex; align-items: center; justify-content: flex-start; gap: 8px; font-family: var(--display); font-size: 18px; color: #1d2a26; }
+      .pol .tag i { width: 9px; height: 9px; border-radius: 50%; background: var(--red); }
       #iris { position: absolute; inset: 0; z-index: 10; background: radial-gradient(circle at 50% 45%, rgba(0,0,0,0) 0%, rgba(0,0,0,0) var(--r, 120%), #000 calc(var(--r, 120%) + 18%)); }
     </style>
   </head>
@@ -236,12 +258,27 @@
       <div id="sweep-3" class="sweep clip" data-start="52.6" data-duration="0.9" data-track-index="14"><div class="band"></div></div>
       <div id="sweep-4" class="sweep clip" data-start="19.0" data-duration="0.9" data-track-index="14"><div class="band"></div></div>
 
+      <!-- Photo cards from the supplied images -->
+      <div id="pol-1" class="pol clip" data-start="10.4" data-duration="4.2" data-track-index="15" data-rot="-5" style="left:96px;top:150px;width:300px;height:420px">
+        <div class="card"><div class="ph"><img src="assets/images/waterfall.jpg" alt="" /></div><div class="tag"><i></i>آداب عامة</div></div>
+      </div>
+      <div id="pol-2" class="pol clip" data-start="22.65" data-duration="1.7" data-track-index="15" data-rot="4" style="left:150px;top:120px;width:250px;height:350px">
+        <div class="card"><div class="ph"><img src="assets/images/pigeon.jpg" alt="" /></div><div class="tag"><i></i>آداب عامة</div></div>
+      </div>
+      <div id="pol-3" class="pol clip" data-start="28.15" data-duration="1.7" data-track-index="15" data-rot="-4" style="left:70px;top:90px;width:240px;height:330px">
+        <div class="card"><div class="ph"><img src="assets/images/waterfall.jpg" alt="" /></div><div class="tag"><i></i>آداب عامة</div></div>
+      </div>
+      <div id="pol-4" class="pol clip" data-start="51.15" data-duration="2.15" data-track-index="15" data-rot="-6" style="left:110px;top:170px;width:290px;height:410px">
+        <div class="card"><div class="ph"><img src="assets/images/pigeon.jpg" alt="" /></div><div class="tag"><i></i>آداب عامة</div></div>
+      </div>
+
       <div id="flash" class="clip" data-start="0" data-duration="58.5" data-track-index="7"></div>
 
       <div id="endcard" class="clip" data-start="55.9" data-duration="2.6" data-track-index="8">
-        <div class="scrim"></div>
+        <div class="panel"><img id="end-img" src="assets/images/waterfall.jpg" alt="" /><div class="shade"></div></div>
+        <div class="edge"></div>
         <div class="title"><span class="a">آداب</span><span class="b">عامة</span></div>
-        <div class="uline"></div>
+        <div class="uline"></div><div class="dot"></div>
       </div>
       <div id="iris" class="clip" data-start="57.7" data-duration="0.8" data-track-index="9"></div>
 
@@ -315,6 +352,14 @@
       <audio id="sfx-66" class="clip" src="assets/sfx/click-soft.mp3" data-start="54.4" data-duration="0.37" data-volume="0.42" data-track-index="21"></audio>
       <audio id="sfx-67" class="clip" src="assets/sfx/impact-bass-1.mp3" data-start="56.05" data-duration="2.12" data-volume="0.12" data-track-index="20"></audio>
       <audio id="sfx-68" class="clip" src="assets/sfx/whoosh-short.mp3" data-start="57.72" data-duration="0.57" data-volume="0.16" data-track-index="21"></audio>
+      <audio id="sfx-p0" class="clip" src="assets/sfx/whoosh-short.mp3" data-start="10.4" data-duration="0.57" data-volume="0.18" data-track-index="24"></audio>
+      <audio id="sfx-q0" class="clip" src="assets/sfx/click.mp3" data-start="10.85" data-duration="0.37" data-volume="0.3" data-track-index="25"></audio>
+      <audio id="sfx-p1" class="clip" src="assets/sfx/whoosh-short.mp3" data-start="22.65" data-duration="0.57" data-volume="0.18" data-track-index="24"></audio>
+      <audio id="sfx-q1" class="clip" src="assets/sfx/click.mp3" data-start="23.1" data-duration="0.37" data-volume="0.3" data-track-index="25"></audio>
+      <audio id="sfx-p2" class="clip" src="assets/sfx/whoosh-short.mp3" data-start="28.15" data-duration="0.57" data-volume="0.18" data-track-index="24"></audio>
+      <audio id="sfx-q2" class="clip" src="assets/sfx/click.mp3" data-start="28.6" data-duration="0.37" data-volume="0.3" data-track-index="25"></audio>
+      <audio id="sfx-p3" class="clip" src="assets/sfx/whoosh-short.mp3" data-start="51.15" data-duration="0.57" data-volume="0.18" data-track-index="24"></audio>
+      <audio id="sfx-q3" class="clip" src="assets/sfx/click.mp3" data-start="51.6" data-duration="0.37" data-volume="0.3" data-track-index="25"></audio>
     </div>
 
     <script>
@@ -401,7 +446,10 @@
       }
 
       // End card + iris close
-      tl.fromTo("#endcard .scrim", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.out" }, 55.9);
+      tl.fromTo("#endcard .panel", { scaleX: 0 }, { scaleX: 1, duration: 0.55, ease: "expo.out" }, 55.9);
+      tl.fromTo("#end-img", { scale: 1.18 }, { scale: 1.02, duration: 2.6, ease: "power1.out" }, 55.9);
+      tl.fromTo("#endcard .edge", { scaleY: 0 }, { scaleY: 1, duration: 0.5, ease: "expo.out" }, 56.0);
+      tl.fromTo("#endcard .dot", { scale: 0 }, { scale: 1, duration: 0.4, ease: "back.out(3)" }, 56.85);
       tl.fromTo("#endcard .a", { opacity: 0, y: 40, filter: "blur(12px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 56.05);
       tl.fromTo("#endcard .b", { opacity: 0, y: 40, filter: "blur(12px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 56.22);
       tl.fromTo("#endcard .b", { scale: 1.4 }, { scale: 1, duration: 0.6, ease: "back.out(2)" }, 56.22);
@@ -458,6 +506,17 @@
         gsap.set(p, { strokeDasharray: len, strokeDashoffset: len, opacity: 0.7 });
         tl.fromTo(p, { strokeDashoffset: len, opacity: 0.7 }, { strokeDashoffset: 0, duration: 1.2, ease: "power2.inOut", immediateRender: false }, t);
         tl.to(p, { opacity: 0, duration: 0.5, ease: "power1.in" }, t + 1.7);
+      });
+
+      // Photo cards: tilt in with overshoot, drift slowly (Ken Burns inside), lift out.
+      document.querySelectorAll(".pol").forEach((el) => {
+        const s = parseFloat(el.dataset.start), d = parseFloat(el.dataset.duration), e = s + d;
+        const rot = parseFloat(el.dataset.rot);
+        const card = el.querySelector(".card"), img = el.querySelector("img");
+        tl.fromTo(card, { opacity: 0, y: 70, rotation: rot * 3, scale: 0.8 }, { opacity: 1, y: 0, rotation: rot, scale: 1, duration: 0.6, ease: "back.out(1.6)" }, s);
+        tl.fromTo(card, { rotation: rot }, { rotation: rot * 0.5, duration: d - 0.95, ease: "sine.inOut", immediateRender: false }, s + 0.6);
+        tl.fromTo(img, { scale: 1.18 }, { scale: 1.0, duration: d, ease: "none" }, s);
+        tl.to(card, { opacity: 0, y: -40, rotation: -rot, scale: 0.92, duration: 0.3, ease: "power2.in" }, e - 0.32);
       });
 
       window.__timelines["main"] = tl;
