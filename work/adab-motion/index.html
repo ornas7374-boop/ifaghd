@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="ar">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1296, height=864" />
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Cairo"; font-weight: 300; src: url("assets/fonts/cairo-arabic-300-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Cairo"; font-weight: 400; src: url("assets/fonts/cairo-arabic-400-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Cairo"; font-weight: 700; src: url("assets/fonts/cairo-arabic-700-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Cairo"; font-weight: 900; src: url("assets/fonts/cairo-arabic-900-normal.woff2") format("woff2"); }
+
+      /* Palette taken from the reference: near-black, signal red, white. */
+      :root {
+        --ink: #ffffff;
+        --red: #e5141b;
+        --plate: rgba(11, 11, 12, 0.985);
+        --font: "Cairo", sans-serif;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1296px; height: 864px; overflow: hidden; background: #000; }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden; font-family: var(--font); direction: rtl; }
+
+      /* Camera: footage + every cover plate move together, so plates stay locked over the burned-in captions. */
+      #cam { position: absolute; inset: 0; transform-origin: 52% 38%; }
+      #footage { position: absolute; left: 0; top: 0; width: 1296px; height: 864px; object-fit: cover; }
+
+      /* Keyword plate */
+      .kw { position: absolute; z-index: 5; }
+      .kw .bg { position: absolute; inset: 0; background: var(--plate); border-radius: 4px; transform-origin: 100% 50%; }
+      .kw.inv .bg { background: var(--red); }
+      .kw .bar { position: absolute; top: 0; bottom: 0; right: 0; width: 6px; background: var(--red); transform-origin: 50% 0%; }
+      .kw.inv .bar { background: var(--ink); }
+      .kw .t {
+        position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 0.28em;
+        color: var(--ink); font-size: var(--fs, 40px); line-height: 1; white-space: nowrap; padding: 0 18px 0 12px;
+      }
+      .kw .w { display: inline-block; font-weight: 300; }
+      .kw .r { display: inline-block; font-weight: 900; color: var(--red); }
+      .kw.inv .r { color: var(--ink); }
+      .kw .ring {
+        position: absolute; left: -26px; top: 50%; width: 52px; height: 52px; margin-top: -26px;
+        border: 3px solid var(--red); border-radius: 50%;
+      }
+
+      /* Hadith panel */
+      #hadith { position: absolute; left: -12px; top: 556px; width: 640px; height: 286px; z-index: 6; }
+      #hadith .bg {
+        position: absolute; inset: 0; border-radius: 0 6px 6px 0; transform-origin: 0% 50%;
+        background:
+          repeating-linear-gradient(0deg, rgba(255,255,255,0.045) 0 1px, transparent 1px 34px),
+          repeating-linear-gradient(90deg, rgba(255,255,255,0.045) 0 1px, transparent 1px 34px),
+          rgba(9, 9, 10, 0.99);
+      }
+      #hadith .bar { position: absolute; top: 0; bottom: 0; right: 0; width: 7px; background: var(--red); transform-origin: 50% 0%; }
+      #hadith .q { position: absolute; left: 44px; top: 4px; font-size: 150px; font-weight: 900; color: var(--red); opacity: 0.18; line-height: 1; }
+      #hadith .head { position: absolute; right: 34px; top: 16px; display: flex; align-items: baseline; gap: 14px; color: var(--ink); }
+      #hadith .head .big { font-size: 54px; font-weight: 900; color: var(--red); line-height: 1.1; }
+      #hadith .head .who { font-size: 24px; font-weight: 400; }
+      #hadith .rule { position: absolute; right: 34px; top: 92px; width: 560px; height: 2px; background: rgba(255,255,255,0.35); transform-origin: 100% 50%; }
+      #hadith .lines { position: absolute; right: 34px; top: 104px; width: 570px; color: var(--ink); font-size: 27px; line-height: 1.6; font-weight: 400; }
+      #hadith .lines .line { display: block; white-space: nowrap; }
+      #hadith .lines span { display: inline-block; }
+      #hadith .lines .hl { color: var(--red); font-weight: 900; }
+
+      /* Decorative line work (reference: thin white arcs drawn across the frame) */
+      #arcs { position: absolute; inset: 0; z-index: 7; pointer-events: none; }
+      #arcs path { fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; }
+      #cam svg { position: absolute; inset: 0; z-index: 4; }
+
+      /* Cut flash */
+      #flash { position: absolute; inset: 0; z-index: 9; background: #fff; }
+
+      /* End card */
+      #endcard { position: absolute; inset: 0; z-index: 8; }
+      #endcard .scrim { position: absolute; inset: 0; background: linear-gradient(270deg, rgba(0,0,0,0) 30%, rgba(0,0,0,0.82) 72%); }
+      #endcard .title { position: absolute; left: 90px; top: 330px; width: 520px; text-align: right; color: var(--ink); line-height: 1; }
+      #endcard .title .a { display: inline-block; font-size: 120px; font-weight: 900; }
+      #endcard .title .b { display: inline-block; font-size: 120px; font-weight: 300; color: var(--red); margin-right: 18px; }
+      #endcard .uline { position: absolute; left: 90px; top: 500px; width: 520px; height: 6px; background: var(--red); transform-origin: 100% 50%; }
+      #iris { position: absolute; inset: 0; z-index: 10; background: radial-gradient(circle at 50% 45%, rgba(0,0,0,0) 0%, rgba(0,0,0,0) var(--r, 120%), #000 calc(var(--r, 120%) + 18%)); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="58.5" data-width="1296" data-height="864">
+      <div id="cam">
+        <video id="footage" class="clip" src="assets/video/source.mp4" data-start="0" data-duration="58.5" data-track-index="0" playsinline data-has-audio="true" data-volume="1"></video>
+
+        <!-- Keyword plates: each sits over the original caption's box (source px × 1.5) and holds its timing. -->
+        <div id="kw-nathar" class="kw clip" data-start="0.35" data-duration="3.0" data-track-index="2" style="left:236px;top:244px;width:290px;height:86px;--fs:42px">
+          <div class="bg"></div><div class="bar"></div><div class="ring"></div>
+          <div class="t"><span class="w">تحقق</span><span class="r">النظر</span></div>
+        </div>
+        <div id="kw-anf" class="kw clip" data-start="4.25" data-duration="3.1" data-track-index="3" style="left:96px;top:504px;width:290px;height:96px;--fs:44px">
+          <div class="bg"></div><div class="bar"></div>
+          <div class="t"><span class="w">ينظف</span><span class="r">أنفه</span></div>
+        </div>
+        <div id="kw-tathaub" class="kw inv clip" data-start="6.3" data-duration="2.05" data-track-index="2" style="left:1056px;top:328px;width:222px;height:90px;--fs:44px">
+          <div class="bg"></div><div class="bar"></div>
+          <div class="t"><span class="r">يتثاءب</span></div>
+        </div>
+        <div id="kw-ghiba" class="kw clip" data-start="16.13" data-duration="2.7" data-track-index="3" style="left:1034px;top:328px;width:262px;height:90px;--fs:42px">
+          <div class="bg"></div><div class="bar"></div><div class="ring"></div>
+          <div class="t"><span class="w">تغتب</span><span class="r">أحداً</span></div>
+        </div>
+        <div id="kw-indak" class="kw clip" data-start="19.9" data-duration="2.65" data-track-index="2" style="left:262px;top:408px;width:252px;height:104px;--fs:42px">
+          <div class="bg"></div><div class="bar"></div>
+          <div class="t"><span class="w">يغتاب</span><span class="r">عندك</span></div>
+        </div>
+        <div id="kw-wafi" class="kw clip" data-start="24.4" data-duration="3.6" data-track-index="3" style="left:968px;top:450px;width:308px;height:88px;--fs:36px">
+          <div class="bg"></div><div class="bar"></div><div class="ring"></div>
+          <div class="t"><span class="r">وفياً</span><span class="w">مع الغائبين</span></div>
+        </div>
+        <div id="kw-ijtima" class="kw clip" data-start="29.9" data-duration="3.1" data-track-index="2" style="left:250px;top:406px;width:236px;height:88px;--fs:42px">
+          <div class="bg"></div><div class="bar"></div>
+          <div class="t"><span class="r">الاجتماع</span></div>
+        </div>
+        <div id="kw-qahwa" class="kw clip" data-start="31.9" data-duration="1.83" data-track-index="3" style="left:1020px;top:524px;width:176px;height:98px;--fs:40px">
+          <div class="bg"></div><div class="bar"></div>
+          <div class="t"><span class="r">القهوة</span></div>
+        </div>
+        <div id="kw-wajba" class="kw inv clip" data-start="32.35" data-duration="2.8" data-track-index="4" style="left:940px;top:156px;width:182px;height:106px;--fs:42px">
+          <div class="bg"></div><div class="bar"></div>
+          <div class="t"><span class="r">الوجبة</span></div>
+        </div>
+        <div id="kw-ana" class="kw inv clip" data-start="36.4" data-duration="2.35" data-track-index="2" style="left:346px;top:252px;width:140px;height:100px;--fs:50px">
+          <div class="bg"></div><div class="bar"></div>
+          <div class="t"><span class="r">أنا</span></div>
+        </div>
+        <div id="kw-arraf" class="kw clip" data-start="36.9" data-duration="3.15" data-track-index="3" style="left:26px;top:518px;width:282px;height:86px;--fs:42px">
+          <div class="bg"></div><div class="bar"></div>
+          <div class="t"><span class="w">عرّف</span><span class="r">بنفسك</span></div>
+        </div>
+        <!-- Dashed connector from "عرّف بنفسك" up to "أنا" (reference: dashed callout arrows) -->
+        <svg id="link-ana" class="clip" data-start="37.2" data-duration="2.6" data-track-index="5" viewBox="0 0 1296 864" data-layout-ignore>
+          <defs>
+            <mask id="link-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="1296" height="864">
+              <path id="link-draw" d="M 300 540 C 380 520, 330 420, 400 356" fill="none" stroke="#fff" stroke-width="10" />
+            </mask>
+          </defs>
+          <path d="M 300 540 C 380 520, 330 420, 400 356" fill="none" stroke="#fff" stroke-width="2.5" stroke-dasharray="7 7" mask="url(#link-mask)" />
+          <circle id="link-dot" cx="400" cy="356" r="6" fill="#e5141b" />
+        </svg>
+
+        <!-- Hadith card: covers and rebuilds the original quote card, revealed phrase by phrase as it is recited -->
+        <div id="hadith" class="clip" data-start="41.25" data-duration="9.75" data-track-index="4">
+          <div class="bg"></div><div class="bar"></div>
+          <div class="q">«</div>
+          <div class="head"><span class="big">يقول</span><span class="who">جابر بن عبدالله</span></div>
+          <div class="rule"></div>
+          <div class="lines">
+            <span class="line" data-at="41.6" data-to="42.9"><span>أتيتُ</span> <span>رسولَ</span> <span>الله</span> <span>صلى</span> <span>الله</span> <span>عليه</span> <span>وسلم</span></span>
+            <span class="line" data-at="43.0" data-to="44.6"><span>فدققتُ</span> <span>الباب،</span> <span>فقال:</span> <span class="hl">«مَن</span> <span class="hl">ذا؟»</span></span>
+            <span class="line" data-at="44.8" data-to="46.2"><span>فقلتُ:</span> <span class="hl">أنا،</span> <span>فقال:</span> <span class="hl">«أنا</span> <span class="hl">أنا!»</span></span>
+            <span class="line" data-at="46.3" data-to="47.6"><span>ــ</span> <span>مرتين</span> <span>ــ</span> <span>كأنه</span> <span class="hl">كرهها</span></span>
+          </div>
+        </div>
+
+        <div id="kw-bab" class="kw inv clip" data-start="53.4" data-duration="3.05" data-track-index="2" style="left:100px;top:232px;width:326px;height:88px;--fs:40px">
+          <div class="bg"></div><div class="bar"></div><div class="ring"></div>
+          <div class="t"><span class="w">لا يستقبل</span><span class="r">الباب</span></div>
+        </div>
+      </div>
+
+      <!-- Thin arcs drawn at each shot change -->
+      <svg id="arcs" class="clip" data-start="0" data-duration="58.5" data-track-index="6" viewBox="0 0 1296 864" data-layout-ignore>
+        <path id="arc-0" d="M -20 640 C 160 560, 240 260, 90 -20" />
+        <path id="arc-1" d="M 1320 120 C 1120 220, 1180 620, 1320 760" />
+        <path id="arc-2" d="M -20 300 C 220 360, 300 720, 140 890" />
+        <path id="arc-3" d="M 1320 600 C 1100 520, 1060 160, 1240 -20" />
+        <path id="arc-4" d="M -20 760 C 300 640, 260 200, 520 -20" />
+      </svg>
+
+      <div id="flash" class="clip" data-start="0" data-duration="58.5" data-track-index="7"></div>
+
+      <div id="endcard" class="clip" data-start="55.9" data-duration="2.6" data-track-index="8">
+        <div class="scrim"></div>
+        <div class="title"><span class="a">آداب</span><span class="b">عامة</span></div>
+        <div class="uline"></div>
+      </div>
+      <div id="iris" class="clip" data-start="57.7" data-duration="0.8" data-track-index="9"></div>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const D = 58.5;
+      const CUTS = [16.133, 33.733, 37.733, 47.533]; // hard cuts in the source footage
+      const SHOTS = [0, ...CUTS, D];
+
+      // Camera: snap-zoom into every shot, then a slow push (or pull) for the rest of it.
+      const push = [[1.0, 1.05], [1.06, 1.0], [1.0, 1.05], [1.0, 1.055], [1.05, 1.0]];
+      for (let i = 0; i < SHOTS.length - 1; i++) {
+        const a = SHOTS[i], b = SHOTS[i + 1];
+        const [s0, s1] = push[i];
+        const mid = s0 + (s1 - s0) * (0.55 / (b - a));
+        tl.fromTo("#cam", { scale: s0 + 0.09 }, { scale: mid, duration: 0.55, ease: "expo.out", immediateRender: i === 0 }, a);
+        tl.fromTo("#cam", { scale: mid }, { scale: s1, duration: b - a - 0.55, ease: "none", immediateRender: false }, a + 0.55);
+      }
+
+      // White flash on every cut (and the opening frame).
+      tl.set("#flash", { opacity: 0 }, 0);
+      tl.fromTo("#flash", { opacity: 0.9 }, { opacity: 0, duration: 0.45, ease: "power2.out", immediateRender: false }, 0);
+      CUTS.forEach((c) => {
+        tl.fromTo("#flash", { opacity: 0 }, { opacity: 0.85, duration: 0.05, ease: "none", immediateRender: false }, c - 0.05);
+        tl.fromTo("#flash", { opacity: 0.85 }, { opacity: 0, duration: 0.4, ease: "power2.out", immediateRender: false }, c);
+      });
+
+      // Arcs: draw in on each shot start, then fade.
+      [0, ...CUTS].forEach((c, i) => {
+        const p = document.getElementById("arc-" + i);
+        const len = p.getTotalLength();
+        gsap.set(p, { strokeDasharray: len, strokeDashoffset: len, opacity: 0.75 });
+        tl.fromTo(p, { strokeDashoffset: len, opacity: 0.75 }, { strokeDashoffset: 0, duration: 1.1, ease: "power2.inOut", immediateRender: false }, c + 0.05);
+        tl.to(p, { opacity: 0, duration: 0.5, ease: "power1.in" }, c + 1.6);
+      });
+
+      // Keyword plates: wipe in from the right (RTL), words rise out of blur, accent word pops; reverse out.
+      document.querySelectorAll(".kw").forEach((el) => {
+        const s = parseFloat(el.dataset.start), e = s + parseFloat(el.dataset.duration);
+        const bg = el.querySelector(".bg"), bar = el.querySelector(".bar"), ring = el.querySelector(".ring");
+        const words = el.querySelectorAll(".t > span");
+        tl.fromTo(bg, { scaleX: 0, transformOrigin: "100% 50%" }, { scaleX: 1, duration: 0.3, ease: "expo.out" }, s);
+        tl.fromTo(bar, { scaleY: 0 }, { scaleY: 1, duration: 0.3, ease: "expo.out" }, s + 0.06);
+        tl.fromTo(words, { opacity: 0, y: 22, filter: "blur(10px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.42, ease: "power3.out", stagger: 0.11 }, s + 0.1);
+        el.querySelectorAll(".r").forEach((r) => {
+          const idx = Array.prototype.indexOf.call(words, r);
+          tl.fromTo(r, { scale: 1.45 }, { scale: 1, duration: 0.5, ease: "back.out(2.2)" }, s + 0.1 + idx * 0.11);
+        });
+        if (ring) tl.fromTo(ring, { scale: 0.2, opacity: 1 }, { scale: 1.7, opacity: 0, duration: 0.7, ease: "power2.out" }, s + 0.25);
+        // Exit collapses vertically so both ends keep covering the source caption until the last frames.
+        tl.to(words, { opacity: 0, y: -14, filter: "blur(8px)", duration: 0.18, ease: "power2.in", stagger: 0.03 }, e - 0.34);
+        tl.to(bar, { scaleY: 0, duration: 0.16, ease: "power2.in" }, e - 0.22);
+        tl.fromTo(bg, { scaleY: 1, transformOrigin: "50% 50%" }, { scaleY: 0, duration: 0.18, ease: "power3.in", immediateRender: false }, e - 0.2);
+      });
+
+      // Dashed connector
+      const ld = document.getElementById("link-draw");
+      const lLen = ld.getTotalLength();
+      tl.fromTo(ld, { strokeDasharray: lLen, strokeDashoffset: lLen }, { strokeDashoffset: 0, duration: 0.7, ease: "power2.out" }, 37.25);
+      tl.fromTo("#link-dot", { scale: 0, transformOrigin: "50% 50%" }, { scale: 1, duration: 0.35, ease: "back.out(3)" }, 37.85);
+      tl.to(["#link-ana path", "#link-dot"], { opacity: 0, duration: 0.25 }, 39.5);
+
+      // Hadith card
+      {
+        const s = 41.25, e = 51.0;
+        tl.fromTo("#hadith .bg", { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: "expo.out" }, s);
+        tl.fromTo("#hadith .bar", { scaleY: 0 }, { scaleY: 1, duration: 0.4, ease: "expo.out" }, s + 0.15);
+        tl.fromTo("#hadith .q", { opacity: 0, x: -30 }, { opacity: 0.18, x: 0, duration: 0.6, ease: "power3.out" }, s + 0.15);
+        tl.fromTo("#hadith .head .big", { opacity: 0, y: 26, filter: "blur(10px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.45, ease: "power3.out" }, s + 0.1);
+        tl.fromTo("#hadith .head .big", { scale: 1.4 }, { scale: 1, duration: 0.55, ease: "back.out(2)" }, s + 0.1);
+        tl.fromTo("#hadith .head .who", { opacity: 0, x: -16 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, s + 0.3);
+        tl.fromTo("#hadith .rule", { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power2.inOut" }, s + 0.3);
+        document.querySelectorAll("#hadith .line").forEach((ln) => {
+          const a = parseFloat(ln.dataset.at), b = parseFloat(ln.dataset.to);
+          const ws = ln.querySelectorAll("span");
+          const step = (b - a) / ws.length;
+          ws.forEach((w, i) => {
+            tl.fromTo(w, { opacity: 0, y: 14, filter: "blur(6px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.32, ease: "power3.out" }, a + i * step);
+            if (w.classList.contains("hl")) tl.fromTo(w, { scale: 1.35 }, { scale: 1, duration: 0.45, ease: "back.out(2.4)" }, a + i * step);
+          });
+        });
+        tl.to(["#hadith .lines", "#hadith .head", "#hadith .q", "#hadith .rule"], { opacity: 0, y: -10, filter: "blur(6px)", duration: 0.25, ease: "power2.in" }, e - 0.4);
+        tl.to("#hadith .bar", { scaleY: 0, duration: 0.2, ease: "power2.in" }, e - 0.35);
+        tl.fromTo("#hadith .bg", { scaleY: 1, transformOrigin: "50% 50%" }, { scaleY: 0, duration: 0.22, ease: "power3.in", immediateRender: false }, e - 0.24);
+      }
+
+      // End card + iris close
+      tl.fromTo("#endcard .scrim", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.out" }, 55.9);
+      tl.fromTo("#endcard .a", { opacity: 0, y: 40, filter: "blur(12px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 56.05);
+      tl.fromTo("#endcard .b", { opacity: 0, y: 40, filter: "blur(12px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 56.22);
+      tl.fromTo("#endcard .b", { scale: 1.4 }, { scale: 1, duration: 0.6, ease: "back.out(2)" }, 56.22);
+      tl.fromTo("#endcard .uline", { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power3.inOut" }, 56.4);
+      tl.fromTo("#iris", { "--r": "120%" }, { "--r": "0%", duration: 0.75, ease: "power2.in" }, 57.72);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>
