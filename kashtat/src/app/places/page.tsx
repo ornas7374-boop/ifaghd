@@ -17,6 +17,7 @@ import {
 import { bookingQuery, parseSearchParams, type RawParams } from "@/lib/search-params";
 import { pageMeta } from "@/lib/seo";
 import { placesCount } from "@/lib/plural";
+import { TYPE_LIST } from "@/lib/type-content";
 
 export async function generateMetadata(props: PageProps<"/places">): Promise<Metadata> {
   const raw = (await props.searchParams) as RawParams;
@@ -29,11 +30,15 @@ export async function generateMetadata(props: PageProps<"/places">): Promise<Met
   });
   // نتائج الفلاتر نسخ مكررة من نفس الصفحة: لا تُفهرس لكن روابطها تُتبع
   if (keys.length === 0) return base;
-  const city = typeof raw.city === "string" && keys.length === 1 ? raw.city : null;
+  // فلتر واحد له صفحة مخصصة (مدينة أو نوع): نشير إليها كنسخة أساسية
+  const only = keys.length === 1 && typeof raw[keys[0]] === "string" ? String(raw[keys[0]]) : null;
+  const typePage = keys[0] === "kind" && only ? TYPE_LIST.find((t) => t.kind === only) : undefined;
+  const canonical =
+    keys[0] === "city" && only ? `/cities/${only}` : typePage ? typePage.path : "/places";
   return {
     ...base,
     robots: { index: false, follow: true },
-    alternates: { canonical: city ? `/cities/${city}` : "/places" },
+    alternates: { canonical },
   };
 }
 

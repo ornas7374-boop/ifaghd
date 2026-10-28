@@ -1,18 +1,23 @@
 import Link from "next/link";
-import { FOOTER_CITIES } from "@/lib/city-content";
+import { cityLinkLabel, FOOTER_CITIES } from "@/lib/city-content";
+import { TYPE_LIST } from "@/lib/type-content";
 
 const COLUMNS = [
   {
     title: "المنصة",
     links: [
       { href: "/places", label: "كل الأماكن" },
+      ...TYPE_LIST.map((t) => ({ href: t.path, label: t.label })),
       { href: "/#how", label: "كيف يعمل" },
       { href: "/#hourly", label: "الحجز بالساعة" },
     ],
   },
   {
-    title: "كشتات حسب المدينة",
-    links: FOOTER_CITIES.map((c) => ({ href: `/cities/${c.slug}`, label: `كشتات ${c.name}` })),
+    title: "حسب المدينة",
+    links: FOOTER_CITIES.map((c) => ({
+      href: `/cities/${c.slug}`,
+      label: cityLinkLabel(c.slug, c.name),
+    })),
   },
   {
     title: "أصحاب الأماكن",

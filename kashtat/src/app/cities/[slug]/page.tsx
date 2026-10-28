@@ -7,7 +7,7 @@ import { breadcrumbLd, JsonLd } from "@/components/seo/json-ld";
 import { SiteFooter } from "@/components/site/site-footer";
 import { SiteHeader } from "@/components/site/site-header";
 import { ButtonLink } from "@/components/ui/button";
-import { cityIntro } from "@/lib/city-content";
+import { cityHeading, cityIntro, cityLinkLabel } from "@/lib/city-content";
 import { getCities, getCityBySlug, PLACE_KIND_LABEL, searchPlaces } from "@/lib/db/places";
 import { formatSar } from "@/lib/money";
 import { placesCount } from "@/lib/plural";
@@ -34,7 +34,7 @@ export async function generateMetadata(props: PageProps<"/cities/[slug]">): Prom
   if (!data) return { title: "المدينة غير موجودة", robots: { index: false } };
   const { city, places } = data;
   const meta = pageMeta({
-    title: `كشتات ومخيمات ${city.name}: احجز أونلاين`,
+    title: `${cityHeading(city.slug, city.name)}: إيجار باليوم والليلة`,
     description: clip(
       `${places.length ? `${placesCount(places.length)} للكشتات والمخيمات في ${city.name}. ` : ""}${cityIntro(city.slug, city.name)}`,
     ),
@@ -78,12 +78,12 @@ export default async function CityPage(props: PageProps<"/cities/[slug]">) {
         data={[
           breadcrumbLd([
             { name: "الرئيسية", url: absoluteUrl("/") },
-            { name: `كشتات ${city.name}`, url },
+            { name: cityLinkLabel(city.slug, city.name), url },
           ]),
           {
             "@context": "https://schema.org",
             "@type": "ItemList",
-            name: `كشتات ومخيمات ${city.name}`,
+            name: cityHeading(city.slug, city.name),
             numberOfItems: places.length,
             itemListElement: places.map((p, i) => ({
               "@type": "ListItem",
@@ -121,7 +121,7 @@ export default async function CityPage(props: PageProps<"/cities/[slug]">) {
 
         <header className="mb-10 flex max-w-[760px] flex-col gap-4">
           <h1 className="text-[clamp(28px,5vw,40px)] leading-[1.4] font-bold">
-            كشتات ومخيمات {city.name}
+            {cityHeading(city.slug, city.name)}
           </h1>
           <p className="text-body-lg text-ink-muted">{cityIntro(city.slug, city.name)}</p>
           {places.length > 0 && (

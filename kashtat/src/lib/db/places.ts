@@ -25,6 +25,7 @@ export type PlaceCard = {
   title: string;
   kind: PlaceKind;
   city: string;
+  citySlug: string;
   capacityMax: number;
   rating: number;
   ratingCount: number;
@@ -72,6 +73,7 @@ function toCard(r: PlaceRow, prefer?: RateUnit): PlaceCard {
     title: r.title_ar,
     kind: r.place_kind,
     city: r.cities?.name_ar ?? "",
+    citySlug: r.cities?.slug ?? "",
     capacityMax: r.capacity_max,
     rating: Number(r.rating_avg),
     ratingCount: r.rating_count,

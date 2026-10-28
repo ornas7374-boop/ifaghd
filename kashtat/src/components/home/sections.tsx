@@ -54,7 +54,7 @@ function Pill({ tone, children }: { tone: "brand" | "sand"; children: ReactNode 
 const CATEGORIES = [
   {
     title: "كشتات برية",
-    href: "/places?kind=kashta",
+    href: "/kashtat",
     desc: "جلسات وموقد في البر المفتوح",
     tone: "bg-brand-subtle text-brand",
     icon: (
@@ -67,7 +67,7 @@ const CATEGORIES = [
   },
   {
     title: "مخيمات",
-    href: "/places?kind=camp",
+    href: "/camps",
     desc: "خيام مجهزة لليلة أو أكثر",
     tone: "bg-sand-subtle text-sand",
     icon: (
@@ -95,7 +95,7 @@ const CATEGORIES = [
   },
   {
     title: "مواقع برية",
-    href: "/places?kind=wild",
+    href: "/wild",
     desc: "إطلالات وبر مفتوح بأقل تجهيز",
     tone: "bg-brand-subtle text-brand",
     icon: (
