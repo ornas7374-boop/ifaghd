@@ -13,7 +13,14 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { SiteFooter } from "@/components/site/site-footer";
 import { SiteHeader } from "@/components/site/site-header";
 import { getFeaturedPlaces, type PlaceCard } from "@/lib/db/places";
-import { DEFAULT_OG_IMAGE, SITE_DESCRIPTION, SITE_NAME, SITE_URL, absoluteUrl } from "@/lib/site";
+import {
+  absoluteUrl,
+  CONTACT_EMAIL,
+  DEFAULT_OG_IMAGE,
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SITE_URL,
+} from "@/lib/site";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -43,6 +50,14 @@ const siteLd = [
     logo: absoluteUrl("/favicon.ico"),
     image: absoluteUrl(DEFAULT_OG_IMAGE),
     areaServed: { "@type": "Country", name: "SA" },
+    email: CONTACT_EMAIL,
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "customer support",
+      email: CONTACT_EMAIL,
+      availableLanguage: ["ar"],
+      url: absoluteUrl("/contact"),
+    },
   },
 ];
 

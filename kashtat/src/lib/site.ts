@@ -16,3 +16,6 @@ export function absoluteUrl(path: string): string {
   if (/^https?:\/\//.test(path)) return path;
   return `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
 }
+
+// بريد التواصل العام: يظهر في صفحة التواصل والبيانات المنظمة
+export const CONTACT_EMAIL = "ornas7374@gmail.com";

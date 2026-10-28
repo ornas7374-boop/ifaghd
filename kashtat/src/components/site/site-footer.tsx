@@ -28,6 +28,14 @@ const COLUMNS = [
       { href: "/owner", label: "لوحة التحكم" },
     ],
   },
+  {
+    title: "عن المنصة",
+    links: [
+      { href: "/about", label: "من نحن" },
+      { href: "/contact", label: "تواصل معنا" },
+      { href: "/privacy", label: "سياسة الخصوصية" },
+    ],
+  },
 ];
 
 export function SiteFooter() {
