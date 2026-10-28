@@ -32,7 +32,7 @@ export async function generateMetadata(props: PageProps<"/places/[slug]">): Prom
   if (!place) return { title: "المكان غير موجود", robots: { index: false } };
   const cover = place.images[0];
   return pageMeta({
-    title: `${place.title}: ${PLACE_KIND_LABEL[place.kind]} في ${place.city.name}`,
+    title: `${place.title}: ${PLACE_KIND_LABEL[place.kind]} للإيجار في ${place.city.name}`,
     description: clip(place.description),
     path: `/places/${place.slug}`,
     image: cover ? { url: cover.src, alt: cover.alt } : undefined,
