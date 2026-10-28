@@ -32,6 +32,8 @@ export type PlaceCard = {
   amenities: string[];
   /** أقل وحدة سعر متاحة للعرض في البطاقة */
   price: { amount: number; unit: RateUnit } | null;
+  /** كل الأسعار بالهللة (null = الوحدة غير متاحة) */
+  rates: Record<RateUnit, number | null>;
   cover: PlaceImage | null;
 };
 
@@ -79,6 +81,7 @@ function toCard(r: PlaceRow, prefer?: RateUnit): PlaceCard {
     ratingCount: r.rating_count,
     amenities: r.place_amenities.flatMap((pa) => (pa.amenities ? [pa.amenities.name_ar] : [])),
     price: startingPrice(r, prefer),
+    rates: { hour: r.price_per_hour, day: r.price_per_day, night: r.price_per_night },
     cover: toImages(r.listing_images, r.title_ar)[0] ?? null,
   };
 }

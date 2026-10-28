@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getSitemapPlaces } from "@/lib/db/places";
 import { absoluteUrl } from "@/lib/site";
+import { GUIDES } from "@/lib/guides";
 import { TYPE_LIST } from "@/lib/type-content";
 
 // تُعاد بناؤها كل ساعة لتشمل الأماكن المعتمدة حديثًا
@@ -14,6 +15,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: absoluteUrl(t.path),
       changeFrequency: "daily" as const,
       priority: 0.9,
+    })),
+    { url: absoluteUrl("/guides"), changeFrequency: "weekly", priority: 0.6 },
+    ...GUIDES.map((g) => ({
+      url: absoluteUrl(`/guides/${g.slug}`),
+      lastModified: new Date(g.updated),
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
     })),
   ];
 

@@ -8,6 +8,7 @@ const COLUMNS = [
     links: [
       { href: "/places", label: "كل الأماكن" },
       ...TYPE_LIST.map((t) => ({ href: t.path, label: t.label })),
+      { href: "/guides", label: "أدلة الكشتات" },
       { href: "/#how", label: "كيف يعمل" },
       { href: "/#hourly", label: "الحجز بالساعة" },
     ],

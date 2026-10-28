@@ -13,6 +13,8 @@ export type TypePage = {
   description: string;
   intro: string[];
   faq: Array<{ q: string; a: string }>;
+  /** دليل مرتبط من src/lib/guides.ts */
+  guide?: string;
 };
 
 export const TYPE_PAGES: Record<PlaceKind, TypePage> = {
@@ -21,6 +23,7 @@ export const TYPE_PAGES: Record<PlaceKind, TypePage> = {
     path: "/camps",
     label: "مخيمات",
     labelDefinite: "المخيمات",
+    guide: "riyadh-camps-rental",
     h1: "إيجار مخيمات في السعودية",
     title: "إيجار مخيمات يومي وبالليلة في السعودية",
     description:
@@ -54,6 +57,7 @@ export const TYPE_PAGES: Record<PlaceKind, TypePage> = {
     path: "/kashtat",
     label: "كشتات",
     labelDefinite: "الكشتات",
+    guide: "kashta-checklist",
     h1: "أماكن كشتات للإيجار",
     title: "أماكن كشتات للإيجار بالساعة واليوم",
     description:

@@ -173,6 +173,18 @@ export default async function CityPage(props: PageProps<"/cities/[slug]">) {
           ))}
         </section>
 
+        {city.slug === "riyadh" && (
+          <p className="mt-10 max-w-[760px] rounded-lg border border-border bg-surface p-4">
+            <span className="text-ink-muted">دليل مفيد: </span>
+            <Link
+              href="/guides/riyadh-camps-rental"
+              className="font-semibold text-brand hover:text-brand-hover"
+            >
+              إيجار مخيمات في الرياض: دليل المناطق والأسعار
+            </Link>
+          </p>
+        )}
+
         <nav
           aria-label="تصفح حسب النوع"
           className="mt-14 flex flex-wrap gap-3 border-t border-border pt-8"

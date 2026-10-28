@@ -7,6 +7,7 @@ import { SiteHeader } from "@/components/site/site-header";
 import { ButtonLink } from "@/components/ui/button";
 import { cache } from "react";
 import { searchPlaces, type PlaceCard as PlaceCardData } from "@/lib/db/places";
+import { getGuide } from "@/lib/guides";
 import { formatSar } from "@/lib/money";
 import { placesCount } from "@/lib/plural";
 import { pageMeta } from "@/lib/seo";
@@ -175,6 +176,18 @@ export function TypeLanding({ page, places }: { page: TypePage; places: PlaceCar
             </details>
           ))}
         </section>
+
+        {page.guide && getGuide(page.guide) && (
+          <p className="mb-8 rounded-lg border border-border bg-surface p-4">
+            <span className="text-ink-muted">دليل مفيد: </span>
+            <Link
+              href={`/guides/${page.guide}`}
+              className="font-semibold text-brand hover:text-brand-hover"
+            >
+              {getGuide(page.guide)!.title}
+            </Link>
+          </p>
+        )}
 
         <nav aria-label="أنواع أخرى" className="flex flex-wrap gap-3 border-t border-border pt-8">
           <span className="text-ink-muted">تصفح أيضًا:</span>
