@@ -27,6 +27,8 @@ export const metadata: Metadata = {
     template: "%s | الكشتات",
   },
   description: SITE_DESCRIPTION,
+  // إثبات ملكية الموقع في Google Search Console (تبقى العلامة حتى بعد التحقق)
+  verification: { google: "89LdaHEIIIwXhWUaVr0RypauqIVRGnP1iYc4lBAvb44" },
   openGraph: {
     type: "website",
     locale: "ar_SA",
