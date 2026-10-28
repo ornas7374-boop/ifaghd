@@ -1,0 +1,460 @@
+<title>تمارين التحكم بالكرة</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lalezar&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap">
+<style>
+/* Layout: tactics-board cards — each drill is a top-down chalk diagram on a pitch-green board, steps beside it */
+:root{
+  --bg:#EEF3EC; --fg:#15241B; --muted:#4F6357; --surface:#FFFFFF; --line:#D3DDD2;
+  --board:#1F4A33; --board-grid:rgba(255,255,255,.06); --chalk:#F2F5EE; --chalk-soft:rgba(242,245,238,.72);
+  --move:#F28C3A; --trace:#F3DD6A; --ballfill:#FFFFFF; --ballink:#1B2A21; --wall:#C9B79A;
+  --display:"Lalezar","IBM Plex Sans Arabic",system-ui,sans-serif;
+  --body:"IBM Plex Sans Arabic",system-ui,"Segoe UI",Tahoma,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1611; --fg:#E3ECE4; --muted:#9DB0A3; --surface:#16211A; --line:#26352B;
+  --board:#183B29; --board-grid:rgba(255,255,255,.05); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1611; --fg:#E3ECE4; --muted:#9DB0A3; --surface:#16211A; --line:#26352B;
+  --board:#183B29; --board-grid:rgba(255,255,255,.05); color-scheme:dark}
+
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:36px}
+header{display:flex;flex-direction:column;gap:6px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(2rem,5vw,3rem);line-height:1.15;margin:0;text-wrap:balance}
+.lede{color:var(--muted);max-width:62ch;margin:0}
+h2{font-family:var(--display);font-weight:400;font-size:1.7rem;margin:0;line-height:1.2;text-wrap:balance}
+.sec{display:flex;flex-direction:column;gap:16px}
+.sec-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:8px}
+.sec-head span{color:var(--muted);font-size:.9rem}
+
+.legend{display:flex;flex-wrap:wrap;gap:10px 22px;background:var(--board);color:var(--chalk);border-radius:10px;padding:12px 16px;font-size:.88rem}
+.legend div{display:flex;align-items:center;gap:8px}
+.legend svg{width:34px;height:24px;flex:none}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.board{background-color:var(--board);
+  background-image:linear-gradient(var(--board-grid) 1px,transparent 1px),linear-gradient(90deg,var(--board-grid) 1px,transparent 1px);
+  background-size:20px 20px;aspect-ratio:6/5;max-width:100%}
+.board svg{display:block;width:100%;height:100%}
+.body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.name{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.name h3{margin:0;font-size:1.08rem;font-weight:700}
+.name small{font-family:ui-monospace,Menlo,monospace;color:var(--muted);font-size:.78rem;direction:ltr}
+ol{margin:0;padding-inline-start:20px;display:flex;flex-direction:column;gap:2px}
+.cue{font-size:.88rem;color:var(--muted);border-top:1px dashed var(--line);padding-top:8px;margin:0}
+.cue b{color:var(--fg)}
+
+/* SVG marks */
+.fr{fill:var(--move);stroke:var(--ballink);stroke-width:.8}
+.fl{fill:none;stroke:var(--chalk);stroke-width:1.8}
+.ghostf{opacity:.35}
+.bc{fill:var(--ballfill);stroke:var(--ballink);stroke-width:1.2}
+.bp{fill:var(--ballink)}
+.ghost{opacity:.4}
+.pb{fill:none;stroke:var(--trace);stroke-width:2.2;stroke-dasharray:5 4;marker-end:url(#mb)}
+.pm{fill:none;stroke:var(--move);stroke-width:2.4;marker-end:url(#mm)}
+.both{marker-start:url(#mbs)}
+.mk-b{fill:var(--trace)} .mk-m{fill:var(--move)}
+.lbl{fill:var(--chalk);font-family:var(--body);font-size:11px;text-anchor:middle}
+.lbl.s{fill:var(--chalk-soft);font-size:10px}
+.stc{fill:var(--move)} .stt{fill:var(--ballink);font:700 10px var(--body);text-anchor:middle}
+.wall{fill:var(--wall)} .wallh{stroke:var(--board);stroke-width:1.5}
+.dim{stroke:var(--chalk-soft);stroke-width:1;fill:none}
+.cone{fill:var(--move)}
+.fig{fill:none;stroke:var(--chalk);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.figh{fill:var(--board);stroke:var(--chalk);stroke-width:3}
+.leg-act{stroke:var(--move)}
+.ground{stroke:var(--chalk-soft);stroke-width:1.2;stroke-dasharray:2 4}
+.zone{fill:var(--trace)}
+
+/* Juggling ladder */
+.ladder{display:flex;flex-direction:column;gap:8px}
+.rung{display:grid;grid-template-columns:52px 1fr auto;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px;min-width:0}
+.lv{font-family:var(--display);font-size:1.6rem;line-height:1;width:44px;height:44px;display:grid;place-items:center;border-radius:8px;background:var(--board);color:var(--chalk)}
+.rung p{margin:0;min-width:0}
+.goal{font-size:.85rem;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.rung:nth-child(2){margin-inline-start:4%}.rung:nth-child(3){margin-inline-start:8%}.rung:nth-child(4){margin-inline-start:12%}.rung:nth-child(5){margin-inline-start:16%}.rung:nth-child(6){margin-inline-start:20%}
+@media (max-width:560px){.rung{grid-template-columns:44px 1fr}.goal{grid-column:2;white-space:normal}.rung:nth-child(n){margin-inline-start:0}}
+</style>
+
+<div dir="rtl" class="wrap">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <path id="sole" d="M0,-26 C8,-26 11,-17 10.5,-7 C10,3 8,10 8,18 C8,24 4,26 0,26 C-5,26 -8,23 -7.5,17 C-7,9 -10,1 -10,-8 C-10,-20 -7,-26 0,-26Z"/>
+    <g id="ball"><circle r="10" class="bc"/><path class="bp" d="M0,-4 L3.8,-1.2 L2.4,3.2 L-2.4,3.2 L-3.8,-1.2Z"/></g>
+    <marker id="mb" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path class="mk-b" d="M0,0 L10,5 L0,10z"/></marker>
+    <marker id="mbs" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path class="mk-b" d="M0,0 L10,5 L0,10z"/></marker>
+    <marker id="mm" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path class="mk-m" d="M0,0 L10,5 L0,10z"/></marker>
+  </defs>
+</svg>
+
+<header>
+  <h1>تمارين التحكم بالكرة في البيت</h1>
+  <p class="lede">رسمة لكل تمرين من الدليل. المنظر من فوق: أنت واقف أسفل الرسمة ووجهك لفوق. تمارين الفخذ والصدر ووجه القدم مرسومة من الجنب.</p>
+</header>
+
+<div class="legend" aria-label="دليل الرموز">
+  <div><svg viewBox="0 0 34 24"><use href="#sole" class="fr" transform="translate(17,12) rotate(90) scale(.4)"/></svg>القدم اليمين</div>
+  <div><svg viewBox="0 0 34 24"><use href="#sole" class="fl" transform="translate(17,12) rotate(90) scale(-.4,.4)"/></svg>القدم اليسار</div>
+  <div><svg viewBox="0 0 34 24"><use href="#ball" transform="translate(17,12)"/></svg>الكرة</div>
+  <div><svg viewBox="0 0 34 24"><use href="#ball" class="ghost" transform="translate(17,12)"/></svg>مكان الكرة قبل/بعد</div>
+  <div><svg viewBox="0 0 34 24"><path class="pb" d="M3,12 L29,12"/></svg>مسار الكرة</div>
+  <div><svg viewBox="0 0 34 24"><path class="pm" d="M3,12 L29,12"/></svg>حركة القدم أو الجسم</div>
+</div>
+
+<!-- ============ 1. BALL MASTERY ============ -->
+<section class="sec">
+  <div class="sec-head"><h2>١. Ball Mastery والتحكم القريب</h2><span>ركبة منحنية، وزنك على مقدمة القدم، الراس مرفوع</span></div>
+  <div class="grid">
+
+    <article class="card">
+      <div class="board"><svg viewBox="0 0 240 200" role="img" aria-label="Toe Taps: القدمين تلمس أعلى الكرة بالتبادل">
+        <use href="#ball" transform="translate(120,78)"/>
+        <use href="#sole" class="fl" transform="translate(95,150)"/>
+        <use href="#sole" class="fr" transform="translate(145,150)"/>
+        <path class="pm" d="M146,122 Q147,100 131,88"/>
+        <path class="pm" d="M94,122 Q93,100 109,88"/>
+        <text class="lbl" x="178" y="108">يمين</text>
+        <text class="lbl" x="62" y="108">يسار</text>
+        <text class="lbl s" x="120" y="192">لمسة خفيفة على أعلى الكرة، الكرة ثابتة</text>
+      </svg></div>
+      <div class="body">
+        <div class="name"><h3>لمس الكرة من فوق</h3><small>Toe Taps</small></div>
+        <ol><li>الكرة قدامك.</li><li>مقدمة نعل اليمين على أعلى الكرة.</li><li>بدّل بنطة خفيفة: اليسار فوق واليمين تنزل.</li></ol>
+        <p class="cue"><b>تطوير:</b> در حول الكرة أو امش قدام وورا وأنت تسويها.</p>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="board"><svg viewBox="0 0 240 200" role="img" aria-label="Sole Rolls: دحرجة الكرة بالنعل يمين ويسار قدام الجسم">
+        <use href="#ball" class="ghost" transform="translate(70,80)"/>
+        <use href="#ball" transform="translate(170,80)"/>
+        <use href="#sole" class="fr ghostf" transform="translate(170,70)"/>
+        <path class="pb both" d="M150,80 L92,80"/>
+        <use href="#sole" class="fl" transform="translate(100,158)"/>
+        <use href="#sole" class="fr" transform="translate(140,158)"/>
+        <text class="lbl" x="120" y="112">دحرجة بالنعل</text>
+        <text class="lbl s" x="120" y="196">وقّفها بنعل القدم الثانية ورجّعها</text>
+      </svg></div>
+      <div class="body">
+        <div class="name"><h3>دحرجة بالنعل</h3><small>Sole Rolls</small></div>
+        <ol><li>نعل اليمين على الكرة.</li><li>دحرجها لجهة اليسار قدام جسمك.</li><li>وقّفها بنعل اليسار ورجّعها بنفس الطريقة.</li></ol>
+        <p class="cue"><b>تطوير:</b> دحرجة قدام وورا بقدم وحدة، ثم جانبية مع سحب للورا.</p>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="board"><svg viewBox="0 0 240 200" role="img" aria-label="Tick-Tock: تمرير الكرة بين داخل القدمين">
+        <use href="#sole" class="fl" transform="translate(82,118)"/>
+        <use href="#sole" class="fr" transform="translate(158,118)"/>
+        <use href="#ball" transform="translate(120,118)"/>
+        <path class="pb both" d="M100,88 L140,88"/>
+        <path class="dim" d="M92,152 L92,160 L148,160 L148,152"/>
+        <text class="lbl" x="120" y="176">10–15 سم بين القدمين</text>
+        <text class="lbl s" x="120" y="194">على أطراف أصابعك، لمسات سريعة جداً</text>
+      </svg></div>
+      <div class="body">
+        <div class="name"><h3>تك توك</h3><small>Tick-Tock / Bell Touches</small></div>
+        <ol><li>الكرة بين قدميك.</li><li>مرّرها بين داخل اليمين وداخل اليسار بلمسات خفيفة.</li><li>خلك على أطراف أصابعك وركبك منحنية.</li></ol>
+        <p class="cue"><b>معيار:</b> اللاعب الجيد يوصل 60–75 لمسة في 30 ثانية.</p>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="board"><svg viewBox="0 0 240 200" role="img" aria-label="Inside-Outside: داخل القدم لليسار ثم خارج نفس القدم لليمين">
+        <use href="#ball" class="ghost" transform="translate(62,96)"/>
+        <use href="#ball" transform="translate(120,96)"/>
+        <use href="#ball" class="ghost" transform="translate(178,96)"/>
+        <path class="pb" d="M108,82 L76,82"/>
+        <text class="lbl" x="92" y="70">١ داخل القدم</text>
+        <path class="pb" d="M132,110 L164,110"/>
+        <text class="lbl" x="150" y="130">٢ خارج القدم</text>
+        <use href="#sole" class="fl ghostf" transform="translate(95,172)"/>
+        <use href="#sole" class="fr" transform="translate(140,172)"/>
+        <text class="lbl s" x="120" y="16">نفس القدم: داخل ← خارج</text>
+      </svg></div>
+      <div class="body">
+        <div class="name"><h3>داخل وخارج نفس القدم</h3><small>Inside-Outside</small></div>
+        <ol><li>المس الكرة بداخل اليمين وحركها شوي لليسار.</li><li>رجّعها فوراً بخارج نفس القدم لليمين.</li><li>30 ثانية وبعدين بدّل القدم.</li></ol>
+        <p class="cue"><b>تطوير:</b> نمط IR-OR-IL-OL: داخل يمين، خارج يمين، داخل يسار، خارج يسار.</p>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="board"><svg viewBox="0 0 240 200" role="img" aria-label="V-Pull: سحب للخلف بالنعل ثم دفع بداخل القدم على شكل V">
+        <use href="#ball" class="ghost" transform="translate(162,58)"/>
+        <use href="#ball" class="ghost" transform="translate(120,124)"/>
+        <use href="#ball" transform="translate(78,58)"/>
+        <path class="pb" d="M156,70 L127,112"/>
+        <path class="pb" d="M113,112 L85,72"/>
+        <circle class="stc" cx="152" cy="96" r="8"/><text class="stt" x="152" y="100">1</text>
+        <circle class="stc" cx="88" cy="96" r="8"/><text class="stt" x="88" y="100">2</text>
+        <text class="lbl" x="196" y="100">سحب بالنعل</text>
+        <text class="lbl" x="46" y="100">دفع بالداخل</text>
+        <use href="#sole" class="fl" transform="translate(100,170)"/>
+        <use href="#sole" class="fr" transform="translate(140,170)"/>
+      </svg></div>
+      <div class="body">
+        <div class="name"><h3>سحب على شكل V</h3><small>V-Pull</small></div>
+        <ol><li>اسحب الكرة للخلف وبالعرض بنعل اليمين.</li><li>ادفعها قدام لليسار بداخل نفس القدم.</li><li>كرر بالقدم اليسار، وكذا الحركة ترسم V.</li></ol>
+        <p class="cue"><b>انتبه:</b> السحب والدفع حركة وحدة متصلة، لا توقف الكرة بينهم.</p>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="board"><svg viewBox="0 0 240 200" role="img" aria-label="L-Turn: سحب الكرة للخلف ثم تمريرها خلف القدم الثابتة">
+        <use href="#ball" class="ghost" transform="translate(148,62)"/>
+        <use href="#ball" class="ghost" transform="translate(148,110)"/>
+        <use href="#ball" transform="translate(48,166)"/>
+        <path class="pb" d="M148,74 L148,96"/>
+        <path class="pb" d="M140,122 C124,198 84,192 62,172"/>
+        <circle class="stc" cx="166" cy="86" r="8"/><text class="stt" x="166" y="90">1</text>
+        <circle class="stc" cx="112" cy="192" r="8"/><text class="stt" x="112" y="196">2</text>
+        <use href="#sole" class="fl" transform="translate(98,138)"/>
+        <use href="#sole" class="fr" transform="translate(148,150)"/>
+        <text class="lbl" x="196" y="90">سحب بالنعل</text>
+        <text class="lbl" x="60" y="128">خلف القدم الثابتة</text>
+      </svg></div>
+      <div class="body">
+        <div class="name"><h3>لفة L</h3><small>L-Turn · Pull &amp; Roll Behind</small></div>
+        <ol><li>ادفع الكرة قدام شوي.</li><li>اسحبها للخلف بنعل اليمين.</li><li>مرّرها خلف القدم اليسار بداخل اليمين، واستلمها باليسار.</li></ol>
+        <p class="cue"><b>المساحة:</b> تحتاج تقريباً 3×3 م.</p>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="board"><svg viewBox="0 0 240 200" role="img" aria-label="Pull-Push: سحب الكرة للخلف بالنعل ثم دفعها للقدام">
+        <use href="#ball" transform="translate(120,78)"/>
+        <use href="#ball" class="ghost" transform="translate(120,138)"/>
+        <path class="pb" d="M108,90 L108,124"/>
+        <path class="pb" d="M132,126 L132,92"/>
+        <text class="lbl" x="72" y="112">١ سحب بالنعل</text>
+        <text class="lbl" x="172" y="112">٢ دفع بالداخل</text>
+        <use href="#sole" class="fl" transform="translate(92,176)"/>
+        <use href="#sole" class="fr" transform="translate(148,176)"/>
+      </svg></div>
+      <div class="body">
+        <div class="name"><h3>سحب ودفع</h3><small>Pull-Push</small></div>
+        <ol><li>اسحب الكرة للخلف بنعل القدم.</li><li>ادفعها فوراً لقدام بداخل نفس القدم أو بوجه القدم.</li></ol>
+        <p class="cue"><b>تطوير:</b> بدّل القدم كل مرة.</p>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="board"><svg viewBox="0 0 240 200" role="img" aria-label="Cruyff Turn: تمويه تسديد ثم سحب الكرة خلف القدم الثابتة والالتفاف">
+        <use href="#ball" transform="translate(140,92)"/>
+        <use href="#ball" class="ghost" transform="translate(50,150)"/>
+        <use href="#sole" class="fl" transform="translate(98,126)"/>
+        <use href="#sole" class="fr" transform="translate(146,140)"/>
+        <path class="pm" style="stroke-dasharray:3 3" d="M160,118 L182,80"/>
+        <text class="lbl" x="196" y="70">١ تمويه تسديد</text>
+        <path class="pb" d="M134,103 C112,180 82,176 62,156"/>
+        <circle class="stc" cx="112" cy="176" r="8"/><text class="stt" x="112" y="180">2</text>
+        <path class="pm" d="M70,186 Q34,188 32,152"/>
+        <text class="lbl" x="58" y="124">٣ لف واطلع</text>
+      </svg></div>
+      <div class="body">
+        <div class="name"><h3>لفة كرويف</h3><small>Cruyff Turn</small></div>
+        <ol><li>الكرة قدامك كأنك بتمرر أو بتسدد.</li><li>ثبّت القدم الثانية جنب الكرة وارفع قدم التسديد.</li><li>بدل ما تضرب، اسحبها بداخل القدم ورا قدمك الثابتة.</li><li>لف حوضك واطلع بالاتجاه المعاكس.</li></ol>
+        <p class="cue"><b>نصيحة:</b> إذا الكرة راحت بعيد، تركها لحظة وبعدين ادفعها.</p>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="board"><svg viewBox="0 0 240 200" role="img" aria-label="Drag Back: سحب الكرة للخلف بالنعل واللف معها 180 درجة">
+        <use href="#ball" transform="translate(152,62)"/>
+        <use href="#ball" class="ghost" transform="translate(152,176)"/>
+        <path class="pb" d="M152,74 L152,160"/>
+        <use href="#sole" class="fl" transform="translate(96,124)"/>
+        <use href="#sole" class="fr ghostf" transform="translate(152,96)"/>
+        <use href="#sole" class="fr" transform="translate(134,132)"/>
+        <path class="pm" d="M78,74 A58,58 0 0 0 92,178"/>
+        <text class="lbl" x="44" y="128">لف 180°</text>
+        <text class="lbl" x="196" y="118">سحب بالنعل</text>
+      </svg></div>
+      <div class="body">
+        <div class="name"><h3>لفة 180 درجة</h3><small>Drag Back / Pull Turn</small></div>
+        <ol><li>ادفع الكرة قدام.</li><li>اسحبها بنعل نفس القدم وأنت تلف معها.</li><li>لما تخلص اللفة، نزّل قدمك وخذ الكرة للاتجاه المعاكس بداخل القدم.</li></ol>
+        <p class="cue"><b>بعد كل لفة:</b> انطلق بقوة 3 لمسات، هذي الانطلاقة اللي تفيدك في المباراة.</p>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ============ 2. WALL / FIRST TOUCH ============ -->
+<section class="sec">
+  <div class="sec-head"><h2>٢. اللمسة الأولى والاستلام على الجدار</h2><span>ارجع بسطح الاستلام لورا شوي لحظة ما تلمسك الكرة</span></div>
+  <div class="grid">
+
+    <article class="card">
+      <div class="board"><svg viewBox="0 0 240 200" role="img" aria-label="لمستين على الجدار: تمرير ثم استلام ناعم على بعد 2 إلى 3 أمتار">
+        <rect class="wall" x="20" y="16" width="200" height="12"/>
+        <path class="wallh" d="M40,16 L30,28 M70,16 L60,28 M100,16 L90,28 M130,16 L120,28 M160,16 L150,28 M190,16 L180,28 M220,16 L210,28"/>
+        <path class="pb" d="M122,110 L106,34"/>
+        <path class="pb" d="M116,34 L134,104"/>
+        <use href="#ball" transform="translate(138,116)"/>
+        <circle class="stc" cx="96" cy="72" r="8"/><text class="stt" x="96" y="76">1</text>
+        <circle class="stc" cx="142" cy="72" r="8"/><text class="stt" x="142" y="76">2</text>
+        <text class="lbl" x="58" y="76">تمرير</text>
+        <text class="lbl" x="184" y="76">استلام ناعم</text>
+        <use href="#sole" class="fl" transform="translate(110,166)"/>
+        <use href="#sole" class="fr" transform="translate(140,166)"/>
+        <path class="dim" d="M210,32 L210,160 M204,32 L216,32 M204,160 L216,160"/>
+        <text class="lbl" x="210" y="180">2–3 م</text>
+      </svg></div>
+      <div class="body">
+        <div class="name"><h3>لمستين على الجدار</h3><small>Two-Touch</small></div>
+        <ol><li>وقّف على بعد 2–3 أمتار من الجدار.</li><li>مرّر بداخل اليمين.</li><li>استلم بلمسة ناعمة تخلي الكرة تبعد عنك 30–60 سم بس.</li><li>مرّر مرة ثانية. 20–30 تمريرة بكل قدم.</li></ol>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="board"><svg viewBox="0 0 240 200" role="img" aria-label="لمسة وحدة: تمرير متواصل بدون إيقاف الكرة، بالتبادل بين القدمين">
+        <rect class="wall" x="20" y="16" width="200" height="12"/>
+        <path class="wallh" d="M40,16 L30,28 M70,16 L60,28 M100,16 L90,28 M130,16 L120,28 M160,16 L150,28 M190,16 L180,28 M220,16 L210,28"/>
+        <path class="pb" d="M100,112 L122,34"/>
+        <path class="pb" d="M128,34 L142,108"/>
+        <use href="#ball" transform="translate(144,118)"/>
+        <text class="lbl" x="76" y="74">يسار</text>
+        <text class="lbl" x="166" y="74">يمين</text>
+        <use href="#sole" class="fl" transform="translate(102,148)"/>
+        <use href="#sole" class="fr" transform="translate(144,148)"/>
+        <path class="dim" d="M210,32 L210,124 M204,32 L216,32 M204,124 L216,124"/>
+        <text class="lbl" x="210" y="142">1–2 م</text>
+        <text class="lbl s" x="120" y="192">بدون إيقاف الكرة، وزد المسافة لـ 3 م</text>
+      </svg></div>
+      <div class="body">
+        <div class="name"><h3>لمسة وحدة</h3><small>One-Touch</small></div>
+        <ol><li>قرّب من الجدار لمسافة متر ونص إلى مترين.</li><li>رجّع الكرة على طول بدون ما توقفها، 20–30 تمريرة بالقوية.</li><li>بعدين بدّل بين القدمين كل تمريرة، وزد المسافة تدريجياً.</li></ol>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="board"><svg viewBox="0 0 240 200" role="img" aria-label="الاستلام بالقدم البعيدة: الجسم مفتوح 45 درجة والكرة تروح للجهة الثانية">
+        <rect class="wall" x="20" y="16" width="200" height="12"/>
+        <path class="wallh" d="M40,16 L30,28 M70,16 L60,28 M100,16 L90,28 M130,16 L120,28 M160,16 L150,28 M190,16 L180,28 M220,16 L210,28"/>
+        <path class="pb" d="M70,34 L132,112"/>
+        <use href="#sole" class="fl" transform="translate(112,142) rotate(45)"/>
+        <use href="#sole" class="fr" transform="translate(150,136) rotate(45)"/>
+        <use href="#ball" class="ghost" transform="translate(140,120)"/>
+        <path class="pb" d="M150,126 L188,150"/>
+        <path class="cone" d="M206,142 L216,168 L196,168Z"/>
+        <use href="#ball" transform="translate(186,160)"/>
+        <path class="dim" d="M96,170 L132,170 M96,170 L122,144"/>
+        <text class="lbl" x="84" y="188">45°</text>
+        <text class="lbl" x="196" y="128">للجهة الثانية</text>
+      </svg></div>
+      <div class="body">
+        <div class="name"><h3>الاستلام بالقدم البعيدة</h3><small>Back Foot</small></div>
+        <ol><li>افتح جسمك 45 درجة.</li><li>استلم بالقدم البعيدة عن الكرة.</li><li>خل اللمسة توديك للجهة الثانية، باتجاه قمع أو قارورة.</li></ol>
+        <p class="cue"><b>قبل الاستلام:</b> سوّ "نظرة كتف" وشوف وين بتودي الكرة.</p>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="board"><svg viewBox="0 0 240 200" role="img" aria-label="أجزاء القدم المستخدمة في الاستلام">
+        <use href="#sole" class="fl" transform="translate(120,102) scale(2.6)"/>
+        <circle class="zone" cx="96" cy="110" r="5"/>
+        <path class="dim" d="M91,110 L50,110"/>
+        <text class="lbl" x="40" y="100">داخل القدم</text>
+        <text class="lbl s" x="40" y="126">كرات أرضية</text>
+        <circle class="zone" cx="146" cy="96" r="5"/>
+        <path class="dim" d="M151,96 L188,96"/>
+        <text class="lbl" x="202" y="86">خارج القدم</text>
+        <text class="lbl s" x="202" y="112">تهرب من ضغط</text>
+        <circle class="zone" cx="120" cy="66" r="5"/>
+        <path class="dim" d="M120,61 L120,32"/>
+        <text class="lbl" x="120" y="24">وجه القدم: الكرة الطايحة</text>
+        <circle class="zone" cx="118" cy="146" r="5"/>
+        <path class="dim" d="M123,150 L170,176"/>
+        <text class="lbl" x="196" y="190">النعل: يوقف الكرة</text>
+      </svg></div>
+      <div class="body">
+        <div class="name"><h3>الاستلام بأجزاء مختلفة من القدم</h3><small>Surfaces</small></div>
+        <ol><li><b>داخل القدم:</b> للكرات الأرضية.</li><li><b>خارج القدم:</b> وجّه الكرة لجنبك كأنك تهرب من ضغط.</li><li><b>النعل:</b> وقّف الكرة تماماً.</li><li>سوّ 10 مرات لكل نوع ولكل قدم.</li></ol>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="board"><svg viewBox="0 0 240 200" role="img" aria-label="التحكم بالفخذ من الجنب: الفخذ موازي للأرض وينزل شوي لحظة اللمس">
+        <line class="ground" x1="20" y1="184" x2="220" y2="184"/>
+        <circle class="figh" cx="108" cy="44" r="11"/>
+        <path class="fig" d="M108,56 L110,110 M108,68 L84,92 M108,68 L132,86 M110,110 L110,146 L110,183 L124,183"/>
+        <path class="fig leg-act" d="M110,110 L152,112 L152,152 L164,154"/>
+        <use href="#ball" class="ghost" transform="translate(132,22)"/>
+        <path class="pb" d="M132,34 L132,84"/>
+        <use href="#ball" transform="translate(132,100)"/>
+        <path class="pm" d="M176,108 L176,130"/>
+        <text class="lbl" x="200" y="104">نزّل الفخذ</text>
+        <text class="lbl" x="200" y="120">شوي</text>
+        <text class="lbl s" x="120" y="198">استلم على نص الفخذ، بعيد عن الركبة</text>
+      </svg></div>
+      <div class="body">
+        <div class="name"><h3>التحكم بالفخذ</h3><small>Thigh Control</small></div>
+        <ol><li>ارم الكرة بيدك لفوق، على ارتفاع الصدر أو أعلى شوي.</li><li>ارفع فخذك لين يصير موازي للأرض تقريباً.</li><li>استلم على نص الفخذ ونزّله شوي لحظة اللمس.</li><li>خل الكرة تنزل قدامك وتحكم فيها بقدمك. 10 مرات لكل فخذ.</li></ol>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="board"><svg viewBox="0 0 240 200" role="img" aria-label="التحكم بالصدر من الجنب: الظهر راجع شوي واليدين مفتوحة والكرة تنزل للرجل">
+        <line class="ground" x1="20" y1="184" x2="220" y2="184"/>
+        <circle class="figh" cx="96" cy="46" r="11"/>
+        <path class="fig" d="M99,58 L110,116 M101,70 L70,74 M101,70 L138,66 M110,116 L120,150 L114,183 L128,183 M110,116 L100,150 L96,183 L108,183"/>
+        <use href="#ball" class="ghost" transform="translate(176,26)"/>
+        <path class="pb" d="M166,32 L126,68"/>
+        <use href="#ball" transform="translate(116,76)"/>
+        <path class="pb" d="M124,88 L140,166"/>
+        <use href="#ball" class="ghost" transform="translate(142,174)"/>
+        <path class="pm" d="M78,36 Q66,44 70,58"/>
+        <text class="lbl" x="56" y="30">ارجع بظهرك</text>
+        <text class="lbl" x="186" y="130">تنزل عند رجولك</text>
+      </svg></div>
+      <div class="body">
+        <div class="name"><h3>التحكم بالصدر</h3><small>Chest Control</small></div>
+        <ol><li>ارم الكرة لفوق على ارتفاع أعلى من راسك.</li><li>افتح يدينك للتوازن، ارجع بظهرك شوي، واثنِ ركبك.</li><li>لا تنفخ صدرك. خلك مرتخي وخل الكرة تنزل عند رجولك.</li></ol>
+        <p class="cue"><b>تطوير:</b> صدر، بعدين فخذ، بعدين قدم، بدون ما تطيح الكرة.</p>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="board"><svg viewBox="0 0 240 200" role="img" aria-label="استلام الكرة الطايحة بوجه القدم: القدم تنزل مع الكرة">
+        <line class="ground" x1="20" y1="184" x2="220" y2="184"/>
+        <circle class="figh" cx="96" cy="44" r="11"/>
+        <path class="fig" d="M97,56 L100,110 M98,68 L74,90 M98,68 L120,84 M100,110 L100,146 L100,183 L114,183"/>
+        <path class="fig leg-act" d="M100,110 L126,142 L150,160 L168,162"/>
+        <use href="#ball" class="ghost" transform="translate(158,26)"/>
+        <path class="pb" d="M158,38 L158,132"/>
+        <use href="#ball" transform="translate(158,148)"/>
+        <path class="pm" d="M190,150 L190,176"/>
+        <text class="lbl" x="196" y="128">نزّل مع الكرة</text>
+        <text class="lbl s" x="96" y="198">مد كاحلك، والقدم "تموّت" الكرة على الأرض</text>
+      </svg></div>
+      <div class="body">
+        <div class="name"><h3>الكرة الطايحة بوجه القدم</h3><small>Instep</small></div>
+        <ol><li>ارم الكرة لفوق.</li><li>مد كاحلك واستقبلها بوجه القدم.</li><li>نزّل قدمك مع الكرة لحظة اللمس عشان "تموّتها" على الأرض.</li></ol>
+        <p class="cue"><b>أكثر غلطة:</b> الكاحل المشدود يخلي الكرة ترتد بعيد. ارخِ القدم.</p>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ============ 3. JUGGLING ============ -->
+<section class="sec">
+  <div class="sec-head"><h2>٣. سلّم الـ Juggling</h2><span>5–10 دقائق من الجلسة فقط. انتقل للمستوى اللي بعده لما توصل الهدف</span></div>
+  <div class="ladder">
+    <div class="rung"><div class="lv">0</div><p>نزّل الكرة، المسها مرة بوجه القدم، وامسكها بيدك</p><div class="goal">10 مرات متتالية بكل قدم</div></div>
+    <div class="rung"><div class="lv">1</div><p>قدم، تنطيطة، قدم، تنطيطة (بأي قدم)</p><div class="goal">50 لمسة متتالية</div></div>
+    <div class="rung"><div class="lv">2</div><p>3 لمسات بالقوية، تنطيطة، لمسة بالضعيفة، تنطيطة</p><div class="goal">25 جولة</div></div>
+    <div class="rung"><div class="lv">3</div><p>يد، قدم، يد، القدم الثانية، يد، فخذ، يد، الفخذ الثاني، يد، راس</p><div class="goal">25 جولة</div></div>
+    <div class="rung"><div class="lv">4</div><p>نفس المستوى 3 بس بعدد لمسات أكثر لكل سطح</p><div class="goal">25 جولة متتالية</div></div>
+    <div class="rung"><div class="lv">5</div><p>Juggling متواصل بالقدمين بالتبادل، بعدين قدم، فخذ، راس</p><div class="goal">أرقام قياسية شخصية</div></div>
+  </div>
+  <p class="cue">خل أصابع القدم لتحت والكاحل ثابت. إذا الكرة راحت لقدام، أصابعك مرفوعة. في الفخذ، خلّه أفقي.</p>
+</section>
+
+</div>

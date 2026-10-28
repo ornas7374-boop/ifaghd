@@ -131,3 +131,29 @@ npm run subscribers
 3. أعد تشغيل عميل الـ MCP (أو شغّل `/mcp` داخل Claude Code) عشان يلتقط التغيير.
 
 **لا ترفع `.env` أبدًا** — موجود في `.gitignore` لهذا السبب بالضبط.
+
+---
+
+## NotebookLM MCP
+
+مسجّل أيضًا في [`.mcp.json`](.mcp.json) خادم [notebooklm-mcp-cli](https://github.com/jacob-bd/notebooklm-mcp-cli) عشان Claude يقدر يقرأ ويدير دفاتر NotebookLM (إنشاء دفاتر، إضافة مصادر، أسئلة، توليد ملخصات صوتية). يشتغل عبر `uvx` فما يحتاج تثبيت منفصل.
+
+NotebookLM ما له API رسمي، فالمصادقة تتم بكوكيز حساب Google من متصفحك. **الدخول يتم مرة وحدة على جهازك** (يحتاج متصفح، فما ينفع داخل جلسة سحابية):
+
+```bash
+# 1) ثبّت الأداة (مرة وحدة)
+uv tool install notebooklm-mcp-cli      # أو: pipx install notebooklm-mcp-cli
+
+# 2) سجّل الدخول — يفتح Chrome، سجّل بحساب Google وسيحفظ الكوكيز تلقائيًا
+nlm login
+
+# 3) تحقق
+nlm login --check
+nlm notebook list
+```
+
+بعدها أعد تشغيل عميل الـ MCP (أو `/mcp` داخل Claude Code) وسيظهر الخادم `notebooklm`.
+
+- الكوكيز تُحفظ محليًا في `~/.notebooklm-mcp-cli/` — **خارج المستودع**، ولا ترفعها أبدًا.
+- الجلسة تنتهي بعد فترة؛ إذا ظهر خطأ مصادقة أعد `nlm login`.
+- لأكثر من حساب: `nlm login --profile <اسم>`.
