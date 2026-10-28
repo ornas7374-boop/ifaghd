@@ -79,22 +79,9 @@ const CATEGORIES = [
     ),
   },
   {
-    title: "شاليهات",
-    href: "/places",
-    desc: "مسابح وخصوصية للعائلة",
-    tone: "bg-info-subtle text-info",
-    icon: (
-      <>
-        <path d="M3 11l9-7 9 7" />
-        <path d="M5 10v10h14V10" />
-        <path d="M10 20v-6h4v6" />
-      </>
-    ),
-  },
-  {
-    title: "استراحات",
+    title: "طلعات بالساعة",
     href: "/places?type=hour",
-    desc: "للسهرات والمناسبات بالساعة",
+    desc: "للسهرات والجلسات القصيرة",
     tone: "bg-warning-subtle text-warning",
     icon: (
       <>
@@ -107,9 +94,9 @@ const CATEGORIES = [
     ),
   },
   {
-    title: "أماكن ترفيهية",
+    title: "مواقع برية",
     href: "/places?kind=wild",
-    desc: "مزارع وإطلالات وأنشطة",
+    desc: "إطلالات وبر مفتوح بأقل تجهيز",
     tone: "bg-brand-subtle text-brand",
     icon: (
       <>
@@ -203,8 +190,8 @@ const STEPS = [
     desc: "بالساعة أو اليوم أو الليلة، مع بروجكتر أو خيمة إضافية أو جلسات.",
   },
   {
-    title: "ادفع إلكترونيًا",
-    desc: "عبر مزود دفع معتمد يدعم مدى وApple Pay، ويصلك رقم الحجز مباشرة.",
+    title: "أكّد حجزك",
+    desc: "السعر النهائي واضح قبل التأكيد، ويصلك رقم الحجز مباشرة.",
   },
   {
     title: "استمتع وقيّم",
@@ -295,7 +282,7 @@ export function HourlyBooking() {
           {[
             "توفر فعلي محدث لحظيًا من صاحب المكان",
             "خدمات إضافية مسعّرة للحجز أو للساعة أو للشخص",
-            "السعر النهائي واضح قبل الدفع، شامل الإضافات والخصومات",
+            "السعر النهائي واضح قبل التأكيد، شامل الإضافات والخصومات",
           ].map((t) => (
             <li key={t} className="flex items-start gap-2.5">
               <Check />
@@ -447,8 +434,8 @@ export function Owners() {
 
 const TRUST = [
   {
-    title: "دفع آمن",
-    desc: "ما نخزن بيانات بطاقتك. الدفع يتم عبر مزود دفع معتمد.",
+    title: "حجز مؤكد",
+    desc: "التوفر في الموقع فعلي، والحجز يتأكد فورًا بدون مراسلات.",
     color: "text-brand",
     icon: (
       <>

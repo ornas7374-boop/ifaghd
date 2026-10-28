@@ -98,7 +98,8 @@ export async function createPlace(_: PlaceFormState, form: FormData): Promise<Pl
   const { data: place, error } = await supabase
     .from("places")
     .insert({
-      slug: `p-${crypto.randomUUID().slice(0, 8)}`,
+      // رابط مقروء: النوع والمدينة ثم رمز قصير يمنع التكرار
+      slug: `${p.kind}-${p.city}-${crypto.randomUUID().slice(0, 6)}`,
       host_id: auth.user.id,
       title_ar: p.title,
       description_ar: p.description,
