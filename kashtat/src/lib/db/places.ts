@@ -219,6 +219,26 @@ export async function searchPlaces(f: PlaceFilters): Promise<PlaceCard[]> {
   return cards;
 }
 
+/** أماكن من نفس المدينة أولًا، ثم من نفس النوع في مدن أخرى */
+export async function getSimilarPlaces(
+  current: { slug: string; kind: PlaceKind; citySlug: string },
+  limit = 4,
+): Promise<PlaceCard[]> {
+  const [sameCity, sameKind] = await Promise.all([
+    searchPlaces({ city: current.citySlug }),
+    searchPlaces({ kind: current.kind }),
+  ]);
+  const seen = new Set([current.slug]);
+  const out: PlaceCard[] = [];
+  for (const p of [...sameCity, ...sameKind]) {
+    if (seen.has(p.slug)) continue;
+    seen.add(p.slug);
+    out.push(p);
+    if (out.length === limit) break;
+  }
+  return out;
+}
+
 /* ---------- صفحة المكان ---------- */
 
 export type PlaceDetail = {

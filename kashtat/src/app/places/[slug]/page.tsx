@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { cache } from "react";
 import { breadcrumbLd, JsonLd } from "@/components/seo/json-ld";
 import { BookingBox } from "@/components/places/booking-box";
+import { PlaceCard } from "@/components/places/place-card";
 import { FavoriteButton } from "@/components/places/favorite-button";
 import { SiteFooter } from "@/components/site/site-footer";
 import { SiteHeader } from "@/components/site/site-header";
@@ -12,11 +13,19 @@ import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { StarIcon, UsersIcon } from "@/components/ui/icons";
 import { formatTime12 } from "@/lib/dates";
-import { getPlaceBySlug, PLACE_KIND_LABEL, RATE_UNIT_LABEL, startingPrice } from "@/lib/db/places";
+import {
+  getPlaceBySlug,
+  getSimilarPlaces,
+  PLACE_KIND_LABEL,
+  RATE_UNIT_LABEL,
+  startingPrice,
+} from "@/lib/db/places";
+import { cityLinkLabel } from "@/lib/city-content";
 import { formatSar } from "@/lib/money";
 import { parseSearchParams, type RawParams } from "@/lib/search-params";
 import { clip, pageMeta } from "@/lib/seo";
 import { absoluteUrl } from "@/lib/site";
+import { TYPE_PAGES } from "@/lib/type-content";
 
 // نفس الطلب يُستخدم في generateMetadata والصفحة
 const loadPlace = cache(getPlaceBySlug);
@@ -119,6 +128,15 @@ export default async function PlacePage(props: PageProps<"/places/[slug]">) {
   if (!place) notFound();
 
   const sp = parseSearchParams((await props.searchParams) as RawParams);
+  // روابط داخلية: فشلها لا يمنع عرض الصفحة
+  const similar = await getSimilarPlaces({
+    slug: place.slug,
+    kind: place.kind,
+    citySlug: place.city.slug,
+  }).catch((err) => {
+    console.error(err);
+    return [];
+  });
   const cheapest = startingPrice({
     price_per_hour: place.rates.hour,
     price_per_day: place.rates.day,
@@ -166,7 +184,9 @@ export default async function PlacePage(props: PageProps<"/places/[slug]">) {
         <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
           <div className="flex flex-col gap-2">
             <div className="flex flex-wrap items-center gap-2">
-              <Badge tone="sand">{PLACE_KIND_LABEL[place.kind]}</Badge>
+              <Link href={TYPE_PAGES[place.kind].path} className="hover:opacity-80">
+                <Badge tone="sand">{PLACE_KIND_LABEL[place.kind]}</Badge>
+              </Link>
               {place.ratingCount > 0 && (
                 <span className="inline-flex items-center gap-1 text-body-sm font-semibold">
                   <StarIcon size={16} fill="currentColor" className="text-sand" />
@@ -337,6 +357,40 @@ export default async function PlacePage(props: PageProps<"/places/[slug]">) {
             />
           </aside>
         </div>
+
+        {similar.length > 0 && (
+          <section
+            aria-labelledby="similar-title"
+            className="mt-14 flex flex-col gap-5 border-t border-border pt-10"
+          >
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 id="similar-title" className="text-[22px] leading-8 font-bold">
+                أماكن مشابهة
+              </h2>
+              <nav aria-label="تصفح المزيد" className="flex flex-wrap gap-4 text-label">
+                <Link
+                  href={`/cities/${place.city.slug}`}
+                  className="font-semibold text-brand hover:text-brand-hover"
+                >
+                  كل {cityLinkLabel(place.city.slug, place.city.name)}
+                </Link>
+                <Link
+                  href={TYPE_PAGES[place.kind].path}
+                  className="font-semibold text-brand hover:text-brand-hover"
+                >
+                  كل {TYPE_PAGES[place.kind].labelDefinite}
+                </Link>
+              </nav>
+            </div>
+            <ul className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-6">
+              {similar.map((pl) => (
+                <li key={pl.slug}>
+                  <PlaceCard place={pl} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
       </main>
 
       {/* شريط الحجز السفلي للجوال: صندوق الحجز في آخر الصفحة */}

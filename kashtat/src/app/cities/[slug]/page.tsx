@@ -13,6 +13,7 @@ import { formatSar } from "@/lib/money";
 import { placesCount } from "@/lib/plural";
 import { clip, pageMeta } from "@/lib/seo";
 import { absoluteUrl } from "@/lib/site";
+import { TYPE_LIST } from "@/lib/type-content";
 
 export const revalidate = 300;
 
@@ -171,6 +172,22 @@ export default async function CityPage(props: PageProps<"/cities/[slug]">) {
             </details>
           ))}
         </section>
+
+        <nav
+          aria-label="تصفح حسب النوع"
+          className="mt-14 flex flex-wrap gap-3 border-t border-border pt-8"
+        >
+          <span className="text-ink-muted">تصفح حسب النوع:</span>
+          {TYPE_LIST.map((t) => (
+            <Link
+              key={t.kind}
+              href={t.path}
+              className="font-semibold text-brand hover:text-brand-hover"
+            >
+              {t.label}
+            </Link>
+          ))}
+        </nav>
       </main>
       <SiteFooter />
     </>
