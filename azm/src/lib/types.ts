@@ -11,6 +11,8 @@ export interface Settings {
   startDate: DateKey; // أول يوم في برنامج الـ30 يوم
   frogTime: string; // "HH:MM"
   tracks: Track[];
+  windowMinutes: number; // طول «نافذة مونستر» الافتراضي
+  windowChangedAt: DateKey; // آخر مرة تغيّر طول النافذة أو تأجل الاقتراح
 }
 
 export interface Frog {
@@ -18,7 +20,6 @@ export interface Frog {
   trackId: string | null;
   done: boolean;
   doneAt?: string;
-  sessions: number; // جلسات تركيز مكتملة على المهمة
 }
 
 export interface DayRecord {
@@ -60,4 +61,40 @@ export interface StuckEntry {
   tinyStep: string;
   outcome: StuckOutcome;
   planId?: string;
+}
+
+export type TimerMode = "pomodoro" | "window";
+
+export interface Session {
+  id: string;
+  mode: TimerMode;
+  task: string;
+  trackId: string | null;
+  frog: boolean; // جلسة على «المهمة الوحدة» لليوم
+  startedAt: string; // ISO
+  endedAt: string; // ISO
+  plannedMin: number;
+  actualMin: number;
+  completed: boolean; // كمّل المدة كاملة
+}
+
+/** المؤقت الشغّال الحين — محفوظ عشان يكمل لو سكّرت الصفحة. */
+export interface ActiveTimer {
+  mode: TimerMode;
+  phase: "work" | "break";
+  task: string;
+  trackId: string | null;
+  frog: boolean;
+  startedAt: number; // ms
+  endAt: number; // ms
+  plannedMin: number;
+}
+
+export interface ProcrastinationEntry {
+  id: string;
+  at: string; // ISO
+  task: string;
+  feeling: FeelingId;
+  trackId: string | null;
+  instead: string; // وش سويت بدالها
 }

@@ -10,19 +10,19 @@ export type PlanDraft = Omit<IfThenPlan, "id" | "createdAt" | "active">;
 
 interface Props {
   tracks: Track[];
-  initialAction?: string;
-  initialTrackId?: string | null;
+  initial?: Partial<PlanDraft>;
   submitLabel?: string;
   onSubmit: (plan: PlanDraft) => void;
+  onCancel?: () => void;
 }
 
 // النموذج: إذا [وقت/مكان/حدث] ← فسأفعل [فعل محدد وصغير].
-export function IfThenForm({ tracks, initialAction = "", initialTrackId = null, submitLabel = "احفظ الخطة", onSubmit }: Props) {
-  const [trigger, setTrigger] = useState("");
-  const [kind, setKind] = useState<TriggerKind>("event");
-  const [time, setTime] = useState("");
-  const [action, setAction] = useState(initialAction);
-  const [trackId, setTrackId] = useState<string>(initialTrackId ?? tracks[0]?.id ?? "");
+export function IfThenForm({ tracks, initial = {}, submitLabel = "احفظ الخطة", onSubmit, onCancel }: Props) {
+  const [trigger, setTrigger] = useState(initial.trigger ?? "");
+  const [kind, setKind] = useState<TriggerKind>(initial.triggerKind ?? "event");
+  const [time, setTime] = useState(initial.time ?? "");
+  const [action, setAction] = useState(initial.action ?? "");
+  const [trackId, setTrackId] = useState<string>(initial.trackId ?? tracks[0]?.id ?? "");
 
   const pickPreset = (label: string) => {
     const p = TRIGGER_PRESETS.find((t) => t.label === label)!;
@@ -85,9 +85,16 @@ export function IfThenForm({ tracks, initialAction = "", initialTrackId = null, 
         </label>
       )}
 
-      <Button type="submit" block disabled={!ready}>
-        {submitLabel}
-      </Button>
+      <div className="flex gap-3">
+        <Button type="submit" block disabled={!ready}>
+          {submitLabel}
+        </Button>
+        {onCancel && (
+          <Button variant="ghost" onClick={onCancel}>
+            إلغاء
+          </Button>
+        )}
+      </div>
     </form>
   );
 }

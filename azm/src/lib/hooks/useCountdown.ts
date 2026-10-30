@@ -77,11 +77,48 @@ export function chime() {
   }
 }
 
-/** للاختبار: ‎?fast=1 في الرابط يخلي كل دقيقة ثانية وحدة. */
-export function useSpeed(): number {
+/** يقرأ عَلَم من الرابط (مثل ‎?fast=1) بدون مشاكل hydration. */
+export function useQueryFlag(name: string): boolean {
   return useSyncExternalStore(
     () => () => {},
-    () => (new URLSearchParams(window.location.search).has("fast") ? 60 : 1),
-    () => 1,
+    () => new URLSearchParams(window.location.search).has(name),
+    () => false,
   );
+}
+
+/** للاختبار: ‎?fast=1 في الرابط يخلي كل دقيقة ثانية وحدة. */
+export function useSpeed(): number {
+  return useQueryFlag("fast") ? 60 : 1;
+}
+
+/**
+ * الوقت الباقي حتى endAt (ثابت ومحفوظ)، ويستدعي onDone مرة وحدة عند الوصول.
+ * قبل أول نبضة يرجّع initialMs.
+ */
+export function useRemaining(endAt: number, initialMs: number, onDone: () => void): number {
+  const [left, setLeft] = useState<number | null>(null);
+  const doneRef = useRef(onDone);
+  useEffect(() => {
+    doneRef.current = onDone;
+  }, [onDone]);
+
+  useEffect(() => {
+    let fired = false;
+    const tick = () => {
+      const ms = endAt - Date.now();
+      setLeft(Math.max(0, ms));
+      if (ms <= 0 && !fired) {
+        fired = true;
+        doneRef.current();
+      }
+    };
+    const id = window.setInterval(tick, 250);
+    const first = window.setTimeout(tick, 0);
+    return () => {
+      window.clearInterval(id);
+      window.clearTimeout(first);
+    };
+  }, [endAt]);
+
+  return left ?? initialMs;
 }

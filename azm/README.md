@@ -17,15 +17,19 @@ npm run dev        # http://localhost:3000
 
 ```
 src/
-  app/                 الصفحات: / (اليوم) و /stuck (الطوارئ)
+  app/                 الصفحات: / (اليوم)، /stuck (الطوارئ)، /plans، /timer، /log، /insights
   components/
     stuck/             خطوات «أنا عالق الحين»
     today/             بطاقات الصفحة الرئيسية
-    plans/IfThenForm   نموذج إذا–فإن (مشترك)
+    plans/             خطط إذا–فإن والمسارات
+    timer/             بومودورو ونافذة مونستر
+    log/               سجل التسويف والتحليل
     ui/                أزرار، حقول، أيقونات
   lib/
     storage/           طبقة التخزين (adapter) — بدّلها هنا فقط
     db.ts              المستودعات: الدوال الوحيدة اللي تقرأ وتكتب البيانات
+    stats.ts           حسابات التحليل (دوال صافية)
+    timer.ts           بدء/إنهاء/إيقاف المؤقت
     content/           الاقتباسات، برنامج الـ30 يوم، المشاعر، محفزات الصلاة
     hooks/             useStored، useCountdown
 ```

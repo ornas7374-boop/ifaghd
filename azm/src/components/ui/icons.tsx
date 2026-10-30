@@ -23,3 +23,21 @@ export const IconLifebuoy = ({ className = "size-6" }: P) => (
 export const IconPencil = ({ className = "size-5" }: P) => (
   <svg viewBox="0 0 24 24" className={className} {...s} aria-hidden><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z" /></svg>
 );
+export const IconHome = ({ className = "size-6" }: P) => (
+  <svg viewBox="0 0 24 24" className={className} {...s} aria-hidden><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z" /></svg>
+);
+export const IconBranch = ({ className = "size-6" }: P) => (
+  <svg viewBox="0 0 24 24" className={className} {...s} aria-hidden><circle cx="6" cy="5" r="2" /><circle cx="6" cy="19" r="2" /><circle cx="18" cy="12" r="2" /><path d="M6 7v10M6 12h4a4 4 0 0 0 4-4V7M16 12h-2" /></svg>
+);
+export const IconTimer = ({ className = "size-6" }: P) => (
+  <svg viewBox="0 0 24 24" className={className} {...s} aria-hidden><circle cx="12" cy="13" r="8" /><path d="M12 9v4l2 2M10 2h4" /></svg>
+);
+export const IconChart = ({ className = "size-6" }: P) => (
+  <svg viewBox="0 0 24 24" className={className} {...s} aria-hidden><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" /></svg>
+);
+export const IconTrash = ({ className = "size-5" }: P) => (
+  <svg viewBox="0 0 24 24" className={className} {...s} aria-hidden><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14" /></svg>
+);
+export const IconPlus = ({ className = "size-5" }: P) => (
+  <svg viewBox="0 0 24 24" className={className} {...s} aria-hidden><path d="M12 5v14M5 12h14" /></svg>
+);

@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { formatClock } from "@/lib/date";
 import { chime, useCountdown, useSpeed, useWakeLock } from "@/lib/hooks/useCountdown";
 import { Button } from "../ui/Button";
+import { Ring } from "../ui/Ring";
 import { StepFrame } from "./StepFrame";
 
 const MINUTES = 10;
@@ -22,9 +23,6 @@ export function TimerStep({ tinyStep, onDone, onGiveUp }: { tinyStep: string; on
     start();
   }, [start]);
 
-  const r = 140;
-  const circumference = 2 * Math.PI * r;
-
   return (
     <StepFrame
       step={5}
@@ -41,25 +39,12 @@ export function TimerStep({ tinyStep, onDone, onGiveUp }: { tinyStep: string; on
         <div className="mt-1 text-xl font-semibold">{tinyStep}</div>
       </div>
 
-      <div className="relative mx-auto mt-8 grid size-72 place-items-center">
-        <svg viewBox="0 0 300 300" className="absolute inset-0 -rotate-90">
-          <circle cx="150" cy="150" r={r} fill="none" stroke="var(--line)" strokeWidth="10" />
-          <circle
-            cx="150"
-            cy="150"
-            r={r}
-            fill="none"
-            stroke="var(--accent)"
-            strokeWidth="10"
-            strokeLinecap="round"
-            strokeDasharray={circumference}
-            strokeDashoffset={circumference * timer.progress}
-            style={{ transition: "stroke-dashoffset 250ms linear" }}
-          />
-        </svg>
-        <div className="text-6xl font-bold tabular-nums" dir="ltr" role="timer" aria-live="off">
-          {formatClock(timer.remaining)}
-        </div>
+      <div className="mt-8">
+        <Ring progress={timer.progress}>
+          <div className="text-6xl font-bold tabular-nums" dir="ltr" role="timer" aria-live="off">
+            {formatClock(timer.remaining)}
+          </div>
+        </Ring>
       </div>
     </StepFrame>
   );

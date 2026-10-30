@@ -43,7 +43,7 @@ export function FailStep({
   return (
     <StepFrame title="تعثرت، وهذا بشري" subtitle="ما في داعي تلوم نفسك. اللوم يزيد التسويف، والتسامح يقلّله. خلنا نجهّز أقرب فرصة.">
       <div className="rounded-3xl border border-line bg-surface p-5">
-        <IfThenForm tracks={tracks} initialAction={tinyStep} initialTrackId={trackId} submitLabel="احفظ خطتي للفرصة الجاية" onSubmit={onSave} />
+        <IfThenForm tracks={tracks} initial={{ action: tinyStep, trackId }} submitLabel="احفظ خطتي للفرصة الجاية" onSubmit={onSave} />
       </div>
     </StepFrame>
   );

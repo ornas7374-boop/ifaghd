@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { IfThenPlan, Track } from "@/lib/types";
 import { Card } from "../ui/Card";
 
@@ -7,10 +8,17 @@ export function PlansToday({ plans, tracks }: { plans: IfThenPlan[]; tracks: Tra
     .sort((a, b) => (a.time ?? "99:99").localeCompare(b.time ?? "99:99"));
 
   return (
-    <Card title="خططك إذا–فإن لليوم">
+    <Card
+      title="خططك إذا–فإن لليوم"
+      action={
+        <Link href="/plans" className="text-sm font-semibold text-accent">
+          {active.length ? "إدارة" : "أضف خطة"}
+        </Link>
+      }
+    >
       {active.length === 0 ? (
         <p className="text-base leading-relaxed text-muted">
-          ما عندك خطط للحين. لما تكتب خطة (من زر الطوارئ مثلًا) تظهر هنا كل يوم.
+          ما عندك خطط للحين. اكتب خطة وحدة مربوطة بصلاة، وبتظهر هنا كل يوم.
         </p>
       ) : (
         <ul className="space-y-3">

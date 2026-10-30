@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { setFrog, updateFrog } from "@/lib/db";
 import type { DateKey, Frog, Track } from "@/lib/types";
@@ -7,11 +8,19 @@ import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { Chip, TextInput } from "../ui/fields";
 import { IconCheck, IconPencil, IconPlay } from "../ui/icons";
-import { FocusTimer } from "./FocusTimer";
 
-export function FrogCard({ date, frog, tracks }: { date: DateKey; frog?: Frog; tracks: Track[] }) {
+export function FrogCard({
+  date,
+  frog,
+  tracks,
+  sessions,
+}: {
+  date: DateKey;
+  frog?: Frog;
+  tracks: Track[];
+  sessions: number; // جلسات اليوم على هالمهمة
+}) {
   const [editing, setEditing] = useState(false);
-  const [focusing, setFocusing] = useState(false);
 
   if (!frog || editing) {
     return <FrogEditor date={date} frog={frog} tracks={tracks} onDone={() => setEditing(false)} />;
@@ -34,7 +43,7 @@ export function FrogCard({ date, frog, tracks }: { date: DateKey; frog?: Frog; t
       <p className={`text-2xl font-bold leading-snug ${frog.done ? "text-muted line-through decoration-ok decoration-2" : ""}`}>{frog.text}</p>
       <div className="mt-2 flex flex-wrap gap-2 text-sm text-muted">
         {track && <span className="rounded-full bg-surface-2 px-3 py-1">{track.name}</span>}
-        {frog.sessions > 0 && <span className="rounded-full bg-surface-2 px-3 py-1 tabular-nums">جلسات: {frog.sessions}</span>}
+        {sessions > 0 && <span className="rounded-full bg-surface-2 px-3 py-1 tabular-nums">جلسات: {sessions}</span>}
       </div>
 
       {frog.done ? (
@@ -44,15 +53,14 @@ export function FrogCard({ date, frog, tracks }: { date: DateKey; frog?: Frog; t
             تراجع
           </button>
         </div>
-      ) : focusing ? (
-        <div className="mt-4">
-          <FocusTimer onComplete={() => updateFrog(date, { sessions: frog.sessions + 1 })} onClose={() => setFocusing(false)} />
-        </div>
       ) : (
         <div className="mt-5 grid grid-cols-[1fr_auto] gap-3">
-          <Button onClick={() => setFocusing(true)}>
+          <Link
+            href="/timer?frog=1"
+            className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-accent px-5 text-lg font-semibold text-accent-fg transition active:scale-[0.98]"
+          >
             <IconPlay /> ابدأ جلسة
-          </Button>
+          </Link>
           <Button variant="secondary" onClick={() => updateFrog(date, { done: true, doneAt: new Date().toISOString() })} aria-label="خلصتها">
             <IconCheck /> خلصتها
           </Button>
@@ -68,7 +76,7 @@ function FrogEditor({ date, frog, tracks, onDone }: { date: DateKey; frog?: Frog
 
   const save = async () => {
     if (!text.trim()) return;
-    await setFrog(date, { text: text.trim(), trackId, done: false, sessions: frog?.sessions ?? 0 });
+    await setFrog(date, { text: text.trim(), trackId, done: false });
     onDone();
   };
 

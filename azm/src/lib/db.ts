@@ -6,7 +6,18 @@ import { storage } from "./storage";
 import { toDateKey } from "./date";
 import { newId } from "./id";
 import { DEFAULT_HABITS, DEFAULT_TRACKS } from "./content/defaults";
-import type { DateKey, DayRecord, Frog, Habit, IfThenPlan, Settings, StuckEntry } from "./types";
+import type {
+  ActiveTimer,
+  DateKey,
+  DayRecord,
+  Frog,
+  Habit,
+  IfThenPlan,
+  ProcrastinationEntry,
+  Session,
+  Settings,
+  StuckEntry,
+} from "./types";
 
 const KEYS = {
   settings: "settings",
@@ -14,6 +25,9 @@ const KEYS = {
   plans: "plans",
   habits: "habits",
   stuck: "stuck-log",
+  sessions: "sessions",
+  activeTimer: "active-timer",
+  procrastination: "procrastination-log",
 };
 
 // إشعار بسيط عشان أي شاشة مفتوحة تتحدّث لما تتغير البيانات.
@@ -31,12 +45,17 @@ async function save<T>(key: string, value: T) {
 // ---------- الإعدادات ----------
 export async function getSettings(): Promise<Settings> {
   const stored = await storage.read<Partial<Settings>>(KEYS.settings);
-  if (stored?.startDate) {
-    return { frogTime: "07:00", tracks: DEFAULT_TRACKS, ...stored } as Settings;
-  }
-  const fresh: Settings = { startDate: toDateKey(), frogTime: "07:00", tracks: DEFAULT_TRACKS };
-  await storage.write(KEYS.settings, fresh);
-  return fresh;
+  const today = toDateKey();
+  const defaults: Settings = {
+    startDate: today,
+    frogTime: "07:00",
+    tracks: DEFAULT_TRACKS,
+    windowMinutes: 60,
+    windowChangedAt: today,
+  };
+  if (stored?.startDate) return { ...defaults, windowChangedAt: stored.startDate, ...stored };
+  await storage.write(KEYS.settings, defaults);
+  return defaults;
 }
 
 export async function updateSettings(patch: Partial<Settings>): Promise<void> {
@@ -71,6 +90,14 @@ export async function addPlan(
   const full: IfThenPlan = { ...plan, id: newId(), createdAt: new Date().toISOString(), active: true };
   await save(KEYS.plans, [...(await getPlans()), full]);
   return full;
+}
+
+export async function updatePlan(id: string, patch: Partial<IfThenPlan>): Promise<void> {
+  await save(KEYS.plans, (await getPlans()).map((p) => (p.id === id ? { ...p, ...patch } : p)));
+}
+
+export async function deletePlan(id: string): Promise<void> {
+  await save(KEYS.plans, (await getPlans()).filter((p) => p.id !== id));
 }
 
 // ---------- العادات ----------
@@ -108,4 +135,39 @@ export async function getStuckLog(): Promise<StuckEntry[]> {
 export async function addStuckEntry(entry: Omit<StuckEntry, "id" | "at">): Promise<void> {
   const full: StuckEntry = { ...entry, id: newId(), at: new Date().toISOString() };
   await save(KEYS.stuck, [...(await getStuckLog()), full]);
+}
+
+// ---------- جلسات المؤقت ----------
+export async function getSessions(): Promise<Session[]> {
+  return (await storage.read<Session[]>(KEYS.sessions)) ?? [];
+}
+
+export async function addSession(session: Omit<Session, "id">): Promise<void> {
+  await save(KEYS.sessions, [...(await getSessions()), { ...session, id: newId() }]);
+}
+
+export async function getActiveTimer(): Promise<ActiveTimer | null> {
+  return storage.read<ActiveTimer>(KEYS.activeTimer);
+}
+
+export async function setActiveTimer(timer: ActiveTimer | null): Promise<void> {
+  if (timer) await save(KEYS.activeTimer, timer);
+  else {
+    await storage.remove(KEYS.activeTimer);
+    listeners.forEach((l) => l());
+  }
+}
+
+// ---------- سجل التسويف ----------
+export async function getProcrastinationLog(): Promise<ProcrastinationEntry[]> {
+  return (await storage.read<ProcrastinationEntry[]>(KEYS.procrastination)) ?? [];
+}
+
+export async function addProcrastination(entry: Omit<ProcrastinationEntry, "id" | "at">): Promise<void> {
+  const full: ProcrastinationEntry = { ...entry, id: newId(), at: new Date().toISOString() };
+  await save(KEYS.procrastination, [...(await getProcrastinationLog()), full]);
+}
+
+export async function deleteProcrastination(id: string): Promise<void> {
+  await save(KEYS.procrastination, (await getProcrastinationLog()).filter((e) => e.id !== id));
 }
