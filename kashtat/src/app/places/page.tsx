@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PlaceCard } from "@/components/places/place-card";
 import { SearchFilters } from "@/components/places/search-filters";
+import { breadcrumbLd, JsonLd } from "@/components/seo/json-ld";
 import { SiteFooter } from "@/components/site/site-footer";
 import { SiteHeader } from "@/components/site/site-header";
 import { ChevronDownIcon } from "@/components/ui/icons";
@@ -16,6 +17,7 @@ import {
 } from "@/lib/db/places";
 import { bookingQuery, parseSearchParams, type RawParams } from "@/lib/search-params";
 import { pageMeta } from "@/lib/seo";
+import { absoluteUrl } from "@/lib/site";
 import { placesCount } from "@/lib/plural";
 import { TYPE_LIST } from "@/lib/type-content";
 
@@ -91,6 +93,12 @@ export default async function PlacesPage(props: PageProps<"/places">) {
 
   return (
     <>
+      <JsonLd
+        data={breadcrumbLd([
+          { name: "الرئيسية", url: absoluteUrl("/") },
+          { name: "كل الأماكن", url: absoluteUrl("/places") },
+        ])}
+      />
       <SiteHeader />
       <main id="main" className="mx-auto w-full max-w-[1248px] flex-1 px-4 py-10 sm:px-6 sm:py-14">
         <div className="mb-8 flex flex-col gap-2">

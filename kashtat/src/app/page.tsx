@@ -47,7 +47,7 @@ const siteLd = [
     "@id": `${SITE_URL}/#organization`,
     name: SITE_NAME,
     url: SITE_URL,
-    logo: absoluteUrl("/favicon.ico"),
+    logo: absoluteUrl("/icons/icon-512.png"),
     image: absoluteUrl(DEFAULT_OG_IMAGE),
     areaServed: { "@type": "Country", name: "SA" },
     email: CONTACT_EMAIL,
