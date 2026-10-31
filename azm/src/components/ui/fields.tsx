@@ -27,3 +27,13 @@ export function Chip({
     />
   );
 }
+
+export function TextArea({ className = "", ...rest }: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
+  return (
+    <textarea
+      rows={3}
+      className={`w-full rounded-2xl border border-line bg-surface-2 p-4 text-lg leading-relaxed text-fg placeholder:text-muted/70 focus:border-accent focus:outline-none ${className}`}
+      {...rest}
+    />
+  );
+}

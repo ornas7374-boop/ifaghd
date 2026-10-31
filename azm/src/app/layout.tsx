@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Sans_Arabic } from "next/font/google";
 import { AppShell } from "@/components/AppShell";
+import { ServiceWorker } from "@/components/ServiceWorker";
 import "./globals.css";
 
 const plex = IBM_Plex_Sans_Arabic({
@@ -14,6 +15,15 @@ export const metadata: Metadata = {
   title: "عَزم",
   description: "تطبيقك الشخصي لكسر التسويف وبناء الصلابة الذهنية.",
   applicationName: "عَزم",
+  appleWebApp: { capable: true, title: "عَزم", statusBarStyle: "black-translucent" },
+  icons: {
+    icon: [
+      { url: "/icons/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: "/icons/apple-touch-icon.png",
+  },
+  formatDetection: { telephone: false },
 };
 
 export const viewport: Viewport = {
@@ -34,6 +44,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       </head>
       <body className="antialiased">
         <AppShell>{children}</AppShell>
+        <ServiceWorker />
       </body>
     </html>
   );

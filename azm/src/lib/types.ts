@@ -98,3 +98,58 @@ export interface ProcrastinationEntry {
   trackId: string | null;
   instead: string; // وش سويت بدالها
 }
+
+export interface Task {
+  id: string;
+  text: string;
+  trackId: string | null;
+  done: boolean;
+  createdAt: string;
+  source: "control" | "review" | "manual";
+}
+
+export interface WeeklyReview {
+  id: string;
+  date: DateKey; // يوم كتابة المحاسبة
+  achieved: string;
+  postponed: string;
+  helpful: string;
+  nextTasks: Record<string, string[]>; // trackId → 3 مهام
+}
+
+export interface ControlItem {
+  id: string;
+  text: string;
+  side: "mine" | "not";
+  taskId?: string; // لو تحوّل لمهمة
+  createdAt: string;
+}
+
+export interface Constitution {
+  principles: string;
+  fixedPlans: string;
+  sleep: string; // "HH:MM"
+  wake: string;
+  envRules: string[];
+  emergency: string;
+  updatedAt?: string;
+}
+
+/** موعد ثابت لنافذة عمل — يُصدَّر للتقويم. */
+export interface WindowSlot {
+  id: string;
+  trackId: string | null;
+  start: string; // "HH:MM"
+  minutes: number;
+}
+
+export interface CalendarPrefs {
+  frog: boolean;
+  planning: boolean;
+  review: boolean;
+  plans: boolean;
+  windows: boolean;
+  planningTime: string;
+  reviewTime: string; // مساء الخميس
+  windowSlots: WindowSlot[];
+}

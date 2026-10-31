@@ -13,7 +13,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <main className={`mx-auto w-full max-w-lg px-4 pt-[max(1rem,env(safe-area-inset-top))] ${isStuck ? "" : "pb-32"}`}>
         {children}
       </main>
-      {!isStuck && <BottomNav />}
+      {!isStuck && (
+        <div className="print:hidden">
+          <BottomNav />
+        </div>
+      )}
     </>
   );
 }

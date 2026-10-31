@@ -2,18 +2,18 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { IconBranch, IconChart, IconHome, IconLifebuoy, IconTimer } from "./ui/icons";
+import { IconChart, IconGrid, IconHome, IconLifebuoy, IconTimer } from "./ui/icons";
 
 const LEFT = [
   { href: "/", label: "اليوم", Icon: IconHome, match: (p: string) => p === "/" },
-  { href: "/plans", label: "الخطط", Icon: IconBranch, match: (p: string) => p.startsWith("/plans") },
+  { href: "/timer", label: "المؤقت", Icon: IconTimer, match: (p: string) => p.startsWith("/timer") },
 ];
 const RIGHT = [
-  { href: "/timer", label: "المؤقت", Icon: IconTimer, match: (p: string) => p.startsWith("/timer") },
   { href: "/log", label: "السجل", Icon: IconChart, match: (p: string) => p.startsWith("/log") || p.startsWith("/insights") },
+  { href: "/more", label: "المزيد", Icon: IconGrid, match: (p: string) => !["/", "/timer", "/log", "/insights"].includes(p) },
 ];
 
-// شريط سفلي بأربع صفحات، وزر الطوارئ في النص — موجود دائمًا.
+// شريط سفلي: الأكثر استخدامًا + «المزيد»، وزر الطوارئ في النص — موجود دائمًا.
 export function BottomNav() {
   const pathname = usePathname();
 

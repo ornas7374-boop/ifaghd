@@ -8,6 +8,11 @@ import { newId } from "./id";
 import { DEFAULT_HABITS, DEFAULT_TRACKS } from "./content/defaults";
 import type {
   ActiveTimer,
+  CalendarPrefs,
+  Constitution,
+  ControlItem,
+  Task,
+  WeeklyReview,
   DateKey,
   DayRecord,
   Frog,
@@ -28,6 +33,12 @@ const KEYS = {
   sessions: "sessions",
   activeTimer: "active-timer",
   procrastination: "procrastination-log",
+  program: "program-done",
+  reviews: "reviews",
+  control: "control",
+  tasks: "tasks",
+  constitution: "constitution",
+  calendar: "calendar",
 };
 
 // إشعار بسيط عشان أي شاشة مفتوحة تتحدّث لما تتغير البيانات.
@@ -170,4 +181,135 @@ export async function addProcrastination(entry: Omit<ProcrastinationEntry, "id" 
 
 export async function deleteProcrastination(id: string): Promise<void> {
   await save(KEYS.procrastination, (await getProcrastinationLog()).filter((e) => e.id !== id));
+}
+
+// ---------- العادات (إدارة) ----------
+export async function addHabit(name: string): Promise<void> {
+  const habit: Habit = { id: newId(), name, createdAt: toDateKey(), doneDates: [] };
+  await save(KEYS.habits, [...(await getHabits()), habit]);
+}
+
+export async function updateHabit(id: string, patch: Partial<Habit>): Promise<void> {
+  await save(KEYS.habits, (await getHabits()).map((h) => (h.id === id ? { ...h, ...patch } : h)));
+}
+
+// ---------- برنامج الـ30 يوم ----------
+export async function getProgramDone(): Promise<number[]> {
+  return (await storage.read<number[]>(KEYS.program)) ?? [];
+}
+
+export async function toggleProgramDay(day: number): Promise<void> {
+  const done = await getProgramDone();
+  await save(KEYS.program, done.includes(day) ? done.filter((d) => d !== day) : [...done, day].sort((a, b) => a - b));
+}
+
+// ---------- المحاسبة الأسبوعية ----------
+export async function getReviews(): Promise<WeeklyReview[]> {
+  return (await storage.read<WeeklyReview[]>(KEYS.reviews)) ?? [];
+}
+
+export async function saveReview(review: Omit<WeeklyReview, "id">): Promise<void> {
+  const reviews = await getReviews();
+  const existing = reviews.find((r) => r.date === review.date);
+  const next = existing
+    ? reviews.map((r) => (r.date === review.date ? { ...review, id: r.id } : r))
+    : [...reviews, { ...review, id: newId() }];
+  await save(KEYS.reviews, next);
+}
+
+// ---------- المهام ----------
+export async function getTasks(): Promise<Task[]> {
+  return (await storage.read<Task[]>(KEYS.tasks)) ?? [];
+}
+
+export async function addTasks(items: Omit<Task, "id" | "createdAt" | "done">[]): Promise<Task[]> {
+  const now = new Date().toISOString();
+  const created = items.map((t) => ({ ...t, id: newId(), createdAt: now, done: false }));
+  await save(KEYS.tasks, [...(await getTasks()), ...created]);
+  return created;
+}
+
+export async function updateTask(id: string, patch: Partial<Task>): Promise<void> {
+  await save(KEYS.tasks, (await getTasks()).map((t) => (t.id === id ? { ...t, ...patch } : t)));
+}
+
+export async function deleteTask(id: string): Promise<void> {
+  await save(KEYS.tasks, (await getTasks()).filter((t) => t.id !== id));
+}
+
+// ---------- ثنائية التحكم ----------
+export async function getControlItems(): Promise<ControlItem[]> {
+  return (await storage.read<ControlItem[]>(KEYS.control)) ?? [];
+}
+
+export async function saveControlItems(items: ControlItem[]): Promise<void> {
+  await save(KEYS.control, items);
+}
+
+// ---------- الدستور ----------
+export const DEFAULT_CONSTITUTION: Constitution = {
+  principles: "أبدأ قبل ما أكون جاهز. مُرسَل أحسن من ممتاز. لا أفوّت مرتين.",
+  fixedPlans: "",
+  sleep: "23:00",
+  wake: "06:00",
+  envRules: ["الجوال برا الغرفة وقت ساعة الضفدع", "تبويب واحد مفتوح وقت الشغل", "تطبيقات التواصل مو على الشاشة الرئيسية"],
+  emergency:
+    "1. أسمّي الشعور.\n2. أتنفس دقيقة (4-4-4-4).\n3. أصغّر الخطوة لين تصير سخيفة.\n4. أبعد الجوال وأسكّر التبويبات.\n5. 10 دقائق بس، وبعدها أنا حر.\nإذا ما قدرت: أسامح نفسي وأكتب خطة إذا–فإن لأقرب فرصة.",
+};
+
+export async function getConstitution(): Promise<Constitution> {
+  return { ...DEFAULT_CONSTITUTION, ...((await storage.read<Constitution>(KEYS.constitution)) ?? {}) };
+}
+
+export async function saveConstitution(c: Constitution): Promise<void> {
+  await save(KEYS.constitution, { ...c, updatedAt: new Date().toISOString() });
+}
+
+// ---------- التقويم ----------
+export const DEFAULT_CALENDAR: CalendarPrefs = {
+  frog: true,
+  planning: true,
+  review: true,
+  plans: true,
+  windows: true,
+  planningTime: "21:30",
+  reviewTime: "20:00",
+  windowSlots: [],
+};
+
+export async function getCalendarPrefs(): Promise<CalendarPrefs> {
+  return { ...DEFAULT_CALENDAR, ...((await storage.read<CalendarPrefs>(KEYS.calendar)) ?? {}) };
+}
+
+export async function updateCalendarPrefs(patch: Partial<CalendarPrefs>): Promise<void> {
+  await save(KEYS.calendar, { ...(await getCalendarPrefs()), ...patch });
+}
+
+// ---------- نسخ احتياطي ----------
+const PREFIX_KEYS = () => Object.values(KEYS).filter((k): k is string => typeof k === "string");
+
+export async function exportAll(): Promise<Record<string, unknown>> {
+  const out: Record<string, unknown> = { app: "azm", version: 1, exportedAt: new Date().toISOString(), data: {} };
+  const data = out.data as Record<string, unknown>;
+  for (const k of PREFIX_KEYS()) data[k] = await storage.read(k);
+  // أيام «المهمة الوحدة»
+  if (typeof window !== "undefined") {
+    for (let i = 0; i < window.localStorage.length; i++) {
+      const full = window.localStorage.key(i) ?? "";
+      if (full.startsWith("azm:v1:day:")) {
+        const k = full.slice("azm:v1:".length);
+        data[k] = await storage.read(k);
+      }
+    }
+  }
+  return out;
+}
+
+export async function importAll(backup: { app?: string; data?: Record<string, unknown> }): Promise<void> {
+  if (backup.app !== "azm" || !backup.data) throw new Error("الملف مو نسخة احتياطية من عَزم");
+  for (const [k, v] of Object.entries(backup.data)) {
+    if (v === null || v === undefined) await storage.remove(k);
+    else await storage.write(k, v);
+  }
+  listeners.forEach((l) => l());
 }

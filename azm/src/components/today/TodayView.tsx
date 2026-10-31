@@ -1,6 +1,7 @@
 "use client";
 
-import { getDay, getHabits, getPlans, getSessions, getSettings } from "@/lib/db";
+import Link from "next/link";
+import { getDay, getHabits, getPlans, getReviews, getSessions, getSettings } from "@/lib/db";
 import { dateOf } from "@/lib/stats";
 import { toDateKey } from "@/lib/date";
 import { useStored } from "@/lib/hooks/useStored";
@@ -21,8 +22,10 @@ async function loadToday() {
     getPlans(),
     getSessions(),
   ]);
+  // مساء الخميس: تذكير بالمحاسبة إذا ما انكتبت اليوم.
+  const reviewDue = now.getDay() === 4 && now.getHours() >= 17 && !(await getReviews()).some((r) => r.date === date);
   const frogSessions = sessions.filter((s) => s.frog && dateOf(s.startedAt) === date).length;
-  return { now, date, settings, day, habits, plans, frogSessions };
+  return { now, date, settings, day, habits, plans, frogSessions, reviewDue };
 }
 
 export function TodayView() {
@@ -30,10 +33,16 @@ export function TodayView() {
 
   if (!data) return <TodaySkeleton />;
 
-  const { now, date, settings, day, habits, plans, frogSessions } = data;
+  const { now, date, settings, day, habits, plans, frogSessions, reviewDue } = data;
   return (
     <div className="space-y-4">
       <TodayHeader now={now} />
+      {reviewDue && (
+        <Link href="/review" className="flex min-h-16 items-center justify-between gap-3 rounded-3xl border border-calm/40 bg-calm/10 p-5 text-lg font-semibold">
+          📝 الليلة محاسبة الأسبوع
+          <span className="text-calm">ابدأ ‹</span>
+        </Link>
+      )}
       <FrogCard key={date} date={date} frog={day.frog} tracks={settings.tracks} sessions={frogSessions} />
       <ProgramCard startDate={settings.startDate} today={date} />
       <PlansToday plans={plans} tracks={settings.tracks} />

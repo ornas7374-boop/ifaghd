@@ -1,6 +1,7 @@
 // حسابات التحليل — دوال صافية بدون تخزين، سهلة الاختبار.
 import { addDays, daysBetween, toDateKey } from "./date";
-import type { DateKey, FeelingId, ProcrastinationEntry, Session } from "./types";
+import { HABIT_TARGET_DAYS } from "./content/defaults";
+import type { DateKey, FeelingId, Habit, ProcrastinationEntry, Session, StuckEntry } from "./types";
 
 export const dateOf = (iso: string): DateKey => toDateKey(new Date(iso));
 
@@ -95,3 +96,71 @@ export function windowStreak(sessions: Session[], today: DateKey, since: DateKey
 
 export const WINDOW_STREAK_FOR_SUGGESTION = 5;
 export const WINDOW_STEP_MIN = 15;
+
+// ---------- العادات ----------
+
+export interface HabitStats {
+  doneToday: boolean;
+  doneCount: number;
+  trackedDays: number;
+  rate: number; // 0..1
+  toTarget: number; // 0..66
+  missedYesterday: boolean;
+  missedTwice: boolean;
+}
+
+export function habitStats(h: Habit, today: DateKey): HabitStats {
+  const yesterday = addDays(today, -1);
+  const before = addDays(today, -2);
+  const done = new Set(h.doneDates.filter((d) => d <= today));
+  const trackedDays = Math.max(1, daysBetween(h.createdAt, today) + 1);
+  const missedYesterday = h.createdAt <= yesterday && !done.has(yesterday);
+  return {
+    doneToday: done.has(today),
+    doneCount: done.size,
+    trackedDays,
+    rate: Math.min(1, done.size / trackedDays),
+    toTarget: Math.min(HABIT_TARGET_DAYS, done.size),
+    missedYesterday,
+    missedTwice: missedYesterday && h.createdAt <= before && !done.has(before),
+  };
+}
+
+/** رسالة دافئة بدون عقاب — قاعدة «لا تفوّت مرتين». */
+export function habitNudge(s: HabitStats): string | null {
+  if (s.doneToday) return null;
+  if (s.missedTwice) return "رجعتك اليوم أهم من أي يوم فات. ابدأ بأصغر نسخة.";
+  if (s.missedYesterday) return "فوّت يوم؟ عادي. المهم ما تفوّت مرتين.";
+  return null;
+}
+
+// ---------- ملخص الأسبوع للمحاسبة ----------
+export function weekSummary(
+  today: DateKey,
+  data: { log: ProcrastinationEntry[]; sessions: Session[]; stuck: StuckEntry[]; habits: Habit[] },
+) {
+  const from = addDays(today, -6);
+  const inWeek = (iso: string) => dateOf(iso) >= from && dateOf(iso) <= today;
+  const log = data.log.filter((e) => inWeek(e.at));
+  const sessions = data.sessions.filter((s) => inWeek(s.startedAt));
+  const stuck = data.stuck.filter((s) => inWeek(s.at));
+  let possible = 0;
+  let done = 0;
+  for (const h of data.habits.filter((x) => !x.archived)) {
+    for (let i = 0; i < 7; i++) {
+      const d = addDays(from, i);
+      if (d < h.createdAt) continue;
+      possible++;
+      if (h.doneDates.includes(d)) done++;
+    }
+  }
+  return {
+    procrastinations: log.length,
+    topFeeling: countBy(log, (e) => e.feeling)[0]?.[0] ?? null,
+    minutes: sessions.reduce((a, s) => a + s.actualMin, 0),
+    sessions: sessions.length,
+    stuckUses: stuck.length,
+    stuckStarted: stuck.filter((s) => s.outcome !== "not_started").length,
+    habitRate: possible ? done / possible : null,
+  };
+}

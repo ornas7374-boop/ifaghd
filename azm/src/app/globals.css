@@ -79,3 +79,15 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+@media print {
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  main {
+    padding: 0 !important;
+    max-width: none !important;
+  }
+}
