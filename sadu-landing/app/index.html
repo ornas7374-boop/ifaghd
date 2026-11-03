@@ -145,6 +145,7 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
         <button class="chip" role="radio" aria-checked="false" data-room="kitchen">مطبخ</button>
         <button class="chip" role="radio" aria-checked="false" data-room="bathroom">حمام</button>
         <button class="chip" role="radio" aria-checked="false" data-room="dressing">غرفة ملابس</button>
+        <button class="chip" role="radio" aria-checked="false" data-room="office">مكتب</button>
       </div>
     </section>
 
@@ -207,7 +208,7 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
   "use strict";
   var $ = function(id){ return document.getElementById(id); };
   var STYLE_NAMES = {najdi:"نجدي",hijazi:"حجازي",gulf_modern:"خليجي مودرن",classic_luxury:"كلاسيكي فاخر",neoclassic:"نيوكلاسيك",calm_modern:"مودرن هادئ",boho_gulf:"بوهيمي خليجي",emirati:"إماراتي معاصر",night_luxury:"فخامة ليلية",warm_luxury:"فخامة دافئة",quiet_luxury:"فخامة هادئة"};
-  var ROOM_NAMES = {majlis_men:"مجلس رجال",majlis_women:"مجلس نساء",living:"صالة",bedroom:"غرفة نوم",annex:"ملحق",dining:"مقلط",kitchen:"مطبخ",bathroom:"حمام",dressing:"غرفة ملابس"};
+  var ROOM_NAMES = {majlis_men:"مجلس رجال",majlis_women:"مجلس نساء",living:"صالة",bedroom:"غرفة نوم",annex:"ملحق",dining:"مقلط",kitchen:"مطبخ",bathroom:"حمام",dressing:"غرفة ملابس",office:"مكتب"};
   var state = { image:null, ratio:4/3, room:"majlis_men", style:null, busy:false };
 
   /* الشبكة: مربعات المعيّن */

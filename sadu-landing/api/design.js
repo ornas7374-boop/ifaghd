@@ -17,22 +17,24 @@ const ROOMS = {
   dining: "a Saudi guest dining room (muqallat)",
   kitchen: "a kitchen",
   bathroom: "a bathroom",
-  dressing: "a walk-in dressing room"
+  dressing: "a walk-in dressing room",
+  office: "a home office"
 };
 
 // "فخامة ليلية" — مأخوذ من مراجع sadu-refs (16 صورة). انظر sadu-refs/README.md
 const NIGHT_BASE = "night luxury style: dark moody palette of charcoal, matte black and warm grey with small accents of dark oak and white-veined black or grey marble; walls finished in large flush matte panels, vertical slats or marble slabs; hidden linear LED lighting is the signature: warm 2700K cove light in a dropped or tray ceiling, thin LED lines along wall panel joints, glowing undersides of floating furniture, backlit niches and shelves; low recessed spotlights, no bright overhead light; very little decor, a single dried-flower vase or sculpture; calm cinematic evening atmosphere";
 const NIGHT_SOFT = "soft heavy fabrics in velvet, boucle and wool; floor-length dark curtains with a sheer layer; deep plush carpet or dark wood floor";
 const NIGHT_ROOM = {
-  bedroom: "low floating platform bed with soft underglow, upholstered panel headboard wall with an LED line above it, dark bedding with a textured throw, floating nightstands, optional wall-mounted TV or projection wall facing the bed",
-  living: "oversized deep velvet sectional sofa in grey, low square coffee tables, floating TV console with underglow, media wall in black marble or dark panels with integrated linear fireplace or backlit shelves",
-  kitchen: "handleless matte charcoal cabinetry to the ceiling, tall units with integrated black ovens, light grey stone backsplash lit by under-cabinet LED, glossy black island with an LED-lit edge, linear recessed ceiling lights",
-  bathroom: "stacked dark natural stone walls, warm wood ceiling, square ceiling-mounted rain shower with LED, floating wood vanity with a white vessel basin and black tap, round mirror, warm wall light",
-  dressing: "floor-to-ceiling wardrobes in dark wood veneer with fluted glass doors and LED-lit shelves, upholstered bench under the window, one sculptural armchair",
+  bedroom: "low floating platform bed in black oak or walnut with warm underglow, full-width headboard wall in dark wood veneer or upholstered panels with a recessed LED line and small spotlights above it, built-in dark shelving beside the bed, dark bedding in grey or black with a textured throw, floating nightstands, optional black leather bed with thin brass trim and a large round mirror, optional wall-mounted TV or projection wall facing the bed",
+  living: "oversized deep velvet sectional sofa in grey, low sculptural black coffee table, floating TV console with underglow, media wall in black marble or dark panels with integrated linear fireplace, built-in black shelving with LED under each shelf, layered dropped ceiling with recessed linear LED lines and black inlay strips, geometric LED lines on dark wall panels, polished light stone floor with a large grey rug",
+  kitchen: "handleless matte black or charcoal cabinetry to the ceiling, tall units with integrated black ovens, black stone or light grey stone backsplash lit by warm under-cabinet LED, black open shelves with LED, large black island with a thick dark stone top, dark wood-grain front panels with recessed LED lines and warm underglow, black dropped ceiling over the island with downlights and a flush ceiling hood, slim black bar stools, warm wood floor",
+  bathroom: "large-format dark grey stone walls and floor, matte black freestanding oval bathtub on a raised platform with a warm LED edge, frameless glass walk-in shower with black rain shower, LED-lit wall niches, floating black vanity with a black vessel basin, round backlit mirror, matte black wall-hung toilet and fixtures, optional stacked natural stone wall with wood ceiling",
+  dressing: "floor-to-ceiling matte black or dark wood wardrobes with open hanging and shelving, vertical and under-shelf LED strips, center island with a glass-top jewelry drawer, round grey velvet pouf, dressing table with a curved velvet chair, LED cove ceiling, warm wood floor with a pale rug",
   dining: "long dark stone or wood dining table, upholstered dark chairs, a linear sculptural pendant over the table, marble feature wall with LED cove",
   majlis_men: "low-profile deep sofas in charcoal velvet along the walls, dark marble feature wall with backlit Arabic calligraphy panel, LED cove ceiling",
   majlis_women: "soft grey and taupe velvet sofas, warm LED cove ceiling, marble feature wall, a sculptural backlit Arabic calligraphy element",
-  annex: "deep modular sofa, media wall with large screen and backlit shelves, dark panels with LED lines"
+  annex: "deep modular sofa, media wall with large screen and backlit shelves, dark panels with LED lines",
+  office: "large black L-shaped or straight desk with a leather-like top and contrast stitching, ergonomic or gaming chair in black, one to three monitors, dark wall with a backlit 3D wall feature, black pegboard or floating shelves with LED, track spotlights, dark carpet or light grey floor with a geometric rug"
 };
 
 // "فخامة دافئة" — مأخوذ من مراجع sadu-refs (الصور 17–30). انظر sadu-refs/README.md
@@ -47,7 +49,8 @@ const WARM_ROOM = {
   dining: "long wood or marble dining table, upholstered curved chairs in cream boucle, gold linear chandelier, fluted wood wall panels and marble floor",
   majlis_men: "deep curved boucle sofas in cream arranged around wood and stone coffee tables, exposed wood ceiling beams, textured backlit feature wall, brass wall sconces, rattan pendant, marble floor with a black inlay border",
   majlis_women: "rounded cream boucle sofas and armchairs, warm wood ceiling beams or cove ceiling, textured plaster feature wall with LED, brass sconces, marble floor with inlay",
-  annex: "curved cream sofa, wood TV wall with LED outline, fluted slats, warm cove lighting"
+  annex: "curved cream sofa, wood TV wall with LED outline, fluted slats, warm cove lighting",
+  office: "light oak or walnut desk with a marble or leather top, cream boucle office chair, fluted wood wall with brass shelves, gold linear pendant, warm cove lighting"
 };
 
 // "فخامة هادئة" — مأخوذ من مراجع sadu-refs (الصور 31–38، مشروع VISION). انظر sadu-refs/README.md
@@ -62,7 +65,8 @@ const QUIET_ROOM = {
   dining: "rounded-edge stone dining table, upholstered greige chairs, flush panel walls with vertical LED slots, a single slim linear pendant",
   majlis_men: "low deep sofas in greige velvet along flush paneled walls, fluted panels framing a large textured art panel, cove lighting, rounded stone coffee tables",
   majlis_women: "rounded boucle sofas in off-white and greige, flush panels with vertical LED slots, textured plaster art panel, soft cove light",
-  annex: "low modular sofa in greige, flush TV wall with floating console, cove lighting"
+  annex: "low modular sofa in greige, flush TV wall with floating console, cove lighting",
+  office: "long floating rounded-edge desk in off-white built into a flush paneled wall, greige upholstered chair, vertical LED slot, textured art panel, small bronze desk lamp"
 };
 
 const STYLE_EXTRAS = {
