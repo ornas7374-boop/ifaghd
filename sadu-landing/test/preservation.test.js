@@ -58,6 +58,7 @@ function roomSvg(o = {}) {
   const pendant = o.pendant ? `
       <line x1="600" y1="60" x2="600" y2="170" stroke="#222" stroke-width="3"/>
       <ellipse cx="600" cy="185" rx="45" ry="22" fill="#c8a24a"/>` : "";
+  const cabinet = o.cabinet ? '<rect x="700" y="360" width="170" height="300" fill="#3a2e26"/><line x1="785" y1="360" x2="785" y2="660" stroke="#1e1712" stroke-width="4"/>' : "";
   const relight = o.relight ? `<rect x="0" y="0" width="${W}" height="${H}" fill="#20140a" opacity="0.38"/>` : "";
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
     <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
@@ -69,7 +70,7 @@ function roomSvg(o = {}) {
     <polygon points="0,900 300,640 900,640 1200,900" fill="#a07c58"/>
     ${planks}
     <line x1="300" y1="220" x2="900" y2="220" stroke="#cfc6b8" stroke-width="3"/>
-    ${coffers}${win}${door}${curtains}${furniture}${pendant}${relight}
+    ${coffers}${win}${door}${curtains}${furniture}${cabinet}${pendant}${relight}
   </svg>`;
 }
 
@@ -91,8 +92,9 @@ async function check(variantBuf) { return validatePreservation(original, variant
 
 test("identical image: architecture preserved but NOT accepted (nothing redesigned)", async () => {
   const r = await check(await render({}));
-  assert.equal(r.pass, true, r.reasons.join("; "));
-  assert.equal(r.changed, false);
+  assert.equal(r.preservation.passed, true, r.reasons.join("; "));
+  assert.equal(r.design.passed, false);
+  assert.ok(r.design.issues.some(i => i.code === "no_real_redesign"));
   assert.equal(r.accepted, false);
 });
 
@@ -119,34 +121,37 @@ test("redesign + curtains + pendant light (allowed occlusions): accepted", async
   assert.equal(r.accepted, true, r.reasons.join("; ") + " " + JSON.stringify(r.elements));
 });
 
-test("window removed: FAILED on the window", async () => {
+test("window removed: PRESERVATION failed — reason is the window, not the camera", async () => {
   const r = await check(await render({ redesign: true, window: false }));
-  assert.equal(r.pass, false);
-  assert.ok(r.reasons.some(x => x.startsWith("window_1")), r.reasons.join("; "));
+  assert.equal(r.preservation.passed, false);
+  assert.equal(r.framing.ok, true, "a removed window must not be reported as a camera change: " + JSON.stringify(r.framing));
+  assert.ok(r.preservation.failures.some(f => f.element === "window_1" && f.code === "element_removed"), r.reasons.join("; "));
 });
 
-test("window moved: FAILED on the window", async () => {
+test("window moved: PRESERVATION failed — reason is the window moving, not the camera", async () => {
   const r = await check(await render({ redesign: true, windowX: 480 }));
-  assert.equal(r.pass, false);
-  assert.ok(r.reasons.some(x => x.startsWith("window_1")), r.reasons.join("; "));
+  assert.equal(r.preservation.passed, false);
+  assert.equal(r.framing.ok, true, JSON.stringify(r.framing));
+  assert.ok(r.preservation.failures.some(f => f.element === "window_1" && f.code === "element_moved"), r.reasons.join("; ") + JSON.stringify(r.elements));
 });
 
-test("door removed: FAILED on the door", async () => {
+test("door removed: PRESERVATION failed on the door", async () => {
   const r = await check(await render({ redesign: true, door: false }));
-  assert.equal(r.pass, false);
-  assert.ok(r.reasons.some(x => x.startsWith("door_1")), r.reasons.join("; "));
+  assert.equal(r.preservation.passed, false);
+  assert.ok(r.preservation.failures.some(f => f.element === "door_1" && f.code === "element_removed"), r.reasons.join("; "));
 });
 
-test("tall wardrobe placed in front of the door: FAILED on the door (furniture may not block an opening)", async () => {
+test("new wardrobe placed in front of the door: architecture preserved, DESIGN failed (door blocked)", async () => {
   const r = await check(await render({ redesign: true, blockDoor: true }));
-  assert.equal(r.pass, false);
-  assert.ok(r.reasons.some(x => x.startsWith("door_1")), r.reasons.join("; "));
+  assert.equal(r.preservation.passed, true, "the door still exists behind the wardrobe: " + r.reasons.join("; "));
+  assert.equal(r.accepted, false);
+  assert.ok(r.design.issues.some(i => i.element === "door_1" && i.code === "door_blocked"), r.reasons.join("; "));
 });
 
-test("ceiling redesigned (coffers + LED): FAILED on the ceiling", async () => {
+test("ceiling redesigned (coffers + LED): PRESERVATION failed on the ceiling", async () => {
   const r = await check(await render({ redesign: true, ceiling: true }));
-  assert.equal(r.pass, false);
-  assert.ok(r.reasons.some(x => x.startsWith("ceiling")), r.reasons.join("; "));
+  assert.equal(r.preservation.passed, false);
+  assert.ok(r.preservation.failures.some(f => f.element === "ceiling" && f.code === "element_changed"), r.reasons.join("; "));
 });
 
 test("camera zoomed in 10%: FAILED on framing", async () => {
@@ -154,7 +159,7 @@ test("camera zoomed in 10%: FAILED on framing", async () => {
   const zoomed = await sharp(full).extract({ left: 60, top: 45, width: 1080, height: 810 }).resize(W, H).jpeg().toBuffer();
   const r = await check(zoomed);
   assert.equal(r.pass, false);
-  assert.ok(r.reasons.some(x => x.startsWith("camera_framing_changed")), r.reasons.join("; ") + JSON.stringify(r.framing));
+  assert.ok(r.preservation.failures.some(f => f.code === "camera_framing_changed"), r.reasons.join("; ") + JSON.stringify(r.framing));
 });
 
 test("camera shifted 5%: FAILED on framing", async () => {
@@ -163,7 +168,7 @@ test("camera shifted 5%: FAILED on framing", async () => {
   const shifted = await sharp(extended).extract({ left: 0, top: 0, width: W, height: H }).jpeg().toBuffer();
   const r = await check(shifted);
   assert.equal(r.pass, false);
-  assert.ok(r.reasons.some(x => x.startsWith("camera_framing_changed")), r.reasons.join("; ") + JSON.stringify(r.framing));
+  assert.ok(r.preservation.failures.some(f => f.code === "camera_framing_changed"), r.reasons.join("; ") + JSON.stringify(r.framing));
 });
 
 test("aspect ratio changed: FAILED immediately", async () => {
@@ -201,3 +206,52 @@ test("method B: outside the protected mask the composite equals the generated im
   assert.ok(diff / n < 4, `mean channel difference ${(diff / n).toFixed(2)} outside the mask`);
 });
 
+// ---- original furniture in front of architecture (occluders) ----
+
+const CABINET = rectMask([[700 / W, 360 / H, 870 / W, 660 / H]]);
+
+test("old furniture covered part of the door: with an occluders mask, removing it is NOT a false failure", async () => {
+  const orig = await render({ cabinet: true });
+  const gen = await render({ redesign: true }); // cabinet gone, door now fully visible
+  const withOcc = await validatePreservation(orig, gen, ELEMENTS, { editableMask: EDITABLE, occluders: CABINET });
+  assert.equal(withOcc.preservation.passed, true, withOcc.reasons.join("; ") + JSON.stringify(withOcc.elements));
+  assert.equal(withOcc.elements.find(e => e.label === "door_1").status, "preserved");
+  // control: without the occluders mask the same pair is misjudged, proving the mask matters
+  const without = await validatePreservation(orig, gen, ELEMENTS, { editableMask: EDITABLE });
+  assert.notEqual(without.elements.find(e => e.label === "door_1").status, "preserved");
+});
+
+test("method B never restores old furniture: occluder pixels come from the generated image", async () => {
+  const orig = await render({ cabinet: true });
+  const gen = await render({ redesign: true, window: false });
+  const pm = rectMask([[370 / W, 270 / H, 630 / W, 530 / H], [710 / W, 320 / H, 850 / W, 645 / H]]);
+  const out = await compositeProtected(orig, gen, pm, { occluders: CABINET });
+  const [a, g, o] = await Promise.all([sharp(out).raw().toBuffer(), sharp(gen).raw().toBuffer(), sharp(orig).raw().toBuffer()]);
+  let dGen = 0, dOrig = 0, n = 0;
+  for (let y = 400; y < 620; y += 3) for (let x = 730; x < 830; x += 3) {
+    const i = (y * W + x) * 3;
+    for (let c = 0; c < 3; c++) { dGen += Math.abs(a[i + c] - g[i + c]); dOrig += Math.abs(a[i + c] - o[i + c]); n++; }
+  }
+  assert.ok(dGen / n < 4, `inside the old cabinet the composite should equal the generated image (diff ${(dGen / n).toFixed(1)})`);
+  assert.ok(dOrig / n > 20, `old cabinet pixels must not come back (diff to original ${(dOrig / n).toFixed(1)})`);
+  // and the removed window is still repaired
+  const r = await validatePreservation(orig, out, ELEMENTS, { editableMask: EDITABLE, occluders: CABINET });
+  assert.equal(r.elements.find(e => e.label === "window_1").status, "preserved", JSON.stringify(r.elements));
+});
+
+// ---- input safety ----
+
+test("rejects non-buffer and oversized inputs", async () => {
+  await assert.rejects(validatePreservation("not-a-buffer", original), /Buffer/);
+  await assert.rejects(validatePreservation(original, Buffer.alloc(16 * 1024 * 1024)), /size/);
+});
+
+
+test("no element masks available: the camera check still works from the whole image", async () => {
+  const full = await render({ redesign: true });
+  const zoomed = await sharp(full).extract({ left: 48, top: 36, width: 1104, height: 828 }).resize(W, H).jpeg().toBuffer();
+  const r = await validatePreservation(original, zoomed, []);
+  assert.equal(r.framing.ok, false, JSON.stringify(r.framing));
+  const same = await validatePreservation(original, await render({ redesign: true }), []);
+  assert.equal(same.framing.ok, true, JSON.stringify(same.framing));
+});
