@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#000000">
+<title>sadu — صمّم غرفتك</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Inter:wght@500;600&family=Reem+Kufi:wght@500..700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#000;--surface:#0D0D0D;--surface-raised:#1A1A1A;--surface-hover:#262626;
+  --border-subtle:#262626;--border-strong:#6B6B6B;
+  --text:#FFF;--text-secondary:#B0B0B0;--text-muted:#8C8C8C;
+  --action:#FFF;--action-hover:#E4E4E4;--on-action:#000;--focus-ring:#FFF;--overlay:rgba(0,0,0,.72);
+  --silver-start:#FFF;--silver-end:#6E6E6E;
+  --error:#F2A09A;--error-bg:#2E1110;--whatsapp:#25D366;
+  --glow-sm:0 0 0 1px #FFFFFF2E,0 0 24px #FFFFFF14;
+  --font-display:"Reem Kufi","IBM Plex Sans Arabic",system-ui,sans-serif;
+  --font-text:Inter,"IBM Plex Sans Arabic",system-ui,sans-serif;
+  --font-latin:Inter,system-ui,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:400 16px/28px var(--font-text);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img,svg{display:block;max-inline-size:100%}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px}
+[hidden]{display:none!important}
+.num{font-family:var(--font-latin);font-variant-numeric:tabular-nums;unicode-bidi:isolate}
+.wrap{max-inline-size:640px;margin-inline:auto;padding:0 16px 120px}
+header{display:flex;align-items:center;justify-content:space-between;min-block-size:64px;padding-inline:16px;border-block-end:1px solid var(--border-subtle);position:sticky;top:0;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:10}
+.logo{inline-size:96px}
+.badge{font:500 13px/22px var(--font-text);color:var(--text-muted);border:1px solid var(--border-strong);border-radius:999px;padding:2px 12px}
+h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gradient(180deg,var(--silver-start),var(--silver-end));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{margin:0 0 24px;color:var(--text-secondary)}
+.step{margin-block:28px}
+.step__h{display:flex;align-items:baseline;gap:10px;margin:0 0 12px;font:600 18px/28px var(--font-display)}
+.step__n{font:600 13px/20px var(--font-latin);color:var(--text-muted)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-block-size:48px;padding:0 20px;border-radius:12px;border:1px solid transparent;font:600 16px/1 var(--font-text);cursor:pointer;text-decoration:none;transition:background-color .15s,transform .08s}
+.btn:active{transform:scale(.98)}
+.btn--primary{background:var(--action);color:var(--on-action)}
+.btn--primary:hover{background:var(--action-hover)}
+.btn--primary:disabled{background:#2E2E2E;color:#8C8C8C;cursor:not-allowed;transform:none}
+.btn--secondary{background:transparent;border-color:var(--border-strong);color:var(--text)}
+.btn--secondary:hover{background:var(--surface-hover)}
+.btn--wa{background:var(--whatsapp);color:#000}
+.btn--lg{min-block-size:56px;inline-size:100%;font-size:17px}
+.btn svg{inline-size:20px;block-size:20px}
+.pick{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pick .btn{inline-size:100%;min-block-size:56px}
+.file{position:absolute;inline-size:1px;block-size:1px;opacity:0;pointer-events:none}
+.preview{position:relative;margin-block-start:12px;border-radius:16px;overflow:hidden;background:var(--surface);border:1px solid var(--border-subtle)}
+.preview img{inline-size:100%;block-size:auto}
+.preview__change{position:absolute;inset-block-end:12px;inset-inline-start:12px;min-block-size:44px;padding:0 14px;border-radius:12px;border:0;background:var(--overlay);color:#fff;font:500 14px/1 var(--font-text);cursor:pointer}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-block-size:44px;padding:0 16px;border-radius:999px;border:1px solid var(--border-strong);background:transparent;font:500 15px/1 var(--font-text);cursor:pointer}
+.chip[aria-checked="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
+.styles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.style{position:relative;text-align:start;min-block-size:76px;padding:12px 14px;border-radius:14px;border:1px solid var(--border-subtle);background:var(--surface);cursor:pointer;display:grid;gap:2px;align-content:center}
+.style b{font:600 16px/26px var(--font-display)}
+.style span{font-size:13px;line-height:20px;color:var(--text-muted)}
+.style[aria-checked="true"]{border:1px solid transparent;background:linear-gradient(var(--surface-raised),var(--surface-raised)) padding-box,linear-gradient(180deg,var(--silver-start),var(--silver-end)) border-box;box-shadow:var(--glow-sm)}
+.style[aria-checked="true"]::after{content:"";position:absolute;inset-block-start:10px;inset-inline-end:10px;inline-size:10px;block-size:10px;background:var(--text)}
+.go{position:fixed;inset-inline:0;inset-block-end:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(to top,#000 65%,#0000);z-index:20}
+.go .btn{max-inline-size:608px;margin-inline:auto;display:flex}
+.hint{margin:8px 0 0;font-size:13px;line-height:22px;color:var(--text-muted);text-align:center}
+.err{margin-block-start:16px;padding:12px 16px;border-radius:12px;background:var(--error-bg);border:1px solid var(--error);color:var(--error);font-size:15px;line-height:24px}
+
+/* loader — موجة مربعات الشعار */
+.loader{display:grid;justify-items:center;gap:16px;padding:40px 0;text-align:center}
+.weave{display:grid;grid-template-columns:repeat(7,14px);grid-template-rows:repeat(7,14px);gap:3px}
+.weave i{background:linear-gradient(180deg,var(--silver-start),var(--silver-end));opacity:.15;animation:wv 1.6s cubic-bezier(.65,0,.35,1) infinite}
+@keyframes wv{0%,100%{opacity:.15}40%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.weave i{animation:none;opacity:.8}}
+.loader p{margin:0;color:var(--text-secondary)}
+
+/* compare */
+.compare{position:relative;border-radius:16px;overflow:hidden;background:var(--surface);user-select:none;touch-action:pan-y}
+.compare img{position:absolute;inset:0;inline-size:100%;block-size:100%;object-fit:cover}
+.compare__after{clip-path:inset(0 var(--pos,50%) 0 0)}
+.compare input{position:absolute;inset:0;inline-size:100%;block-size:100%;margin:0;opacity:0;cursor:ew-resize;z-index:3}
+.compare__line{position:absolute;inset-block:0;inset-inline-start:var(--pos,50%);inline-size:2px;margin-inline-start:-1px;background:#fff;z-index:2;pointer-events:none}
+.compare__knob{position:absolute;top:50%;inset-inline-start:50%;inline-size:44px;block-size:44px;transform:translate(50%,-50%);border-radius:50%;background:#fff;color:#000;display:grid;place-items:center;box-shadow:0 4px 16px #0008}
+.tag{position:absolute;top:12px;z-index:2;padding:2px 12px;border-radius:999px;background:var(--overlay);font:500 13px/22px var(--font-text);color:#fff;pointer-events:none}
+.tag--b{inset-inline-start:12px}.tag--a{inset-inline-end:12px}
+#result,#s3{scroll-margin-top:80px}
+.result__meta{display:flex;justify-content:space-between;margin:10px 0 16px;font-size:14px;color:var(--text-secondary)}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.actions .btn{inline-size:100%}
+.actions .full{grid-column:1/-1}
+
+/* history */
+.history{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;list-style:none;margin:0;padding:0}
+.history button{display:block;inline-size:100%;padding:0;border:1px solid var(--border-subtle);border-radius:10px;overflow:hidden;background:var(--surface);cursor:pointer;text-align:start}
+.history img{aspect-ratio:1;object-fit:cover;inline-size:100%}
+.history span{display:block;padding:4px 8px;font-size:12px;line-height:20px;color:var(--text-secondary)}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs><linearGradient id="sv" gradientUnits="userSpaceOnUse" x1="0" y1="115.2" x2="0" y2="199.2"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#6E6E6E"/></linearGradient></defs>
+  <symbol id="lockup" viewBox="111 111 383 92"><g fill="url(#sv)"><rect x="151.583" y="116.167" width="9.917" height="9.917"/><rect x="139.778" y="127.972" width="9.917" height="9.917"/><rect x="151.583" y="127.972" width="9.917" height="9.917"/><rect x="163.389" y="127.972" width="9.917" height="9.917"/><rect x="127.972" y="139.778" width="9.917" height="9.917"/><rect x="139.778" y="139.778" width="9.917" height="9.917"/><rect x="163.389" y="139.778" width="9.917" height="9.917"/><rect x="175.194" y="139.778" width="9.917" height="9.917"/><rect x="116.167" y="151.583" width="9.917" height="9.917"/><rect x="127.972" y="151.583" width="9.917" height="9.917"/><rect x="151.583" y="151.583" width="9.917" height="9.917"/><rect x="175.194" y="151.583" width="9.917" height="9.917"/><rect x="187.000" y="151.583" width="9.917" height="9.917"/><rect x="127.972" y="163.389" width="9.917" height="9.917"/><rect x="139.778" y="163.389" width="9.917" height="9.917"/><rect x="163.389" y="163.389" width="9.917" height="9.917"/><rect x="175.194" y="163.389" width="9.917" height="9.917"/><rect x="139.778" y="175.194" width="9.917" height="9.917"/><rect x="151.583" y="175.194" width="9.917" height="9.917"/><rect x="163.389" y="175.194" width="9.917" height="9.917"/><rect x="151.583" y="187.000" width="9.917" height="9.917"/><path d="M 264.390625 199.140625 C 280.03125 199.140625 291.015625 191.042969 291.015625 179.285156 C 291.015625 170.574219 285.414062 165.03125 273.65625 162.535156 L 263.117188 160.316406 C 256.792969 158.929688 254.296875 156.65625 254.296875 153.050781 C 254.296875 148.835938 258.957031 145.839844 265.058594 145.839844 C 271.714844 145.839844 275.261719 149.277344 276.703125 153.605469 L 289.570312 151.054688 C 287.078125 141.457031 278.921875 135.078125 264.890625 135.078125 C 250.027344 135.078125 239.878906 142.457031 239.878906 153.9375 C 239.878906 163.03125 245.589844 168.746094 257.292969 171.296875 L 267.886719 173.570312 C 273.542969 174.789062 276.261719 177.066406 276.261719 180.667969 C 276.261719 184.886719 271.769531 188.101562 264.667969 188.101562 C 257.625 188.101562 253.300781 185.164062 251.636719 179.007812 L 238.160156 181.558594 C 240.320312 192.816406 250.136719 199.140625 264.390625 199.140625 Z M 319.496094 199.140625 C 329.144531 199.140625 335.023438 194.644531 337.742188 189.320312 L 338.296875 189.320312 L 338.296875 197.863281 L 352.105469 197.863281 L 352.105469 156.433594 C 352.105469 139.90625 338.464844 135.078125 326.816406 135.078125 C 314.394531 135.078125 304.1875 140.347656 300.527344 151.273438 L 313.894531 153.992188 C 315.390625 149.886719 319.660156 146.171875 326.871094 146.171875 C 333.914062 146.171875 337.6875 149.722656 337.6875 155.765625 L 337.6875 156.042969 C 337.6875 160.316406 333.140625 160.480469 322.378906 161.644531 C 310.398438 162.921875 298.753906 166.472656 298.753906 180.449219 C 298.753906 192.648438 307.679688 199.140625 319.496094 199.140625 Z M 323.210938 188.433594 C 317.109375 188.433594 312.730469 185.660156 312.730469 180.28125 C 312.730469 174.625 317.609375 172.238281 324.097656 171.351562 C 327.816406 170.851562 335.855469 169.855469 337.796875 168.300781 L 337.796875 175.621094 C 337.796875 182.5 332.085938 188.433594 323.210938 188.433594 Z M 389.128906 198.972656 C 399.832031 198.972656 404.601562 192.539062 406.878906 188.046875 L 407.765625 188.046875 L 407.765625 197.863281 L 421.90625 197.863281 L 421.90625 115.222656 L 407.488281 115.222656 L 407.488281 146.117188 L 406.878906 146.117188 C 404.660156 141.734375 400.109375 135.078125 389.074219 135.078125 C 374.765625 135.078125 363.5625 146.339844 363.5625 166.96875 C 363.5625 187.324219 374.433594 198.972656 389.128906 198.972656 Z M 393.066406 187.101562 C 383.417969 187.101562 378.3125 178.5625 378.3125 166.914062 C 378.3125 155.378906 383.304688 146.949219 393.066406 146.949219 C 402.550781 146.949219 407.765625 154.824219 407.765625 166.914062 C 407.765625 179.007812 402.441406 187.101562 393.066406 187.101562 Z M 457.265625 198.640625 C 466.25 198.640625 472.738281 194.3125 476.457031 185.441406 L 476.566406 197.863281 L 490.265625 197.863281 L 490.265625 135.855469 L 475.789062 135.855469 L 475.789062 172.183594 C 475.789062 181.167969 470.242188 186.382812 462.589844 186.382812 C 455.046875 186.382812 450.445312 181.390625 450.445312 173.070312 L 450.445312 135.855469 L 436.023438 135.855469 L 436.023438 175.289062 C 436.023438 190.210938 444.507812 198.640625 457.265625 198.640625 Z"/></g></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></symbol>
+  <symbol id="i-compare" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 7-5 5 5 5M15 7l5 5-5 5"/></symbol>
+</svg>
+
+<header>
+  <svg class="logo" viewBox="0 0 383 92" role="img" aria-label="sadu"><use href="#lockup"/></svg>
+  <span class="badge">نسخة تجريبية</span>
+</header>
+
+<main class="wrap">
+  <h1>صمّم غرفتك</h1>
+  <p class="sub">صوّر غرفتك، واختر أسلوبك، وشاهد التصميم خلال ثوانٍ.</p>
+
+  <div id="editor">
+    <section class="step" aria-labelledby="s1">
+      <h2 class="step__h" id="s1"><span class="step__n">01</span>صورة الغرفة</h2>
+      <div class="pick" id="pick">
+        <label class="btn btn--primary"><svg><use href="#i-camera"/></svg>التقط بالكاميرا
+          <input class="file" id="cam" type="file" accept="image/*" capture="environment"></label>
+        <label class="btn btn--secondary"><svg><use href="#i-upload"/></svg>ارفع صورة
+          <input class="file" id="lib" type="file" accept="image/*"></label>
+      </div>
+      <div class="preview" id="preview" hidden>
+        <img id="previewImg" alt="صورة غرفتك">
+        <button class="preview__change" type="button" id="change">تغيير الصورة</button>
+      </div>
+      <p class="hint">للنتيجة الأفضل: صورة واسعة للغرفة كاملة، في إضاءة النهار.</p>
+    </section>
+
+    <section class="step" aria-labelledby="s2">
+      <h2 class="step__h" id="s2"><span class="step__n">02</span>نوع المكان</h2>
+      <div class="chips" role="radiogroup" aria-labelledby="s2" id="rooms">
+        <button class="chip" role="radio" aria-checked="true" data-room="majlis_men">مجلس رجال</button>
+        <button class="chip" role="radio" aria-checked="false" data-room="majlis_women">مجلس نساء</button>
+        <button class="chip" role="radio" aria-checked="false" data-room="living">صالة</button>
+        <button class="chip" role="radio" aria-checked="false" data-room="bedroom">غرفة نوم</button>
+        <button class="chip" role="radio" aria-checked="false" data-room="annex">ملحق</button>
+      </div>
+    </section>
+
+    <section class="step" aria-labelledby="s3">
+      <h2 class="step__h" id="s3"><span class="step__n">03</span>الأسلوب</h2>
+      <div class="styles" role="radiogroup" aria-labelledby="s3" id="styles">
+        <button class="style" role="radio" aria-checked="false" data-style="najdi"><b>نجدي</b><span>طين وخشب وزخارف السدو</span></button>
+        <button class="style" role="radio" aria-checked="false" data-style="hijazi"><b>حجازي</b><span>رواشين ونقوش خشبية</span></button>
+        <button class="style" role="radio" aria-checked="false" data-style="gulf_modern"><b>خليجي مودرن</b><span>خطوط هادئة وخامات فاخرة</span></button>
+        <button class="style" role="radio" aria-checked="false" data-style="classic_luxury"><b>كلاسيكي فاخر</b><span>ذهبيات هادئة وأقمشة غنية</span></button>
+        <button class="style" role="radio" aria-checked="false" data-style="neoclassic"><b>نيوكلاسيك</b><span>كلاسيكي بلمسة عصرية</span></button>
+        <button class="style" role="radio" aria-checked="false" data-style="calm_modern"><b>مودرن هادئ</b><span>ألوان محايدة ومساحات مريحة</span></button>
+        <button class="style" role="radio" aria-checked="false" data-style="boho_gulf"><b>بوهيمي خليجي</b><span>سجاد وخامات طبيعية</span></button>
+        <button class="style" role="radio" aria-checked="false" data-style="emirati"><b>إماراتي معاصر</b><span>تراث بخطوط حديثة</span></button>
+      </div>
+    </section>
+    <div class="err" id="err" role="alert" hidden></div>
+  </div>
+
+  <section id="loading" class="loader" hidden aria-live="polite">
+    <div class="weave" id="weave" aria-hidden="true"></div>
+    <p>نصمّم غرفتك الآن… <span class="num" id="secs">0</span> ثانية</p>
+  </section>
+
+  <section id="result" hidden aria-labelledby="rh">
+    <h2 class="step__h" id="rh">التصميم الجديد</h2>
+    <div class="compare" id="compare">
+      <img id="beforeImg" alt="قبل">
+      <img id="afterImg" class="compare__after" alt="بعد">
+      <input type="range" min="0" max="100" value="50" aria-label="حرّك للمقارنة بين قبل وبعد" id="range">
+      <div class="compare__line"><span class="compare__knob"><svg width="20" height="20"><use href="#i-compare"/></svg></span></div>
+      <span class="tag tag--b">قبل</span><span class="tag tag--a">بعد</span>
+    </div>
+    <div class="result__meta"><span id="metaStyle"></span><span id="metaTime" class="num"></span></div>
+    <div class="actions">
+      <button class="btn btn--primary full" type="button" id="another">جرّب أسلوباً آخر</button>
+      <a class="btn btn--secondary" id="save" target="_blank" rel="noopener">حفظ الصورة</a>
+      <a class="btn btn--wa" id="share" target="_blank" rel="noopener">شارك عبر واتساب</a>
+      <button class="btn btn--secondary full" type="button" id="newPhoto">صورة جديدة</button>
+    </div>
+  </section>
+
+  <section class="step" id="historyWrap" hidden aria-labelledby="hh">
+    <h2 class="step__h" id="hh">تصاميمك في هذه الجلسة</h2>
+    <ul class="history" id="history"></ul>
+  </section>
+</main>
+
+<div class="go" id="go">
+  <div style="max-inline-size:608px;margin-inline:auto">
+    <button class="btn btn--primary btn--lg" type="button" id="generate" disabled>صمّم غرفتك</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+  var STYLE_NAMES = {najdi:"نجدي",hijazi:"حجازي",gulf_modern:"خليجي مودرن",classic_luxury:"كلاسيكي فاخر",neoclassic:"نيوكلاسيك",calm_modern:"مودرن هادئ",boho_gulf:"بوهيمي خليجي",emirati:"إماراتي معاصر"};
+  var ROOM_NAMES = {majlis_men:"مجلس رجال",majlis_women:"مجلس نساء",living:"صالة",bedroom:"غرفة نوم",annex:"ملحق"};
+  var state = { image:null, ratio:4/3, room:"majlis_men", style:null, busy:false };
+
+  /* الشبكة: مربعات المعيّن */
+  var DIAMOND = ["0001000","0011100","0110110","1101011","0110110","0011100","0001000"];
+  var weave = $("weave"), k = 0;
+  DIAMOND.forEach(function(row, r){ row.split("").forEach(function(c, col){
+    var i = document.createElement("i");
+    if(c === "1"){ i.style.animationDelay = ((r + col) * 90) + "ms"; k++; } else { i.style.visibility = "hidden"; }
+    weave.appendChild(i);
+  }); });
+
+  /* ضغط الصورة إلى 1024px تقريباً */
+  function compress(file){
+    return new Promise(function(resolve, reject){
+      var url = URL.createObjectURL(file);
+      var img = new Image();
+      img.onload = function(){
+        var max = 1024, w = img.naturalWidth, h = img.naturalHeight, s = Math.min(1, max / Math.max(w, h));
+        var c = document.createElement("canvas");
+        c.width = Math.round(w * s); c.height = Math.round(h * s);
+        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        var q = 0.82, out = c.toDataURL("image/jpeg", q);
+        while(out.length > 340000 && q > 0.5){ q -= 0.08; out = c.toDataURL("image/jpeg", q); }
+        resolve({ data: out, ratio: c.width / c.height });
+      };
+      img.onerror = function(){ URL.revokeObjectURL(url); reject(new Error("read")); };
+      img.src = url;
+    });
+  }
+
+  function showErr(msg){ var e = $("err"); e.textContent = msg; e.hidden = false; }
+  function clearErr(){ $("err").hidden = true; }
+  function refresh(){ $("generate").disabled = !(state.image && state.style) || state.busy; }
+
+  function onFile(input){
+    var f = input.files && input.files[0]; input.value = "";
+    if(!f) return;
+    clearErr();
+    compress(f).then(function(r){
+      state.image = r.data; state.ratio = r.ratio;
+      $("previewImg").src = r.data; $("preview").hidden = false; $("pick").hidden = true;
+      refresh();
+    }).catch(function(){ showErr("تعذّر قراءة الصورة. جرّب صورة أخرى بصيغة JPG أو PNG."); });
+  }
+  $("cam").addEventListener("change", function(){ onFile(this); });
+  $("lib").addEventListener("change", function(){ onFile(this); });
+  $("change").addEventListener("click", function(){ $("lib").click(); });
+
+  function radio(groupId, attr, key){
+    $(groupId).addEventListener("click", function(e){
+      var b = e.target.closest("[" + attr + "]"); if(!b) return;
+      $(groupId).querySelectorAll("[" + attr + "]").forEach(function(x){ x.setAttribute("aria-checked", x === b ? "true" : "false"); });
+      state[key] = b.getAttribute(attr); refresh();
+    });
+  }
+  radio("rooms", "data-room", "room");
+  radio("styles", "data-style", "style");
+
+  /* المقارنة */
+  $("range").addEventListener("input", function(){ $("compare").style.setProperty("--pos", this.value + "%"); });
+
+  var timer = null;
+  function setBusy(on){
+    state.busy = on;
+    $("loading").hidden = !on; $("editor").hidden = on; $("go").hidden = on;
+    if(on){ $("result").hidden = true; var t0 = Date.now(); $("secs").textContent = "0";
+      timer = setInterval(function(){ $("secs").textContent = Math.round((Date.now() - t0) / 1000); }, 500);
+    } else { clearInterval(timer); }
+    refresh();
+  }
+
+  function wait(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+  async function poll(id){
+    for(var i = 0; i < 40; i++){
+      await wait(2500);
+      var r = await fetch("/api/design?id=" + encodeURIComponent(id)).then(function(x){ return x.json(); });
+      if(r.status !== "processing") return r;
+    }
+    return { status:"failed", error:"timeout" };
+  }
+
+  var ERR = {
+    missing_token: "المفتاح غير مضاف في إعدادات Vercel.",
+    bad_image: "الصورة غير صالحة. جرّب صورة أخرى.",
+    too_large: "الصورة كبيرة جداً. جرّب صورة أصغر.",
+    timeout: "التصميم تأخر أكثر من المعتاد. جرّب مرة ثانية.",
+    replicate_401: "مفتاح Replicate غير صحيح أو ملغى.",
+    replicate_402: "رصيد Replicate انتهى. اشحن الحساب ثم جرّب.",
+    replicate_422: "النموذج رفض الطلب. جرّب صورة أخرى."
+  };
+
+  $("generate").addEventListener("click", async function(){
+    if(!state.image || !state.style || state.busy) return;
+    clearErr(); setBusy(true);
+    var t0 = Date.now();
+    try{
+      var r = await fetch("/api/design", { method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ image: state.image, style: state.style, room: state.room }) }).then(function(x){ return x.json(); });
+      if(r.status === "processing") r = await poll(r.id);
+      if(r.status !== "succeeded") throw r;
+      show(r.output, (Date.now() - t0) / 1000);
+    }catch(e){
+      setBusy(false);
+      showErr((e && ERR[e.error]) || ("صار خطأ أثناء التصميم" + (e && e.error ? " (" + e.error + ")" : "") + ". جرّب مرة ثانية."));
+      if(e && e.detail) console.warn(e.detail);
+    }
+  });
+
+  function show(url, secs){
+    setBusy(false);
+    $("editor").hidden = true; $("go").hidden = true;
+    $("compare").style.aspectRatio = String(state.ratio);
+    $("compare").style.setProperty("--pos", "50%"); $("range").value = 50;
+    $("beforeImg").src = state.image; $("afterImg").src = url;
+    $("metaStyle").textContent = ROOM_NAMES[state.room] + " · " + STYLE_NAMES[state.style];
+    $("metaTime").textContent = Math.round(secs) + " ثانية";
+    $("save").href = url;
+    $("share").href = "https://wa.me/?text=" + encodeURIComponent("شوف تصميم غرفتي الجديد بأسلوب " + STYLE_NAMES[state.style] + " من sadu: " + url);
+    $("result").hidden = false;
+    addHistory(url, state.image, state.style, state.room, state.ratio);
+    $("result").scrollIntoView({ behavior:"smooth", block:"start" });
+  }
+
+  function addHistory(url, before, style, room, ratio){
+    var li = document.createElement("li"), b = document.createElement("button"), img = new Image(), s = document.createElement("span");
+    b.type = "button"; img.src = url; img.alt = ""; s.textContent = STYLE_NAMES[style];
+    b.append(img, s); li.append(b); $("history").prepend(li); $("historyWrap").hidden = false;
+    b.addEventListener("click", function(){
+      state.image = before; state.style = style; state.room = room; state.ratio = ratio;
+      $("compare").style.aspectRatio = String(ratio);
+      $("beforeImg").src = before; $("afterImg").src = url; $("save").href = url;
+      $("metaStyle").textContent = ROOM_NAMES[room] + " · " + STYLE_NAMES[style]; $("metaTime").textContent = "";
+      $("editor").hidden = true; $("go").hidden = true; $("result").hidden = false;
+      $("result").scrollIntoView({ behavior:"smooth", block:"start" });
+    });
+  }
+
+  function backToEditor(){ $("result").hidden = true; $("editor").hidden = false; $("go").hidden = false; refresh(); }
+  $("another").addEventListener("click", function(){ backToEditor(); $("s3").scrollIntoView({ behavior:"smooth", block:"start" }); });
+  $("newPhoto").addEventListener("click", function(){
+    state.image = null; $("preview").hidden = true; $("pick").hidden = false; backToEditor();
+    window.scrollTo({ top:0, behavior:"smooth" });
+  });
+})();
+</script>
+</body>
+</html>
