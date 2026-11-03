@@ -50,9 +50,25 @@ const WARM_ROOM = {
   annex: "curved cream sofa, wood TV wall with LED outline, fluted slats, warm cove lighting"
 };
 
+// "فخامة هادئة" — مأخوذ من مراجع sadu-refs (الصور 31–38، مشروع VISION). انظر sadu-refs/README.md
+const QUIET_BASE = "quiet luxury style: calm monochrome palette of greige, warm taupe, soft stone and off-white, with smoked walnut wood and bronze-tinted glass as the only darker notes; walls in large flush matte panels separated by thin shadow-gap reveal lines; vertical fluted panels framing feature walls; floating furniture with soft rounded edges; warm 3000K LED cove lighting along the ceiling perimeter plus slim vertical LED light slots in the wall; small paired recessed downlights; one large textured plaster or fabric art panel as the only artwork; no gold, no chandelier, no strong colors, almost no decor except a dried-flower vase and a small bronze object; serene, soft, hotel-suite atmosphere";
+const QUIET_SOFT = "velvet and boucle upholstery in greige; floor-length linen curtains in taupe; medium-tone wood plank floor with a large cream rug with a subtle zigzag weave; chunky dark knit throw as the one contrast";
+const QUIET_ROOM = {
+  bedroom: "wide wraparound curved upholstered headboard in greige velvet that spans the wall, upholstered bed, small off-white nightstands with a bronze handle, opposite wall with flush panels and a wall-mounted TV above a long floating rounded-edge console that continues into a desk, a pair of rounded boucle armchairs with a floor lamp in the corner",
+  living: "low rounded sofa and boucle armchairs in greige, flush panel TV wall with a long floating rounded-edge console, vertical LED slots, textured art panel, round side table in bronze",
+  kitchen: "flush handleless cabinets in warm greige, smoked walnut tall units, light stone countertops and backsplash, under-cabinet LED, island with rounded edges, slim recessed downlights",
+  bathroom: "large-format warm stone or microcement walls in greige, floating vanity with rounded edges, LED-backlit mirror, smoked walnut accents, bronze fixtures, vertical LED slot",
+  dressing: "open walk-in wardrobe niches with warm LED strips under every shelf and hanging rail, tall bronze-tinted glass framed doors, off-white flush cabinetry and smoked walnut panels, cove ceiling light",
+  dining: "rounded-edge stone dining table, upholstered greige chairs, flush panel walls with vertical LED slots, a single slim linear pendant",
+  majlis_men: "low deep sofas in greige velvet along flush paneled walls, fluted panels framing a large textured art panel, cove lighting, rounded stone coffee tables",
+  majlis_women: "rounded boucle sofas in off-white and greige, flush panels with vertical LED slots, textured plaster art panel, soft cove light",
+  annex: "low modular sofa in greige, flush TV wall with floating console, cove lighting"
+};
+
 const STYLE_EXTRAS = {
   night_luxury: { soft: NIGHT_SOFT, room: NIGHT_ROOM },
-  warm_luxury: { soft: WARM_SOFT, room: WARM_ROOM }
+  warm_luxury: { soft: WARM_SOFT, room: WARM_ROOM },
+  quiet_luxury: { soft: QUIET_SOFT, room: QUIET_ROOM }
 };
 
 const STYLES = {
@@ -65,7 +81,8 @@ const STYLES = {
   boho_gulf: "Gulf bohemian style: layered handwoven rugs and Sadu textiles, rattan and natural wood furniture, floor cushions, plants, terracotta and sand tones, cozy warm lighting",
   emirati: "contemporary Emirati style: modern furniture inspired by Emirati heritage, palm-frond (khoos) weave textures, sand, olive and deep blue accents, arched niches, geometric lattice details, refined lighting",
   night_luxury: NIGHT_BASE,
-  warm_luxury: WARM_BASE
+  warm_luxury: WARM_BASE,
+  quiet_luxury: QUIET_BASE
 };
 
 const KEEP = "Keep the exact same room architecture: the position and size of walls, windows, doors, ceiling height, room shape, camera angle and perspective must stay identical. You may change wall and ceiling finishes, furniture, decor, textiles, colors and lighting. Photorealistic interior photograph, high detail, natural proportions.";

@@ -153,6 +153,7 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
       <div class="styles" role="radiogroup" aria-labelledby="s3" id="styles">
         <button class="style" role="radio" aria-checked="false" data-style="night_luxury"><b>فخامة ليلية</b><span>داكن وإضاءة LED مخفية</span></button>
         <button class="style" role="radio" aria-checked="false" data-style="warm_luxury"><b>فخامة دافئة</b><span>بيج وخشب ورخام وذهبي</span></button>
+        <button class="style" role="radio" aria-checked="false" data-style="quiet_luxury"><b>فخامة هادئة</b><span>رمادي دافئ وألواح ناعمة</span></button>
         <button class="style" role="radio" aria-checked="false" data-style="najdi"><b>نجدي</b><span>طين وخشب وزخارف السدو</span></button>
         <button class="style" role="radio" aria-checked="false" data-style="hijazi"><b>حجازي</b><span>رواشين ونقوش خشبية</span></button>
         <button class="style" role="radio" aria-checked="false" data-style="gulf_modern"><b>خليجي مودرن</b><span>خطوط هادئة وخامات فاخرة</span></button>
@@ -205,7 +206,7 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
 (function(){
   "use strict";
   var $ = function(id){ return document.getElementById(id); };
-  var STYLE_NAMES = {najdi:"نجدي",hijazi:"حجازي",gulf_modern:"خليجي مودرن",classic_luxury:"كلاسيكي فاخر",neoclassic:"نيوكلاسيك",calm_modern:"مودرن هادئ",boho_gulf:"بوهيمي خليجي",emirati:"إماراتي معاصر",night_luxury:"فخامة ليلية",warm_luxury:"فخامة دافئة"};
+  var STYLE_NAMES = {najdi:"نجدي",hijazi:"حجازي",gulf_modern:"خليجي مودرن",classic_luxury:"كلاسيكي فاخر",neoclassic:"نيوكلاسيك",calm_modern:"مودرن هادئ",boho_gulf:"بوهيمي خليجي",emirati:"إماراتي معاصر",night_luxury:"فخامة ليلية",warm_luxury:"فخامة دافئة",quiet_luxury:"فخامة هادئة"};
   var ROOM_NAMES = {majlis_men:"مجلس رجال",majlis_women:"مجلس نساء",living:"صالة",bedroom:"غرفة نوم",annex:"ملحق",dining:"مقلط",kitchen:"مطبخ",bathroom:"حمام",dressing:"غرفة ملابس"};
   var state = { image:null, ratio:4/3, room:"majlis_men", style:null, busy:false };
 
