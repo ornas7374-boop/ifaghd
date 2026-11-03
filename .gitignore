@@ -46,4 +46,3 @@ next-env.d.ts
 /data/*.db-wal
 /data/*.db-shm
 sadu-refs/images/
-sadu-landing/node_modules/
