@@ -87,6 +87,7 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
 .tag--b{inset-inline-start:12px}.tag--a{inset-inline-end:12px}
 #result,#s3{scroll-margin-top:80px}
 .result__meta{display:flex;justify-content:space-between;margin:10px 0 16px;font-size:14px;color:var(--text-secondary)}
+.why{margin:-4px 0 16px;padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--border-subtle);color:var(--text-secondary);font-size:15px;line-height:26px}
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .actions .btn{inline-size:100%}
 .actions .full{grid-column:1/-1}
@@ -115,7 +116,7 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
 
 <main class="wrap">
   <h1>صمّم غرفتك</h1>
-  <p class="sub">صوّر غرفتك، واختر أسلوبك، وشاهد التصميم خلال ثوانٍ.</p>
+  <p class="sub">صوّر غرفتك فقط. الذكاء الاصطناعي يعرف نوعها، ويختار الأسلوب الأنسب لها، ويصمّمها.</p>
 
   <div id="editor">
     <section class="step" aria-labelledby="s1">
@@ -133,44 +134,12 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
       <p class="hint">للنتيجة الأفضل: صورة واسعة للغرفة كاملة، في إضاءة النهار.</p>
     </section>
 
-    <section class="step" aria-labelledby="s2">
-      <h2 class="step__h" id="s2"><span class="step__n">02</span>نوع المكان</h2>
-      <div class="chips" role="radiogroup" aria-labelledby="s2" id="rooms">
-        <button class="chip" role="radio" aria-checked="true" data-room="majlis_men">مجلس رجال</button>
-        <button class="chip" role="radio" aria-checked="false" data-room="majlis_women">مجلس نساء</button>
-        <button class="chip" role="radio" aria-checked="false" data-room="living">صالة</button>
-        <button class="chip" role="radio" aria-checked="false" data-room="bedroom">غرفة نوم</button>
-        <button class="chip" role="radio" aria-checked="false" data-room="annex">ملحق</button>
-        <button class="chip" role="radio" aria-checked="false" data-room="dining">مقلط</button>
-        <button class="chip" role="radio" aria-checked="false" data-room="kitchen">مطبخ</button>
-        <button class="chip" role="radio" aria-checked="false" data-room="bathroom">حمام</button>
-        <button class="chip" role="radio" aria-checked="false" data-room="dressing">غرفة ملابس</button>
-        <button class="chip" role="radio" aria-checked="false" data-room="office">مكتب</button>
-      </div>
-    </section>
-
-    <section class="step" aria-labelledby="s3">
-      <h2 class="step__h" id="s3"><span class="step__n">03</span>الأسلوب</h2>
-      <div class="styles" role="radiogroup" aria-labelledby="s3" id="styles">
-        <button class="style" role="radio" aria-checked="false" data-style="night_luxury"><b>فخامة ليلية</b><span>داكن وإضاءة LED مخفية</span></button>
-        <button class="style" role="radio" aria-checked="false" data-style="warm_luxury"><b>فخامة دافئة</b><span>بيج وخشب ورخام وذهبي</span></button>
-        <button class="style" role="radio" aria-checked="false" data-style="quiet_luxury"><b>فخامة هادئة</b><span>رمادي دافئ وألواح ناعمة</span></button>
-        <button class="style" role="radio" aria-checked="false" data-style="najdi"><b>نجدي</b><span>طين وخشب وزخارف السدو</span></button>
-        <button class="style" role="radio" aria-checked="false" data-style="hijazi"><b>حجازي</b><span>رواشين ونقوش خشبية</span></button>
-        <button class="style" role="radio" aria-checked="false" data-style="gulf_modern"><b>خليجي مودرن</b><span>خطوط هادئة وخامات فاخرة</span></button>
-        <button class="style" role="radio" aria-checked="false" data-style="classic_luxury"><b>كلاسيكي فاخر</b><span>ذهبيات هادئة وأقمشة غنية</span></button>
-        <button class="style" role="radio" aria-checked="false" data-style="neoclassic"><b>نيوكلاسيك</b><span>كلاسيكي بلمسة عصرية</span></button>
-        <button class="style" role="radio" aria-checked="false" data-style="calm_modern"><b>مودرن هادئ</b><span>ألوان محايدة ومساحات مريحة</span></button>
-        <button class="style" role="radio" aria-checked="false" data-style="boho_gulf"><b>بوهيمي خليجي</b><span>سجاد وخامات طبيعية</span></button>
-        <button class="style" role="radio" aria-checked="false" data-style="emirati"><b>إماراتي معاصر</b><span>تراث بخطوط حديثة</span></button>
-      </div>
-    </section>
     <div class="err" id="err" role="alert" hidden></div>
   </div>
 
   <section id="loading" class="loader" hidden aria-live="polite">
     <div class="weave" id="weave" aria-hidden="true"></div>
-    <p>نصمّم غرفتك الآن… <span class="num" id="secs">0</span> ثانية</p>
+    <p><span id="loadText">نحلل غرفتك…</span> <span class="num" id="secs">0</span> ثانية</p>
   </section>
 
   <section id="result" hidden aria-labelledby="rh">
@@ -183,12 +152,14 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
       <span class="tag tag--b">قبل</span><span class="tag tag--a">بعد</span>
     </div>
     <div class="result__meta"><span id="metaStyle"></span><span id="metaTime" class="num"></span></div>
+    <p class="why" id="why" hidden></p>
     <div class="actions">
-      <button class="btn btn--primary full" type="button" id="another">جرّب أسلوباً آخر</button>
+      <button class="btn btn--primary full" type="button" id="another">صمّم بأسلوب آخر</button>
       <a class="btn btn--secondary" id="save" target="_blank" rel="noopener">حفظ الصورة</a>
       <a class="btn btn--wa" id="share" target="_blank" rel="noopener">شارك عبر واتساب</a>
       <button class="btn btn--secondary full" type="button" id="newPhoto">صورة جديدة</button>
     </div>
+    <div class="err" id="err2" role="alert" hidden></div>
   </section>
 
   <section class="step" id="historyWrap" hidden aria-labelledby="hh">
@@ -209,7 +180,7 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
   var $ = function(id){ return document.getElementById(id); };
   var STYLE_NAMES = {najdi:"نجدي",hijazi:"حجازي",gulf_modern:"خليجي مودرن",classic_luxury:"كلاسيكي فاخر",neoclassic:"نيوكلاسيك",calm_modern:"مودرن هادئ",boho_gulf:"بوهيمي خليجي",emirati:"إماراتي معاصر",night_luxury:"فخامة ليلية",warm_luxury:"فخامة دافئة",quiet_luxury:"فخامة هادئة"};
   var ROOM_NAMES = {majlis_men:"مجلس رجال",majlis_women:"مجلس نساء",living:"صالة",bedroom:"غرفة نوم",annex:"ملحق",dining:"مقلط",kitchen:"مطبخ",bathroom:"حمام",dressing:"غرفة ملابس",office:"مكتب"};
-  var state = { image:null, ratio:4/3, room:"majlis_men", style:null, busy:false };
+  var state = { image:null, ratio:4/3, room:null, style:null, why:"", tried:[], busy:false };
 
   /* الشبكة: مربعات المعيّن */
   var DIAMOND = ["0001000","0011100","0110110","1101011","0110110","0011100","0001000"];
@@ -240,16 +211,16 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
     });
   }
 
-  function showErr(msg){ var e = $("err"); e.textContent = msg; e.hidden = false; }
-  function clearErr(){ $("err").hidden = true; }
-  function refresh(){ $("generate").disabled = !(state.image && state.style) || state.busy; }
+  function showErr(msg){ var e = $("result").hidden ? $("err") : $("err2"); e.textContent = msg; e.hidden = false; }
+  function clearErr(){ $("err").hidden = true; $("err2").hidden = true; }
+  function refresh(){ $("generate").disabled = !state.image || state.busy; }
 
   function onFile(input){
     var f = input.files && input.files[0]; input.value = "";
     if(!f) return;
     clearErr();
     compress(f).then(function(r){
-      state.image = r.data; state.ratio = r.ratio;
+      state.image = r.data; state.ratio = r.ratio; state.tried = [];
       $("previewImg").src = r.data; $("preview").hidden = false; $("pick").hidden = true;
       refresh();
     }).catch(function(){ showErr("تعذّر قراءة الصورة. جرّب صورة أخرى بصيغة JPG أو PNG."); });
@@ -257,16 +228,6 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
   $("cam").addEventListener("change", function(){ onFile(this); });
   $("lib").addEventListener("change", function(){ onFile(this); });
   $("change").addEventListener("click", function(){ $("lib").click(); });
-
-  function radio(groupId, attr, key){
-    $(groupId).addEventListener("click", function(e){
-      var b = e.target.closest("[" + attr + "]"); if(!b) return;
-      $(groupId).querySelectorAll("[" + attr + "]").forEach(function(x){ x.setAttribute("aria-checked", x === b ? "true" : "false"); });
-      state[key] = b.getAttribute(attr); refresh();
-    });
-  }
-  radio("rooms", "data-room", "room");
-  radio("styles", "data-style", "style");
 
   /* المقارنة */
   $("range").addEventListener("input", function(){ $("compare").style.setProperty("--pos", this.value + "%"); });
@@ -298,25 +259,43 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
     timeout: "التصميم تأخر أكثر من المعتاد. جرّب مرة ثانية.",
     replicate_401: "مفتاح Replicate غير صحيح أو ملغى.",
     replicate_402: "رصيد Replicate انتهى. اشحن الحساب ثم جرّب.",
-    replicate_422: "النموذج رفض الطلب. جرّب صورة أخرى."
+    replicate_422: "النموذج رفض الطلب. جرّب صورة أخرى.",
+    analysis_model_unavailable: "نموذج تحليل الغرفة غير متاح على الحساب.",
+    analysis_failed: "تعذّر تحليل الغرفة. جرّب مرة ثانية.",
+    analysis_bad_room: "ما قدرنا نحدد نوع الغرفة. جرّب صورة أوضح وأوسع.",
+    analysis_bad_style: "تعذّر اختيار أسلوب. جرّب مرة ثانية.",
+    analysis_no_json: "تعذّر تحليل الغرفة. جرّب مرة ثانية.",
+    analysis_bad_json: "تعذّر تحليل الغرفة. جرّب مرة ثانية."
   };
 
-  $("generate").addEventListener("click", async function(){
-    if(!state.image || !state.style || state.busy) return;
-    clearErr(); setBusy(true);
+  async function postJson(url, body){
+    return fetch(url, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(body) })
+      .then(function(x){ return x.json(); });
+  }
+
+  /* الذكاء الاصطناعي يحلل الغرفة ويختار الأسلوب، ثم يصمّم */
+  async function run(another){
+    if(!state.image || state.busy) return;
+    clearErr(); setBusy(true); $("loadText").textContent = "نحلل غرفتك…";
     var t0 = Date.now();
     try{
-      var r = await fetch("/api/design", { method:"POST", headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({ image: state.image, style: state.style, room: state.room }) }).then(function(x){ return x.json(); });
+      var a = await postJson("/api/analyze", { image: state.image, exclude: another ? state.tried : [] });
+      if(a.status !== "succeeded") throw a;
+      state.room = a.room; state.style = a.style; state.why = a.why || "";
+      if(state.tried.indexOf(a.style) < 0) state.tried.push(a.style);
+      $("loadText").textContent = "نصمّم " + ROOM_NAMES[a.room] + " بأسلوب " + STYLE_NAMES[a.style] + "…";
+      var r = await postJson("/api/design", { image: state.image, style: state.style, room: state.room });
       if(r.status === "processing") r = await poll(r.id);
       if(r.status !== "succeeded") throw r;
       show(r.output, (Date.now() - t0) / 1000);
     }catch(e){
       setBusy(false);
+      if(another){ $("result").hidden = false; $("editor").hidden = true; $("go").hidden = true; }
       showErr((e && ERR[e.error]) || ("صار خطأ أثناء التصميم" + (e && e.error ? " (" + e.error + ")" : "") + ". جرّب مرة ثانية."));
       if(e && e.detail) console.warn(e.detail);
     }
-  });
+  }
+  $("generate").addEventListener("click", function(){ run(false); });
 
   function show(url, secs){
     setBusy(false);
@@ -326,19 +305,21 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
     $("beforeImg").src = state.image; $("afterImg").src = url;
     $("metaStyle").textContent = ROOM_NAMES[state.room] + " · " + STYLE_NAMES[state.style];
     $("metaTime").textContent = Math.round(secs) + " ثانية";
+    $("why").textContent = state.why; $("why").hidden = !state.why;
     $("save").href = url;
     $("share").href = "https://wa.me/?text=" + encodeURIComponent("شوف تصميم غرفتي الجديد بأسلوب " + STYLE_NAMES[state.style] + " من sadu: " + url);
     $("result").hidden = false;
-    addHistory(url, state.image, state.style, state.room, state.ratio);
+    addHistory(url, state.image, state.style, state.room, state.ratio, state.why);
     $("result").scrollIntoView({ behavior:"smooth", block:"start" });
   }
 
-  function addHistory(url, before, style, room, ratio){
+  function addHistory(url, before, style, room, ratio, why){
     var li = document.createElement("li"), b = document.createElement("button"), img = new Image(), s = document.createElement("span");
     b.type = "button"; img.src = url; img.alt = ""; s.textContent = STYLE_NAMES[style];
     b.append(img, s); li.append(b); $("history").prepend(li); $("historyWrap").hidden = false;
     b.addEventListener("click", function(){
-      state.image = before; state.style = style; state.room = room; state.ratio = ratio;
+      state.image = before; state.style = style; state.room = room; state.ratio = ratio; state.why = why || "";
+      $("why").textContent = state.why; $("why").hidden = !state.why;
       $("compare").style.aspectRatio = String(ratio);
       $("beforeImg").src = before; $("afterImg").src = url; $("save").href = url;
       $("metaStyle").textContent = ROOM_NAMES[room] + " · " + STYLE_NAMES[style]; $("metaTime").textContent = "";
@@ -348,9 +329,9 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
   }
 
   function backToEditor(){ $("result").hidden = true; $("editor").hidden = false; $("go").hidden = false; refresh(); }
-  $("another").addEventListener("click", function(){ backToEditor(); $("s3").scrollIntoView({ behavior:"smooth", block:"start" }); });
+  $("another").addEventListener("click", function(){ run(true); });
   $("newPhoto").addEventListener("click", function(){
-    state.image = null; $("preview").hidden = true; $("pick").hidden = false; backToEditor();
+    state.image = null; state.tried = []; $("preview").hidden = true; $("pick").hidden = false; backToEditor();
     window.scrollTo({ top:0, behavior:"smooth" });
   });
 })();
