@@ -1,0 +1,810 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>sadu — غرفتك كما تتخيلها</title>
+<meta name="description" content="صورة واحدة تكفي لترى غرفتك بأسلوب خليجي قبل أن تدفع ريالاً. صمّم غرفتك مجاناً بالذكاء الاصطناعي خلال 30 ثانية.">
+<meta name="theme-color" content="#000000">
+<meta property="og:title" content="sadu — غرفتك كما تتخيلها">
+<meta property="og:description" content="صورة واحدة تكفي لترى غرفتك بأسلوب خليجي قبل أن تدفع ريالاً.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ar_SA">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='111 111 91 91'%3E%3Crect x='111' y='111' width='91' height='91' fill='%23000'/%3E%3Cg fill='%23fff'%3E%3Crect x='151.6' y='116.2' width='9.9' height='9.9'/%3E%3Crect x='139.8' y='128' width='9.9' height='9.9'/%3E%3Crect x='151.6' y='128' width='9.9' height='9.9'/%3E%3Crect x='163.4' y='128' width='9.9' height='9.9'/%3E%3Crect x='128' y='139.8' width='9.9' height='9.9'/%3E%3Crect x='139.8' y='139.8' width='9.9' height='9.9'/%3E%3Crect x='163.4' y='139.8' width='9.9' height='9.9'/%3E%3Crect x='175.2' y='139.8' width='9.9' height='9.9'/%3E%3Crect x='116.2' y='151.6' width='9.9' height='9.9'/%3E%3Crect x='128' y='151.6' width='9.9' height='9.9'/%3E%3Crect x='151.6' y='151.6' width='9.9' height='9.9'/%3E%3Crect x='175.2' y='151.6' width='9.9' height='9.9'/%3E%3Crect x='187' y='151.6' width='9.9' height='9.9'/%3E%3Crect x='128' y='163.4' width='9.9' height='9.9'/%3E%3Crect x='139.8' y='163.4' width='9.9' height='9.9'/%3E%3Crect x='163.4' y='163.4' width='9.9' height='9.9'/%3E%3Crect x='175.2' y='163.4' width='9.9' height='9.9'/%3E%3Crect x='139.8' y='175.2' width='9.9' height='9.9'/%3E%3Crect x='151.6' y='175.2' width='9.9' height='9.9'/%3E%3Crect x='163.4' y='175.2' width='9.9' height='9.9'/%3E%3Crect x='151.6' y='187' width='9.9' height='9.9'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Inter:wght@500;600&family=Reem+Kufi:wght@500..700&display=swap" rel="stylesheet">
+
+<!--
+  ================================================================
+  الإعدادات — عدّل هذه القيم فقط
+  ================================================================
+  WEBHOOK_URL     : رابط Google Apps Script بعد النشر (انظر apps-script.gs)
+  META_PIXEL_ID   : رقم Meta Pixel (اتركه فارغاً لتعطيله)
+  TIKTOK_PIXEL_ID : رقم TikTok Pixel (اتركه فارغاً لتعطيله)
+  WHATSAPP_NUMBER : رقم واتساب الدعم بصيغة دولية بدون + (مثال 9665XXXXXXXX)
+  SOCIAL          : روابط حسابات السوشال
+-->
+<script>
+window.SADU_CONFIG = {
+  WEBHOOK_URL: "",
+  META_PIXEL_ID: "",
+  TIKTOK_PIXEL_ID: "",
+  WHATSAPP_NUMBER: "9665XXXXXXXX",
+  SOCIAL: {
+    tiktok: "https://www.tiktok.com/@sadu",
+    snapchat: "https://www.snapchat.com/add/sadu",
+    instagram: "https://www.instagram.com/sadu",
+    x: "https://x.com/sadu"
+  }
+};
+</script>
+
+<style>
+/* ---------- sadu tokens (من نظام التصميم) ---------- */
+:root{
+  --bg:#000000; --surface:#0D0D0D; --surface-raised:#1A1A1A; --surface-hover:#262626;
+  --border-subtle:#262626; --border-strong:#6B6B6B;
+  --text:#FFFFFF; --text-secondary:#B0B0B0; --text-muted:#8C8C8C;
+  --action:#FFFFFF; --action-hover:#E4E4E4; --action-pressed:#CFCFCF; --on-action:#000000;
+  --focus-ring:#FFFFFF; --overlay:rgba(0,0,0,.72);
+  --silver-start:#FFFFFF; --silver-end:#6E6E6E;
+  --success:#7FD1A5; --success-bg:#0C2A1C; --success-border:#1E5A3D;
+  --error:#F2A09A; --error-bg:#2E1110;
+  --whatsapp:#25D366; --on-whatsapp:#000000;
+  --shadow-sm:0 0 0 1px #FFFFFF14;
+  --shadow-lg:0 0 0 1px #FFFFFF1F,0 24px 48px #000000CC;
+  --glow-sm:0 0 0 1px #FFFFFF2E,0 0 24px #FFFFFF14;
+  --glow-md:0 0 0 1px #FFFFFF3D,0 0 48px #FFFFFF1F;
+  --radius-sm:8px; --radius-md:12px; --radius-lg:16px; --radius-xl:24px; --radius-full:9999px;
+  --dur-instant:80ms; --dur-fast:150ms; --dur-base:240ms; --dur-slow:320ms;
+  --ease-standard:cubic-bezier(.2,0,0,1); --ease-enter:cubic-bezier(0,0,.2,1);
+  --font-display:"Reem Kufi","IBM Plex Sans Arabic",system-ui,sans-serif;
+  --font-text:Inter,"IBM Plex Sans Arabic",system-ui,sans-serif;
+  --font-latin:Inter,system-ui,sans-serif;
+  --page-margin:16px; --section-gap:72px; --max:1200px;
+}
+@media (min-width:768px){ :root{ --page-margin:32px; --section-gap:112px; } }
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:0ms!important;transition-duration:0ms!important;scroll-behavior:auto!important}
+}
+
+/* ---------- base ---------- */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:400 16px/28px var(--font-text);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+img,svg{display:block;max-inline-size:100%}
+a{color:inherit}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px}
+.sr-only{position:absolute!important;inline-size:1px;block-size:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.wrap{inline-size:100%;max-inline-size:calc(var(--max) + var(--page-margin)*2);margin-inline:auto;padding-inline:var(--page-margin)}
+section{padding-block:calc(var(--section-gap)/2)}
+.num{font-family:var(--font-latin);font-variant-numeric:tabular-nums;unicode-bidi:isolate}
+
+/* type */
+.h1{font:600 40px/56px var(--font-display);margin:0}
+.h2{font:600 28px/42px var(--font-display);margin:0}
+.h3{font:600 20px/32px var(--font-display);margin:0}
+.lead{font-size:18px;line-height:32px;color:var(--text-secondary);margin:0}
+.muted{color:var(--text-muted)}
+.small{font-size:14px;line-height:24px}
+.caption{font-size:12px;line-height:20px}
+.silver{background:linear-gradient(180deg,var(--silver-start),var(--silver-end));-webkit-background-clip:text;background-clip:text;color:transparent}
+@media (min-width:768px){ .h1{font-size:64px;line-height:84px} .h2{font-size:36px;line-height:52px} }
+.sec-head{display:grid;gap:8px;margin-block-end:32px;max-inline-size:640px}
+.eyebrow{font:500 14px/22px var(--font-text);color:var(--text-muted);margin:0}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-block-size:48px;padding:0 24px;border-radius:var(--radius-md);border:1px solid transparent;font:600 16px/1 var(--font-text);text-decoration:none;cursor:pointer;transition:background-color var(--dur-fast) var(--ease-standard),transform var(--dur-instant) var(--ease-standard),border-color var(--dur-fast)}
+.btn:active{transform:scale(.98)}
+.btn--primary{background:var(--action);color:var(--on-action)}
+.btn--primary:hover{background:var(--action-hover)}
+.btn--primary:active{background:var(--action-pressed)}
+.btn--secondary{background:transparent;color:var(--text);border-color:var(--border-strong)}
+.btn--secondary:hover{background:var(--surface-hover)}
+.btn--lg{min-block-size:56px;font-size:17px;padding-inline:32px}
+.btn--block{inline-size:100%}
+.btn--wa{background:var(--whatsapp);color:var(--on-whatsapp)}
+.btn--wa:hover{filter:brightness(.92)}
+.btn[aria-busy="true"]{opacity:.7;pointer-events:none}
+
+/* ---------- header ---------- */
+.top{position:sticky;inset-block-start:0;z-index:40;background:rgba(0,0,0,.82);backdrop-filter:saturate(1.2) blur(10px);-webkit-backdrop-filter:saturate(1.2) blur(10px);border-block-end:1px solid var(--border-subtle)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;min-block-size:64px}
+.logo{display:block;inline-size:104px;block-size:auto}
+.logo-link{display:inline-flex;padding:8px 0;min-block-size:44px;align-items:center}
+.top nav{display:flex;gap:4px}
+.top nav a{display:inline-flex;align-items:center;min-block-size:44px;padding-inline:12px;font:500 14px/22px var(--font-text);color:var(--text-secondary);text-decoration:none;border-radius:var(--radius-sm)}
+.top nav a:hover{color:var(--text);background:var(--surface-hover)}
+.top nav .hide-sm{display:none}
+@media (min-width:768px){ .top nav .hide-sm{display:inline-flex} }
+
+/* ---------- hero ---------- */
+.hero{position:relative;padding-block:40px 56px;overflow:hidden}
+.hero__weave{position:absolute;inset-block-start:-40px;inset-inline-end:-120px;inline-size:420px;opacity:.07;pointer-events:none}
+.hero__grid{position:relative;display:grid;gap:32px;align-items:center}
+.hero__copy{display:grid;gap:16px}
+.hero__cta{display:grid;gap:8px;margin-block-start:8px}
+.hero__cta .btn{inline-size:100%}
+.hero__note{font-size:14px;line-height:24px;color:var(--text-muted);margin:0;text-align:center}
+@media (min-width:768px){
+  .hero{padding-block:72px 96px}
+  .hero__weave{inline-size:640px;inset-inline-end:-160px}
+  .hero__cta{justify-items:start}
+  .hero__cta .btn{inline-size:auto}
+  .hero__note{text-align:start}
+}
+@media (min-width:1024px){ .hero__grid{grid-template-columns:1fr 1.1fr;gap:56px} }
+
+/* ---------- before / after slider ---------- */
+.compare{position:relative;aspect-ratio:4/3;border-radius:var(--radius-lg);overflow:hidden;background:var(--surface);box-shadow:var(--shadow-sm);user-select:none;touch-action:pan-y}
+.compare__layer{position:absolute;inset:0}
+.compare__after{clip-path:inset(0 var(--pos,50%) 0 0)}
+.compare__range{position:absolute;inset:0;inline-size:100%;block-size:100%;margin:0;opacity:0;cursor:ew-resize;z-index:3}
+.compare__handle{position:absolute;inset-block:0;inset-inline-start:var(--pos,50%);inline-size:2px;margin-inline-start:-1px;background:var(--text);z-index:2;pointer-events:none}
+.compare__knob{position:absolute;inset-block-start:50%;inset-inline-start:50%;inline-size:44px;block-size:44px;transform:translate(50%,-50%);border-radius:var(--radius-full);background:var(--text);color:var(--bg);display:grid;place-items:center;box-shadow:0 4px 16px #00000080}
+.compare__range:focus-visible ~ .compare__handle .compare__knob{outline:2px solid var(--focus-ring);outline-offset:3px}
+.compare__tag{position:absolute;inset-block-start:12px;z-index:2;padding:4px 12px;border-radius:var(--radius-full);background:var(--overlay);font:500 13px/20px var(--font-text);color:#fff;pointer-events:none}
+.compare__tag--before{inset-inline-start:12px}
+.compare__tag--after{inset-inline-end:12px}
+
+/* placeholders — استبدلها بـ <img class="shot" src="..." alt="..."> */
+.ph{position:absolute;inset:0;display:grid;place-items:center;font:500 15px/24px var(--font-text);color:var(--text-secondary)}
+.ph--before{background:linear-gradient(160deg,#2a2a2a,#151515)}
+.ph--after{background:
+  repeating-linear-gradient(45deg,#ffffff08 0 12px,transparent 12px 24px),
+  linear-gradient(160deg,#3a3a3a,#1c1c1c)}
+.compare .ph--before{justify-items:start;padding-inline-start:10%}
+.compare .ph--after{justify-items:end;padding-inline-end:10%}
+.ph span{padding:4px 12px;border-radius:var(--radius-sm);background:var(--overlay);color:#fff}
+.shot{position:absolute;inset:0;inline-size:100%;block-size:100%;object-fit:cover}
+
+/* ---------- problem ---------- */
+.pains{display:grid;gap:12px;list-style:none;margin:0;padding:0}
+.pain{background:var(--surface);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;display:grid;gap:8px}
+.pain__n{font:600 14px/20px var(--font-latin);color:var(--text-muted)}
+.pain p{margin:0;color:var(--text-secondary)}
+.bridge{margin:24px 0 0;font:500 18px/32px var(--font-text);color:var(--text)}
+@media (min-width:768px){ .pains{grid-template-columns:repeat(3,1fr);gap:16px} .pain{padding:24px} }
+
+/* ---------- how it works ---------- */
+.steps{display:grid;gap:12px;list-style:none;margin:0;padding:0;counter-reset:s}
+.step{display:grid;grid-template-columns:48px 1fr;gap:16px;align-items:start;padding:20px;border-radius:var(--radius-lg);background:var(--surface);border:1px solid var(--border-subtle)}
+.step__icon{inline-size:48px;block-size:48px;border-radius:var(--radius-md);border:1px solid var(--border-strong);display:grid;place-items:center}
+.step__icon svg{inline-size:24px;block-size:24px}
+.step p{margin:4px 0 0;color:var(--text-secondary);font-size:15px;line-height:26px}
+@media (min-width:768px){ .steps{grid-template-columns:repeat(3,1fr);gap:16px} .step{grid-template-columns:1fr;padding:24px} }
+
+/* ---------- styles ---------- */
+.styles{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;list-style:none;margin:0;padding:0}
+.style{border-radius:var(--radius-lg);overflow:hidden;background:var(--surface);border:1px solid var(--border-subtle)}
+.style__media{position:relative;aspect-ratio:1/1;background:linear-gradient(160deg,#2c2c2c,#121212)}
+.style__media .ph{font-size:13px}
+.style__body{padding:12px 14px 14px}
+.style__name{font:600 17px/28px var(--font-display);margin:0}
+.style__desc{margin:2px 0 0;font-size:13px;line-height:22px;color:var(--text-muted)}
+@media (min-width:768px){ .styles{grid-template-columns:repeat(4,1fr);gap:16px} }
+
+/* ---------- examples ---------- */
+.examples{display:grid;gap:24px;list-style:none;margin:0;padding:0}
+.example figcaption{margin-block-start:12px;display:flex;justify-content:space-between;gap:8px;font-size:14px;line-height:24px;color:var(--text-secondary)}
+.example figure{margin:0}
+@media (min-width:768px){ .examples{grid-template-columns:repeat(2,1fr)} }
+
+/* ---------- comparison ---------- */
+.table-wrap{border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;background:var(--surface)}
+.cmp{inline-size:100%;border-collapse:collapse;table-layout:fixed;font-size:14px;line-height:22px}
+.cmp th,.cmp td{padding:14px 8px;text-align:center;border-block-end:1px solid var(--border-subtle);vertical-align:middle}
+.cmp tr:last-child th,.cmp tr:last-child td{border-block-end:0}
+.cmp thead th{font:600 14px/22px var(--font-text);color:var(--text-secondary)}
+.cmp tbody th{text-align:start;font-weight:500;color:var(--text-secondary);padding-inline-start:14px}
+.cmp td{color:var(--text-secondary)}
+.cmp col.c-label{inline-size:27%}
+.cmp .is-us{background:var(--surface-raised);color:var(--text);font-weight:600}
+.cmp thead .is-us{font:600 16px/22px var(--font-latin);color:var(--text)}
+@media (min-width:768px){ .cmp{font-size:16px;line-height:26px} .cmp th,.cmp td{padding:18px 16px} .cmp tbody th{padding-inline-start:24px} }
+
+/* ---------- pricing ---------- */
+.plans{display:grid;gap:12px;list-style:none;margin:0;padding:0}
+.plan{position:relative;display:grid;gap:16px;align-content:start;padding:24px 20px;border-radius:var(--radius-lg);background:var(--surface);border:1px solid var(--border-subtle)}
+.plan--featured{border:1px solid transparent;background:linear-gradient(var(--surface-raised),var(--surface-raised)) padding-box,linear-gradient(180deg,var(--silver-start),var(--silver-end)) border-box;box-shadow:var(--glow-md)}
+.plan__badge{position:absolute;inset-block-start:-12px;inset-inline-start:20px;padding:2px 12px;border-radius:var(--radius-full);background:var(--text);color:var(--bg);font:600 13px/22px var(--font-text)}
+.plan__name{font:600 20px/32px var(--font-display);margin:0}
+.plan__for{margin:0;font-size:14px;line-height:24px;color:var(--text-muted)}
+.plan__price{display:flex;align-items:baseline;gap:6px;margin:0}
+.plan__price .amt{font:600 40px/1 var(--font-latin);letter-spacing:-.02em}
+.plan__price .cur{font:500 16px/1 var(--font-text);color:var(--text-secondary)}
+.plan__meta{margin:0;font-size:14px;line-height:24px;color:var(--text-secondary)}
+.plan ul{list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:15px;line-height:24px;color:var(--text-secondary)}
+.plan li{display:flex;gap:8px;align-items:flex-start}
+.plan li svg{flex:none;inline-size:18px;block-size:18px;margin-block-start:3px;color:var(--text)}
+.plan .btn{inline-size:100%;margin-block-start:auto}
+.pay{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 12px;margin-block-start:24px}
+.pay__label{inline-size:100%;text-align:center;margin:0 0 4px;font-size:14px;color:var(--text-muted)}
+.pay__item{display:inline-flex;align-items:center;justify-content:center;min-inline-size:88px;block-size:40px;padding-inline:14px;border-radius:var(--radius-sm);background:#fff;color:#000;font:600 15px/1 var(--font-latin)}
+.pay__item--ar{font-family:var(--font-text)}
+.vat{text-align:center;margin:12px 0 0;font-size:13px;line-height:22px;color:var(--text-muted)}
+@media (min-width:768px){ .plans{grid-template-columns:repeat(2,1fr);gap:16px} }
+@media (min-width:1100px){ .plans{grid-template-columns:repeat(5,1fr)} .plan{padding:28px 18px} }
+
+/* ---------- faq ---------- */
+.faq{display:grid;gap:8px;max-inline-size:760px}
+.faq details{background:var(--surface);border:1px solid var(--border-subtle);border-radius:var(--radius-md)}
+.faq summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:16px;min-block-size:56px;padding:12px 20px;font:500 16px/26px var(--font-text)}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary svg{flex:none;inline-size:20px;block-size:20px;color:var(--text-muted);transition:transform var(--dur-base) var(--ease-standard)}
+.faq details[open] summary svg{transform:rotate(180deg)}
+.faq details p{margin:0;padding:0 20px 18px;color:var(--text-secondary)}
+
+/* ---------- final cta ---------- */
+.final{text-align:center}
+.final__box{position:relative;overflow:hidden;display:grid;gap:16px;justify-items:center;padding:48px 20px;border-radius:var(--radius-xl);background:var(--surface);border:1px solid var(--border-subtle)}
+.final__weave{position:absolute;inline-size:360px;inset-block-end:-120px;inset-inline-start:-80px;opacity:.06;pointer-events:none}
+.final__box > *:not(.final__weave){position:relative}
+.final .btn{inline-size:100%;max-inline-size:360px}
+@media (min-width:768px){ .final__box{padding:80px 40px} }
+
+/* ---------- footer ---------- */
+footer{border-block-start:1px solid var(--border-subtle);padding-block:40px 32px;margin-block-start:calc(var(--section-gap)/2)}
+.foot{display:grid;gap:24px}
+.foot__tag{margin:8px 0 0;font-size:14px;line-height:24px;color:var(--text-muted)}
+.social{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:0;padding:0}
+.social a{display:inline-flex;align-items:center;justify-content:center;inline-size:44px;block-size:44px;border-radius:var(--radius-md);border:1px solid var(--border-strong);color:var(--text)}
+.social a:hover{background:var(--surface-hover)}
+.social svg{inline-size:20px;block-size:20px}
+.copy{margin:0;font-size:13px;line-height:22px;color:var(--text-muted)}
+@media (min-width:768px){ .foot{grid-template-columns:1fr auto auto;align-items:center} }
+
+/* ---------- sticky mobile cta ---------- */
+.sticky{position:fixed;inset-inline:0;inset-block-end:0;z-index:50;padding:12px var(--page-margin) calc(12px + env(safe-area-inset-bottom));background:linear-gradient(to top,#000 60%,#0000);transform:translateY(110%);transition:transform var(--dur-slow) var(--ease-enter)}
+.sticky.is-on{transform:none}
+.sticky .btn{inline-size:100%}
+@media (min-width:768px){ .sticky{display:none} }
+
+/* ---------- modal ---------- */
+dialog.modal{inline-size:min(440px,calc(100vw - 32px));max-block-size:calc(100dvh - 32px);padding:0;border:0;border-radius:var(--radius-xl);background:var(--surface-raised);color:var(--text);box-shadow:var(--shadow-lg);overflow:auto}
+dialog.modal::backdrop{background:var(--overlay)}
+dialog.modal[open]{animation:pop var(--dur-slow) var(--ease-enter)}
+@keyframes pop{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.modal__in{position:relative;display:grid;gap:16px;padding:32px 24px 24px}
+.modal__close{position:absolute;inset-block-start:8px;inset-inline-end:8px;inline-size:44px;block-size:44px;display:grid;place-items:center;border:0;border-radius:var(--radius-md);background:transparent;cursor:pointer;color:var(--text-secondary)}
+.modal__close:hover{background:var(--surface-hover);color:var(--text)}
+.modal__mark{inline-size:40px}
+.modal__plan{display:flex;justify-content:space-between;gap:8px;padding:12px 16px;border-radius:var(--radius-md);background:var(--surface);border:1px solid var(--border-subtle);font-size:15px;line-height:24px}
+.modal__plan b{font-weight:600}
+.field{display:grid;gap:6px}
+.field label{font:500 14px/22px var(--font-text)}
+.field input{block-size:56px;padding:0 16px;border-radius:var(--radius-md);border:1px solid var(--border-strong);background:var(--surface);font:500 16px/1 var(--font-latin);letter-spacing:.02em;text-align:start}
+.field input::placeholder{color:var(--text-muted)}
+.field input:focus{outline:2px solid var(--focus-ring);outline-offset:2px}
+.field input[aria-invalid="true"]{border-color:var(--error)}
+.field__err{margin:0;font-size:14px;line-height:22px;color:var(--error);min-block-size:0}
+.field__err:empty{display:none}
+.hp{position:absolute;inset-inline-start:-9999px;inline-size:1px;block-size:1px;overflow:hidden}
+.privacy{margin:0;font-size:13px;line-height:22px;color:var(--text-muted);text-align:center}
+.success{display:grid;gap:12px;justify-items:center;text-align:center;padding-block:8px}
+.success__icon{inline-size:56px;block-size:56px;border-radius:var(--radius-full);display:grid;place-items:center;background:var(--success-bg);border:1px solid var(--success-border);color:var(--success)}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+
+<!-- ===== شعار sadu (من نظام التصميم، بدون تعديل) ===== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="sv-lockup" gradientUnits="userSpaceOnUse" x1="0" y1="115.2" x2="0" y2="199.2"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#6E6E6E"/></linearGradient>
+    <linearGradient id="sv-mark" gradientUnits="userSpaceOnUse" x1="0" y1="115.2" x2="0" y2="197.9"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#6E6E6E"/></linearGradient>
+  </defs>
+  <symbol id="lockup" viewBox="111 111 383 92"><g fill="url(#sv-lockup)"><rect x="151.583" y="116.167" width="9.917" height="9.917"/><rect x="139.778" y="127.972" width="9.917" height="9.917"/><rect x="151.583" y="127.972" width="9.917" height="9.917"/><rect x="163.389" y="127.972" width="9.917" height="9.917"/><rect x="127.972" y="139.778" width="9.917" height="9.917"/><rect x="139.778" y="139.778" width="9.917" height="9.917"/><rect x="163.389" y="139.778" width="9.917" height="9.917"/><rect x="175.194" y="139.778" width="9.917" height="9.917"/><rect x="116.167" y="151.583" width="9.917" height="9.917"/><rect x="127.972" y="151.583" width="9.917" height="9.917"/><rect x="151.583" y="151.583" width="9.917" height="9.917"/><rect x="175.194" y="151.583" width="9.917" height="9.917"/><rect x="187.000" y="151.583" width="9.917" height="9.917"/><rect x="127.972" y="163.389" width="9.917" height="9.917"/><rect x="139.778" y="163.389" width="9.917" height="9.917"/><rect x="163.389" y="163.389" width="9.917" height="9.917"/><rect x="175.194" y="163.389" width="9.917" height="9.917"/><rect x="139.778" y="175.194" width="9.917" height="9.917"/><rect x="151.583" y="175.194" width="9.917" height="9.917"/><rect x="163.389" y="175.194" width="9.917" height="9.917"/><rect x="151.583" y="187.000" width="9.917" height="9.917"/><path d="M 264.390625 199.140625 C 280.03125 199.140625 291.015625 191.042969 291.015625 179.285156 C 291.015625 170.574219 285.414062 165.03125 273.65625 162.535156 L 263.117188 160.316406 C 256.792969 158.929688 254.296875 156.65625 254.296875 153.050781 C 254.296875 148.835938 258.957031 145.839844 265.058594 145.839844 C 271.714844 145.839844 275.261719 149.277344 276.703125 153.605469 L 289.570312 151.054688 C 287.078125 141.457031 278.921875 135.078125 264.890625 135.078125 C 250.027344 135.078125 239.878906 142.457031 239.878906 153.9375 C 239.878906 163.03125 245.589844 168.746094 257.292969 171.296875 L 267.886719 173.570312 C 273.542969 174.789062 276.261719 177.066406 276.261719 180.667969 C 276.261719 184.886719 271.769531 188.101562 264.667969 188.101562 C 257.625 188.101562 253.300781 185.164062 251.636719 179.007812 L 238.160156 181.558594 C 240.320312 192.816406 250.136719 199.140625 264.390625 199.140625 Z M 319.496094 199.140625 C 329.144531 199.140625 335.023438 194.644531 337.742188 189.320312 L 338.296875 189.320312 L 338.296875 197.863281 L 352.105469 197.863281 L 352.105469 156.433594 C 352.105469 139.90625 338.464844 135.078125 326.816406 135.078125 C 314.394531 135.078125 304.1875 140.347656 300.527344 151.273438 L 313.894531 153.992188 C 315.390625 149.886719 319.660156 146.171875 326.871094 146.171875 C 333.914062 146.171875 337.6875 149.722656 337.6875 155.765625 L 337.6875 156.042969 C 337.6875 160.316406 333.140625 160.480469 322.378906 161.644531 C 310.398438 162.921875 298.753906 166.472656 298.753906 180.449219 C 298.753906 192.648438 307.679688 199.140625 319.496094 199.140625 Z M 323.210938 188.433594 C 317.109375 188.433594 312.730469 185.660156 312.730469 180.28125 C 312.730469 174.625 317.609375 172.238281 324.097656 171.351562 C 327.816406 170.851562 335.855469 169.855469 337.796875 168.300781 L 337.796875 175.621094 C 337.796875 182.5 332.085938 188.433594 323.210938 188.433594 Z M 389.128906 198.972656 C 399.832031 198.972656 404.601562 192.539062 406.878906 188.046875 L 407.765625 188.046875 L 407.765625 197.863281 L 421.90625 197.863281 L 421.90625 115.222656 L 407.488281 115.222656 L 407.488281 146.117188 L 406.878906 146.117188 C 404.660156 141.734375 400.109375 135.078125 389.074219 135.078125 C 374.765625 135.078125 363.5625 146.339844 363.5625 166.96875 C 363.5625 187.324219 374.433594 198.972656 389.128906 198.972656 Z M 393.066406 187.101562 C 383.417969 187.101562 378.3125 178.5625 378.3125 166.914062 C 378.3125 155.378906 383.304688 146.949219 393.066406 146.949219 C 402.550781 146.949219 407.765625 154.824219 407.765625 166.914062 C 407.765625 179.007812 402.441406 187.101562 393.066406 187.101562 Z M 457.265625 198.640625 C 466.25 198.640625 472.738281 194.3125 476.457031 185.441406 L 476.566406 197.863281 L 490.265625 197.863281 L 490.265625 135.855469 L 475.789062 135.855469 L 475.789062 172.183594 C 475.789062 181.167969 470.242188 186.382812 462.589844 186.382812 C 455.046875 186.382812 450.445312 181.390625 450.445312 173.070312 L 450.445312 135.855469 L 436.023438 135.855469 L 436.023438 175.289062 C 436.023438 190.210938 444.507812 198.640625 457.265625 198.640625 Z"/></g></symbol>
+  <symbol id="mark" viewBox="111 111 91 91"><g fill="url(#sv-mark)"><rect x="151.583" y="116.167" width="9.917" height="9.917"/><rect x="139.778" y="127.972" width="9.917" height="9.917"/><rect x="151.583" y="127.972" width="9.917" height="9.917"/><rect x="163.389" y="127.972" width="9.917" height="9.917"/><rect x="127.972" y="139.778" width="9.917" height="9.917"/><rect x="139.778" y="139.778" width="9.917" height="9.917"/><rect x="163.389" y="139.778" width="9.917" height="9.917"/><rect x="175.194" y="139.778" width="9.917" height="9.917"/><rect x="116.167" y="151.583" width="9.917" height="9.917"/><rect x="127.972" y="151.583" width="9.917" height="9.917"/><rect x="151.583" y="151.583" width="9.917" height="9.917"/><rect x="175.194" y="151.583" width="9.917" height="9.917"/><rect x="187.000" y="151.583" width="9.917" height="9.917"/><rect x="127.972" y="163.389" width="9.917" height="9.917"/><rect x="139.778" y="163.389" width="9.917" height="9.917"/><rect x="163.389" y="163.389" width="9.917" height="9.917"/><rect x="175.194" y="163.389" width="9.917" height="9.917"/><rect x="139.778" y="175.194" width="9.917" height="9.917"/><rect x="151.583" y="175.194" width="9.917" height="9.917"/><rect x="163.389" y="175.194" width="9.917" height="9.917"/><rect x="151.583" y="187.000" width="9.917" height="9.917"/></g></symbol>
+</svg>
+
+<!-- ===== أيقونات (Lucide-style, 1.5px) ===== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+  <symbol id="i-palette" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-compare" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 7-5 5 5 5M15 7l5 5-5 5"/></symbol>
+  <symbol id="i-wa" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.8 14.02c-.24.68-1.42 1.3-1.96 1.36-.5.06-1.13.09-1.82-.11-.42-.13-.96-.31-1.65-.61-2.9-1.25-4.79-4.17-4.94-4.36-.14-.19-1.18-1.57-1.18-3 0-1.43.75-2.13 1.02-2.42.26-.29.58-.36.77-.36h.55c.18 0 .42-.07.65.5.24.58.82 2 .89 2.15.07.14.12.31.02.5-.1.19-.14.31-.29.48-.14.17-.3.38-.43.5-.14.14-.29.3-.13.59.17.29.74 1.22 1.59 1.98 1.09.97 2.01 1.27 2.3 1.42.29.14.46.12.62-.07.17-.19.72-.84.91-1.13.19-.29.38-.24.65-.14.26.1 1.68.79 1.97.94.29.14.48.22.55.34.07.12.07.7-.17 1.38z"/></symbol>
+  <symbol id="i-tiktok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.5 2.6 2.4 4.5 5 5"/></symbol>
+  <symbol id="i-snap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c3 0 5 2.2 5 5v3l2 .8-1.6 1.4c.6 1.6 1.9 2.6 3.6 3-.6.8-1.8 1-3 1.1l-.6 1.7c-1.2-.3-2.3 0-3.4.7-.9.6-1.6.8-2 .8s-1.1-.2-2-.8c-1.1-.7-2.2-1-3.4-.7L6 17.3c-1.2-.1-2.4-.3-3-1.1 1.7-.4 3-1.4 3.6-3L5 11.8 7 11V8c0-2.8 2-5 5-5z"/></symbol>
+  <symbol id="i-insta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".8" fill="currentColor"/></symbol>
+  <symbol id="i-xlogo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l16 16M20 4 4 20"/></symbol>
+</svg>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo-link" href="#top" aria-label="sadu — الصفحة الرئيسية">
+      <svg class="logo" viewBox="0 0 383 92" role="img" aria-label="sadu"><use href="#lockup"/></svg>
+    </a>
+    <nav aria-label="روابط الصفحة">
+      <a class="hide-sm" href="#how">كيف يعمل</a>
+      <a class="hide-sm" href="#styles">الأساليب</a>
+      <a href="#pricing">الأسعار</a>
+      <a href="#faq">أسئلة</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- 1. الهيرو -->
+  <section class="hero" aria-labelledby="hero-title">
+    <svg class="hero__weave" viewBox="0 0 91 91" aria-hidden="true"><use href="#mark"/></svg>
+    <div class="wrap hero__grid">
+      <div class="hero__copy">
+        <h1 id="hero-title" class="h1 silver">غرفتك كما تتخيلها</h1>
+        <p class="lead">صورة واحدة تكفي لترى غرفتك بأسلوب خليجي قبل أن تدفع ريالاً.</p>
+        <div class="hero__cta">
+          <button class="btn btn--primary btn--lg" type="button" data-cta="hero">صمّم غرفتك مجاناً</button>
+          <p class="hero__note">بدون مهندس ديكور، وبدون انتظار.</p>
+        </div>
+      </div>
+
+      <div class="compare" data-compare>
+        <!-- استبدل .ph بصورك: <img class="shot" src="hero-before.jpg" alt="الغرفة قبل التصميم"> -->
+        <div class="compare__layer"><div class="ph ph--before"><span>[صورة قبل]</span></div></div>
+        <div class="compare__layer compare__after"><div class="ph ph--after"><span>[صورة بعد]</span></div></div>
+        <input class="compare__range" type="range" min="0" max="100" value="50" aria-label="حرّك للمقارنة بين قبل وبعد">
+        <div class="compare__handle"><span class="compare__knob"><svg width="20" height="20"><use href="#i-compare"/></svg></span></div>
+        <span class="compare__tag compare__tag--before">قبل</span>
+        <span class="compare__tag compare__tag--after">بعد</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. المشكلة -->
+  <section aria-labelledby="pain-title">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 id="pain-title" class="h2">لماذا يتردد الناس قبل تجديد غرفهم؟</h2>
+      </div>
+      <ol class="pains">
+        <li class="pain"><span class="pain__n">01</span><h3 class="h3">الخوف من الندم</h3><p>تدفع آلاف الريالات على الأثاث، ثم تكتشف أن الغرفة لا تشبه ما تخيلته.</p></li>
+        <li class="pain"><span class="pain__n">02</span><h3 class="h3">تكلفة المصمم</h3><p>المصمم الداخلي يطلب آلاف الريالات، وأسابيع حتى يسلّم التصميم.</p></li>
+        <li class="pain"><span class="pain__n">03</span><h3 class="h3">صور لا تشبه بيتك</h3><p>تتصفح بنترست وإنستغرام، فتجد تصاميم جميلة لا تناسب مساحتك ولا ذوقك الخليجي.</p></li>
+      </ol>
+      <p class="bridge">sadu يحل الثلاثة: صورة غرفتك الحقيقية، بأسلوب خليجي، في <span class="num">30</span> ثانية.</p>
+    </div>
+  </section>
+
+  <!-- 3. كيف يعمل -->
+  <section id="how" aria-labelledby="how-title">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">كيف يعمل</p>
+        <h2 id="how-title" class="h2">ثلاث خطوات، وأقل من دقيقة</h2>
+      </div>
+      <ol class="steps">
+        <li class="step">
+          <span class="step__icon"><svg><use href="#i-camera"/></svg></span>
+          <div><h3 class="h3">صوّر غرفتك</h3><p>التقط صورة من جوالك أو ارفع صورة موجودة.</p></div>
+        </li>
+        <li class="step">
+          <span class="step__icon"><svg><use href="#i-palette"/></svg></span>
+          <div><h3 class="h3">اختر الأسلوب</h3><p>من <span class="num">8</span> أساليب خليجية، من النجدي إلى الإماراتي المعاصر.</p></div>
+        </li>
+        <li class="step">
+          <span class="step__icon"><svg><use href="#i-clock"/></svg></span>
+          <div><h3 class="h3">استلم التصميم في <span class="num">30</span> ثانية</h3><p>جدرانك ونوافذك كما هي، والأثاث والديكور بأسلوبك الجديد.</p></div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 4. الأساليب -->
+  <section id="styles" aria-labelledby="styles-title">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">الأساليب</p>
+        <h2 id="styles-title" class="h2"><span class="num">8</span> أساليب خليجية، اختر ما يشبهك</h2>
+      </div>
+      <ul class="styles">
+        <!-- استبدل كل .ph بصورة مثال: <img class="shot" src="style-najdi.jpg" alt="غرفة بأسلوب نجدي"> -->
+        <li class="style"><div class="style__media"><div class="ph"><span>[صورة نجدي]</span></div></div><div class="style__body"><h3 class="style__name">نجدي</h3><p class="style__desc">طين وخشب وزخارف السدو</p></div></li>
+        <li class="style"><div class="style__media"><div class="ph"><span>[صورة حجازي]</span></div></div><div class="style__body"><h3 class="style__name">حجازي</h3><p class="style__desc">رواشين ونقوش خشبية</p></div></li>
+        <li class="style"><div class="style__media"><div class="ph"><span>[صورة خليجي مودرن]</span></div></div><div class="style__body"><h3 class="style__name">خليجي مودرن</h3><p class="style__desc">خطوط هادئة وخامات فاخرة</p></div></li>
+        <li class="style"><div class="style__media"><div class="ph"><span>[صورة كلاسيكي فاخر]</span></div></div><div class="style__body"><h3 class="style__name">كلاسيكي فاخر</h3><p class="style__desc">ذهبيات هادئة وأقمشة غنية</p></div></li>
+        <li class="style"><div class="style__media"><div class="ph"><span>[صورة نيوكلاسيك]</span></div></div><div class="style__body"><h3 class="style__name">نيوكلاسيك</h3><p class="style__desc">تفاصيل كلاسيكية بلمسة عصرية</p></div></li>
+        <li class="style"><div class="style__media"><div class="ph"><span>[صورة مودرن هادئ]</span></div></div><div class="style__body"><h3 class="style__name">مودرن هادئ</h3><p class="style__desc">ألوان محايدة ومساحات مريحة</p></div></li>
+        <li class="style"><div class="style__media"><div class="ph"><span>[صورة بوهيمي خليجي]</span></div></div><div class="style__body"><h3 class="style__name">بوهيمي خليجي</h3><p class="style__desc">سجاد وخامات طبيعية ونباتات</p></div></li>
+        <li class="style"><div class="style__media"><div class="ph"><span>[صورة إماراتي معاصر]</span></div></div><div class="style__body"><h3 class="style__name">إماراتي معاصر</h3><p class="style__desc">تراث بخطوط معمارية حديثة</p></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 5. أمثلة قبل / بعد -->
+  <section aria-labelledby="ex-title">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">أمثلة</p>
+        <h2 id="ex-title" class="h2">نفس الغرفة، تصميم جديد</h2>
+        <p class="muted">حرّك الخط لترى الفرق. الجدران والنوافذ لم تتغير.</p>
+      </div>
+      <ul class="examples">
+        <li class="example"><figure>
+          <div class="compare" data-compare>
+            <div class="compare__layer"><div class="ph ph--before"><span>[صورة قبل]</span></div></div>
+            <div class="compare__layer compare__after"><div class="ph ph--after"><span>[صورة بعد]</span></div></div>
+            <input class="compare__range" type="range" min="0" max="100" value="50" aria-label="قارن المثال الأول: قبل وبعد">
+            <div class="compare__handle"><span class="compare__knob"><svg width="20" height="20"><use href="#i-compare"/></svg></span></div>
+            <span class="compare__tag compare__tag--before">قبل</span><span class="compare__tag compare__tag--after">بعد</span>
+          </div>
+          <figcaption><span>مجلس رجال</span><span>نجدي</span></figcaption>
+        </figure></li>
+        <li class="example"><figure>
+          <div class="compare" data-compare>
+            <div class="compare__layer"><div class="ph ph--before"><span>[صورة قبل]</span></div></div>
+            <div class="compare__layer compare__after"><div class="ph ph--after"><span>[صورة بعد]</span></div></div>
+            <input class="compare__range" type="range" min="0" max="100" value="50" aria-label="قارن المثال الثاني: قبل وبعد">
+            <div class="compare__handle"><span class="compare__knob"><svg width="20" height="20"><use href="#i-compare"/></svg></span></div>
+            <span class="compare__tag compare__tag--before">قبل</span><span class="compare__tag compare__tag--after">بعد</span>
+          </div>
+          <figcaption><span>صالة</span><span>خليجي مودرن</span></figcaption>
+        </figure></li>
+        <li class="example"><figure>
+          <div class="compare" data-compare>
+            <div class="compare__layer"><div class="ph ph--before"><span>[صورة قبل]</span></div></div>
+            <div class="compare__layer compare__after"><div class="ph ph--after"><span>[صورة بعد]</span></div></div>
+            <input class="compare__range" type="range" min="0" max="100" value="50" aria-label="قارن المثال الثالث: قبل وبعد">
+            <div class="compare__handle"><span class="compare__knob"><svg width="20" height="20"><use href="#i-compare"/></svg></span></div>
+            <span class="compare__tag compare__tag--before">قبل</span><span class="compare__tag compare__tag--after">بعد</span>
+          </div>
+          <figcaption><span>غرفة نوم</span><span>مودرن هادئ</span></figcaption>
+        </figure></li>
+        <li class="example"><figure>
+          <div class="compare" data-compare>
+            <div class="compare__layer"><div class="ph ph--before"><span>[صورة قبل]</span></div></div>
+            <div class="compare__layer compare__after"><div class="ph ph--after"><span>[صورة بعد]</span></div></div>
+            <input class="compare__range" type="range" min="0" max="100" value="50" aria-label="قارن المثال الرابع: قبل وبعد">
+            <div class="compare__handle"><span class="compare__knob"><svg width="20" height="20"><use href="#i-compare"/></svg></span></div>
+            <span class="compare__tag compare__tag--before">قبل</span><span class="compare__tag compare__tag--after">بعد</span>
+          </div>
+          <figcaption><span>مجلس نساء</span><span>حجازي</span></figcaption>
+        </figure></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 6. المقارنة -->
+  <section aria-labelledby="cmp-title">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">المقارنة</p>
+        <h2 id="cmp-title" class="h2">لماذا sadu؟</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="cmp">
+          <colgroup><col class="c-label"><col><col><col></colgroup>
+          <thead>
+            <tr><th scope="col"><span class="sr-only">المعيار</span></th><th scope="col" class="is-us">sadu</th><th scope="col">المصمم الداخلي</th><th scope="col">تطبيقات أجنبية</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">السعر</th><td class="is-us">من <span class="num">19</span> ر.س</td><td>آلاف الريالات</td><td>حوالي <span class="num">184</span> ر.س شهرياً</td></tr>
+            <tr><th scope="row">الوقت</th><td class="is-us"><span class="num">30</span> ثانية</td><td>أسابيع</td><td>دقائق</td></tr>
+            <tr><th scope="row">اللغة</th><td class="is-us">عربي</td><td>عربي</td><td>إنجليزي أو ترجمة آلية</td></tr>
+            <tr><th scope="row">الأساليب الخليجية</th><td class="is-us"><span class="num">8</span> أساليب</td><td>حسب المصمم</td><td>لا يوجد</td></tr>
+            <tr><th scope="row">التجربة المجانية</th><td class="is-us">تصميمان</td><td>لا</td><td>لا غالباً</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. الأسعار -->
+  <section id="pricing" aria-labelledby="price-title">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">الأسعار</p>
+        <h2 id="price-title" class="h2">ادفع مرة واحدة، بدون اشتراك</h2>
+        <p class="muted">ابدأ بتصميمين مجاناً، واختر الباقة التي تناسب مشروعك.</p>
+      </div>
+      <ul class="plans">
+        <li class="plan">
+          <div><h3 class="plan__name">تجربة</h3><p class="plan__for">لكل زائر</p></div>
+          <p class="plan__price"><span class="amt">مجاناً</span></p>
+          <p class="plan__meta"><span class="num">2</span> تصميم</p>
+          <ul><li><svg><use href="#i-check"/></svg>بدون تسجيل وبدون بطاقة</li><li><svg><use href="#i-check"/></svg>بعلامة مائية</li></ul>
+          <button class="btn btn--secondary" type="button" data-plan="free">ابدأ مجاناً</button>
+        </li>
+        <li class="plan">
+          <div><h3 class="plan__name">جلسة</h3><p class="plan__for">غرفة واحدة</p></div>
+          <p class="plan__price"><span class="amt num">19</span><span class="cur">ر.س</span></p>
+          <p class="plan__meta"><span class="num">10</span> تصاميم · مرة واحدة</p>
+          <ul><li><svg><use href="#i-check"/></svg>بدون علامة مائية</li><li><svg><use href="#i-check"/></svg>كل الأساليب</li></ul>
+          <button class="btn btn--secondary" type="button" data-plan="session">اشترِ الآن</button>
+        </li>
+        <li class="plan plan--featured">
+          <span class="plan__badge">الأكثر طلباً</span>
+          <div><h3 class="plan__name">غرفة</h3><p class="plan__for">تجديد غرفة أو صالة</p></div>
+          <p class="plan__price"><span class="amt num">49</span><span class="cur">ر.س</span></p>
+          <p class="plan__meta"><span class="num">40</span> تصميماً · مرة واحدة</p>
+          <ul><li><svg><use href="#i-check"/></svg>دقة عالية</li><li><svg><use href="#i-check"/></svg>كل الأساليب</li><li><svg><use href="#i-check"/></svg>بدون علامة مائية</li></ul>
+          <button class="btn btn--primary" type="button" data-plan="room">اشترِ الآن</button>
+        </li>
+        <li class="plan">
+          <div><h3 class="plan__name">بيت</h3><p class="plan__for">تأثيث بيت كامل</p></div>
+          <p class="plan__price"><span class="amt num">99</span><span class="cur">ر.س</span></p>
+          <p class="plan__meta"><span class="num">100</span> تصميم · مرة واحدة</p>
+          <ul><li><svg><use href="#i-check"/></svg>دقة عالية</li><li><svg><use href="#i-check"/></svg>أولوية في السرعة</li></ul>
+          <button class="btn btn--secondary" type="button" data-plan="home">اشترِ الآن</button>
+        </li>
+        <li class="plan">
+          <div><h3 class="plan__name">محترف</h3><p class="plan__for">مصممون، محلات أثاث، عقار</p></div>
+          <p class="plan__price"><span class="amt num">149</span><span class="cur">ر.س / شهرياً</span></p>
+          <p class="plan__meta"><span class="num">300</span> تصميم شهرياً · ألغِ متى شئت</p>
+          <ul><li><svg><use href="#i-check"/></svg>رخصة تجارية</li><li><svg><use href="#i-check"/></svg>شعار مكتبك بدل sadu</li></ul>
+          <button class="btn btn--secondary" type="button" data-plan="pro">اشترِ الآن</button>
+        </li>
+      </ul>
+      <div class="pay" aria-label="طرق الدفع">
+        <p class="pay__label">ادفع بأمان عبر</p>
+        <!-- استبدل هذه الشارات بالشعارات الرسمية من بوابة الدفع (Moyasar أو Tap) -->
+        <span class="pay__item pay__item--ar">مدى</span>
+        <span class="pay__item">Apple Pay</span>
+        <span class="pay__item">STC Pay</span>
+      </div>
+      <p class="vat">الأسعار بالريال السعودي وشاملة ضريبة القيمة المضافة.</p>
+    </div>
+  </section>
+
+  <!-- 8. الأسئلة الشائعة -->
+  <section id="faq" aria-labelledby="faq-title">
+    <div class="wrap">
+      <div class="sec-head"><h2 id="faq-title" class="h2">أسئلة شائعة</h2></div>
+      <div class="faq">
+        <details><summary>هل التجربة مجانية فعلاً؟<svg><use href="#i-chev"/></svg></summary><p>نعم. أول تصميمين مجاناً، بدون تسجيل وبدون بطاقة.</p></details>
+        <details><summary>هل تتغير جدران الغرفة ونوافذها؟<svg><use href="#i-chev"/></svg></summary><p>لا. نحافظ على الجدران والنوافذ والأبواب كما هي، ونغيّر الأثاث والألوان والديكور فقط.</p></details>
+        <details><summary>ما طرق الدفع المتاحة؟<svg><use href="#i-chev"/></svg></summary><p>مدى وApple Pay وSTC Pay.</p></details>
+        <details><summary>هل الباقات اشتراك يتجدد تلقائياً؟<svg><use href="#i-chev"/></svg></summary><p>لا. باقات الأفراد تُدفع مرة واحدة. باقة المحترف وحدها شهرية، ويمكنك إلغاؤها متى شئت.</p></details>
+        <details><summary>هل يمكنني تنفيذ التصميم في الواقع؟<svg><use href="#i-chev"/></svg></summary><p>نعم. شارك التصميم مع النجار أو محل الأثاث أو المصمم، ليكون مرجعاً واضحاً لما تريد.</p></details>
+        <details><summary>هل صوري آمنة؟<svg><use href="#i-chev"/></svg></summary><p>نعم. صورك خاصة بك، ولا نشاركها ولا نستخدمها في أي إعلان دون إذنك.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. الدعوة الأخيرة -->
+  <section class="final" aria-labelledby="final-title">
+    <div class="wrap">
+      <div class="final__box">
+        <svg class="final__weave" viewBox="0 0 91 91" aria-hidden="true"><use href="#mark"/></svg>
+        <h2 id="final-title" class="h2">غرفة أحلامك على بُعد صورة</h2>
+        <p class="lead">صوّر غرفتك الآن، وشاهدها بأسلوب خليجي خلال <span class="num">30</span> ثانية.</p>
+        <button class="btn btn--primary btn--lg" type="button" data-cta="final">صمّم غرفتك مجاناً</button>
+        <p class="small muted" style="margin:0">أول تصميمين مجاناً، بدون تسجيل وبدون بطاقة.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- 10. التذييل -->
+<footer>
+  <div class="wrap foot">
+    <div>
+      <svg class="logo" viewBox="0 0 383 92" role="img" aria-label="sadu"><use href="#lockup"/></svg>
+      <p class="foot__tag">تصميم داخلي بأسلوب خليجي، من صورة واحدة.</p>
+    </div>
+    <a class="btn btn--wa" id="wa-link" href="#" target="_blank" rel="noopener"><svg width="20" height="20"><use href="#i-wa"/></svg>تواصل عبر واتساب</a>
+    <ul class="social" aria-label="حساباتنا">
+      <li><a data-social="tiktok" href="#" target="_blank" rel="noopener" aria-label="تيك توك"><svg><use href="#i-tiktok"/></svg></a></li>
+      <li><a data-social="snapchat" href="#" target="_blank" rel="noopener" aria-label="سناب شات"><svg><use href="#i-snap"/></svg></a></li>
+      <li><a data-social="instagram" href="#" target="_blank" rel="noopener" aria-label="إنستغرام"><svg><use href="#i-insta"/></svg></a></li>
+      <li><a data-social="x" href="#" target="_blank" rel="noopener" aria-label="إكس"><svg><use href="#i-xlogo"/></svg></a></li>
+    </ul>
+  </div>
+  <div class="wrap" style="margin-block-start:24px"><p class="copy">© <span class="num" id="year">2026</span> sadu. جميع الحقوق محفوظة.</p></div>
+</footer>
+
+<div class="sticky" id="sticky" aria-hidden="true">
+  <button class="btn btn--primary btn--lg" type="button" data-cta="sticky" tabindex="-1">صمّم غرفتك مجاناً</button>
+</div>
+
+<!-- نافذة "يُطلق قريباً" -->
+<dialog class="modal" id="lead-modal" aria-labelledby="modal-title">
+  <div class="modal__in">
+    <button class="modal__close" type="button" data-close aria-label="إغلاق"><svg width="22" height="22"><use href="#i-x"/></svg></button>
+
+    <div id="lead-step">
+      <div style="display:grid;gap:16px">
+        <svg class="modal__mark" viewBox="0 0 91 91" aria-hidden="true"><use href="#mark"/></svg>
+        <h2 id="modal-title" class="h3" style="font-size:24px;line-height:36px">sadu يُطلق قريباً</h2>
+        <p style="margin:0;color:var(--text-secondary)">اترك رقم جوالك، وكن من أول <span class="num">100</span> عميل يحصلون على خصم <span class="num">50%</span> عند الإطلاق.</p>
+        <div class="modal__plan"><span>الباقة المختارة</span><b id="modal-plan">غرفة · 49 ر.س</b></div>
+        <form id="lead-form" novalidate style="display:grid;gap:16px">
+          <div class="field">
+            <label for="phone">رقم الجوال</label>
+            <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" placeholder="05X XXX XXXX" aria-describedby="phone-err" required>
+            <p class="field__err" id="phone-err" role="alert"></p>
+          </div>
+          <div class="hp" aria-hidden="true"><label for="website">اتركه فارغاً</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div>
+          <button class="btn btn--primary btn--lg btn--block" type="submit">احجز خصمي</button>
+          <p class="privacy">نستخدم رقمك لإبلاغك بالإطلاق فقط.</p>
+        </form>
+      </div>
+    </div>
+
+    <div id="done-step" class="success" hidden>
+      <span class="success__icon"><svg width="28" height="28"><use href="#i-check"/></svg></span>
+      <h2 class="h3" style="font-size:24px;line-height:36px">تم حجز خصمك</h2>
+      <p style="margin:0;color:var(--text-secondary)">سنرسل لك رسالة على جوالك يوم الإطلاق، مع خصم <span class="num">50%</span> على أول باقة تشتريها.</p>
+      <button class="btn btn--secondary btn--block" type="button" data-close>رجوع للصفحة</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+(function(){
+  "use strict";
+  var C = window.SADU_CONFIG || {};
+  var PLANS = {
+    free:    {name:"تجربة مجانية", price:0},
+    session: {name:"جلسة",  price:19},
+    room:    {name:"غرفة",  price:49},
+    home:    {name:"بيت",   price:99},
+    pro:     {name:"محترف", price:149}
+  };
+
+  /* ---------- session + UTM ---------- */
+  function store(k,v){ try{ if(v===undefined) return sessionStorage.getItem(k); sessionStorage.setItem(k,v); }catch(e){ return null; } }
+  var sid = store("sadu_sid");
+  if(!sid){ sid = (Date.now().toString(36)+Math.random().toString(36).slice(2,8)); store("sadu_sid", sid); }
+  var qs = new URLSearchParams(location.search);
+  var utm = {};
+  ["utm_source","utm_medium","utm_campaign","utm_content","utm_term"].forEach(function(k){
+    var v = qs.get(k) || store("sadu_"+k) || "";
+    if(qs.get(k)) store("sadu_"+k, v);
+    utm[k] = v;
+  });
+
+  /* ---------- webhook ---------- */
+  function send(payload){
+    if(!C.WEBHOOK_URL) return;
+    var body = JSON.stringify(Object.assign({
+      session: sid, ts: new Date().toISOString(), page: location.pathname,
+      referrer: document.referrer || "", ua: navigator.userAgent
+    }, utm, payload));
+    try{
+      if(navigator.sendBeacon && navigator.sendBeacon(C.WEBHOOK_URL, new Blob([body],{type:"text/plain;charset=utf-8"}))) return Promise.resolve();
+    }catch(e){}
+    return fetch(C.WEBHOOK_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:body,keepalive:true}).catch(function(){});
+  }
+
+  /* ---------- pixels (تُحمَّل فقط إذا وُضع الرقم) ---------- */
+  if(C.META_PIXEL_ID){
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version="2.0";n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,"script","https://connect.facebook.net/en_US/fbevents.js");
+    fbq("init", C.META_PIXEL_ID); fbq("track","PageView");
+  }
+  if(C.TIKTOK_PIXEL_ID){
+    !function(w,d,t){w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"];ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e};ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{};ttq._i[e]=[];ttq._i[e]._u=i;ttq._t=ttq._t||{};ttq._t[e]=+new Date;ttq._o=ttq._o||{};ttq._o[e]=n||{};var o=d.createElement("script");o.type="text/javascript";o.async=!0;o.src=i+"?sdkid="+e+"&lib="+t;var a=d.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)}}(window,document,"ttq");
+    ttq.load(C.TIKTOK_PIXEL_ID); ttq.page();
+  }
+
+  /* ---------- تتبع الأحداث ---------- */
+  window.dataLayer = window.dataLayer || [];
+  function track(event, data){
+    data = data || {};
+    window.dataLayer.push(Object.assign({event:event}, data));
+    var p = data.plan && PLANS[data.plan];
+    var money = p ? {value:p.price, currency:"SAR", content_name:p.name} : {};
+    try{
+      if(window.fbq){
+        if(event==="cta_click") fbq("trackCustom","TryFreeClick",{location:data.location});
+        if(event==="buy_click") fbq("track","InitiateCheckout",money);
+        if(event==="lead_submit") fbq("track","Lead",money);
+      }
+      if(window.ttq){
+        if(event==="cta_click") ttq.track("ClickButton",{content_name:"try_free_"+data.location});
+        if(event==="buy_click") ttq.track("InitiateCheckout",money);
+        if(event==="lead_submit") ttq.track("SubmitForm",money);
+      }
+    }catch(e){}
+    send(Object.assign({type:"event", event:event}, data, p ? {price:p.price} : {}));
+  }
+  track("page_view");
+
+  /* ---------- سلايدر قبل/بعد ---------- */
+  document.querySelectorAll("[data-compare]").forEach(function(el){
+    var r = el.querySelector(".compare__range");
+    function set(){ el.style.setProperty("--pos", r.value + "%"); }
+    r.addEventListener("input", set); set();
+  });
+
+  /* ---------- النافذة ---------- */
+  var modal = document.getElementById("lead-modal");
+  var form = document.getElementById("lead-form");
+  var phone = document.getElementById("phone");
+  var err = document.getElementById("phone-err");
+  var leadStep = document.getElementById("lead-step");
+  var doneStep = document.getElementById("done-step");
+  var planLabel = document.getElementById("modal-plan");
+  var current = "free", lastFocus = null;
+
+  function openModal(plan){
+    current = plan;
+    var p = PLANS[plan];
+    planLabel.textContent = p.price ? (p.name + " · " + p.price + " ر.س" + (plan==="pro" ? " شهرياً" : "")) : p.name;
+    leadStep.hidden = false; doneStep.hidden = true;
+    err.textContent = ""; phone.removeAttribute("aria-invalid");
+    lastFocus = document.activeElement;
+    if(typeof modal.showModal === "function") modal.showModal(); else modal.setAttribute("open","");
+    setTimeout(function(){ phone.focus(); }, 50);
+  }
+  function closeModal(){ if(modal.open) modal.close(); }
+  modal.addEventListener("close", function(){ if(lastFocus) lastFocus.focus(); });
+  modal.addEventListener("click", function(e){ if(e.target === modal) closeModal(); });
+  modal.querySelectorAll("[data-close]").forEach(function(b){ b.addEventListener("click", closeModal); });
+
+  document.querySelectorAll("[data-cta]").forEach(function(b){
+    b.addEventListener("click", function(){ track("cta_click",{location:b.dataset.cta, plan:"free"}); openModal("free"); });
+  });
+  document.querySelectorAll("[data-plan]").forEach(function(b){
+    b.addEventListener("click", function(){
+      var plan = b.dataset.plan;
+      track(plan==="free" ? "cta_click" : "buy_click", plan==="free" ? {location:"pricing", plan:"free"} : {plan:plan});
+      openModal(plan);
+    });
+  });
+
+  /* ---------- رقم الجوال ---------- */
+  function toLatin(s){ return s.replace(/[٠-٩]/g,function(d){return "٠١٢٣٤٥٦٧٨٩".indexOf(d);}).replace(/[۰-۹]/g,function(d){return "۰۱۲۳۴۵۶۷۸۹".indexOf(d);}); }
+  function normalize(raw){
+    var s = toLatin(raw).replace(/[^\d+]/g,"");
+    if(/^05\d{8}$/.test(s)) return "+966" + s.slice(1);
+    if(/^5\d{8}$/.test(s)) return "+966" + s;
+    if(/^(\+|00)9665\d{8}$/.test(s)) return "+966" + s.replace(/^(\+|00)966/,"");
+    if(/^(\+|00)9(71|65|73|74|68)\d{7,9}$/.test(s)) return "+" + s.replace(/^(\+|00)/,""); /* الإمارات، الكويت، البحرين، قطر، عُمان */
+    return null;
+  }
+
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+    if(form.website.value) return; /* honeypot */
+    var n = normalize(phone.value);
+    if(!n){
+      err.textContent = "اكتب رقم جوال صحيح، مثل 0551234567.";
+      phone.setAttribute("aria-invalid","true"); phone.focus(); return;
+    }
+    phone.removeAttribute("aria-invalid"); err.textContent = "";
+    var btn = form.querySelector("[type=submit]");
+    btn.setAttribute("aria-busy","true");
+    var p = PLANS[current];
+    track("lead_submit",{plan:current});
+    Promise.resolve(send({type:"lead", phone:n, plan:current, plan_name:p.name, price:p.price})).then(function(){
+      btn.removeAttribute("aria-busy");
+      form.reset();
+      leadStep.hidden = true; doneStep.hidden = false;
+    });
+  });
+
+  /* ---------- زر ثابت على الجوال ---------- */
+  var sticky = document.getElementById("sticky");
+  var hero = document.querySelector(".hero");
+  var finalBox = document.querySelector(".final");
+  if("IntersectionObserver" in window){
+    var heroVisible = true, finalVisible = false;
+    function upd(){
+      var on = !heroVisible && !finalVisible;
+      sticky.classList.toggle("is-on", on);
+      sticky.setAttribute("aria-hidden", on ? "false" : "true");
+      sticky.querySelector("button").tabIndex = on ? 0 : -1;
+    }
+    new IntersectionObserver(function(es){ heroVisible = es[0].isIntersecting; upd(); }).observe(hero);
+    new IntersectionObserver(function(es){ finalVisible = es[0].isIntersecting; upd(); }).observe(finalBox);
+  }
+
+  /* ---------- واتساب والسوشال ---------- */
+  var wa = document.getElementById("wa-link");
+  wa.href = "https://wa.me/" + (C.WHATSAPP_NUMBER || "") + "?text=" + encodeURIComponent("السلام عليكم، عندي سؤال عن sadu");
+  wa.addEventListener("click", function(){ track("whatsapp_click"); });
+  document.querySelectorAll("[data-social]").forEach(function(a){
+    var u = C.SOCIAL && C.SOCIAL[a.dataset.social]; if(u) a.href = u;
+  });
+  document.getElementById("year").textContent = new Date().getFullYear();
+})();
+</script>
+</body>
+</html>
