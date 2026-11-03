@@ -101,17 +101,28 @@ function buildPrompt(style, room) {
   return `Redesign ${ROOMS[room] || "this room"} in ${STYLES[style]}.${extra} ${KEEP}`;
 }
 
+// Replicate rate-limits accounts (strictly when the credit balance is low): retry 429 and
+// transient 5xx a few times, waiting what Replicate asks for, within the function's time budget.
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+function retryDelay(r, attempt) {
+  const ra = Number(r.headers && r.headers.get && r.headers.get("retry-after"));
+  return Number.isFinite(ra) && ra > 0 ? Math.min(ra, 12) * 1000 : 2000 * 2 ** attempt;
+}
+
 async function replicate(path, opts = {}) {
-  const r = await fetch(API + path, {
-    ...opts,
-    headers: {
-      Authorization: `Bearer ${process.env.REPLICATE_API_TOKEN}`,
-      "Content-Type": "application/json",
-      ...(opts.headers || {})
-    }
-  });
-  const data = await r.json().catch(() => ({}));
-  return { ok: r.ok, status: r.status, data };
+  for (let attempt = 0; ; attempt++) {
+    const r = await fetch(API + path, {
+      ...opts,
+      headers: {
+        Authorization: `Bearer ${process.env.REPLICATE_API_TOKEN}`,
+        "Content-Type": "application/json",
+        ...(opts.headers || {})
+      }
+    });
+    if ((r.status === 429 || r.status >= 500) && attempt < 3) { await sleep(retryDelay(r, attempt)); continue; }
+    const data = await r.json().catch(() => ({}));
+    return { ok: r.ok, status: r.status, data };
+  }
 }
 
 function reply(res, code, body) {

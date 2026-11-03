@@ -3,7 +3,8 @@
 
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { parseAnswer, analyzeRoom, STYLES } = require("../api/_lib/roomAnalysis");
+const { parseAnswer, analyzeRoom, STYLES, _resetWorkingModel } = require("../api/_lib/roomAnalysis");
+test.beforeEach(() => _resetWorkingModel());
 
 test("parses a clean JSON answer", () => {
   const r = parseAnswer('{"room":"bedroom","room_confidence":0.92,"style":"quiet_luxury","why":"هذه غرفة نوم هادئة الإضاءة.","seen":["bed","window"]}');
@@ -77,4 +78,28 @@ test("endpoint: rejects bad input, uses the server key", async () => {
     assert.equal(r3.code, 200); assert.equal(r3.body.room, "office");
   } finally { m.restore(); }
   assert.ok(Object.keys(STYLES).length >= 11);
+});
+
+test("rate limited (429): waits and retries instead of failing", async () => {
+  const m = mockFetch((url, n) => n === 1 ? { status: 429, json: { detail: "throttled" } }
+    : { json: { id: "p3", status: "succeeded", output: '{"room":"bedroom","room_confidence":0.9,"style":"quiet_luxury","why":"غرفة نوم."}' } });
+  try {
+    const t0 = Date.now();
+    const r = await analyzeRoom("tok", "data:image/jpeg;base64,AAAA");
+    assert.equal(r.style, "quiet_luxury");
+    assert.equal(m.calls.length, 2, "one retry");
+    assert.ok(Date.now() - t0 >= 1900, "waited before retrying");
+  } finally { m.restore(); }
+});
+
+test("remembers the model that worked, so the next request is a single call", async () => {
+  const m = mockFetch((url) => url.includes("claude-4.5-sonnet") ? { status: 404, json: {} }
+    : { json: { id: "p4", status: "succeeded", output: '{"room":"kitchen","room_confidence":0.9,"style":"warm_luxury","why":"مطبخ."}' } });
+  try {
+    await analyzeRoom("tok", "data:image/jpeg;base64,AAAA");
+    const before = m.calls.length;
+    await analyzeRoom("tok", "data:image/jpeg;base64,AAAA");
+    assert.equal(m.calls.length - before, 1, "second request goes straight to the working model");
+    assert.ok(m.calls[m.calls.length - 1].url.includes("claude-4-sonnet"));
+  } finally { m.restore(); }
 });

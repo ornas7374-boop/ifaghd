@@ -258,6 +258,7 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
     too_large: "الصورة كبيرة جداً. جرّب صورة أصغر.",
     timeout: "التصميم تأخر أكثر من المعتاد. جرّب مرة ثانية.",
     replicate_401: "مفتاح Replicate غير صحيح أو ملغى.",
+    replicate_429: "الخدمة مزدحمة الآن. انتظر دقيقة ثم جرّب مرة ثانية.",
     replicate_402: "رصيد Replicate انتهى. اشحن الحساب ثم جرّب.",
     replicate_422: "النموذج رفض الطلب. جرّب صورة أخرى.",
     analysis_model_unavailable: "نموذج تحليل الغرفة غير متاح على الحساب.",
@@ -269,8 +270,13 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
   };
 
   async function postJson(url, body){
-    return fetch(url, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(body) })
-      .then(function(x){ return x.json(); });
+    for(var attempt = 0; ; attempt++){
+      var r = await fetch(url, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(body) })
+        .then(function(x){ return x.json(); });
+      // the service is busy: wait and retry once more before showing an error
+      if(r && r.error === "replicate_429" && attempt < 1){ $("loadText").textContent = "الخدمة مزدحمة، نعيد المحاولة…"; await wait(15000); continue; }
+      return r;
+    }
   }
 
   /* الذكاء الاصطناعي يحلل الغرفة ويختار الأسلوب، ثم يصمّم */
