@@ -35,6 +35,26 @@ const NIGHT_ROOM = {
   annex: "deep modular sofa, media wall with large screen and backlit shelves, dark panels with LED lines"
 };
 
+// "فخامة دافئة" — مأخوذ من مراجع sadu-refs (الصور 17–30). انظر sadu-refs/README.md
+const WARM_BASE = "warm modern luxury style: light warm palette of cream, beige, greige and taupe with walnut or light oak wood; floor-to-ceiling fluted wood slats or vertical wood panels; tall upholstered fabric wall panels; polished white Calacatta or grey-veined marble on floors and feature walls, sometimes with a thin black inlay line; textured plaster walls; brushed gold and brass accents; a sculptural ring or linear gold chandelier as the focal light; warm 3000K cove LED in a dropped ceiling plus small recessed spotlights; curved and rounded furniture; one muted accent color only, such as olive, sage green or terracotta; bright, airy, elegant daytime atmosphere";
+const WARM_SOFT = "boucle, velvet and linen upholstery in cream and taupe; layered sheer and linen curtains floor to ceiling; light herringbone wood or marble floor with a large textured cream rug";
+const WARM_ROOM = {
+  bedroom: "tall upholstered headboard wall of fabric panels, upholstered bed in cream, olive or grey, channel-tufted bench at the foot of the bed, rounded nightstands, gold ring chandelier or slim glass pendants beside the bed, built-in wardrobe in wood with tinted glass doors",
+  living: "curved boucle sofas and rounded armchairs in cream, wood-veneer TV wall with LED outline beside white fluted slats, marble and wood coffee tables, gold ring chandelier",
+  kitchen: "large wood dining island on a fluted marble base with clear acrylic bar stools on black legs, grey-veined marble backsplash wall with brass open shelves, black upper cabinets with wood accents, polished white marble floor, gold linear stick chandelier over the island, built-in stainless refrigerator",
+  bathroom: "white Calacatta marble walls with a grey marble accent wall or rough stone feature, floating marble or wood vanity with a sculptural vessel basin, organic-shaped or wood-framed mirror, black or brass fixtures, slim black pendant lights, wall-hung toilet, LED-lit niche shelf",
+  dressing: "wood-veneer wardrobes with tinted glass doors and LED shelves, upholstered bench, one rounded armchair",
+  dining: "long wood or marble dining table, upholstered curved chairs in cream boucle, gold linear chandelier, fluted wood wall panels and marble floor",
+  majlis_men: "deep curved boucle sofas in cream arranged around wood and stone coffee tables, exposed wood ceiling beams, textured backlit feature wall, brass wall sconces, rattan pendant, marble floor with a black inlay border",
+  majlis_women: "rounded cream boucle sofas and armchairs, warm wood ceiling beams or cove ceiling, textured plaster feature wall with LED, brass sconces, marble floor with inlay",
+  annex: "curved cream sofa, wood TV wall with LED outline, fluted slats, warm cove lighting"
+};
+
+const STYLE_EXTRAS = {
+  night_luxury: { soft: NIGHT_SOFT, room: NIGHT_ROOM },
+  warm_luxury: { soft: WARM_SOFT, room: WARM_ROOM }
+};
+
 const STYLES = {
   najdi: "traditional Najdi style: low floor seating with Sadu-woven cushions in deep red, black and cream, earthy clay and sand tones, carved wooden accents with geometric Najdi motifs, brass coffee set (dallah), warm lantern lighting",
   hijazi: "traditional Hijazi style: carved wooden mashrabiya and rawashin-inspired panels, rich teal and wood tones, ornate wooden furniture, patterned rugs, coral-stone texture accents, soft warm lighting",
@@ -44,16 +64,18 @@ const STYLES = {
   calm_modern: "calm modern minimal style: warm neutral tones, natural wood and linen, uncluttered layout, soft textures, a few plants, diffuse natural lighting",
   boho_gulf: "Gulf bohemian style: layered handwoven rugs and Sadu textiles, rattan and natural wood furniture, floor cushions, plants, terracotta and sand tones, cozy warm lighting",
   emirati: "contemporary Emirati style: modern furniture inspired by Emirati heritage, palm-frond (khoos) weave textures, sand, olive and deep blue accents, arched niches, geometric lattice details, refined lighting",
-  night_luxury: NIGHT_BASE
+  night_luxury: NIGHT_BASE,
+  warm_luxury: WARM_BASE
 };
 
 const KEEP = "Keep the exact same room architecture: the position and size of walls, windows, doors, ceiling height, room shape, camera angle and perspective must stay identical. You may change wall and ceiling finishes, furniture, decor, textiles, colors and lighting. Photorealistic interior photograph, high detail, natural proportions.";
 
 function buildPrompt(style, room) {
   let extra = "";
-  if (style === "night_luxury") {
-    if (room !== "kitchen" && room !== "bathroom") extra += ` Textiles and floor: ${NIGHT_SOFT}.`;
-    if (NIGHT_ROOM[room]) extra += ` Key pieces: ${NIGHT_ROOM[room]}.`;
+  const x = STYLE_EXTRAS[style];
+  if (x) {
+    if (room !== "kitchen" && room !== "bathroom") extra += ` Textiles and floor: ${x.soft}.`;
+    if (x.room[room]) extra += ` Key pieces: ${x.room[room]}.`;
   }
   return `Redesign ${ROOMS[room] || "this room"} in ${STYLES[style]}.${extra} ${KEEP}`;
 }
