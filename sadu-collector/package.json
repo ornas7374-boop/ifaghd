@@ -1,0 +1,21 @@
+{
+  "name": "sadu-collector",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Autonomous, authorized collection and AI classification of interior reference images for sadu",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "collect": "node bin/cli.js collect",
+    "probe": "node bin/cli.js probe"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "pg": "^8.23.1",
+    "sharp": "^0.35.5"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.15"
+  }
+}
