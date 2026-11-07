@@ -114,3 +114,17 @@ test("analysis asks for low thinking on 2.5 models", async () => {
   try { await analyzeRoomGemini("k", IMG); assert.deepEqual(m.calls[0].body.generationConfig.thinkingConfig, { thinkingBudget: 0 }); }
   finally { m.restore(); }
 });
+
+test("overloaded model (503): falls back to the next model on the account", async () => {
+  require("../api/_lib/gemini")._reset();
+  const m = mockFetch((url) => {
+    if (url.includes("/models?")) return { json: { models: [
+      { name: "models/gemini-3.8-flash", supportedGenerationMethods: ["generateContent"] },
+      { name: "models/gemini-3.5-flash", supportedGenerationMethods: ["generateContent"] }] } };
+    if (url.includes("gemini-2.5-flash:") || url.includes("gemini-3.8-flash:")) return { status: 503, json: { error: { message: "high demand" } } };
+    if (url.includes("gemini-3.5-flash:")) return { json: reply([{ text: '{"room":"living","style":"warm_luxury","why":"صالة."}' }]) };
+    return { status: 500, json: {} };
+  });
+  try { const a = await analyzeRoomGemini("k", IMG); assert.equal(a.model, "gemini-3.5-flash"); }
+  finally { m.restore(); require("../api/_lib/gemini")._reset(); }
+});

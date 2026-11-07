@@ -39,7 +39,7 @@ async function generate(key, model, body, budgetMs = 50000) {
     }
     clearTimeout(timer);
     console.log(JSON.stringify({ gemini: model, status: r.status, ms: Date.now() - t0, attempt }));
-    if ((r.status === 429 || r.status >= 500) && attempt < 2 && budgetMs - (Date.now() - t0) > 8000) { await sleep(2000 * 2 ** attempt); continue; }
+    if ((r.status === 429 || r.status >= 500) && attempt < 1 && budgetMs - (Date.now() - t0) > 8000) { await sleep(2000 * 2 ** attempt); continue; }
     const data = await r.json().catch(() => ({}));
     return { ok: r.ok, status: r.status, data };
   }
@@ -55,7 +55,7 @@ function pick(models, kind) {
     ? ok.filter(n => /^gemini-/.test(n) && /image/.test(n))
     : ok.filter(n => /^gemini-/.test(n) && /flash/.test(n) && !/(image|tts|audio|live|embed|lite)/.test(n));
   fits.sort((a, b) => (/preview|exp/.test(a) - /preview|exp/.test(b)) || (ver(b) - ver(a)) || (/flash/.test(b) - /flash/.test(a)));
-  return fits[0] || null;
+  return fits;
 }
 async function listModels(key) {
   const out = [];
@@ -85,10 +85,18 @@ async function generateWithFallback(key, kind, preferred, body, budgetMs) {
   };
   let model = chosen[kind] || preferred;
   let res = await send(model);
-  if (res.status === 404 && !chosen[kind]) {
-    const alt = pick(await listModels(key), kind);
-    console.log(JSON.stringify({ gemini_pick: kind, model: alt }));
-    if (alt && alt !== model) { model = alt; res = await send(model); }
+  // Not on the account (404), or overloaded (503/429/500 after retries): try the next suitable
+  // model the account has, newest stable first, while time remains.
+  if ([404, 429, 500, 503].includes(res.status) && left() > 8000) {
+    const tried = new Set([model]);
+    const list = pick(await listModels(key), kind).filter(n => !tried.has(n));
+    for (const alt of list.slice(0, 3)) {
+      if (left() < 8000) break;
+      console.log(JSON.stringify({ gemini_fallback: kind, from: model, status: res.status, to: alt }));
+      if (chosen[kind] === model) delete chosen[kind];
+      model = alt; res = await send(model);
+      if (res.ok || ![404, 429, 500, 503].includes(res.status)) break;
+    }
   }
   if (res.ok) chosen[kind] = model;
   return { res, model };
