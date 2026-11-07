@@ -96,3 +96,21 @@ test("404 on the default model: lists the account's models and retries with the 
     assert.equal(m.calls.length - n, 1, "remembered: one call next time");
   } finally { m.restore(); require("../api/_lib/gemini")._reset(); }
 });
+
+test("a model that hangs fails clearly inside the time budget (no 60 s Vercel timeout)", async () => {
+  require("../api/_lib/gemini")._reset();
+  const real = global.fetch;
+  global.fetch = (url, init) => new Promise((_, rej) => init.signal.addEventListener("abort", () => rej(new Error("aborted"))));
+  try {
+    const t0 = Date.now();
+    await assert.rejects(analyzeRoomGemini("k", IMG, { budgetMs: 1500 }), /gemini_timeout/);
+    assert.ok(Date.now() - t0 < 3000);
+  } finally { global.fetch = real; }
+});
+
+test("analysis asks for low thinking on 2.5 models", async () => {
+  require("../api/_lib/gemini")._reset();
+  const m = mockFetch(() => ({ json: reply([{ text: '{"room":"living","style":"warm_luxury","why":"صالة."}' }]) }));
+  try { await analyzeRoomGemini("k", IMG); assert.deepEqual(m.calls[0].body.generationConfig.thinkingConfig, { thinkingBudget: 0 }); }
+  finally { m.restore(); }
+});

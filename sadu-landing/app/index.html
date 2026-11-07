@@ -266,6 +266,9 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
     gemini_403: "مفتاح Gemini غير صحيح أو غير مفعّل لهذا النموذج.",
     gemini_404: "نموذج Gemini غير متاح. أرسل الخطأ للمطوّر.",
     gemini_429: "حد استخدام Gemini تجاوز. انتظر دقيقة أو فعّل الفوترة.",
+    gemini_timeout: "Gemini تأخر أكثر من اللازم. جرّب مرة ثانية.",
+    http_504: "الخادم تأخر أكثر من دقيقة. جرّب مرة ثانية.",
+    http_413: "الصورة أو النتيجة كبيرة جداً.",
     gemini_no_image: "Gemini ما أرجع صورة. جرّب صورة أخرى.",
     analysis_model_unavailable: "نموذج تحليل الغرفة غير متاح على الحساب.",
     analysis_failed: "تعذّر تحليل الغرفة. جرّب مرة ثانية.",
@@ -278,7 +281,7 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
   async function postJson(url, body){
     for(var attempt = 0; ; attempt++){
       var r = await fetch(url, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(body) })
-        .then(function(x){ return x.json(); });
+        .then(function(x){ return x.json().catch(function(){ return { status:"failed", error:"http_" + x.status }; }); });
       // the service is busy: wait and retry once more before showing an error
       if(r && r.error === "replicate_429" && attempt < 1){ $("loadText").textContent = "الخدمة مزدحمة، نعيد المحاولة…"; await wait(15000); continue; }
       return r;

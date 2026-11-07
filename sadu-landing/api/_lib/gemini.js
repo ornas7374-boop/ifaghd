@@ -16,14 +16,30 @@ function splitDataUri(uri) {
   return { mime: m[1], data: m[2] };
 }
 
-async function generate(key, model, body) {
+// One generateContent call, with retries for 429/5xx, inside a time budget (Vercel stops the
+// function at 60 s, so a slow model must fail clearly instead of hanging the request).
+async function generate(key, model, body, budgetMs = 50000) {
+  const t0 = Date.now();
   for (let attempt = 0; ; attempt++) {
-    const r = await fetch(`${API}/models/${model}:generateContent`, {
-      method: "POST",
-      headers: { "x-goog-api-key": key, "Content-Type": "application/json" },
-      body: JSON.stringify(body)
-    });
-    if ((r.status === 429 || r.status >= 500) && attempt < 2) { await sleep(2000 * 2 ** attempt); continue; }
+    const left = budgetMs - (Date.now() - t0);
+    if (left < 1000) return { ok: false, status: 504, data: { error: { message: "timeout" } }, timeout: true };
+    const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), left);
+    let r;
+    try {
+      r = await fetch(`${API}/models/${model}:generateContent`, {
+        method: "POST",
+        headers: { "x-goog-api-key": key, "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+        signal: ctl.signal
+      });
+    } catch (e) {
+      clearTimeout(timer);
+      console.log(JSON.stringify({ gemini: model, status: "timeout", ms: Date.now() - t0 }));
+      return { ok: false, status: 504, data: { error: { message: "timeout after " + Math.round((Date.now() - t0) / 1000) + "s" } }, timeout: true };
+    }
+    clearTimeout(timer);
+    console.log(JSON.stringify({ gemini: model, status: r.status, ms: Date.now() - t0, attempt }));
+    if ((r.status === 429 || r.status >= 500) && attempt < 2 && budgetMs - (Date.now() - t0) > 8000) { await sleep(2000 * 2 ** attempt); continue; }
     const data = await r.json().catch(() => ({}));
     return { ok: r.ok, status: r.status, data };
   }
@@ -38,7 +54,7 @@ function pick(models, kind) {
   const fits = kind === "image"
     ? ok.filter(n => /^gemini-/.test(n) && /image/.test(n))
     : ok.filter(n => /^gemini-/.test(n) && /flash/.test(n) && !/(image|tts|audio|live|embed|lite)/.test(n));
-  fits.sort((a, b) => (ver(b) - ver(a)) || (/preview|exp/.test(a) - /preview|exp/.test(b)) || (/flash/.test(b) - /flash/.test(a)));
+  fits.sort((a, b) => (/preview|exp/.test(a) - /preview|exp/.test(b)) || (ver(b) - ver(a)) || (/flash/.test(b) - /flash/.test(a)));
   return fits[0] || null;
 }
 async function listModels(key) {
@@ -54,12 +70,25 @@ async function listModels(key) {
   }
   return out;
 }
-async function generateWithFallback(key, kind, preferred, body) {
+// Analysis does not need long reasoning: ask the model to think little (faster, cheaper).
+function withLowThinking(model, body) {
+  const t = /gemini-2\.5/.test(model) ? { thinkingBudget: 0 } : /gemini-[3-9]/.test(model) ? { thinkingLevel: "low" } : null;
+  return t ? { ...body, generationConfig: { ...body.generationConfig, thinkingConfig: t } } : body;
+}
+async function generateWithFallback(key, kind, preferred, body, budgetMs) {
+  const t0 = Date.now(), left = () => budgetMs - (Date.now() - t0);
+  const send = async (model) => {
+    if (kind !== "vision") return generate(key, model, body, left());
+    let r = await generate(key, model, withLowThinking(model, body), left());
+    if (r.status === 400 && /thinking/i.test(errDetail(r.data))) r = await generate(key, model, body, left());
+    return r;
+  };
   let model = chosen[kind] || preferred;
-  let res = await generate(key, model, body);
+  let res = await send(model);
   if (res.status === 404 && !chosen[kind]) {
     const alt = pick(await listModels(key), kind);
-    if (alt && alt !== model) { model = alt; res = await generate(key, model, body); }
+    console.log(JSON.stringify({ gemini_pick: kind, model: alt }));
+    if (alt && alt !== model) { model = alt; res = await send(model); }
   }
   if (res.ok) chosen[kind] = model;
   return { res, model };
@@ -74,8 +103,8 @@ async function generateImage(key, image, prompt, opts = {}) {
   const { res, model } = await generateWithFallback(key, "image", opts.model || DEFAULT_IMAGE_MODEL, {
     contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: mime, data } }] }],
     generationConfig: { responseModalities: ["IMAGE"] }
-  });
-  if (!res.ok) { const e = new Error(`gemini_${res.status}`); e.detail = `${model}: ${errDetail(res.data)}`.slice(0, 240); throw e; }
+  }, opts.budgetMs || 55000);
+  if (!res.ok) { const e = new Error(res.timeout ? "gemini_timeout" : `gemini_${res.status}`); e.detail = `${model}: ${errDetail(res.data)}`.slice(0, 240); throw e; }
   const img = parts(res.data).find(p => (p.inlineData || p.inline_data));
   if (!img) {
     const e = new Error("gemini_no_image");
@@ -96,9 +125,9 @@ async function analyzeRoomGemini(key, image, opts = {}) {
   const { res, model } = await generateWithFallback(key, "vision", opts.model || DEFAULT_VISION_MODEL, {
     systemInstruction: { parts: [{ text: SYSTEM }] },
     contents: [{ parts: [{ text: userPrompt(exclude) }, { inline_data: { mime_type: mime, data } }] }],
-    generationConfig: { responseMimeType: "application/json", maxOutputTokens: 600, temperature: 0.3 }
-  });
-  if (!res.ok) { const e = new Error(`gemini_${res.status}`); e.detail = `${model}: ${errDetail(res.data)}`.slice(0, 240); throw e; }
+    generationConfig: { responseMimeType: "application/json", maxOutputTokens: 800, temperature: 0.3 }
+  }, opts.budgetMs || 45000);
+  if (!res.ok) { const e = new Error(res.timeout ? "gemini_timeout" : `gemini_${res.status}`); e.detail = `${model}: ${errDetail(res.data)}`.slice(0, 240); throw e; }
   const text = parts(res.data).map(p => p.text || "").join("");
   return { ...parseAnswer(text, exclude), model };
 }
