@@ -138,11 +138,27 @@ function shape(p) {
 }
 
 module.exports = async function handler(req, res) {
-  if (!process.env.REPLICATE_API_TOKEN) {
+  // Provider: Gemini when SADU_PROVIDER=gemini (synchronous, returns a data URI), else Replicate.
+  const useGemini = process.env.SADU_PROVIDER === "gemini";
+  if (!(useGemini ? process.env.GEMINI_API_KEY : process.env.REPLICATE_API_TOKEN)) {
     return reply(res, 500, { status: "failed", error: "missing_token" });
   }
 
   try {
+    if (useGemini) {
+      if (req.method !== "POST") return reply(res, 405, { status: "failed", error: "method" });
+      const b = typeof req.body === "string" ? JSON.parse(req.body || "{}") : (req.body || {});
+      if (!STYLES[b.style]) return reply(res, 400, { status: "failed", error: "bad_style" });
+      if (typeof b.image !== "string" || !/^data:image\/(jpeg|png|webp);base64,/.test(b.image)) return reply(res, 400, { status: "failed", error: "bad_image" });
+      if (b.image.length > 4_000_000) return reply(res, 413, { status: "failed", error: "too_large" });
+      try {
+        const g = await require("./_lib/gemini").generateImage(process.env.GEMINI_API_KEY, b.image, buildPrompt(b.style, b.room), { model: process.env.GEMINI_IMAGE_MODEL || undefined });
+        return reply(res, 200, { status: "succeeded", output: g.output });
+      } catch (e) {
+        return reply(res, 502, { status: "failed", error: e.message || "gemini_failed", detail: e.detail || "" });
+      }
+    }
+
     if (req.method === "GET") {
       const id = String(req.query.id || "");
       if (!/^[a-z0-9]{10,40}$/i.test(id)) return reply(res, 400, { status: "failed", error: "bad_id" });

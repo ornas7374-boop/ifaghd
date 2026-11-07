@@ -131,4 +131,4 @@ async function analyzeRoom(token, image, opts = {}) {
   throw e;
 }
 
-module.exports = { _resetWorkingModel: () => { workingModel = null; }, analyzeRoom, parseAnswer, ROOMS, STYLES, DEFAULT_MODELS, userPrompt };
+module.exports = { _resetWorkingModel: () => { workingModel = null; }, analyzeRoom, parseAnswer, ROOMS, STYLES, DEFAULT_MODELS, userPrompt, SYSTEM };
