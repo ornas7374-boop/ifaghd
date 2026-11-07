@@ -74,3 +74,25 @@ test("endpoints use Gemini only when SADU_PROVIDER=gemini", async () => {
     } finally { m.restore(); }
   } finally { for (const k of Object.keys(process.env)) if (!(k in saved)) delete process.env[k]; Object.assign(process.env, saved); }
 });
+
+test("404 on the default model: lists the account's models and retries with the newest fit", async () => {
+  require("../api/_lib/gemini")._reset();
+  const m = mockFetch((url) => {
+    if (url.includes("/models?")) return { json: { models: [
+      { name: "models/gemini-2.0-flash", supportedGenerationMethods: ["generateContent"] },
+      { name: "models/gemini-3.0-flash-image", supportedGenerationMethods: ["generateContent"] },
+      { name: "models/gemini-3.0-flash", supportedGenerationMethods: ["generateContent"] },
+      { name: "models/gemini-3.0-flash-tts", supportedGenerationMethods: ["generateContent"] },
+      { name: "models/imagen-4", supportedGenerationMethods: ["predict"] }] } };
+    if (url.includes("gemini-2.5")) return { status: 404, json: { error: { message: "not found" } } };
+    if (url.includes("gemini-3.0-flash-image:")) return { json: reply([{ inlineData: { mimeType: "image/png", data: "QQ==" } }]) };
+    if (url.includes("gemini-3.0-flash:")) return { json: reply([{ text: '{"room":"living","room_confidence":0.8,"style":"warm_luxury","why":"صالة."}' }]) };
+    return { status: 500, json: {} };
+  });
+  try {
+    const a = await analyzeRoomGemini("k", IMG); assert.equal(a.model, "gemini-3.0-flash");
+    const g = await generateImage("k", IMG, "p"); assert.equal(g.model, "gemini-3.0-flash-image");
+    const n = m.calls.length; await generateImage("k", IMG, "p");
+    assert.equal(m.calls.length - n, 1, "remembered: one call next time");
+  } finally { m.restore(); require("../api/_lib/gemini")._reset(); }
+});

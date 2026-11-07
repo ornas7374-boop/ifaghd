@@ -303,7 +303,7 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
     }catch(e){
       setBusy(false);
       if(another){ $("result").hidden = false; $("editor").hidden = true; $("go").hidden = true; }
-      showErr((e && ERR[e.error]) || ("صار خطأ أثناء التصميم" + (e && e.error ? " (" + e.error + ")" : "") + ". جرّب مرة ثانية."));
+      showErr(((e && ERR[e.error]) || ("صار خطأ أثناء التصميم" + (e && e.error ? " (" + e.error + ")" : "") + ". جرّب مرة ثانية.")) + (e && e.detail ? " — " + String(e.detail).slice(0, 160) : ""));
       if(e && e.detail) console.warn(e.detail);
     }
   }

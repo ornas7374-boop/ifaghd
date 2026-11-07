@@ -29,18 +29,53 @@ async function generate(key, model, body) {
   }
 }
 
+// If a model id is not available on the account (404), ask the API which models exist and pick
+// the newest one that fits. The choice is remembered for this server instance.
+const chosen = {};
+const ver = (n) => { const m = /gemini-(\d+(?:\.\d+)?)/.exec(n); return m ? Number(m[1]) : 0; };
+function pick(models, kind) {
+  const ok = models.filter(m => (m.supportedGenerationMethods || []).includes("generateContent")).map(m => String(m.name || "").replace(/^models\//, ""));
+  const fits = kind === "image"
+    ? ok.filter(n => /^gemini-/.test(n) && /image/.test(n))
+    : ok.filter(n => /^gemini-/.test(n) && /flash/.test(n) && !/(image|tts|audio|live|embed|lite)/.test(n));
+  fits.sort((a, b) => (ver(b) - ver(a)) || (/preview|exp/.test(a) - /preview|exp/.test(b)) || (/flash/.test(b) - /flash/.test(a)));
+  return fits[0] || null;
+}
+async function listModels(key) {
+  const out = [];
+  let token = "";
+  for (let i = 0; i < 5; i++) {
+    const r = await fetch(`${API}/models?pageSize=200${token ? "&pageToken=" + encodeURIComponent(token) : ""}`, { headers: { "x-goog-api-key": key } });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) break;
+    out.push(...(d.models || []));
+    if (!d.nextPageToken) break;
+    token = d.nextPageToken;
+  }
+  return out;
+}
+async function generateWithFallback(key, kind, preferred, body) {
+  let model = chosen[kind] || preferred;
+  let res = await generate(key, model, body);
+  if (res.status === 404 && !chosen[kind]) {
+    const alt = pick(await listModels(key), kind);
+    if (alt && alt !== model) { model = alt; res = await generate(key, model, body); }
+  }
+  if (res.ok) chosen[kind] = model;
+  return { res, model };
+}
+
 const parts = (data) => (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) || [];
 const errDetail = (data) => String((data && data.error && data.error.message) || "").slice(0, 200);
 
 /** Edit the photo according to `prompt`. Returns { output: "data:image/...;base64,..." }. */
 async function generateImage(key, image, prompt, opts = {}) {
   const { mime, data } = splitDataUri(image);
-  const model = opts.model || DEFAULT_IMAGE_MODEL;
-  const res = await generate(key, model, {
+  const { res, model } = await generateWithFallback(key, "image", opts.model || DEFAULT_IMAGE_MODEL, {
     contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: mime, data } }] }],
     generationConfig: { responseModalities: ["IMAGE"] }
   });
-  if (!res.ok) { const e = new Error(`gemini_${res.status}`); e.detail = errDetail(res.data); throw e; }
+  if (!res.ok) { const e = new Error(`gemini_${res.status}`); e.detail = `${model}: ${errDetail(res.data)}`.slice(0, 240); throw e; }
   const img = parts(res.data).find(p => (p.inlineData || p.inline_data));
   if (!img) {
     const e = new Error("gemini_no_image");
@@ -58,15 +93,14 @@ async function analyzeRoomGemini(key, image, opts = {}) {
   const exclude = (opts.exclude || []).filter(s => STYLES[s]).slice(0, 10);
   if (exclude.length >= Object.keys(STYLES).length) exclude.length = 0;
   const { mime, data } = splitDataUri(image);
-  const model = opts.model || DEFAULT_VISION_MODEL;
-  const res = await generate(key, model, {
+  const { res, model } = await generateWithFallback(key, "vision", opts.model || DEFAULT_VISION_MODEL, {
     systemInstruction: { parts: [{ text: SYSTEM }] },
     contents: [{ parts: [{ text: userPrompt(exclude) }, { inline_data: { mime_type: mime, data } }] }],
     generationConfig: { responseMimeType: "application/json", maxOutputTokens: 600, temperature: 0.3 }
   });
-  if (!res.ok) { const e = new Error(`gemini_${res.status}`); e.detail = errDetail(res.data); throw e; }
+  if (!res.ok) { const e = new Error(`gemini_${res.status}`); e.detail = `${model}: ${errDetail(res.data)}`.slice(0, 240); throw e; }
   const text = parts(res.data).map(p => p.text || "").join("");
   return { ...parseAnswer(text, exclude), model };
 }
 
-module.exports = { generateImage, analyzeRoomGemini, splitDataUri, DEFAULT_IMAGE_MODEL, DEFAULT_VISION_MODEL };
+module.exports = { _reset: () => { for (const k in chosen) delete chosen[k]; }, pick, generateImage, analyzeRoomGemini, splitDataUri, DEFAULT_IMAGE_MODEL, DEFAULT_VISION_MODEL };
