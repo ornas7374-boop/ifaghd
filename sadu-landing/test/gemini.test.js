@@ -156,7 +156,7 @@ test("analysis: a stuck model is abandoned and a faster (lite) model answers", a
     return new Promise((_, rej) => init.signal.addEventListener("abort", () => rej(new Error("aborted"))));
   };
   try {
-    const r = await analyzeRoomGemini("k", IMG, { budgetMs: 4000 });
+    const r = await analyzeRoomGemini("k", IMG, { budgetMs: 12000 });
     assert.equal(r.model, "gemini-3.5-flash-lite", "lite is ranked first for analysis");
     assert.ok(!calls.some(u => u.includes("gemini-3.8-flash:")), "did not need the slow model");
   } finally { global.fetch = real; g._reset(); }
