@@ -97,6 +97,22 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
 .history button{display:block;inline-size:100%;padding:0;border:1px solid var(--border-subtle);border-radius:10px;overflow:hidden;background:var(--surface);cursor:pointer;text-align:start}
 .history img{aspect-ratio:1;object-fit:cover;inline-size:100%}
 .history span{display:block;padding:4px 8px;font-size:12px;line-height:20px;color:var(--text-secondary)}
+
+/* shop the look — قطع التصميم */
+.shop{margin-block-start:20px}
+.shop__h{margin:0 0 4px;font:600 18px/28px var(--font-display)}
+.shop__note{margin:0 0 12px;font-size:13px;line-height:22px;color:var(--text-muted)}
+.shop__wait{margin:12px 0 0;color:var(--text-secondary);text-align:center}
+.items{display:grid;gap:10px;list-style:none;margin:0;padding:0}
+.item{padding:12px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--border-subtle)}
+.item__top{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.item b{font:600 16px/26px var(--font-display)}
+.item__price{white-space:nowrap;font-size:14px;color:var(--text)}
+.item__meta{margin:2px 0 10px;font-size:13px;line-height:22px;color:var(--text-muted)}
+.item__links{display:flex;flex-wrap:wrap;gap:8px}
+.item__links a{min-block-size:36px;display:inline-flex;align-items:center;padding:0 14px;border-radius:999px;border:1px solid var(--border-subtle);color:var(--text);text-decoration:none;font-size:14px}
+.total{display:flex;justify-content:space-between;margin-block-start:12px;padding:12px 14px;border-radius:14px;border:1px solid var(--border-subtle);font-weight:600}
+.linkbtn{display:block;margin:12px auto 0;min-block-size:44px;padding:0 8px;background:none;border:0;color:var(--text-secondary);text-decoration:underline;font:inherit;font-size:14px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -134,6 +150,13 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
       <p class="hint">للنتيجة الأفضل: صورة واسعة للغرفة كاملة، في إضاءة النهار.</p>
     </section>
 
+    <button class="linkbtn" type="button" id="shopOnly" hidden>عندك صورة تصميم جاهز؟ اعرض قطعها وأسعارها</button>
+    <div class="shop" id="shop0" hidden>
+      <h2 class="shop__h">قطع الصورة</h2>
+      <p class="shop__note">الأسعار تقريبية، والروابط تفتح البحث في المتجر.</p>
+      <p class="shop__wait" id="shopWait0" hidden>نتعرّف على القطع… <span class="num" id="shopSecs0">0</span> ثانية</p>
+      <div id="shopOut0"></div>
+    </div>
     <div class="err" id="err" role="alert" hidden></div>
   </div>
 
@@ -158,6 +181,11 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
       <a class="btn btn--secondary" id="save" target="_blank" rel="noopener">حفظ الصورة</a>
       <a class="btn btn--wa" id="share" target="_blank" rel="noopener">شارك عبر واتساب</a>
       <button class="btn btn--secondary full" type="button" id="newPhoto">صورة جديدة</button>
+    </div>
+    <div class="shop" id="shop">
+      <button class="btn btn--secondary full" type="button" id="shopBtn">اعرض قطع التصميم وأسعارها</button>
+      <p class="shop__wait" id="shopWait" hidden>نتعرّف على القطع… <span class="num" id="shopSecs">0</span> ثانية</p>
+      <div id="shopOut"></div>
     </div>
     <div class="err" id="err2" role="alert" hidden></div>
   </section>
@@ -213,7 +241,7 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
 
   function showErr(msg){ var e = $("result").hidden ? $("err") : $("err2"); e.textContent = msg; e.hidden = false; }
   function clearErr(){ $("err").hidden = true; $("err2").hidden = true; }
-  function refresh(){ $("generate").disabled = !state.image || state.busy; }
+  function refresh(){ $("generate").disabled = !state.image || state.busy; $("shopOnly").hidden = !state.image || state.busy; }
 
   function onFile(input){
     var f = input.files && input.files[0]; input.value = "";
@@ -222,6 +250,7 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
     compress(f).then(function(r){
       state.image = r.data; state.ratio = r.ratio; state.tried = [];
       $("previewImg").src = r.data; $("preview").hidden = false; $("pick").hidden = true;
+      $("shop0").hidden = true; $("shopOut0").textContent = "";
       refresh();
     }).catch(function(){ showErr("تعذّر قراءة الصورة. جرّب صورة أخرى بصيغة JPG أو PNG."); });
   }
@@ -270,6 +299,9 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
     http_504: "الخادم تأخر أكثر من دقيقة. جرّب مرة ثانية.",
     http_413: "الصورة أو النتيجة كبيرة جداً.",
     gemini_no_image: "Gemini ما أرجع صورة. جرّب صورة أخرى.",
+    items_none: "ما لقينا قطعاً واضحة في الصورة. جرّب صورة أوضح.",
+    items_no_json: "تعذّر قراءة القطع. جرّب مرة ثانية.",
+    items_bad_json: "تعذّر قراءة القطع. جرّب مرة ثانية.",
     analysis_model_unavailable: "نموذج تحليل الغرفة غير متاح على الحساب.",
     analysis_failed: "تعذّر تحليل الغرفة. جرّب مرة ثانية.",
     analysis_bad_room: "ما قدرنا نحدد نوع الغرفة. جرّب صورة أوضح وأوسع.",
@@ -321,7 +353,7 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
     $("metaStyle").textContent = ROOM_NAMES[state.room] + " · " + STYLE_NAMES[state.style];
     $("metaTime").textContent = Math.round(secs) + " ثانية";
     $("why").textContent = state.why; $("why").hidden = !state.why;
-    $("save").href = url;
+    $("save").href = url; state.after = url; resetShop();
     $("share").href = "https://wa.me/?text=" + encodeURIComponent("شوف تصميم غرفتي الجديد بأسلوب " + STYLE_NAMES[state.style] + " من sadu: " + url);
     $("result").hidden = false;
     addHistory(url, state.image, state.style, state.room, state.ratio, state.why);
@@ -336,12 +368,73 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
       state.image = before; state.style = style; state.room = room; state.ratio = ratio; state.why = why || "";
       $("why").textContent = state.why; $("why").hidden = !state.why;
       $("compare").style.aspectRatio = String(ratio);
-      $("beforeImg").src = before; $("afterImg").src = url; $("save").href = url;
+      $("beforeImg").src = before; $("afterImg").src = url; $("save").href = url; state.after = url; resetShop();
       $("metaStyle").textContent = ROOM_NAMES[room] + " · " + STYLE_NAMES[style]; $("metaTime").textContent = "";
       $("editor").hidden = true; $("go").hidden = true; $("result").hidden = false;
       $("result").scrollIntoView({ behavior:"smooth", block:"start" });
     });
   }
+
+  /* قطع التصميم: الاسم، السعر التقريبي، وروابط المتاجر */
+  function shrink(src){
+    if(/^https:/.test(src)) return Promise.resolve(src); // نتيجة مستضافة: الخادم يجلبها
+    return new Promise(function(resolve){
+      var img = new Image();
+      img.onload = function(){
+        var s = Math.min(1, 1280 / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement("canvas");
+        c.width = Math.round(img.naturalWidth * s); c.height = Math.round(img.naturalHeight * s);
+        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+        resolve(c.toDataURL("image/jpeg", 0.85));
+      };
+      img.onerror = function(){ resolve(src); };
+      img.src = src;
+    });
+  }
+  var SAR = function(n){ return Number(n || 0).toLocaleString("en-US"); };
+  function el(tag, cls, text){ var e = document.createElement(tag); if(cls) e.className = cls; if(text != null) e.textContent = text; return e; }
+  function renderItems(out, r){
+    out.textContent = "";
+    var ul = el("ul", "items");
+    r.items.forEach(function(it){
+      var li = el("li", "item"), top = el("div", "item__top");
+      var price = it.price_max_sar ? (it.price_min_sar === it.price_max_sar ? SAR(it.price_min_sar) : SAR(it.price_min_sar) + " – " + SAR(it.price_max_sar)) + " ريال" : "";
+      top.append(el("b", null, it.name_ar + (it.quantity > 1 ? " ×" + it.quantity : "")), el("span", "item__price num", price));
+      var meta = [it.material_ar, it.color_ar].filter(Boolean).join(" · ");
+      var links = el("div", "item__links");
+      (it.links || []).forEach(function(l){ var a = el("a", null, l.store); a.href = l.url; a.target = "_blank"; a.rel = "noopener nofollow"; links.append(a); });
+      li.append(top, el("p", "item__meta", meta || " "), links);
+      ul.append(li);
+    });
+    out.append(ul);
+    if(r.total_max){
+      var t = el("div", "total");
+      t.append(el("span", null, "التكلفة التقريبية للغرفة"), el("span", "num", SAR(r.total_min) + " – " + SAR(r.total_max) + " ريال"));
+      out.append(t);
+    }
+    var note = el("p", "shop__note", "الأسعار تقديرية من الذكاء الاصطناعي وقد تختلف في المتجر.");
+    note.style.marginTop = "10px"; out.append(note);
+  }
+  async function loadItems(src, out, waitEl, secsEl, btn){
+    if(!src || state.busy) return;
+    clearErr(); out.textContent = ""; if(btn) btn.disabled = true;
+    waitEl.hidden = false; var t0 = Date.now(); secsEl.textContent = "0";
+    var tick = setInterval(function(){ secsEl.textContent = Math.round((Date.now() - t0) / 1000); }, 500);
+    try{
+      var img = await shrink(src);
+      var r = await postJson("/api/items", { image: img });
+      if(r.status !== "succeeded") throw r;
+      renderItems(out, r);
+      if(btn) btn.hidden = true;
+    }catch(e){
+      showErr(((e && ERR[e.error]) || ("تعذّر عرض القطع" + (e && e.error ? " (" + e.error + ")" : "") + ". جرّب مرة ثانية.")) + (e && e.detail ? " — " + String(e.detail).slice(0, 160) : ""));
+    }finally{ clearInterval(tick); waitEl.hidden = true; if(btn) btn.disabled = false; }
+  }
+  function resetShop(){ $("shopOut").textContent = ""; $("shopBtn").hidden = false; $("shopWait").hidden = true; }
+  $("shopBtn").addEventListener("click", function(){ loadItems(state.after, $("shopOut"), $("shopWait"), $("shopSecs"), $("shopBtn")); });
+  $("shopOnly").addEventListener("click", function(){
+    $("shop0").hidden = false;
+    loadItems(state.image, $("shopOut0"), $("shopWait0"), $("shopSecs0"), $("shopOnly"));
+  });
 
   function backToEditor(){ $("result").hidden = true; $("editor").hidden = false; $("go").hidden = false; refresh(); }
   $("another").addEventListener("click", function(){ run(true); });

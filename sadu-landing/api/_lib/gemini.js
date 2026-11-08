@@ -140,4 +140,16 @@ async function analyzeRoomGemini(key, image, opts = {}) {
   return { ...parseAnswer(text, exclude), model };
 }
 
-module.exports = { _reset: () => { for (const k in chosen) delete chosen[k]; }, pick, generateImage, analyzeRoomGemini, splitDataUri, DEFAULT_IMAGE_MODEL, DEFAULT_VISION_MODEL };
+/** Ask a Gemini vision model for a JSON answer about one image. Returns { text, model }. */
+async function visionJSON(key, image, { system, prompt, model, budgetMs = 45000, maxTokens = 2500 } = {}) {
+  const { mime, data } = splitDataUri(image);
+  const r = await generateWithFallback(key, "vision", model || DEFAULT_VISION_MODEL, {
+    ...(system ? { systemInstruction: { parts: [{ text: system }] } } : {}),
+    contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: mime, data } }] }],
+    generationConfig: { responseMimeType: "application/json", maxOutputTokens: maxTokens, temperature: 0.3 }
+  }, budgetMs);
+  if (!r.res.ok) { const e = new Error(r.res.timeout ? "gemini_timeout" : `gemini_${r.res.status}`); e.detail = `${r.model}: ${errDetail(r.res.data)}`.slice(0, 240); throw e; }
+  return { text: parts(r.res.data).map(p => p.text || "").join(""), model: r.model };
+}
+
+module.exports = { _reset: () => { for (const k in chosen) delete chosen[k]; }, pick, generateImage, visionJSON, analyzeRoomGemini, splitDataUri, DEFAULT_IMAGE_MODEL, DEFAULT_VISION_MODEL };
