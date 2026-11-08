@@ -53,8 +53,9 @@ function pick(models, kind) {
   const ok = models.filter(m => (m.supportedGenerationMethods || []).includes("generateContent")).map(m => String(m.name || "").replace(/^models\//, ""));
   const fits = kind === "image"
     ? ok.filter(n => /^gemini-/.test(n) && /image/.test(n))
-    : ok.filter(n => /^gemini-/.test(n) && /flash/.test(n) && !/(image|tts|audio|live|embed|lite)/.test(n));
-  fits.sort((a, b) => (/preview|exp/.test(a) - /preview|exp/.test(b)) || (ver(b) - ver(a)) || (/flash/.test(b) - /flash/.test(a)));
+    : ok.filter(n => /^gemini-/.test(n) && /flash/.test(n) && !/(image|tts|audio|live|embed|thinking)/.test(n));
+  const lite = (n) => (kind === "vision" && /lite/.test(n) ? 1 : 0);
+  fits.sort((a, b) => (lite(b) - lite(a)) || (/preview|exp/.test(a) - /preview|exp/.test(b)) || (ver(b) - ver(a)) || (/flash/.test(b) - /flash/.test(a)));
   return fits;
 }
 async function listModels(key) {
@@ -72,22 +73,24 @@ async function listModels(key) {
 }
 // Analysis does not need long reasoning: ask the model to think little (faster, cheaper).
 function withLowThinking(model, body) {
-  const t = /gemini-2\.5/.test(model) ? { thinkingBudget: 0 } : /gemini-[3-9]/.test(model) ? { thinkingLevel: "low" } : null;
+  const t = /gemini-2\.5/.test(model) ? { thinkingBudget: 0 } : /gemini-[3-9]/.test(model) ? { thinkingLevel: "minimal" } : null;
   return t ? { ...body, generationConfig: { ...body.generationConfig, thinkingConfig: t } } : body;
 }
 async function generateWithFallback(key, kind, preferred, body, budgetMs) {
   const t0 = Date.now(), left = () => budgetMs - (Date.now() - t0);
+  // Analysis gets at most 20 s per model, so a stuck model leaves time to try another one.
+  const slice = () => (kind === "vision" ? Math.min(left(), 20000) : left());
   const send = async (model) => {
-    if (kind !== "vision") return generate(key, model, body, left());
-    let r = await generate(key, model, withLowThinking(model, body), left());
-    if (r.status === 400 && /thinking/i.test(errDetail(r.data))) r = await generate(key, model, body, left());
+    if (kind !== "vision") return generate(key, model, body, slice());
+    let r = await generate(key, model, withLowThinking(model, body), slice());
+    if (r.status === 400 && /thinking/i.test(errDetail(r.data))) r = await generate(key, model, body, slice());
     return r;
   };
   let model = chosen[kind] || preferred;
   let res = await send(model);
   // Not on the account (404), or overloaded (503/429/500 after retries): try the next suitable
   // model the account has, newest stable first, while time remains.
-  if ([404, 429, 500, 503].includes(res.status) && left() > 8000) {
+  if ([404, 429, 500, 503, 504].includes(res.status) && left() > 8000) {
     const tried = new Set([model]);
     const list = pick(await listModels(key), kind).filter(n => !tried.has(n));
     for (const alt of list.slice(0, 3)) {
@@ -95,7 +98,7 @@ async function generateWithFallback(key, kind, preferred, body, budgetMs) {
       console.log(JSON.stringify({ gemini_fallback: kind, from: model, status: res.status, to: alt }));
       if (chosen[kind] === model) delete chosen[kind];
       model = alt; res = await send(model);
-      if (res.ok || ![404, 429, 500, 503].includes(res.status)) break;
+      if (res.ok || ![404, 429, 500, 503, 504].includes(res.status)) break;
     }
   }
   if (res.ok) chosen[kind] = model;

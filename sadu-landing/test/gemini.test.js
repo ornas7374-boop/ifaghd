@@ -141,3 +141,23 @@ test("SADU_DESIGN_PROVIDER=replicate: analysis on Gemini, design on Replicate", 
     assert.ok(m.calls.every(c => c.url.includes("api.replicate.com")), "design must not call Gemini");
   } finally { m.restore(); for (const k of Object.keys(process.env)) if (!(k in saved)) delete process.env[k]; Object.assign(process.env, saved); }
 });
+
+test("analysis: a stuck model is abandoned and a faster (lite) model answers", async () => {
+  const g = require("../api/_lib/gemini"); g._reset();
+  const real = global.fetch, calls = [];
+  global.fetch = (url, init) => {
+    url = String(url); calls.push(url);
+    const ok = (json) => Promise.resolve({ ok: true, status: 200, headers: { get: () => null }, json: async () => json });
+    if (url.includes("/models?")) return ok({ models: [
+      { name: "models/gemini-3.8-flash", supportedGenerationMethods: ["generateContent"] },
+      { name: "models/gemini-3.5-flash-lite", supportedGenerationMethods: ["generateContent"] }] });
+    if (url.includes("gemini-2.5-flash:")) return Promise.resolve({ ok: false, status: 404, headers: { get: () => null }, json: async () => ({}) });
+    if (url.includes("gemini-3.5-flash-lite:")) return ok({ candidates: [{ content: { parts: [{ text: '{"room":"living","style":"warm_luxury","why":"صالة."}' }] } }] });
+    return new Promise((_, rej) => init.signal.addEventListener("abort", () => rej(new Error("aborted"))));
+  };
+  try {
+    const r = await analyzeRoomGemini("k", IMG, { budgetMs: 4000 });
+    assert.equal(r.model, "gemini-3.5-flash-lite", "lite is ranked first for analysis");
+    assert.ok(!calls.some(u => u.includes("gemini-3.8-flash:")), "did not need the slow model");
+  } finally { global.fetch = real; g._reset(); }
+});
