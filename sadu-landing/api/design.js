@@ -138,8 +138,9 @@ function shape(p) {
 }
 
 module.exports = async function handler(req, res) {
-  // Provider: Gemini when SADU_PROVIDER=gemini (synchronous, returns a data URI), else Replicate.
-  const useGemini = process.env.SADU_PROVIDER === "gemini";
+  // Provider for the design image: SADU_DESIGN_PROVIDER (gemini | replicate), falling back to
+  // SADU_PROVIDER. So analysis can stay on (free) Gemini while Replicate designs.
+  const useGemini = (process.env.SADU_DESIGN_PROVIDER || process.env.SADU_PROVIDER) === "gemini";
   if (!(useGemini ? process.env.GEMINI_API_KEY : process.env.REPLICATE_API_TOKEN)) {
     return reply(res, 500, { status: "failed", error: "missing_token" });
   }
