@@ -1,0 +1,10 @@
+{
+  "name": "sadu-landing",
+  "private": true,
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "sharp": "^0.35.5"
+  }
+}

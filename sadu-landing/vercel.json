@@ -1,24 +1,12 @@
 {
   "functions": {
-    "api/design.js": {
-      "maxDuration": 60
-    },
-    "api/analyze.js": {
-      "maxDuration": 60
-    },
-    "api/items.js": {
-      "maxDuration": 60
-    }
+    "api/design.js": { "maxDuration": 60 },
+    "api/analyze.js": { "maxDuration": 60 },
+    "api/items.js": { "maxDuration": 60 },
+    "api/eval/*.js": { "maxDuration": 60 }
   },
   "headers": [
-    {
-      "source": "/app/(.*)",
-      "headers": [
-        {
-          "key": "X-Robots-Tag",
-          "value": "noindex, nofollow"
-        }
-      ]
-    }
+    { "source": "/app/(.*)", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }] },
+    { "source": "/eval/(.*)", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }, { "key": "Cache-Control", "value": "no-store" }] }
   ]
 }
