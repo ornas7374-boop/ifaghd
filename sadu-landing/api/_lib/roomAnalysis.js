@@ -30,9 +30,14 @@ ${styles}
 
 3. Write "why" in natural Saudi-friendly Modern Standard Arabic, one or two short sentences (max 30 words), addressed to the owner: say what space you see and why this setup style suits it. No English words, no emoji.
 
+4. Describe the existing surfaces exactly as they are in the photo, in short precise English (material, colour, pattern), so they can be kept unchanged: "floor", "walls", "ceiling". Example floor: "light beige polished marble tiles, large format, thin grout lines".
+
 Return ONLY this JSON, no other text:
-{"room": "<room key>", "room_confidence": <0..1>, "style": "<style key>", "why": "<Arabic>", "seen": ["<up to 6 short English labels of what you see>"]}`;
+{"room": "<room key>", "room_confidence": <0..1>, "style": "<style key>", "why": "<Arabic>", "seen": ["<up to 6 short English labels of what you see>"], "floor": "<existing floor>", "walls": "<existing walls>", "ceiling": "<existing ceiling>"}`;
 }
+
+// A surface description goes into the design prompt: plain short text only.
+const surface = (v) => String(v || "").replace(/[^\p{L}\p{N} ,.\-/()%]/gu, " ").replace(/\s+/g, " ").trim().slice(0, 140);
 
 /** Extract and validate the model's JSON answer. */
 function parseAnswer(text, exclude = []) {
@@ -48,7 +53,8 @@ function parseAnswer(text, exclude = []) {
   if (!why) why = "";
   const conf = Number(j.room_confidence);
   return { room, style, why, confidence: Number.isFinite(conf) ? Math.max(0, Math.min(1, conf)) : null,
-    seen: Array.isArray(j.seen) ? j.seen.slice(0, 6).map(s => String(s).slice(0, 40)) : [] };
+    seen: Array.isArray(j.seen) ? j.seen.slice(0, 6).map(s => String(s).slice(0, 40)) : [],
+    keep: { floor: surface(j.floor), walls: surface(j.walls), ceiling: surface(j.ceiling) } };
 }
 
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));

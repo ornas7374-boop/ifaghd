@@ -113,7 +113,22 @@ test("setup focus: only setup spaces and styles are offered, and the design prom
   for (const k of Object.keys(S)) assert.ok(p.includes(`- ${k}:`));
   assert.ok(!/majlis|kitchen|najdi/.test(p), "old room types are gone");
   const d = buildPrompt("grey_tech", "setup_corner");
-  assert.match(d, /Keep the exact same room architecture/);
-  assert.match(d, /without blocking any window or door/);
+  assert.match(d, /not a new room/); assert.match(d, /floor exactly as it is/); assert.match(d, /every window and door in the same position/);
+  assert.match(d, /without covering any window or door/);
   assert.match(d, /No brand logos/);
+});
+
+test("walls and floor are kept: style text never repaints them; analysis descriptions go into the prompt", () => {
+  const { STYLES: S, buildPrompt } = require("../api/_lib/setup");
+  for (const [k, st] of Object.entries(S)) {
+    assert.ok(!/\b(walls?|floor)\b[^;]*\b(paint|washed|panels?|wood-look)\b|\b(dark grey|white|charcoal|grey) walls\b|wood-look floor/i.test(st.prompt), `${k} prompt must not change walls or floor`);
+    const p = buildPrompt(k, "setup_corner", { keep: { floor: "light beige marble tiles", walls: "off-white paint", ceiling: "tray ceiling" } });
+    assert.match(p, /floor exactly as it is \(light beige marble tiles\)/);
+    assert.match(p, /every wall exactly as it is \(off-white paint\)/);
+    assert.match(p, /do not add rugs/);
+    assert.ok(!p.includes(st.wall), "wall treatment is not used unless allowed");
+    assert.ok(buildPrompt(k, "setup_corner", { allowWall: true }).includes(st.wall));
+  }
+  const r = parseAnswer('{"room":"setup_corner","style":"grey_tech","why":"ركن.","floor":"beige marble <b>tiles</b>","walls":"off-white","ceiling":"tray"}');
+  assert.ok(!/[<>]/.test(r.keep.floor) && r.keep.floor.startsWith("beige marble")); assert.equal(r.keep.walls, "off-white");
 });

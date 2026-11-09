@@ -10,6 +10,9 @@ const API = "https://api.replicate.com/v1";
 
 // Setup focus: spaces, styles and the preservation rule live in _lib/setup.js (shared with analysis).
 const { STYLES, buildPrompt } = require("./_lib/setup");
+// Descriptions of the existing floor / walls / ceiling from the analysis step; they are put into
+// the prompt as things to keep. Walls stay protected here (no wall change yet).
+const keepOf = (k) => (k && typeof k === "object" ? { floor: k.floor, walls: k.walls, ceiling: k.ceiling } : {});
 
 // Replicate rate-limits accounts (strictly when the credit balance is low): retry 429 and
 // transient 5xx a few times, waiting what Replicate asks for, within the function's time budget.
@@ -63,7 +66,7 @@ module.exports = async function handler(req, res) {
       if (typeof b.image !== "string" || !/^data:image\/(jpeg|png|webp);base64,/.test(b.image)) return reply(res, 400, { status: "failed", error: "bad_image" });
       if (b.image.length > 4_000_000) return reply(res, 413, { status: "failed", error: "too_large" });
       try {
-        const g = await require("./_lib/gemini").generateImage(process.env.GEMINI_API_KEY, b.image, buildPrompt(b.style, b.room), { model: process.env.GEMINI_IMAGE_MODEL || undefined });
+        const g = await require("./_lib/gemini").generateImage(process.env.GEMINI_API_KEY, b.image, buildPrompt(b.style, b.room, { keep: keepOf(b.keep) }), { model: process.env.GEMINI_IMAGE_MODEL || undefined });
         return reply(res, 200, { status: "succeeded", output: g.output });
       } catch (e) {
         return reply(res, 502, { status: "failed", error: e.message || "gemini_failed", detail: e.detail || "" });
@@ -93,7 +96,7 @@ module.exports = async function handler(req, res) {
       headers: { Prefer: "wait=50" },
       body: JSON.stringify({
         input: {
-          prompt: buildPrompt(style, room),
+          prompt: buildPrompt(style, room, { keep: keepOf(body.keep) }),
           input_image: image,
           aspect_ratio: "match_input_image",
           output_format: "jpg",

@@ -378,10 +378,10 @@ fieldset.field{border:0;margin:0;padding:0}
     try{
       var a = await postJson("/api/analyze", { image: state.image, exclude: another ? state.tried : [] });
       if(a.status !== "succeeded") throw a;
-      state.room = a.room; state.style = a.style; state.why = a.why || "";
+      state.room = a.room; state.style = a.style; state.why = a.why || ""; state.keep = a.keep || null;
       if(state.tried.indexOf(a.style) < 0) state.tried.push(a.style);
       $("loadText").textContent = "نصمّم " + ROOM_NAMES[a.room] + " بأسلوب " + STYLE_NAMES[a.style] + "…";
-      var r = await postJson("/api/design", { image: state.image, style: state.style, room: state.room });
+      var r = await postJson("/api/design", { image: state.image, style: state.style, room: state.room, keep: state.keep });
       if(r.status === "processing") r = await poll(r.id);
       if(r.status !== "succeeded") throw r;
       show(r.output, (Date.now() - t0) / 1000);

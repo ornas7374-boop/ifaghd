@@ -25,7 +25,7 @@ module.exports = async function handler(req, res) {
     const r = useGemini
       ? await require("./_lib/gemini").analyzeRoomGemini(token, image, { exclude: ex, model: process.env.GEMINI_VISION_MODEL || undefined })
       : await analyzeRoom(token, image, { exclude: ex, models });
-    return reply(res, 200, { status: "succeeded", room: r.room, style: r.style, why: r.why, confidence: r.confidence, seen: r.seen, model: r.model });
+    return reply(res, 200, { status: "succeeded", room: r.room, style: r.style, why: r.why, confidence: r.confidence, seen: r.seen, keep: r.keep, model: r.model });
   } catch (e) {
     return reply(res, 502, { status: "failed", error: e.message || "analysis_failed", detail: e.detail || "" });
   }
