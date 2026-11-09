@@ -77,17 +77,21 @@ const clip = (v, n = 140) => String(v || "").replace(/[\u0000-\u001f<>{}]/g, " "
  * (from the analysis, when available) and the model is told to keep them; the style only adds things.
  * @param {string} style  style key
  * @param {string} space  space key
- * @param {{keep?: {floor?: string, walls?: string, ceiling?: string}, allowWall?: boolean}} opts
+ * @param {{keep?: {floor?: string, walls?: string, ceiling?: string}, allowWall?: boolean, request?: string, changes?: string[]}} opts
  */
 function buildPrompt(style, space, opts = {}) {
   const s = STYLES[style], p = SPACES[space];
   const k = opts.keep || {};
   const floor = clip(k.floor), walls = clip(k.walls), ceiling = clip(k.ceiling);
-  const wallRule = opts.allowWall && s.wall
+  const request = clip(opts.request, 400);
+  const changes = Array.isArray(opts.changes) ? opts.changes : [];
+  const allowWall = !!opts.allowWall || changes.includes("wall");
+  const wallRule = allowWall && s.wall
     ? `the walls keep their position and size; only the wall behind the desk may get ${s.wall}`
     : `every wall exactly as it is${walls ? ` (${walls})` : ""}: same paint colour and texture, no new paint, panels, slats, wallpaper or colour wash`;
   return [
     `Edit this photo of ${p ? p.prompt : "a room"}: add ${s.prompt}.`,
+    ...(request ? [`THE CUSTOMER'S REQUEST, which overrides the style wherever they differ: ${request}.`] : []),
     "This is an edit of the existing photo, not a new room.",
     `Keep unchanged: the floor exactly as it is${floor ? ` (${floor})` : ""}: same material, colour, tile or plank pattern, grout lines and reflections, and do not add rugs or floor coverings;`,
     `${wallRule};`,

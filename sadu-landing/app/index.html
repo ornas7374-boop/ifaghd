@@ -280,7 +280,7 @@ fieldset.field{border:0;margin:0;padding:0}
 
   function showErr(msg){ var e = $("result").hidden ? $("err") : $("err2"); e.textContent = msg; e.hidden = false; }
   function clearErr(){ $("err").hidden = true; $("err2").hidden = true; }
-  /* طلب العميل: يُجمع فقط، ولا يُرسل للتوليد في هذه المرحلة */
+  /* طلب العميل: يُرسل للتحليل (يختار الأسلوب حسبه ويترجمه) ثم للتصميم (له الأولوية على الأسلوب) */
   function readBrief(){
     var b = Number($("budget").value);
     return {
@@ -376,12 +376,14 @@ fieldset.field{border:0;margin:0;padding:0}
     clearErr(); setBusy(true); $("loadText").textContent = "نحلل الركن…";
     var t0 = Date.now();
     try{
-      var a = await postJson("/api/analyze", { image: state.image, exclude: another ? state.tried : [] });
+      state.brief = readBrief();
+      var a = await postJson("/api/analyze", { image: state.image, exclude: another ? state.tried : [], brief: state.brief });
       if(a.status !== "succeeded") throw a;
-      state.room = a.room; state.style = a.style; state.why = a.why || ""; state.keep = a.keep || null;
+      state.room = a.room; state.style = a.style; state.why = a.why || ""; state.keep = a.keep || null; state.request = a.request || state.brief.description || "";
+      if(a.wall_change && state.brief.changes.indexOf("wall") < 0) state.brief.changes.push("wall");
       if(state.tried.indexOf(a.style) < 0) state.tried.push(a.style);
       $("loadText").textContent = "نصمّم " + ROOM_NAMES[a.room] + " بأسلوب " + STYLE_NAMES[a.style] + "…";
-      var r = await postJson("/api/design", { image: state.image, style: state.style, room: state.room, keep: state.keep });
+      var r = await postJson("/api/design", { image: state.image, style: state.style, room: state.room, keep: state.keep, request: state.request, changes: state.brief.changes });
       if(r.status === "processing") r = await poll(r.id);
       if(r.status !== "succeeded") throw r;
       show(r.output, (Date.now() - t0) / 1000);

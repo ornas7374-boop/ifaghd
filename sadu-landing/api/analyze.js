@@ -17,15 +17,15 @@ module.exports = async function handler(req, res) {
   if (!token) return reply(res, 500, { status: "failed", error: "missing_token" });
   try {
     const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : (req.body || {});
-    const { image, exclude } = body;
+    const { image, exclude, brief } = body;
     if (typeof image !== "string" || !/^data:image\/(jpeg|png|webp);base64,/.test(image)) return reply(res, 400, { status: "failed", error: "bad_image" });
     if (image.length > 4_000_000) return reply(res, 413, { status: "failed", error: "too_large" });
     const models = process.env.SADU_VISION_MODELS ? process.env.SADU_VISION_MODELS.split(",").map(s => s.trim()).filter(Boolean) : undefined;
     const ex = Array.isArray(exclude) ? exclude.map(String) : [];
     const r = useGemini
-      ? await require("./_lib/gemini").analyzeRoomGemini(token, image, { exclude: ex, model: process.env.GEMINI_VISION_MODEL || undefined })
-      : await analyzeRoom(token, image, { exclude: ex, models });
-    return reply(res, 200, { status: "succeeded", room: r.room, style: r.style, why: r.why, confidence: r.confidence, seen: r.seen, keep: r.keep, model: r.model });
+      ? await require("./_lib/gemini").analyzeRoomGemini(token, image, { exclude: ex, brief, model: process.env.GEMINI_VISION_MODEL || undefined })
+      : await analyzeRoom(token, image, { exclude: ex, brief, models });
+    return reply(res, 200, { status: "succeeded", room: r.room, style: r.style, why: r.why, confidence: r.confidence, seen: r.seen, keep: r.keep, request: r.request, wall_change: r.wall_change, model: r.model });
   } catch (e) {
     return reply(res, 502, { status: "failed", error: e.message || "analysis_failed", detail: e.detail || "" });
   }

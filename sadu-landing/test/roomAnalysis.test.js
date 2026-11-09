@@ -132,3 +132,20 @@ test("walls and floor are kept: style text never repaints them; analysis descrip
   const r = parseAnswer('{"room":"setup_corner","style":"grey_tech","why":"ركن.","floor":"beige marble <b>tiles</b>","walls":"off-white","ceiling":"tray"}');
   assert.ok(!/[<>]/.test(r.keep.floor) && r.keep.floor.startsWith("beige marble")); assert.equal(r.keep.walls, "off-white");
 });
+
+test("the customer's request reaches the analysis and the design prompt; walls change only when asked", () => {
+  const { userPrompt } = require("../api/_lib/roomAnalysis");
+  const { buildPrompt } = require("../api/_lib/setup");
+  const p = userPrompt([], { description: "أبغى إضاءة زرقاء", changes: ["lighting"] });
+  assert.match(p, /THE CUSTOMER'S REQUEST/); assert.ok(p.includes("أبغى إضاءة زرقاء")); assert.match(p, /lighting/);
+  assert.ok(!userPrompt([], null).includes("CUSTOMER"), "no request block without a request");
+  const d = buildPrompt("grey_tech", "setup_corner", { request: "blue LED lighting behind the desk and monitor", changes: ["lighting"] });
+  assert.match(d, /THE CUSTOMER'S REQUEST, which overrides the style wherever they differ: blue LED lighting/);
+  assert.match(d, /every wall exactly as it is/);
+  const w = buildPrompt("grey_tech", "setup_corner", { request: "wood slat wall", changes: ["wall"] });
+  assert.match(w, /only the wall behind the desk may get/);
+  assert.match(w, /floor exactly as it is/, "floor stays protected even when the wall may change");
+  const r = parseAnswer('{"room":"setup_corner","style":"white_blue","why":"ركن.","request":"blue lighting","wall_change":true}');
+  assert.equal(r.request, "blue lighting"); assert.equal(r.wall_change, true);
+  assert.equal(parseAnswer('{"room":"setup_corner","style":"white_blue","why":"ركن."}').wall_change, false);
+});

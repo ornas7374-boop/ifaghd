@@ -135,8 +135,8 @@ async function analyzeRoomGemini(key, image, opts = {}) {
   const { mime, data } = splitDataUri(image);
   const { res, model } = await generateWithFallback(key, "vision", opts.model || DEFAULT_VISION_MODEL, {
     systemInstruction: { parts: [{ text: SYSTEM }] },
-    contents: [{ parts: [{ text: userPrompt(exclude) }, { inline_data: { mime_type: mime, data } }] }],
-    generationConfig: { responseMimeType: "application/json", maxOutputTokens: 800, temperature: 0.3 }
+    contents: [{ parts: [{ text: userPrompt(exclude, opts.brief) }, { inline_data: { mime_type: mime, data } }] }],
+    generationConfig: { responseMimeType: "application/json", maxOutputTokens: 1000, temperature: 0.3 }
   }, opts.budgetMs || 45000);
   if (!res.ok) { const e = new Error(res.timeout ? "gemini_timeout" : `gemini_${res.status}`); e.detail = `${model}: ${errDetail(res.data)}`.slice(0, 240); throw e; }
   const text = parts(res.data).map(p => p.text || "").join("");
