@@ -1,22 +1,24 @@
 // sadu — "shop the look": list the furnishings seen in a design image, with an approximate
 // Saudi price range and search links to stores. Prices are AI estimates, shown as approximate.
 
-const CATEGORIES = ["seating", "table", "bed", "storage", "lighting", "rug", "curtains", "textiles", "wall_art", "decor", "plants", "mirror", "other"];
+const CATEGORIES = ["desk", "chair", "monitor", "monitor_arm", "keyboard", "mouse", "mousepad", "headset", "microphone", "speakers", "computer", "console", "controller",
+  "lighting", "wall_panels", "shelf", "pegboard", "storage", "seating", "table", "rug", "textiles", "wall_art", "decor", "plants", "other"];
 
-const SYSTEM = "You are an interior stylist and shopping assistant for homeowners in Saudi Arabia. " +
-  "You look at a photo of a designed room and list the furnishings and decor a customer could buy to recreate it. Answer with JSON only.";
+const SYSTEM = "You are a gaming and desk setup stylist and shopping assistant for customers in Saudi Arabia. " +
+  "You look at a photo of a setup or room and list the pieces a customer could buy to recreate it. Answer with JSON only.";
 
-const PROMPT = `List the purchasable items visible in this room photo: furniture, lighting, rugs, curtains, cushions and textiles, wall art, mirrors, vases, plants and decor.
-Do NOT list fixed architecture (walls, floor, ceiling, windows, doors, built-in cabinets) or people.
+const PROMPT = `List the purchasable items visible in this setup photo: desk, chair, monitors and monitor arms, keyboard, mouse, desk mat, headset, microphone, speakers, PC or console,
+LED light bars, LED wall panels, neon signs, 3D wall panels, shelves, pegboards, plants, posters and decor, and any furniture (sofa, TV unit, rug).
+Do NOT list fixed architecture (walls, floor, ceiling, windows, doors) or people. Describe items generically (type, style, colour); do not guess brand names.
 Merge identical items (e.g. 4 matching chairs = one item, quantity 4). Most visible items first. At most 12 items.
 
 For each item:
-- name_ar: short natural Arabic product name, as a Saudi shopper would search for it (e.g. "طاولة قهوة رخام دائرية")
+- name_ar: short natural Arabic product name, as a Saudi shopper would search for it (e.g. "شاشة منحنية 34 بوصة" or "لوحات إضاءة مثلثة RGB")
 - name_en: short English product name
 - category: one of ${CATEGORIES.join(", ")}
 - material_ar, color_ar: short Arabic words
 - quantity: integer
-- price_min_sar, price_max_sar: typical retail price range for ONE piece in Saudi Arabia, mid-range stores (IKEA, Home Centre, Pan Home, Amazon.sa, noon), whole riyals
+- price_min_sar, price_max_sar: typical retail price range for ONE piece in Saudi Arabia, mid-range (Amazon.sa, noon, Jarir, Extra, IKEA), whole riyals
 - search_ar, search_en: the best short search query for this exact piece (style + material + type), 2 to 6 words
 
 Return ONLY: {"items":[{"name_ar":"","name_en":"","category":"","material_ar":"","color_ar":"","quantity":1,"price_min_sar":0,"price_max_sar":0,"search_ar":"","search_en":""}]}`;

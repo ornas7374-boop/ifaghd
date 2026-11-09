@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#000000">
-<title>sadu — صمّم غرفتك</title>
+<title>sadu — صمّم سيت أبك</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Inter:wght@500;600&family=Reem+Kufi:wght@500..700&display=swap" rel="stylesheet">
@@ -131,12 +131,12 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
 </header>
 
 <main class="wrap">
-  <h1>صمّم غرفتك</h1>
-  <p class="sub">صوّر غرفتك فقط. الذكاء الاصطناعي يعرف نوعها، ويختار الأسلوب الأنسب لها، ويصمّمها.</p>
+  <h1>صمّم سيت أبك</h1>
+  <p class="sub">صوّر الركن أو الغرفة اللي تبغى فيها السيت أب. الذكاء الاصطناعي يختار الأسلوب الأنسب ويصمّمه، ويعطيك القطع وأسعارها.</p>
 
   <div id="editor">
     <section class="step" aria-labelledby="s1">
-      <h2 class="step__h" id="s1"><span class="step__n">01</span>صورة الغرفة</h2>
+      <h2 class="step__h" id="s1"><span class="step__n">01</span>صورة الركن</h2>
       <div class="pick" id="pick">
         <label class="btn btn--primary"><svg><use href="#i-camera"/></svg>التقط بالكاميرا
           <input class="file" id="cam" type="file" accept="image/*" capture="environment"></label>
@@ -144,13 +144,13 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
           <input class="file" id="lib" type="file" accept="image/*"></label>
       </div>
       <div class="preview" id="preview" hidden>
-        <img id="previewImg" alt="صورة غرفتك">
+        <img id="previewImg" alt="صورة الركن">
         <button class="preview__change" type="button" id="change">تغيير الصورة</button>
       </div>
-      <p class="hint">للنتيجة الأفضل: صورة واسعة للغرفة كاملة، في إضاءة النهار.</p>
+      <p class="hint">للنتيجة الأفضل: صورة واسعة للركن أو الجدار كاملاً، بدون أشخاص.</p>
     </section>
 
-    <button class="linkbtn" type="button" id="shopOnly" hidden>عندك صورة تصميم جاهز؟ اعرض قطعها وأسعارها</button>
+    <button class="linkbtn" type="button" id="shopOnly" hidden>عندك صورة سيت أب جاهز؟ اعرض قطعه وأسعارها</button>
     <div class="shop" id="shop0" hidden>
       <h2 class="shop__h">قطع الصورة</h2>
       <p class="shop__note">الأسعار تقريبية، والروابط تفتح البحث في المتجر.</p>
@@ -162,7 +162,7 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
 
   <section id="loading" class="loader" hidden aria-live="polite">
     <div class="weave" id="weave" aria-hidden="true"></div>
-    <p><span id="loadText">نحلل غرفتك…</span> <span class="num" id="secs">0</span> ثانية</p>
+    <p><span id="loadText">نحلل الركن…</span> <span class="num" id="secs">0</span> ثانية</p>
   </section>
 
   <section id="result" hidden aria-labelledby="rh">
@@ -183,7 +183,7 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
       <button class="btn btn--secondary full" type="button" id="newPhoto">صورة جديدة</button>
     </div>
     <div class="shop" id="shop">
-      <button class="btn btn--secondary full" type="button" id="shopBtn">اعرض قطع التصميم وأسعارها</button>
+      <button class="btn btn--secondary full" type="button" id="shopBtn">اعرض قطع السيت أب وأسعارها</button>
       <p class="shop__wait" id="shopWait" hidden>نتعرّف على القطع… <span class="num" id="shopSecs">0</span> ثانية</p>
       <div id="shopOut"></div>
     </div>
@@ -198,7 +198,7 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
 
 <div class="go" id="go">
   <div style="max-inline-size:608px;margin-inline:auto">
-    <button class="btn btn--primary btn--lg" type="button" id="generate" disabled>صمّم غرفتك</button>
+    <button class="btn btn--primary btn--lg" type="button" id="generate" disabled>صمّم السيت أب</button>
   </div>
 </div>
 
@@ -206,8 +206,8 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
 (function(){
   "use strict";
   var $ = function(id){ return document.getElementById(id); };
-  var STYLE_NAMES = {najdi:"نجدي",hijazi:"حجازي",gulf_modern:"خليجي مودرن",classic_luxury:"كلاسيكي فاخر",neoclassic:"نيوكلاسيك",calm_modern:"مودرن هادئ",boho_gulf:"بوهيمي خليجي",emirati:"إماراتي معاصر",night_luxury:"فخامة ليلية",warm_luxury:"فخامة دافئة",quiet_luxury:"فخامة هادئة"};
-  var ROOM_NAMES = {majlis_men:"مجلس رجال",majlis_women:"مجلس نساء",living:"صالة",bedroom:"غرفة نوم",annex:"ملحق",dining:"مقلط",kitchen:"مطبخ",bathroom:"حمام",dressing:"غرفة ملابس",office:"مكتب"};
+  var STYLE_NAMES = {night_setup:"ركن ليلي",white_blue:"أبيض وأزرق",neon_purple:"نيون بنفسجي",rgb_setup:"RGB متغيّر",grey_tech:"رمادي تقني"};
+  var ROOM_NAMES = {setup_corner:"ركن سيت أب",gaming_room:"غرفة ألعاب",home_office:"مكتب منزلي"};
   var state = { image:null, ratio:4/3, room:null, style:null, why:"", tried:[], busy:false };
 
   /* الشبكة: مربعات المعيّن */
@@ -302,12 +302,12 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
     items_none: "ما لقينا قطعاً واضحة في الصورة. جرّب صورة أوضح.",
     items_no_json: "تعذّر قراءة القطع. جرّب مرة ثانية.",
     items_bad_json: "تعذّر قراءة القطع. جرّب مرة ثانية.",
-    analysis_model_unavailable: "نموذج تحليل الغرفة غير متاح على الحساب.",
-    analysis_failed: "تعذّر تحليل الغرفة. جرّب مرة ثانية.",
-    analysis_bad_room: "ما قدرنا نحدد نوع الغرفة. جرّب صورة أوضح وأوسع.",
+    analysis_model_unavailable: "نموذج التحليل غير متاح على الحساب.",
+    analysis_failed: "تعذّر تحليل الصورة. جرّب مرة ثانية.",
+    analysis_bad_room: "ما قدرنا نحدد نوع المكان. جرّب صورة أوضح وأوسع.",
     analysis_bad_style: "تعذّر اختيار أسلوب. جرّب مرة ثانية.",
-    analysis_no_json: "تعذّر تحليل الغرفة. جرّب مرة ثانية.",
-    analysis_bad_json: "تعذّر تحليل الغرفة. جرّب مرة ثانية."
+    analysis_no_json: "تعذّر تحليل الصورة. جرّب مرة ثانية.",
+    analysis_bad_json: "تعذّر تحليل الصورة. جرّب مرة ثانية."
   };
 
   async function postJson(url, body){
@@ -323,7 +323,7 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
   /* الذكاء الاصطناعي يحلل الغرفة ويختار الأسلوب، ثم يصمّم */
   async function run(another){
     if(!state.image || state.busy) return;
-    clearErr(); setBusy(true); $("loadText").textContent = "نحلل غرفتك…";
+    clearErr(); setBusy(true); $("loadText").textContent = "نحلل الركن…";
     var t0 = Date.now();
     try{
       var a = await postJson("/api/analyze", { image: state.image, exclude: another ? state.tried : [] });
@@ -354,7 +354,7 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
     $("metaTime").textContent = Math.round(secs) + " ثانية";
     $("why").textContent = state.why; $("why").hidden = !state.why;
     $("save").href = url; state.after = url; resetShop();
-    $("share").href = "https://wa.me/?text=" + encodeURIComponent("شوف تصميم غرفتي الجديد بأسلوب " + STYLE_NAMES[state.style] + " من sadu: " + url);
+    $("share").href = "https://wa.me/?text=" + encodeURIComponent("شوف تصميم السيت أب حقي بأسلوب " + STYLE_NAMES[state.style] + " من sadu: " + url);
     $("result").hidden = false;
     addHistory(url, state.image, state.style, state.room, state.ratio, state.why);
     $("result").scrollIntoView({ behavior:"smooth", block:"start" });
@@ -408,7 +408,7 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
     out.append(ul);
     if(r.total_max){
       var t = el("div", "total");
-      t.append(el("span", null, "التكلفة التقريبية للغرفة"), el("span", "num", SAR(r.total_min) + " – " + SAR(r.total_max) + " ريال"));
+      t.append(el("span", null, "التكلفة التقريبية للسيت أب"), el("span", "num", SAR(r.total_min) + " – " + SAR(r.total_max) + " ريال"));
       out.append(t);
     }
     var note = el("p", "shop__note", "الأسعار تقديرية من الذكاء الاصطناعي وقد تختلف في المتجر.");

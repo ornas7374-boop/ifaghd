@@ -1,4 +1,4 @@
-// sadu — the AI decides the room type and the style (the customer only uploads a photo).
+// sadu — the AI decides the setup space and the style (the customer only uploads a photo).
 //
 // A vision-language model on Replicate looks at the photo and returns strict JSON:
 //   { room, room_confidence, style, why (Arabic, shown to the customer), seen: [...] }
@@ -8,51 +8,27 @@
 const API = "https://api.replicate.com/v1";
 const DEFAULT_MODELS = ["anthropic/claude-4.5-sonnet", "anthropic/claude-4-sonnet", "anthropic/claude-3.7-sonnet"];
 
-const ROOMS = {
-  majlis_men: "Saudi men's majlis: formal guest room, seating along the walls, often near the entrance",
-  majlis_women: "Saudi women's majlis: formal guest sitting room for women, softer and more decorative",
-  living: "family living room / lounge with sofas and a TV",
-  bedroom: "bedroom (bed, wardrobe, bedside tables)",
-  annex: "guest annex (mulhaq) or outdoor-adjacent lounge, casual gathering space",
-  dining: "dining room / muqallat (dining table or floor dining area)",
-  kitchen: "kitchen (cabinets, counters, sink, stove, appliances)",
-  bathroom: "bathroom (toilet, sink, shower or tub)",
-  dressing: "walk-in dressing room / closet",
-  office: "home office or study (desk, chair, shelves)"
-};
+// Setup focus: the spaces and styles come from the shared catalogue (_lib/setup.js).
+const CATALOG = require("./setup");
+const ROOMS = Object.fromEntries(Object.entries(CATALOG.SPACES).map(([k, v]) => [k, v.hint]));
+const STYLES = Object.fromEntries(Object.entries(CATALOG.STYLES).map(([k, v]) => [k, v.hint]));
 
-// When each style suits a room. The architecture is preserved, so the style must harmonise
-// with the existing floor, walls, ceiling and light.
-const STYLES = {
-  night_luxury: "dark, dramatic, warm low lighting: bedrooms, media/living rooms, evening majlis; rooms with little daylight or dark existing finishes",
-  warm_luxury: "light cream/beige, wood, marble, gold accents: bright rooms with daylight, living rooms, women's majlis, dining rooms, light kitchens",
-  quiet_luxury: "calm monochrome greige, soft and minimal: bedrooms, dressing rooms, small or medium rooms",
-  najdi: "traditional Najdi: men's majlis, annex, rooms with earthy or traditional character",
-  hijazi: "traditional Hijazi with carved wood and teal: majlis or living rooms that suit wood and pattern",
-  gulf_modern: "modern Gulf, neutral and elegant: versatile for living rooms, majlis and offices",
-  classic_luxury: "grand classic Arabian: large formal majlis or dining rooms with generous ceiling height",
-  neoclassic: "refined light neoclassical: bright formal rooms, especially with existing mouldings",
-  calm_modern: "simple calm modern, natural wood and linen: small rooms, kids' rooms, offices, practical spaces",
-  boho_gulf: "relaxed Gulf bohemian with rugs and natural materials: annex, casual lounges",
-  emirati: "contemporary heritage with palm-weave textures: majlis and living rooms"
-};
-
-const SYSTEM = "You are a senior interior architect for homes in Saudi Arabia. You look at a photo of an existing room and decide " +
-  "what the room is and which interior style will look best in THIS room. The room's architecture (walls, floor, ceiling, windows, doors) " +
-  "will be kept exactly as it is; only furniture, textiles, lighting fixtures and decor will change. Answer with JSON only.";
+const SYSTEM = "You are a senior designer of gaming and desk setups for young people and professionals in Saudi Arabia. You look at a photo of a room or a corner " +
+  "and decide what kind of setup space it is and which setup style will look best in THIS space. The room's architecture (walls, floor, ceiling, windows, doors) " +
+  "will be kept exactly as it is; only the desk, chair, shelves, electronics, wall panels, decor and lighting will change. Answer with JSON only.";
 
 function userPrompt(exclude) {
   const rooms = Object.entries(ROOMS).map(([k, v]) => `- ${k}: ${v}`).join("\n");
   const styles = Object.entries(STYLES).filter(([k]) => !exclude.includes(k)).map(([k, v]) => `- ${k}: ${v}`).join("\n");
   return `Look at the photo.
 
-1. Decide the room type from visible evidence (fixed elements such as a sink, stove, toilet or built-in wardrobe count more than movable furniture). If the room is empty, decide from its size, windows, doors, finishes and position. Choose exactly one key:
+1. Decide what kind of setup space this is, from visible evidence (a bed means a bedroom corner; a TV wall or sofa without a bed suggests a gaming room; books, files or a work desk suggest a home office). If the space is empty, decide from its size and position. Choose exactly one key:
 ${rooms}
 
-2. Choose the ONE style that will look best in this specific room, given its existing floor, wall colour, ceiling, natural light and size, and given how the room is used. Choose exactly one key:
+2. Choose the ONE setup style that will look best in this specific space, given its existing walls, floor, ceiling, natural light and size, and who probably uses it. Choose exactly one key:
 ${styles}
 
-3. Write "why" in natural Saudi-friendly Modern Standard Arabic, one or two short sentences (max 30 words), addressed to the homeowner: say what room you see and why this style suits it. No English words, no emoji.
+3. Write "why" in natural Saudi-friendly Modern Standard Arabic, one or two short sentences (max 30 words), addressed to the owner: say what space you see and why this setup style suits it. No English words, no emoji.
 
 Return ONLY this JSON, no other text:
 {"room": "<room key>", "room_confidence": <0..1>, "style": "<style key>", "why": "<Arabic>", "seen": ["<up to 6 short English labels of what you see>"]}`;

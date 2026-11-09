@@ -45,11 +45,11 @@ test("rejects non-image input", async () => {
 });
 
 test("analysis: parses the JSON answer and honours excluded styles", async () => {
-  const m = mockFetch(() => ({ json: reply([{ text: '{"room":"bedroom","room_confidence":0.9,"style":"quiet_luxury","why":"غرفة نوم هادئة."}' }]) }));
+  const m = mockFetch(() => ({ json: reply([{ text: '{"room":"setup_corner","room_confidence":0.9,"style":"grey_tech","why":"غرفة نوم هادئة."}' }]) }));
   try {
-    const r = await analyzeRoomGemini("k", IMG, { exclude: ["night_luxury"] });
-    assert.equal(r.room, "bedroom"); assert.equal(r.style, "quiet_luxury");
-    assert.ok(!m.calls[0].body.contents[0].parts[0].text.includes("- night_luxury:"));
+    const r = await analyzeRoomGemini("k", IMG, { exclude: ["night_setup"] });
+    assert.equal(r.room, "setup_corner"); assert.equal(r.style, "grey_tech");
+    assert.ok(!m.calls[0].body.contents[0].parts[0].text.includes("- night_setup:"));
     assert.ok(m.calls[0].body.systemInstruction.parts[0].text.length > 20);
   } finally { m.restore(); }
 });
@@ -64,12 +64,12 @@ test("endpoints use Gemini only when SADU_PROVIDER=gemini", async () => {
     process.env.GEMINI_API_KEY = "g-key";
     const m = mockFetch((url) => url.includes("generativelanguage") ? { json: reply([{ inlineData: { mimeType: "image/jpeg", data: "QUJD" } }]) } : { status: 500, json: {} });
     try {
-      const r2 = mk(); await design({ method: "POST", body: { image: IMG, style: "warm_luxury", room: "bedroom" } }, r2);
+      const r2 = mk(); await design({ method: "POST", body: { image: IMG, style: "white_blue", room: "setup_corner" } }, r2);
       assert.equal(r2.code, 200); assert.match(r2.body.output, /^data:image\/jpeg;base64,/);
       assert.ok(m.calls.every(c => c.url.includes("generativelanguage")), "Replicate must not be called");
       m.restore();
-      const m2 = mockFetch(() => ({ json: reply([{ text: '{"room":"office","room_confidence":0.9,"style":"calm_modern","why":"مكتب."}' }]) }));
-      try { const r3 = mk(); await analyze({ method: "POST", body: { image: IMG } }, r3); assert.equal(r3.code, 200); assert.equal(r3.body.room, "office"); }
+      const m2 = mockFetch(() => ({ json: reply([{ text: '{"room":"home_office","room_confidence":0.9,"style":"rgb_setup","why":"مكتب."}' }]) }));
+      try { const r3 = mk(); await analyze({ method: "POST", body: { image: IMG } }, r3); assert.equal(r3.code, 200); assert.equal(r3.body.room, "home_office"); }
       finally { m2.restore(); }
     } finally { m.restore(); }
   } finally { for (const k of Object.keys(process.env)) if (!(k in saved)) delete process.env[k]; Object.assign(process.env, saved); }
@@ -86,7 +86,7 @@ test("404 on the default model: lists the account's models and retries with the 
       { name: "models/imagen-4", supportedGenerationMethods: ["predict"] }] } };
     if (url.includes("gemini-2.5")) return { status: 404, json: { error: { message: "not found" } } };
     if (url.includes("gemini-3.0-flash-image:")) return { json: reply([{ inlineData: { mimeType: "image/png", data: "QQ==" } }]) };
-    if (url.includes("gemini-3.0-flash:")) return { json: reply([{ text: '{"room":"living","room_confidence":0.8,"style":"warm_luxury","why":"صالة."}' }]) };
+    if (url.includes("gemini-3.0-flash:")) return { json: reply([{ text: '{"room":"gaming_room","room_confidence":0.8,"style":"white_blue","why":"صالة."}' }]) };
     return { status: 500, json: {} };
   });
   try {
@@ -110,7 +110,7 @@ test("a model that hangs fails clearly inside the time budget (no 60 s Vercel ti
 
 test("analysis asks for low thinking on 2.5 models", async () => {
   require("../api/_lib/gemini")._reset();
-  const m = mockFetch(() => ({ json: reply([{ text: '{"room":"living","style":"warm_luxury","why":"صالة."}' }]) }));
+  const m = mockFetch(() => ({ json: reply([{ text: '{"room":"gaming_room","style":"white_blue","why":"صالة."}' }]) }));
   try { await analyzeRoomGemini("k", IMG); assert.deepEqual(m.calls[0].body.generationConfig.thinkingConfig, { thinkingBudget: 0 }); }
   finally { m.restore(); }
 });
@@ -122,7 +122,7 @@ test("overloaded model (503): falls back to the next model on the account", asyn
       { name: "models/gemini-3.8-flash", supportedGenerationMethods: ["generateContent"] },
       { name: "models/gemini-3.5-flash", supportedGenerationMethods: ["generateContent"] }] } };
     if (url.includes("gemini-2.5-flash:") || url.includes("gemini-3.8-flash:")) return { status: 503, json: { error: { message: "high demand" } } };
-    if (url.includes("gemini-3.5-flash:")) return { json: reply([{ text: '{"room":"living","style":"warm_luxury","why":"صالة."}' }]) };
+    if (url.includes("gemini-3.5-flash:")) return { json: reply([{ text: '{"room":"gaming_room","style":"white_blue","why":"صالة."}' }]) };
     return { status: 500, json: {} };
   });
   try { const a = await analyzeRoomGemini("k", IMG); assert.equal(a.model, "gemini-3.5-flash"); }
@@ -136,7 +136,7 @@ test("SADU_DESIGN_PROVIDER=replicate: analysis on Gemini, design on Replicate", 
   Object.assign(process.env, { SADU_PROVIDER: "gemini", SADU_DESIGN_PROVIDER: "replicate", GEMINI_API_KEY: "g", REPLICATE_API_TOKEN: "r8_x" });
   const m = mockFetch((url) => url.includes("api.replicate.com") ? { json: { id: "abc123def456", status: "succeeded", output: "https://replicate.delivery/x.jpg" } } : { status: 500, json: {} });
   try {
-    const r = mk(); await design({ method: "POST", body: { image: IMG, style: "warm_luxury", room: "living" } }, r);
+    const r = mk(); await design({ method: "POST", body: { image: IMG, style: "white_blue", room: "gaming_room" } }, r);
     assert.equal(r.code, 200); assert.equal(r.body.output, "https://replicate.delivery/x.jpg");
     assert.ok(m.calls.every(c => c.url.includes("api.replicate.com")), "design must not call Gemini");
   } finally { m.restore(); for (const k of Object.keys(process.env)) if (!(k in saved)) delete process.env[k]; Object.assign(process.env, saved); }
@@ -152,7 +152,7 @@ test("analysis: a stuck model is abandoned and a faster (lite) model answers", a
       { name: "models/gemini-3.8-flash", supportedGenerationMethods: ["generateContent"] },
       { name: "models/gemini-3.5-flash-lite", supportedGenerationMethods: ["generateContent"] }] });
     if (url.includes("gemini-2.5-flash:")) return Promise.resolve({ ok: false, status: 404, headers: { get: () => null }, json: async () => ({}) });
-    if (url.includes("gemini-3.5-flash-lite:")) return ok({ candidates: [{ content: { parts: [{ text: '{"room":"living","style":"warm_luxury","why":"صالة."}' }] } }] });
+    if (url.includes("gemini-3.5-flash-lite:")) return ok({ candidates: [{ content: { parts: [{ text: '{"room":"gaming_room","style":"white_blue","why":"صالة."}' }] } }] });
     return new Promise((_, rej) => init.signal.addEventListener("abort", () => rej(new Error("aborted"))));
   };
   try {
