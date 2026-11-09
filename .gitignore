@@ -49,3 +49,6 @@ sadu-refs/images/
 sadu-landing/node_modules/
 sadu-collector/node_modules/
 sadu-collector/.env
+
+# private test photos for the segmentation lab (bundled at deploy time only)
+sadu-landing/eval-photos/

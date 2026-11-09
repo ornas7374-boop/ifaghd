@@ -17,7 +17,7 @@
 const sharp = require("sharp");
 const { ADE20K } = require("./ade20k");
 
-const DEFAULT_MODEL = "buntingj-vt/one-former"; // unverified candidate; the probe decides
+const DEFAULT_MODEL = "simbrams/segformer-b5-finetuned-ade-640-640"; // verified 2026-11-09 via the Replicate API: returns [{label, mask, score}]
 const MAP_W = 320;                               // class maps are analysed at this width
 const UNKNOWN = 255;                             // class id for unmapped pixels (treated as movable)
 
@@ -86,21 +86,39 @@ async function classMapFromImage(buf, cfg, targetW, targetH) {
     describe: d };
 }
 
+/** ADE20K index for a model label ("windowpane, window" -> "windowpane"); -1 if unknown. */
+function labelIndex(name) {
+  const n = String(name || "").toLowerCase().trim();
+  let i = ADE20K.indexOf(n);
+  if (i < 0) i = ADE20K.indexOf(n.split(",")[0].trim());
+  if (i < 0) i = ADE20K.findIndex(c => c.split(",")[0].trim() === n.split(",")[0].trim());
+  return i;
+}
+
+/** A segment mask may be an output URL, a data URI or bare base64 (models differ). */
+async function maskBuffer(str, fetchOutput) {
+  if (/^https?:\/\//.test(str)) return fetchOutput(str);
+  const b64 = str.startsWith("data:") ? str.slice(str.indexOf(",") + 1) : str;
+  if (!/^[A-Za-z0-9+/=\s]+$/.test(b64.slice(0, 200))) throw new Error("mask_unreadable");
+  return Buffer.from(b64, "base64");
+}
+
 /** Parse JSON segments [{label, mask}] into a class map. */
 async function classMapFromSegments(list, fetchOutput, cfg, targetW, targetH) {
-  const out = new Uint8Array(targetW * targetH).fill(UNKNOWN);
+  const out = new Uint8Array(targetW * targetH).fill(UNKNOWN); // not covered by any segment = unknown (protected)
   let used = 0;
+  const unmatched = [];
   for (const seg of list.slice(0, 200)) {
     const name = String(seg.label || seg.class || seg.name || "").toLowerCase().trim();
-    const idx = ADE20K.indexOf(name);
-    const maskUrl = seg.mask || seg.mask_url || seg.url;
-    if (idx < 0 || typeof maskUrl !== "string") continue;
-    const { data, info } = await rawAt(await fetchOutput(maskUrl), targetW, targetH);
+    const idx = labelIndex(name);
+    const maskStr = seg.mask || seg.mask_url || seg.url;
+    if (idx < 0 || typeof maskStr !== "string") { unmatched.push(name); continue; }
+    const { data, info } = await rawAt(await maskBuffer(maskStr, fetchOutput), targetW, targetH);
     for (let i = 0, p = 0; p < out.length; i += info.channels, p++) if (data[i] > 127) out[p] = idx + cfg.offset;
     used++;
   }
-  if (!used) return { kind: "unsupported", reason: "segments found but none matched ADE20K class names" };
-  return { kind: "segments", classMap: { w: targetW, h: targetH, data: out }, segments: used };
+  if (!used) return { kind: "unsupported", reason: "segments found but none matched ADE20K class names", unmatched };
+  return { kind: "segments", classMap: { w: targetW, h: targetH, data: out }, segments: used, unmatched };
 }
 
 /**
@@ -136,4 +154,4 @@ async function parseOutput(output, fetchOutput, cfg, aspect) {
   return { shape, kind: "unsupported", reason: "empty or unrecognised output" };
 }
 
-module.exports = { config, segInput, parseOutput, nameOfFactory, describeImage, classMapFromImage, UNKNOWN, MAP_W };
+module.exports = { labelIndex, maskBuffer, config, segInput, parseOutput, nameOfFactory, describeImage, classMapFromImage, UNKNOWN, MAP_W };

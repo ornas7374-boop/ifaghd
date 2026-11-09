@@ -122,7 +122,7 @@ test("endpoints: segment → generate (A and C) → validate (A, B, C) with Repl
     calls.push({ u, method: init.method || "GET", body: bodyJson, auth: init.headers && init.headers.Authorization });
     const json = (o, status = 200) => ({ ok: status < 300, status, headers: { get: () => null }, json: async () => o });
     const file = (buf) => ({ ok: true, status: 200, headers: { get: (k) => (k === "content-length" ? String(buf.length) : null) }, arrayBuffer: async () => buf });
-    if (u.endsWith("/models/buntingj-vt/one-former")) return json({ latest_version: { id: "a".repeat(64) } });
+    if (u.endsWith("/models/simbrams/segformer-b5-finetuned-ade-640-640")) return json({ latest_version: { id: "a".repeat(64) } });
     if (u.endsWith("/predictions") && init.method === "POST") return json({ id: "seg123456", status: "succeeded", output: "https://replicate.delivery/seg/out.png", metrics: { predict_time: 2.1 } });
     if (u.includes("/models/black-forest-labs/") && u.endsWith("/predictions")) return json({ id: "gen123456", status: "succeeded", output: "https://replicate.delivery/gen/out.jpg", metrics: { predict_time: 9.5 } });
     if (u === "https://replicate.delivery/seg/out.png") return file(classPng);
