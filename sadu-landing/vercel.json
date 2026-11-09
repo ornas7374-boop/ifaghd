@@ -10,9 +10,6 @@
       "maxDuration": 60
     },
     "api/eval/*.js": {
-      "maxDuration": 60
-    },
-    "api/eval/seglab.js": {
       "maxDuration": 60,
       "includeFiles": "eval-photos-enc/**"
     }
