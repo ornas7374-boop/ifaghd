@@ -13,7 +13,8 @@ const seg = require("../_lib/segmentation");
 const { buildMasks } = require("../_lib/masks");
 const { ADE20K } = require("../_lib/ade20k");
 
-const PHOTO_DIR = path.join(process.cwd(), "eval-photos-enc");
+const PHOTO_DIRS = [path.join(__dirname, "..", "..", "eval-photos-enc"), path.join(process.cwd(), "eval-photos-enc")];
+const PHOTO_DIR = PHOTO_DIRS.find(d => fs.existsSync(d)) || PHOTO_DIRS[0];
 const crypto = require("crypto");
 
 function decrypt(buf, keyB64) {
@@ -37,7 +38,7 @@ module.exports = async (req, res) => {
   const name = String(req.query.photo || "");
   if (!/^[a-z0-9_-]{1,20}$/i.test(name)) return res.status(400).json({ error: "bad_photo" });
   const file = path.join(PHOTO_DIR, `${name}.bin`);
-  if (!fs.existsSync(file)) return res.status(404).json({ error: "photo_not_bundled", available: fs.existsSync(PHOTO_DIR) ? fs.readdirSync(PHOTO_DIR) : [] });
+  if (!fs.existsSync(file)) return res.status(404).json({ error: "photo_not_bundled", looked: PHOTO_DIRS.map(d => ({ dir: d, exists: fs.existsSync(d), files: fs.existsSync(d) ? fs.readdirSync(d) : [] })) });
   try {
     const raw = decrypt(fs.readFileSync(file), process.env.SADU_LAB_KEY);
     // same preparation as the app: max 1024 px JPEG
