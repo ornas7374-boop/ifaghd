@@ -1,6 +1,8 @@
 // GET /api/eval/seglab?photo=p1&confirm=1        run segmentation on a bundled test photo (costs one run)
 // GET /api/eval/seglab?photo=p1&pred=<id>        re-read an earlier run (free)
-// Preview only. Test photos are bundled in eval-photos/ at deploy time (never committed to git).
+// Preview only. Private test photos live in eval-photos-enc/<name>.bin, encrypted with AES-256-GCM
+// (iv 12 bytes | tag 16 bytes | ciphertext). The key is only in the preview env (SADU_LAB_KEY), so the
+// files in git are unreadable without it.
 // Returns a compact class map (run-length encoded) so the result can be drawn and measured offline.
 const fs = require("fs");
 const path = require("path");
@@ -11,7 +13,16 @@ const seg = require("../_lib/segmentation");
 const { buildMasks } = require("../_lib/masks");
 const { ADE20K } = require("../_lib/ade20k");
 
-const PHOTO_DIR = path.join(process.cwd(), "eval-photos");
+const PHOTO_DIR = path.join(process.cwd(), "eval-photos-enc");
+const crypto = require("crypto");
+
+function decrypt(buf, keyB64) {
+  const key = Buffer.from(String(keyB64 || ""), "base64");
+  if (key.length !== 32) throw new Error("lab_key_missing");
+  const d = crypto.createDecipheriv("aes-256-gcm", key, buf.subarray(0, 12));
+  d.setAuthTag(buf.subarray(12, 28));
+  return Buffer.concat([d.update(buf.subarray(28)), d.final()]);
+}
 
 function rle(arr) {
   const parts = [];
@@ -25,10 +36,10 @@ module.exports = async (req, res) => {
   const cfg = seg.config();
   const name = String(req.query.photo || "");
   if (!/^[a-z0-9_-]{1,20}$/i.test(name)) return res.status(400).json({ error: "bad_photo" });
-  const file = ["jpg", "jpeg", "png", "webp"].map(e => path.join(PHOTO_DIR, `${name}.${e}`)).find(f => fs.existsSync(f));
-  if (!file) return res.status(404).json({ error: "photo_not_bundled", available: fs.existsSync(PHOTO_DIR) ? fs.readdirSync(PHOTO_DIR) : [] });
+  const file = path.join(PHOTO_DIR, `${name}.bin`);
+  if (!fs.existsSync(file)) return res.status(404).json({ error: "photo_not_bundled", available: fs.existsSync(PHOTO_DIR) ? fs.readdirSync(PHOTO_DIR) : [] });
   try {
-    const raw = fs.readFileSync(file);
+    const raw = decrypt(fs.readFileSync(file), process.env.SADU_LAB_KEY);
     // same preparation as the app: max 1024 px JPEG
     const jpg = await sharp(raw).rotate().resize(1024, 1024, { fit: "inside", withoutEnlargement: true }).jpeg({ quality: 88 }).toBuffer();
     const meta = await sharp(jpg).metadata();
