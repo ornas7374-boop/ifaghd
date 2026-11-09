@@ -13,7 +13,10 @@ function schemaOf(info) {
     input[k] = { type: v.type || (v.allOf ? "enum" : undefined), format: v.format, default: v.default, description: (v.description || "").slice(0, 160) };
     if (v.allOf && v.allOf[0] && v.allOf[0].$ref) { const n = v.allOf[0].$ref.split("/").pop(); if (c[n] && c[n].enum) input[k].enum = c[n].enum; }
   }
-  return { input, required: (c.Input && c.Input.required) || [], output: c.Output };
+  // include the component definitions the output refers to (e.g. "Segment"), so the real output shape is visible
+  const refs = {};
+  JSON.stringify(c.Output || {}).replace(/#\/components\/schemas\/(\w+)/g, (_, n) => { refs[n] = c[n]; return _; });
+  return { input, required: (c.Input && c.Input.required) || [], output: c.Output, outputRefs: refs };
 }
 
 module.exports = async (req, res) => {

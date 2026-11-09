@@ -113,6 +113,22 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
 .item__links a{min-block-size:36px;display:inline-flex;align-items:center;padding:0 14px;border-radius:999px;border:1px solid var(--border-subtle);color:var(--text);text-decoration:none;font-size:14px}
 .total{display:flex;justify-content:space-between;margin-block-start:12px;padding:12px 14px;border-radius:14px;border:1px solid var(--border-subtle);font-weight:600}
 .linkbtn{display:block;margin:12px auto 0;min-block-size:44px;padding:0 8px;background:none;border:0;color:var(--text-secondary);text-decoration:underline;font:inherit;font-size:14px;cursor:pointer}
+
+/* طلب العميل — وصف، ميزانية، نوع التعديلات (غير مربوط بالتوليد بعد) */
+.brief{display:grid;gap:14px;margin-block-start:24px}
+.field{display:grid;gap:6px}
+.field label,.field legend{font:600 15px/24px var(--font-display);color:var(--text)}
+.field small{font-size:13px;line-height:20px;color:var(--text-muted)}
+.field textarea,.field input[type=number]{inline-size:100%;box-sizing:border-box;min-block-size:44px;padding:10px 12px;border-radius:12px;border:1px solid var(--border-subtle);background:var(--surface);color:var(--text);font:inherit;font-size:16px}
+.field textarea{min-block-size:96px;resize:vertical}
+.money{display:flex;align-items:center;gap:8px}
+.money span{color:var(--text-secondary);font-size:15px}
+fieldset.field{border:0;margin:0;padding:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative;display:inline-flex;align-items:center;min-block-size:40px;padding:0 14px;border-radius:999px;border:1px solid var(--border-subtle);background:var(--surface);cursor:pointer;font-size:14px}
+.chip input{position:absolute;opacity:0;pointer-events:none}
+.chip:has(input:checked){background:var(--text);color:#000;border-color:var(--text)}
+.chip:has(input:focus-visible){outline:2px solid var(--text);outline-offset:2px}
 </style>
 </head>
 <body>
@@ -157,6 +173,29 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
       <p class="shop__wait" id="shopWait0" hidden>نتعرّف على القطع… <span class="num" id="shopSecs0">0</span> ثانية</p>
       <div id="shopOut0"></div>
     </div>
+    <section class="brief" id="brief" aria-labelledby="s2">
+      <h2 class="step__h" id="s2"><span class="step__n">02</span>طلبك (اختياري)</h2>
+      <div class="field">
+        <label for="desc">صف لنا التصميم الذي تريده</label>
+        <textarea id="desc" maxlength="600" placeholder="مثال: أبغى سيت أب ألعاب بإضاءة LED زرقاء، وجدار بشرائح خشب، بدون ما نغيّر الأرضية."></textarea>
+        <small>بالعربي أو الإنجليزي.</small>
+      </div>
+      <div class="field">
+        <label for="budget">كم ميزانيتك؟</label>
+        <div class="money"><input id="budget" type="number" inputmode="numeric" min="0" max="200000" step="50" placeholder="1000"><span>ريال</span></div>
+      </div>
+      <fieldset class="field">
+        <legend>وش تبغى نغيّر؟</legend>
+        <div class="chips" id="changes">
+          <label class="chip"><input type="checkbox" value="furniture" checked>الأثاث</label>
+          <label class="chip"><input type="checkbox" value="lighting" checked>الإضاءة</label>
+          <label class="chip"><input type="checkbox" value="decor" checked>الديكورات</label>
+          <label class="chip"><input type="checkbox" value="wall">الجدار</label>
+          <label class="chip"><input type="checkbox" value="full_setup">سيت أب كامل</label>
+        </div>
+        <small>الأرضية محمية دائماً. الجدار لا يتغيّر إلا إذا اخترته.</small>
+      </fieldset>
+    </section>
     <div class="err" id="err" role="alert" hidden></div>
   </div>
 
@@ -241,6 +280,17 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
 
   function showErr(msg){ var e = $("result").hidden ? $("err") : $("err2"); e.textContent = msg; e.hidden = false; }
   function clearErr(){ $("err").hidden = true; $("err2").hidden = true; }
+  /* طلب العميل: يُجمع فقط، ولا يُرسل للتوليد في هذه المرحلة */
+  function readBrief(){
+    var b = Number($("budget").value);
+    return {
+      description: $("desc").value.trim().slice(0, 600),
+      budget_sar: Number.isFinite(b) && b > 0 ? Math.round(b) : null,
+      changes: Array.prototype.map.call(document.querySelectorAll("#changes input:checked"), function(i){ return i.value; })
+    };
+  }
+  window.saduBrief = readBrief;
+
   function refresh(){ $("generate").disabled = !state.image || state.busy; $("shopOnly").hidden = !state.image || state.busy; }
 
   function onFile(input){
