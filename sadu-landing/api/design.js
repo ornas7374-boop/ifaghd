@@ -14,6 +14,8 @@ const { STYLES, buildPrompt } = require("./_lib/setup");
 // the prompt as things to keep. Walls stay protected here (no wall change yet).
 const briefOf = (b) => ({
   request: typeof b.request === "string" ? b.request : "",
+  placement: typeof b.placement === "string" ? b.placement : "",
+  use: typeof b.use === "string" ? b.use : "",
   changes: Array.isArray(b.changes) ? b.changes.map(String).filter(x => /^[a-z_]{2,20}$/.test(x)).slice(0, 6) : []
 });
 const keepOf = (k) => (k && typeof k === "object" ? { floor: k.floor, walls: k.walls, ceiling: k.ceiling } : {});

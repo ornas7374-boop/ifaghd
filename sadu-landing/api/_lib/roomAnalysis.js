@@ -10,6 +10,7 @@ const DEFAULT_MODELS = ["anthropic/claude-4.5-sonnet", "anthropic/claude-4-sonne
 
 // Setup focus: the spaces and styles come from the shared catalogue (_lib/setup.js).
 const CATALOG = require("./setup");
+const { ANALYSIS_RULES, USES } = require("./designPrinciples");
 const ROOMS = Object.fromEntries(Object.entries(CATALOG.SPACES).map(([k, v]) => [k, v.hint]));
 const STYLES = Object.fromEntries(Object.entries(CATALOG.STYLES).map(([k, v]) => [k, v.hint]));
 
@@ -32,6 +33,8 @@ function userPrompt(exclude, brief) {
   const styles = Object.entries(STYLES).filter(([k]) => !exclude.includes(k)).map(([k, v]) => `- ${k}: ${v}`).join("\n");
   return `Look at the photo.${briefText(brief)}
 
+${ANALYSIS_RULES}
+
 1. Decide what kind of setup space this is, from visible evidence (a bed means a bedroom corner; a TV wall or sofa without a bed suggests a gaming room; books, files or a work desk suggest a home office). If the space is empty, decide from its size and position. Choose exactly one key:
 ${rooms}
 
@@ -44,8 +47,10 @@ ${styles}
 
 5. Write "request" in English: the customer's request turned into short, concrete design instructions for an image editor (colours, lights, items, mood), max 60 words. Empty string if there was no request. Never include instructions to change the floor. Set "wall_change" to true ONLY if the customer explicitly asks to change a wall (paint, panels, slats, wallpaper); otherwise false.
 
+6. Decide "use": one of ${USES.join(", ")} (from the request and what you see). Write "placement" in English (max 45 words): where exactly the desk and monitors go in THIS photo following the principles (which wall, window to the side, nothing blocking a window or door, room behind the chair).
+
 Return ONLY this JSON, no other text:
-{"room": "<room key>", "room_confidence": <0..1>, "style": "<style key>", "why": "<Arabic>", "seen": ["<up to 6 short English labels of what you see>"], "floor": "<existing floor>", "walls": "<existing walls>", "ceiling": "<existing ceiling>", "request": "<English design instructions from the customer's request, or empty>", "wall_change": <true|false>}`;
+{"room": "<room key>", "room_confidence": <0..1>, "style": "<style key>", "why": "<Arabic>", "seen": ["<up to 6 short English labels of what you see>"], "floor": "<existing floor>", "walls": "<existing walls>", "ceiling": "<existing ceiling>", "request": "<English design instructions from the customer's request, or empty>", "wall_change": <true|false>, "use": "<${USES.join("|")}>", "placement": "<English>"}`;
 }
 
 // A surface description goes into the design prompt: plain short text only.
@@ -68,6 +73,8 @@ function parseAnswer(text, exclude = []) {
     seen: Array.isArray(j.seen) ? j.seen.slice(0, 6).map(s => String(s).slice(0, 40)) : [],
     keep: { floor: surface(j.floor), walls: surface(j.walls), ceiling: surface(j.ceiling) },
     wall_change: j.wall_change === true,
+    use: USES.includes(j.use) ? j.use : "mixed",
+    placement: surface(j.placement).slice(0, 300),
     request: String(j.request || "").replace(/[\u0000-\u001f<>{}]/g, " ").replace(/\s+/g, " ").trim().slice(0, 400) };
 }
 

@@ -1,7 +1,7 @@
 // sadu — "shop the look": list the furnishings seen in a design image, with an approximate
 // Saudi price range and search links to stores. Prices are AI estimates, shown as approximate.
 
-const CATEGORIES = ["desk", "chair", "monitor", "monitor_arm", "keyboard", "mouse", "mousepad", "headset", "microphone", "speakers", "computer", "console", "controller",
+const CATEGORIES = ["desk", "chair", "monitor", "monitor_arm", "keyboard", "mouse", "mousepad", "headset", "microphone", "speakers", "computer", "console", "controller", "camera",
   "lighting", "wall_panels", "shelf", "pegboard", "storage", "seating", "table", "rug", "textiles", "wall_art", "decor", "plants", "other"];
 
 const SYSTEM = "You are a gaming and desk setup stylist and shopping assistant for customers in Saudi Arabia. " +
@@ -10,7 +10,8 @@ const SYSTEM = "You are a gaming and desk setup stylist and shopping assistant f
 const PROMPT = `List the purchasable items visible in this setup photo: desk, chair, monitors and monitor arms, keyboard, mouse, desk mat, headset, microphone, speakers, PC or console,
 LED light bars, LED wall panels, neon signs, 3D wall panels, shelves, pegboards, plants, posters and decor, and any furniture (sofa, TV unit, rug).
 Do NOT list fixed architecture (walls, floor, ceiling, windows, doors) or people. Describe items generically (type, style, colour); do not guess brand names.
-Merge identical items (e.g. 4 matching chairs = one item, quantity 4). Most visible items first. At most 12 items.
+Merge identical items (e.g. 4 matching chairs = one item, quantity 4). At most 12 items.
+Order the list by what a professional would buy first for this kind of setup: work/study = chair, monitor, desk, keyboard and mouse, lighting, then accessories; gaming = desk and monitor, mouse and mouse pad, keyboard, chair, lighting; streaming = lighting, microphone and arm, camera, then the rest. Decor always last.
 
 For each item:
 - name_ar: short natural Arabic product name, as a Saudi shopper would search for it (e.g. "شاشة منحنية 34 بوصة" or "لوحات إضاءة مثلثة RGB")

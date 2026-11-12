@@ -23,6 +23,8 @@ const SPACES = {
 };
 
 // Styles. `prompt` is the full look for the image model; `hint` tells the vision model when it fits.
+const { layoutRules } = require("./designPrinciples");
+
 // Styles. `prompt` = what to ADD (furniture, gear, lighting, decor) and never touches the room's
 // surfaces; `wall` = an optional wall treatment, used only when the customer asks for a wall change.
 // The floor is never part of a style.
@@ -77,31 +79,32 @@ const clip = (v, n = 140) => String(v || "").replace(/[\u0000-\u001f<>{}]/g, " "
  * (from the analysis, when available) and the model is told to keep them; the style only adds things.
  * @param {string} style  style key
  * @param {string} space  space key
- * @param {{keep?: {floor?: string, walls?: string, ceiling?: string}, allowWall?: boolean, request?: string, changes?: string[]}} opts
+ * @param {{keep?: {floor?: string, walls?: string, ceiling?: string}, allowWall?: boolean, request?: string, changes?: string[], placement?: string, use?: string}} opts
  */
 function buildPrompt(style, space, opts = {}) {
   const s = STYLES[style], p = SPACES[space];
   const k = opts.keep || {};
   const floor = clip(k.floor), walls = clip(k.walls), ceiling = clip(k.ceiling);
   const request = clip(opts.request, 400);
+  const placement = clip(opts.placement, 300);
   const changes = Array.isArray(opts.changes) ? opts.changes : [];
   const allowWall = !!opts.allowWall || changes.includes("wall");
   const wallRule = allowWall && s.wall
     ? `the walls keep their position and size; only the wall behind the desk may get ${s.wall}`
-    : `every wall exactly as it is${walls ? ` (${walls})` : ""}: same paint colour and texture, no new paint, panels, slats, wallpaper or colour wash`;
+    : `every wall exactly as it is${walls ? ` (${walls})` : ""}, same paint and texture, no new paint, panels, slats or wallpaper`;
+  // Order matters: image models read a limited number of words, so the protection rules come first
+  // and the least important details last.
   return [
-    `Edit this photo of ${p ? p.prompt : "a room"}: add ${s.prompt}.`,
-    ...(request ? [`THE CUSTOMER'S REQUEST, which overrides the style wherever they differ: ${request}.`] : []),
-    "This is an edit of the existing photo, not a new room.",
-    `Keep unchanged: the floor exactly as it is${floor ? ` (${floor})` : ""}: same material, colour, tile or plank pattern, grout lines and reflections, and do not add rugs or floor coverings;`,
+    `Edit this photo of ${p ? p.prompt : "a room"}. This is an edit of the existing photo, not a new room.`,
+    `Keep unchanged: the floor exactly as it is${floor ? ` (${floor})` : ""}, same material, colour, pattern and reflections, no rugs;`,
     `${wallRule};`,
-    `the ceiling exactly as it is${ceiling ? ` (${ceiling})` : ""}: same shape, height and lights;`,
-    "every window and door in the same position, size and frame; the same camera angle, framing and perspective.",
-    "Only add or replace: the desk, chair, monitors, computer, accessories, shelves, pegboards and light bars mounted on the existing walls, lamps, plants and decor.",
-    "Lights may glow, but they must not repaint the walls or the floor.",
-    "If there is no desk, place it against the most suitable wall without covering any window or door.",
-    "Remove any people. No brand logos and no readable text; screens show abstract colourful wallpapers.",
-    "Photorealistic interior photograph, natural proportions."
+    `the ceiling${ceiling ? ` (${ceiling})` : ""}, every window and door, and the camera angle exactly as they are. Lights may glow but must not repaint walls or floor.`,
+    ...(request ? [`THE CUSTOMER'S REQUEST, which overrides the style wherever they differ: ${request}.`] : []),
+    `Add ${s.prompt}.`,
+    ...(placement ? [`Placement: ${placement}.`] : []),
+    layoutRules(opts.use),
+    "Only add or replace furniture, electronics, wall-mounted shelves, pegboards and lights, lamps, plants and decor; if there is no desk, place it against a suitable wall without covering a window or door.",
+    "Remove any people. No logos or readable text; screens show abstract wallpapers. Photorealistic, natural proportions."
   ].join(" ");
 }
 

@@ -113,9 +113,9 @@ test("setup focus: only setup spaces and styles are offered, and the design prom
   for (const k of Object.keys(S)) assert.ok(p.includes(`- ${k}:`));
   assert.ok(!/majlis|kitchen|najdi/.test(p), "old room types are gone");
   const d = buildPrompt("grey_tech", "setup_corner");
-  assert.match(d, /not a new room/); assert.match(d, /floor exactly as it is/); assert.match(d, /every window and door in the same position/);
-  assert.match(d, /without covering any window or door/);
-  assert.match(d, /No brand logos/);
+  assert.match(d, /not a new room/); assert.match(d, /floor exactly as it is/); assert.match(d, /every window and door, and the camera angle exactly as they are/);
+  assert.match(d, /without covering a window or door/);
+  assert.match(d, /No logos or readable text/);
 });
 
 test("walls and floor are kept: style text never repaints them; analysis descriptions go into the prompt", () => {
@@ -125,7 +125,7 @@ test("walls and floor are kept: style text never repaints them; analysis descrip
     const p = buildPrompt(k, "setup_corner", { keep: { floor: "light beige marble tiles", walls: "off-white paint", ceiling: "tray ceiling" } });
     assert.match(p, /floor exactly as it is \(light beige marble tiles\)/);
     assert.match(p, /every wall exactly as it is \(off-white paint\)/);
-    assert.match(p, /do not add rugs/);
+    assert.match(p, /no rugs/);
     assert.ok(!p.includes(st.wall), "wall treatment is not used unless allowed");
     assert.ok(buildPrompt(k, "setup_corner", { allowWall: true }).includes(st.wall));
   }
@@ -148,4 +148,20 @@ test("the customer's request reaches the analysis and the design prompt; walls c
   const r = parseAnswer('{"room":"setup_corner","style":"white_blue","why":"ركن.","request":"blue lighting","wall_change":true}');
   assert.equal(r.request, "blue lighting"); assert.equal(r.wall_change, true);
   assert.equal(parseAnswer('{"room":"setup_corner","style":"white_blue","why":"ركن."}').wall_change, false);
+});
+
+test("the setup guide shapes the thinking: principles in the analysis, placement and layout in the design, protection first", () => {
+  const { userPrompt } = require("../api/_lib/roomAnalysis");
+  const { buildPrompt } = require("../api/_lib/setup");
+  const a = userPrompt([], null);
+  assert.match(a, /PERPENDICULAR to the window/); assert.match(a, /90-107 cm/); assert.match(a, /"use"/); assert.match(a, /"placement"/);
+  const d = buildPrompt("grey_tech", "setup_corner", { placement: "desk on the back wall, window to the left", use: "streaming", request: "blue light" });
+  assert.match(d, /Placement: desk on the back wall, window to the left/);
+  assert.match(d, /key light on a stand/);
+  assert.ok(d.indexOf("Keep unchanged") < d.indexOf("Add a grey tech"), "protection rules come before the style");
+  assert.ok(d.indexOf("Keep unchanged") < d.indexOf("CUSTOMER"), "protection comes before the request");
+  assert.ok(d.split(/\s+/).length < 380, "prompt stays short enough for the image model");
+  const r = parseAnswer('{"room":"setup_corner","style":"grey_tech","why":"ركن.","use":"streaming","placement":"desk on the right wall"}');
+  assert.equal(r.use, "streaming"); assert.equal(r.placement, "desk on the right wall");
+  assert.equal(parseAnswer('{"room":"setup_corner","style":"grey_tech","why":"ركن.","use":"party"}').use, "mixed");
 });
