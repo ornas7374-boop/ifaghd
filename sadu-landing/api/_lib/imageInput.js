@@ -1,9 +1,10 @@
 // sadu — read an image given by the browser: a data URI, or an https URL of a generated result on
-// replicate.delivery (fetched server-side; no other host is fetched, so this is not an open proxy).
+// replicate.delivery or fal.media (fetched server-side; no other host is fetched, so this is not an open proxy).
 async function toDataUri(url) {
   let u;
   try { u = new URL(url); } catch { return null; }
-  if (u.protocol !== "https:" || !(u.hostname === "replicate.delivery" || u.hostname.endsWith(".replicate.delivery"))) return null;
+  const ok = (h) => [ "replicate.delivery", "fal.media" ].some(d => h === d || h.endsWith("." + d));
+  if (u.protocol !== "https:" || !ok(u.hostname)) return null;
   const r = await fetch(u, { redirect: "error" });
   const type = (r.headers.get("content-type") || "").split(";")[0];
   if (!r.ok || !/^image\/(jpeg|png|webp)$/.test(type)) return null;
