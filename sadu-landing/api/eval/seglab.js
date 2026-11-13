@@ -1,5 +1,7 @@
 // GET /api/eval/seglab?photo=p1&confirm=1        run segmentation on a bundled test photo (costs one run)
 // GET /api/eval/seglab?photo=p1&pred=<id>        re-read an earlier run (free)
+// GET /api/eval/seglab?photo=p1&plan=1&desc=...&budget=2000   REAL planner test: Gemini perception (free tier)
+//                                                 + the Planning Engine on the photo; no image is generated
 // Preview only. Private test photos live in eval-photos-enc/<name>.bin, encrypted with AES-256-GCM
 // (iv 12 bytes | tag 16 bytes | ciphertext). The key is only in the preview env (SADU_LAB_KEY), so the
 // files in git are unreadable without it.
@@ -44,6 +46,17 @@ module.exports = async (req, res) => {
     // same preparation as the app: max 1024 px JPEG
     const jpg = await sharp(raw).rotate().resize(1024, 1024, { fit: "inside", withoutEnlargement: true }).jpeg({ quality: 88 }).toBuffer();
     const meta = await sharp(jpg).metadata();
+    if (req.query.plan === "1") {
+      if (!process.env.GEMINI_API_KEY) return res.status(500).json({ error: "missing_gemini_key" });
+      const { perceive } = require("../_lib/planner/perceive");
+      const { planDesign } = require("../_lib/planner");
+      const brief = { description: String(req.query.desc || "").slice(0, 600), budget_sar: Number(req.query.budget) || null,
+        changes: String(req.query.changes || "").split(",").filter(Boolean).slice(0, 6) };
+      const t0 = Date.now();
+      const per = await perceive(process.env.GEMINI_API_KEY, `data:image/jpeg;base64,${jpg.toString("base64")}`, brief, { model: process.env.GEMINI_VISION_MODEL || undefined, budgetMs: 52000 });
+      const plan = planDesign({ ...per, brief });
+      return res.status(200).json({ mode: "plan", model: per.model, perceive_ms: Date.now() - t0, image: { w: meta.width, h: meta.height }, raw_perception: per, plan });
+    }
     let p;
     if (req.query.pred) p = await rep.getPrediction(token, String(req.query.pred));
     else {

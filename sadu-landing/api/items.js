@@ -9,18 +9,7 @@ function reply(res, code, body) {
   res.status(code).json(body);
 }
 
-// Only fetch our own generated results (no open proxy / SSRF).
-async function toDataUri(url) {
-  let u;
-  try { u = new URL(url); } catch { return null; }
-  if (u.protocol !== "https:" || !(u.hostname === "replicate.delivery" || u.hostname.endsWith(".replicate.delivery"))) return null;
-  const r = await fetch(u, { redirect: "error" });
-  const type = (r.headers.get("content-type") || "").split(";")[0];
-  if (!r.ok || !/^image\/(jpeg|png|webp)$/.test(type)) return null;
-  const buf = Buffer.from(await r.arrayBuffer());
-  if (buf.length > 6_000_000) return null;
-  return `data:${type};base64,${buf.toString("base64")}`;
-}
+const { toDataUri } = require("./_lib/imageInput");
 
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") return reply(res, 405, { status: "failed", error: "method" });

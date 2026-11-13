@@ -12,6 +12,12 @@
     "api/eval/*.js": {
       "maxDuration": 60,
       "includeFiles": "eval-photos-enc/**"
+    },
+    "api/plan.js": {
+      "maxDuration": 60
+    },
+    "api/evaluate.js": {
+      "maxDuration": 60
     }
   },
   "headers": [

@@ -72,6 +72,22 @@ const STYLES = {
   }
 };
 
+/**
+ * The protection rules shared by every design prompt (legacy style prompt and the planning engine).
+ * The floor, walls (unless allowed), ceiling, windows, doors and camera stay as they are.
+ */
+function protectionLines({ keep = {}, allowWall = false, wallTreatment = "" } = {}) {
+  const floor = clip(keep.floor), walls = clip(keep.walls), ceiling = clip(keep.ceiling);
+  const wallRule = allowWall && wallTreatment
+    ? `the walls keep their position and size; only the wall behind the desk may get ${clip(wallTreatment, 120)}`
+    : `every wall exactly as it is${walls ? ` (${walls})` : ""}, same paint and texture, no new paint, panels, slats or wallpaper`;
+  return [
+    `Keep unchanged: the floor exactly as it is${floor ? ` (${floor})` : ""}, same material, colour, pattern and reflections, no rugs;`,
+    `${wallRule};`,
+    `the ceiling${ceiling ? ` (${ceiling})` : ""}, every window and door, and the camera angle exactly as they are. Lights may glow but must not repaint walls or floor.`
+  ];
+}
+
 const clip = (v, n = 140) => String(v || "").replace(/[\u0000-\u001f<>{}]/g, " ").replace(/\s+/g, " ").trim().slice(0, n);
 
 /**
@@ -84,21 +100,16 @@ const clip = (v, n = 140) => String(v || "").replace(/[\u0000-\u001f<>{}]/g, " "
 function buildPrompt(style, space, opts = {}) {
   const s = STYLES[style], p = SPACES[space];
   const k = opts.keep || {};
-  const floor = clip(k.floor), walls = clip(k.walls), ceiling = clip(k.ceiling);
   const request = clip(opts.request, 400);
   const placement = clip(opts.placement, 300);
   const changes = Array.isArray(opts.changes) ? opts.changes : [];
   const allowWall = !!opts.allowWall || changes.includes("wall");
-  const wallRule = allowWall && s.wall
-    ? `the walls keep their position and size; only the wall behind the desk may get ${s.wall}`
-    : `every wall exactly as it is${walls ? ` (${walls})` : ""}, same paint and texture, no new paint, panels, slats or wallpaper`;
+  const prot = protectionLines({ keep: k, allowWall, wallTreatment: s.wall });
   // Order matters: image models read a limited number of words, so the protection rules come first
   // and the least important details last.
   return [
     `Edit this photo of ${p ? p.prompt : "a room"}. This is an edit of the existing photo, not a new room.`,
-    `Keep unchanged: the floor exactly as it is${floor ? ` (${floor})` : ""}, same material, colour, pattern and reflections, no rugs;`,
-    `${wallRule};`,
-    `the ceiling${ceiling ? ` (${ceiling})` : ""}, every window and door, and the camera angle exactly as they are. Lights may glow but must not repaint walls or floor.`,
+    ...prot,
     ...(request ? [`THE CUSTOMER'S REQUEST, which overrides the style wherever they differ: ${request}.`] : []),
     `Add ${s.prompt}.`,
     ...(placement ? [`Placement: ${placement}.`] : []),
@@ -108,4 +119,4 @@ function buildPrompt(style, space, opts = {}) {
   ].join(" ");
 }
 
-module.exports = { SPACES, STYLES, buildPrompt };
+module.exports = { SPACES, STYLES, buildPrompt, protectionLines };

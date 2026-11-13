@@ -18,6 +18,19 @@ const briefOf = (b) => ({
   use: typeof b.use === "string" ? b.use : "",
   changes: Array.isArray(b.changes) ? b.changes.map(String).filter(x => /^[a-z_]{2,20}$/.test(x)).slice(0, 6) : []
 });
+// Prompt for a request: a SIGNED plan from /api/plan (the Planning Engine decides, we only draw it),
+// or the legacy style path. Returns {prompt} or {error}.
+const { verify } = require("./_lib/planner");
+const { planSecret } = require("./plan");
+function promptFor(b) {
+  if (b.plan) {
+    const ri = b.plan.rendering_instructions;
+    if (!ri || !verify(ri, planSecret())) return { error: "plan_not_signed" };
+    return { prompt: ri.prompt };
+  }
+  if (!STYLES[b.style]) return { error: "bad_style" };
+  return { prompt: buildPrompt(b.style, b.room, { keep: keepOf(b.keep), ...briefOf(b) }) };
+}
 const keepOf = (k) => (k && typeof k === "object" ? { floor: k.floor, walls: k.walls, ceiling: k.ceiling } : {});
 
 // Replicate rate-limits accounts (strictly when the credit balance is low): retry 429 and
@@ -68,11 +81,12 @@ module.exports = async function handler(req, res) {
     if (useGemini) {
       if (req.method !== "POST") return reply(res, 405, { status: "failed", error: "method" });
       const b = typeof req.body === "string" ? JSON.parse(req.body || "{}") : (req.body || {});
-      if (!STYLES[b.style]) return reply(res, 400, { status: "failed", error: "bad_style" });
+      const pr = promptFor(b);
+      if (pr.error) return reply(res, 400, { status: "failed", error: pr.error });
       if (typeof b.image !== "string" || !/^data:image\/(jpeg|png|webp);base64,/.test(b.image)) return reply(res, 400, { status: "failed", error: "bad_image" });
       if (b.image.length > 4_000_000) return reply(res, 413, { status: "failed", error: "too_large" });
       try {
-        const g = await require("./_lib/gemini").generateImage(process.env.GEMINI_API_KEY, b.image, buildPrompt(b.style, b.room, { keep: keepOf(b.keep), ...briefOf(b) }), { model: process.env.GEMINI_IMAGE_MODEL || undefined });
+        const g = await require("./_lib/gemini").generateImage(process.env.GEMINI_API_KEY, b.image, pr.prompt, { model: process.env.GEMINI_IMAGE_MODEL || undefined });
         return reply(res, 200, { status: "succeeded", output: g.output });
       } catch (e) {
         return reply(res, 502, { status: "failed", error: e.message || "gemini_failed", detail: e.detail || "" });
@@ -90,8 +104,9 @@ module.exports = async function handler(req, res) {
     if (req.method !== "POST") return reply(res, 405, { status: "failed", error: "method" });
 
     const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : (req.body || {});
-    const { image, style, room } = body;
-    if (!STYLES[style]) return reply(res, 400, { status: "failed", error: "bad_style" });
+    const { image } = body;
+    const pr = promptFor(body);
+    if (pr.error) return reply(res, 400, { status: "failed", error: pr.error });
     if (typeof image !== "string" || !/^data:image\/(jpeg|png|webp);base64,/.test(image)) {
       return reply(res, 400, { status: "failed", error: "bad_image" });
     }
@@ -102,7 +117,7 @@ module.exports = async function handler(req, res) {
       headers: { Prefer: "wait=50" },
       body: JSON.stringify({
         input: {
-          prompt: buildPrompt(style, room, { keep: keepOf(body.keep), ...briefOf(body) }),
+          prompt: pr.prompt,
           input_image: image,
           aspect_ratio: "match_input_image",
           output_format: "jpg",

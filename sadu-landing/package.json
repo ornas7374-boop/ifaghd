@@ -2,7 +2,8 @@
   "name": "sadu-landing",
   "private": true,
   "scripts": {
-    "test": "node --test test/*.test.js"
+    "test": "node --test test/*.test.js test/planner/*.test.js",
+    "test:live": "node scripts/planner-live.js"
   },
   "dependencies": {
     "sharp": "^0.35.5"
