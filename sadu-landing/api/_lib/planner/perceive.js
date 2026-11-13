@@ -19,25 +19,30 @@ Coordinates: x is the horizontal position in the image from 0 (left edge) to 1 (
 Walls: "left", "back" (facing the camera) and "right" as seen in the photo. Give each visible wall's horizontal extent in the image.
 Certainty for every item: "confirmed" (clearly visible), "estimated" (partly visible or inferred) or "unknown".
 
-Report ONLY this JSON:
-{
- "space": one of ${Object.keys(SPACES).join(", ")} — ${spaces},
- "style": the setup style that suits THIS room and request, one of ${Object.keys(STYLES).filter(k => !exclude.includes(k)).join(", ")} — ${styles},
- "why": "one or two short sentences in natural Modern Standard Arabic for the owner: what you see and why this style suits it",
- "camera": {"view": "frontal|corner|angled", "height": "eye|high|low", "certainty": "..."},
- "size": {"class": "small|medium|large", "width_m": number or null, "depth_m": number or null, "basis": "what the estimate is based on (e.g. floor tiles 60 cm, door 90 cm) or empty"},
- "surfaces": {"floor": "material, colour, pattern", "walls": "paint colour/texture", "ceiling": "shape and lights"},
- "walls": [{"id": "left|back|right", "x_from": 0-1, "x_to": 0-1, "free_from": 0-1, "free_to": 0-1, "certainty": "..."}],
- "windows": [{"wall": "...", "x0": 0-1, "x1": 0-1, "y0": 0-1, "y1": 0-1, "certainty": "..."}],
- "doors": [{"wall": "...", "x0": 0-1, "x1": 0-1, "y0": 0-1, "y1": 0-1, "certainty": "..."}],
- "outlets": [{"wall": "...", "x": 0-1, "y": 0-1, "certainty": "..."}],
- "furniture": [{"type": "bed|desk|chair|sofa|wardrobe|shelf|tv|tv_unit|dresser|table|plant|other", "wall": "...", "x0": 0-1, "x1": 0-1, "certainty": "..."}],
- "obstacles": [{"what": "radiator, AC unit, column, pipe...", "wall": "...", "x0": 0-1, "x1": 0-1}],
- "light": {"natural": "none|low|medium|high", "window_side": "left|back|right|none", "artificial": ["existing light sources"]},
- "intent": {"use": "gaming|streaming|work|study|mixed", "colors": ["colours the customer wants"], "avoid": ["colours to avoid"], "devices": ["devices mentioned"],
-   "style_words": ["minimal, cosy, luxury..."], "keep": ["things the customer keeps or already owns"], "wall_change": true only if they explicitly ask to change a wall,
-   "request_en": "the request as short concrete English design instructions (max 60 words), never about changing the floor; empty if no request"}
-}
+Fill in this JSON. It is an EXAMPLE with made-up values: replace every value with what you see, keep the same keys, numbers as plain numbers between 0 and 1.
+Field rules:
+- space: one of ${Object.keys(SPACES).join(", ")} (${spaces})
+- style: one of ${Object.keys(STYLES).filter(k => !exclude.includes(k)).join(", ")} (${styles})
+- why: one or two short sentences in natural Modern Standard Arabic for the owner: what you see and why this style suits it
+- camera.view: frontal|corner|angled; camera.height: eye|high|low
+- size.class: small|medium|large; width_m / depth_m: a number only if you can base it on something visible (say what in "basis"), otherwise null
+- furniture.type: bed|desk|chair|sofa|wardrobe|shelf|tv|tv_unit|dresser|table|plant|other
+- intent.use: gaming|streaming|work|study|mixed; intent.wall_change: true only if the customer explicitly asks to change a wall
+- intent.request_en: the customer's request as short concrete English design instructions (max 60 words), never about changing the floor; "" if none
+
+Return ONLY valid JSON, no comments, no text around it:
+{"space":"setup_corner","style":"grey_tech","why":"...",
+"camera":{"view":"frontal","height":"eye","certainty":"estimated"},
+"size":{"class":"medium","width_m":null,"depth_m":null,"basis":""},
+"surfaces":{"floor":"light grey porcelain tiles","walls":"white matte paint","ceiling":"flat white with recessed spots"},
+"walls":[{"id":"left","x_from":0.0,"x_to":0.2,"free_from":0.0,"free_to":0.2,"certainty":"confirmed"},{"id":"back","x_from":0.2,"x_to":0.8,"free_from":0.25,"free_to":0.8,"certainty":"confirmed"}],
+"windows":[{"wall":"left","x0":0.03,"x1":0.17,"y0":0.1,"y1":0.6,"certainty":"confirmed"}],
+"doors":[],
+"outlets":[{"wall":"back","x":0.3,"y":0.65,"certainty":"estimated"}],
+"furniture":[],
+"obstacles":[],
+"light":{"natural":"medium","window_side":"left","artificial":["recessed spots"]},
+"intent":{"use":"mixed","colors":[],"avoid":[],"devices":[],"style_words":[],"keep":[],"wall_change":false,"request_en":""}}
 Use empty arrays when nothing is visible. Do not guess positions you cannot see.`;
 }
 
@@ -51,14 +56,19 @@ function splitPerception(raw) {
 function parseJson(text) {
   if (typeof text !== "string") throw new Error("perceive_no_text");
   const a = text.indexOf("{"), b = text.lastIndexOf("}");
-  if (a < 0 || b <= a) throw new Error("perceive_no_json");
-  try { return JSON.parse(text.slice(a, b + 1)); } catch { throw new Error("perceive_bad_json"); }
+  const fail = (code) => { const e = new Error(code); e.detail = `len ${text.length}; start: ${text.slice(0, 160)} … end: ${text.slice(-160)}`; return e; };
+  if (a < 0 || b <= a) throw fail("perceive_no_json");
+  const body = text.slice(a, b + 1);
+  try { return JSON.parse(body); } catch { /* try a tolerant read below */ }
+  // common model slips: comments, trailing commas, ranges like 0-1 copied from instructions
+  const cleaned = body.replace(/\/\/[^\n]*/g, "").replace(/,\s*([}\]])/g, "$1").replace(/:\s*0-1\b/g, ": null");
+  try { return JSON.parse(cleaned); } catch { throw fail("perceive_bad_json"); }
 }
 
 /** One Gemini call: image + request -> raw observations and intent. */
 async function perceive(key, image, brief, opts = {}) {
   const { visionJSON } = require("../gemini");
-  const r = await visionJSON(key, image, { system: SYSTEM, prompt: perceivePrompt(brief, opts.exclude || []), model: opts.model, budgetMs: opts.budgetMs || 50000, maxTokens: 3000 });
+  const r = await visionJSON(key, image, { system: SYSTEM, prompt: perceivePrompt(brief, opts.exclude || []), model: opts.model, budgetMs: opts.budgetMs || 50000, maxTokens: 6000 });
   return { ...splitPerception(parseJson(r.text)), model: r.model };
 }
 

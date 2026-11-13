@@ -129,6 +129,19 @@ fieldset.field{border:0;margin:0;padding:0}
 .chip input{position:absolute;opacity:0;pointer-events:none}
 .chip:has(input:checked){background:var(--text);color:#000;border-color:var(--text)}
 .chip:has(input:focus-visible){outline:2px solid var(--text);outline-offset:2px}
+
+/* خطة المصمم + التقييم */
+.plan,.evalbox{margin:0 0 16px;padding:14px 16px;border-radius:14px;background:var(--surface);border:1px solid var(--border-subtle)}
+.plan h3,.evalbox h3{margin:0 0 8px;font:600 16px/26px var(--font-display)}
+.plan p,.evalbox p{margin:4px 0;font-size:14px;line-height:24px;color:var(--text-secondary)}
+.plan ul,.evalbox ul{margin:6px 0;padding-inline-start:18px;font-size:14px;line-height:24px;color:var(--text-secondary)}
+.btable{width:100%;border-collapse:collapse;margin:8px 0;font-size:13px}
+.btable td{padding:4px 0;border-bottom:1px solid var(--border-subtle)}
+.btable td:last-child{text-align:end;white-space:nowrap}
+.btable tr.out td{color:var(--text-muted);text-decoration:line-through}
+.plan details{margin-top:8px;font-size:13px;color:var(--text-muted)}
+.plan summary{cursor:pointer;min-block-size:32px;display:flex;align-items:center}
+.warn{color:var(--text)}
 </style>
 </head>
 <body>
@@ -215,6 +228,8 @@ fieldset.field{border:0;margin:0;padding:0}
     </div>
     <div class="result__meta"><span id="metaStyle"></span><span id="metaTime" class="num"></span></div>
     <p class="why" id="why" hidden></p>
+    <section class="plan" id="planCard" hidden aria-label="خطة المصمم"></section>
+    <div class="evalbox" id="evalBox" hidden aria-live="polite"></div>
     <div class="actions">
       <button class="btn btn--primary full" type="button" id="another">صمّم بأسلوب آخر</button>
       <a class="btn btn--secondary" id="save" target="_blank" rel="noopener">حفظ الصورة</a>
@@ -352,6 +367,10 @@ fieldset.field{border:0;margin:0;padding:0}
     items_none: "ما لقينا قطعاً واضحة في الصورة. جرّب صورة أوضح.",
     items_no_json: "تعذّر قراءة القطع. جرّب مرة ثانية.",
     items_bad_json: "تعذّر قراءة القطع. جرّب مرة ثانية.",
+    plan_not_signed: "خطة التصميم غير صالحة. أعد المحاولة.",
+    plan_failed: "ما قدرنا نطلع بخطة آمنة لهذا المكان.",
+    perceive_no_json: "تعذّر فهم الصورة. جرّب مرة ثانية.",
+    perceive_bad_json: "تعذّر فهم الصورة. جرّب مرة ثانية.",
     analysis_model_unavailable: "نموذج التحليل غير متاح على الحساب.",
     analysis_failed: "تعذّر تحليل الصورة. جرّب مرة ثانية.",
     analysis_bad_room: "ما قدرنا نحدد نوع المكان. جرّب صورة أوضح وأوسع.",
@@ -373,28 +392,86 @@ fieldset.field{border:0;margin:0;padding:0}
   /* الذكاء الاصطناعي يحلل الغرفة ويختار الأسلوب، ثم يصمّم */
   async function run(another){
     if(!state.image || state.busy) return;
-    clearErr(); setBusy(true); $("loadText").textContent = "نحلل الركن…";
+    clearErr(); setBusy(true); $("loadText").textContent = "نفهم المكان ونخطط…";
     var t0 = Date.now();
     try{
       state.brief = readBrief();
-      var a = await postJson("/api/analyze", { image: state.image, exclude: another ? state.tried : [], brief: state.brief });
-      if(a.status !== "succeeded") throw a;
-      state.room = a.room; state.style = a.style; state.why = a.why || ""; state.keep = a.keep || null; state.request = a.request || state.brief.description || "";
-      if(a.wall_change && state.brief.changes.indexOf("wall") < 0) state.brief.changes.push("wall");
-      state.placement = a.placement || ""; state.use = a.use || "";
-      if(state.tried.indexOf(a.style) < 0) state.tried.push(a.style);
-      $("loadText").textContent = "نصمّم " + ROOM_NAMES[a.room] + " بأسلوب " + STYLE_NAMES[a.style] + "…";
-      var r = await postJson("/api/design", { image: state.image, style: state.style, room: state.room, keep: state.keep, request: state.request, changes: state.brief.changes, placement: state.placement, use: state.use });
+      // 1) Planning Engine: observe once, then plan / budget / validate on the server
+      var pl = await postJson("/api/plan", { image: state.image, brief: state.brief, exclude: another ? state.tried : [] });
+      if(pl.status !== "succeeded") throw pl;
+      var plan = pl.plan; state.plan = plan;
+      state.room = plan.room_analysis.space; state.style = plan.room_analysis.style; state.why = plan.room_analysis.why || "";
+      if(state.tried.indexOf(state.style) < 0) state.tried.push(state.style);
+      if(!plan.validation_results.passed){
+        throw { error: "plan_failed", detail: plan.validation_results.errors.map(function(e){ return AR_ERR[e.code] || e.message; }).join(" · ") };
+      }
+      // 2) draw exactly the approved plan
+      $("loadText").textContent = "نصمّم حسب الخطة…";
+      var r = await postJson("/api/design", { image: state.image, plan: plan });
       if(r.status === "processing") r = await poll(r.id);
       if(r.status !== "succeeded") throw r;
       show(r.output, (Date.now() - t0) / 1000);
+      // 3) review the result against the plan (does not block the result)
+      evaluate(r.output, plan);
     }catch(e){
       setBusy(false);
       if(another){ $("result").hidden = false; $("editor").hidden = true; $("go").hidden = true; }
-      showErr(((e && ERR[e.error]) || ("صار خطأ أثناء التصميم" + (e && e.error ? " (" + e.error + ")" : "") + ". جرّب مرة ثانية.")) + (e && e.detail ? " — " + String(e.detail).slice(0, 160) : ""));
+      showErr(((e && ERR[e.error]) || ("صار خطأ أثناء التصميم" + (e && e.error ? " (" + e.error + ")" : "") + ". جرّب مرة ثانية.")) + (e && e.detail ? " — " + String(e.detail).slice(0, 300) : ""));
       if(e && e.detail) console.warn(e.detail);
     }
   }
+
+  /* عرض خطة المصمم بالعربي */
+  var AR_WALL = { left: "الجدار الأيسر", back: "الجدار المقابل", right: "الجدار الأيمن" };
+  var AR_CAT = { desk:"مكتب", chair:"كرسي", monitor:"شاشة", monitor_arm:"ذراع شاشة", keyboard:"كيبورد", mouse:"ماوس", mousepad:"ماوس باد", lighting:"إضاءة الشاشة", desk_lamp:"أباجورة مكتب",
+    accent_lighting:"إضاءة جدارية LED", key_light:"إضاءة تصوير", microphone:"مايك مع ذراع", webcam:"كاميرا ويب", shelf:"لوح تعليق ورف", storage:"وحدة أدراج", plants:"نبتة", decor:"لوحة جدارية", wall_panels:"معالجة الجدار" };
+  var AR_USE = { gaming:"قيمنق", streaming:"ستريم", work:"شغل", study:"دراسة", mixed:"مختلط" };
+  var AR_ERR = { no_desk_position:"ما فيه جدار يناسب المكتب بأمان", blocks_door:"المكتب يسد الباب", window_behind_monitor:"الشاشة بتكون مقابل الشباك", no_clearance:"ما فيه مساحة كافية ورا الكرسي",
+    covers_opening:"قطعة تغطي شباك أو باب", over_budget:"الخطة تتجاوز الميزانية", budget_no_desk:"الميزانية ما تكفي حتى لمكتب", colour_missing:"اللون المطلوب غير موجود", wall_not_allowed:"تغيير الجدار غير مسموح", floor_change:"تغيير الأرضية ممنوع" };
+  var AR_WARN = { narrow_desk:"المكتب أضيق من 117 سم الموصى بها", clearance_unsure:"عمق الغرفة غير معروف: تأكد من مساحة 90 سم ورا الكرسي", budget_too_low:"الميزانية ما تغطي كل الأساسيات", no_budget:"ما حددت ميزانية: الأسعار تقديرية متوسطة", crowded:"الغرفة صغيرة: قللنا الزينة" };
+  function li(t){ var x = el("li"); x.textContent = t; return x; }
+  function renderPlan(plan){
+    var box = $("planCard"); box.textContent = ""; if(!plan){ box.hidden = true; return; }
+    box.append(el("h3", null, "خطة المصمم"));
+    var d = plan.spatial_plan.desk, u = plan.user_requirements;
+    if(d) box.append(el("p", null, "المكتب: " + d.width_cm + " سم على " + AR_WALL[d.wall] + ". الاستخدام: " + (AR_USE[u.use] || u.use) + "."));
+    var why = el("ul");
+    (d ? d.reasons : []).slice(0, 4).forEach(function(r){
+      why.append(li(/to the side of the screen/.test(r) ? "الشباك على جنب الشاشة، لا قدامها ولا وراك" : /power outlet/.test(r) ? "قريب من فيش كهرباء" : /room to move/.test(r) ? "فيه مساحة كافية ورا الكرسي" : /back wall/.test(r) ? "الجدار المقابل يبيّن السيت أب كامل" : /replaces/.test(r) ? "يحل محل قطعة موجودة" : r));
+    });
+    if(why.childNodes.length) box.append(why);
+    var b = plan.budget_allocation;
+    var t = el("table", "btable");
+    b.lines.forEach(function(l){ var tr = el("tr", l.included ? "" : "out"); tr.append(el("td", null, (AR_CAT[l.category] || l.label) + (l.priority === "essential" ? "" : " (إضافي)")), el("td", "num", l.included ? SAR(l.planned_sar) + " ريال" : "خارج الميزانية")); t.append(tr); });
+    box.append(t);
+    box.append(el("p", null, b.budget_sar ? ("المجموع التقريبي " + SAR(b.total_planned_sar) + " من " + SAR(b.budget_sar) + " ريال (احتياطي " + SAR(b.reserve_sar) + ")") : "ما حددت ميزانية، فهذي تقديرات متوسطة."));
+    box.append(el("p", null, "الأسعار تقديرية لكل فئة، وليست أسعار منتجات محددة."));
+    var w = plan.validation_results.warnings.filter(function(x){ return AR_WARN[x.code] || /^request_/.test(x.code); });
+    if(w.length){ var wl = el("ul"); w.slice(0, 4).forEach(function(x){ var e2 = li(AR_WARN[x.code] || "طلبك فيه تعارض، وحلّيناه: " + x.message.split(" -> ")[1]); e2.className = "warn"; wl.append(e2); }); box.append(wl); }
+    var det = el("details"); det.append(el("summary", null, "تفاصيل تفكير المصمم"));
+    var dl = el("ul"); (plan.design_rationale || []).slice(0, 12).forEach(function(r){ dl.append(li(r.decision + ": " + r.why)); });
+    (plan.unknowns || []).slice(0, 4).forEach(function(u2){ dl.append(li("غير معروف: " + u2)); });
+    det.append(dl); box.append(det);
+    box.hidden = false;
+  }
+
+  /* تقييم النتيجة مقابل الخطة */
+  var AR_FAIL = { architecture_changed:"تغيّر شيء من معمار الغرفة", pixel_preservation_failed:"فحص البكسل لم ينجح", planned_items_missing:"قطع من الخطة ناقصة", items_misplaced:"قطع في غير مكانها",
+    unplanned_items_added:"أُضيفت قطع ليست في الخطة", request_not_met_by_plan:"الخطة ما حققت طلبك", colours_wrong:"الألوان غير مطابقة" };
+  var AR_NEXT = { accept:"النتيجة مقبولة", regenerate:"يُنصح بإعادة التصميم", regenerate_strict:"يُنصح بإعادة التصميم مع حماية أقوى", replan:"يُنصح بإعادة التخطيط" };
+  async function evaluate(url, plan){
+    var box = $("evalBox"); box.hidden = false; box.textContent = ""; box.append(el("p", null, "نراجع النتيجة مقابل الخطة…"));
+    try{
+      var r = await postJson("/api/evaluate", { original: state.image, generated: url, plan: plan });
+      if(r.status !== "succeeded") throw r;
+      var ev = r.evaluation; box.textContent = "";
+      box.append(el("h3", null, "مراجعة النتيجة: " + (AR_NEXT[ev.next_action] || ev.next_action)));
+      box.append(el("p", null, "المحافظة على الغرفة " + ev.scores.preservation + "٪ · مطابقة الخطة " + Math.max(0, ev.scores.plan_match) + "٪ · طلبك " + ev.scores.request + "٪"));
+      if(ev.failures.length){ var fl = el("ul"); ev.failures.forEach(function(f){ fl.append(li(AR_FAIL[f.type] || f.type)); }); box.append(fl); }
+      box.append(el("p", "small", "فحص المحافظة هنا بصري بالذكاء الاصطناعي، ولم يُتحقق منه بالبكسل بعد."));
+    }catch(e){ box.textContent = ""; box.append(el("p", null, "تعذّرت مراجعة النتيجة الآن" + (e && e.error ? " (" + e.error + ")" : "") + ".")); }
+  }
+
   $("generate").addEventListener("click", function(){ run(false); });
 
   function show(url, secs){
@@ -406,19 +483,19 @@ fieldset.field{border:0;margin:0;padding:0}
     $("metaStyle").textContent = ROOM_NAMES[state.room] + " · " + STYLE_NAMES[state.style];
     $("metaTime").textContent = Math.round(secs) + " ثانية";
     $("why").textContent = state.why; $("why").hidden = !state.why;
-    $("save").href = url; state.after = url; resetShop();
+    $("save").href = url; state.after = url; resetShop(); renderPlan(state.plan); $("evalBox").hidden = true;
     $("share").href = "https://wa.me/?text=" + encodeURIComponent("شوف تصميم السيت أب حقي بأسلوب " + STYLE_NAMES[state.style] + " من sadu: " + url);
     $("result").hidden = false;
-    addHistory(url, state.image, state.style, state.room, state.ratio, state.why);
+    addHistory(url, state.image, state.style, state.room, state.ratio, state.why, state.plan);
     $("result").scrollIntoView({ behavior:"smooth", block:"start" });
   }
 
-  function addHistory(url, before, style, room, ratio, why){
+  function addHistory(url, before, style, room, ratio, why, plan){
     var li = document.createElement("li"), b = document.createElement("button"), img = new Image(), s = document.createElement("span");
     b.type = "button"; img.src = url; img.alt = ""; s.textContent = STYLE_NAMES[style];
     b.append(img, s); li.append(b); $("history").prepend(li); $("historyWrap").hidden = false;
     b.addEventListener("click", function(){
-      state.image = before; state.style = style; state.room = room; state.ratio = ratio; state.why = why || "";
+      state.image = before; state.style = style; state.room = room; state.ratio = ratio; state.why = why || ""; state.plan = plan || null; renderPlan(state.plan); $("evalBox").hidden = true;
       $("why").textContent = state.why; $("why").hidden = !state.why;
       $("compare").style.aspectRatio = String(ratio);
       $("beforeImg").src = before; $("afterImg").src = url; $("save").href = url; state.after = url; resetShop();
@@ -483,7 +560,20 @@ fieldset.field{border:0;margin:0;padding:0}
     }finally{ clearInterval(tick); waitEl.hidden = true; if(btn) btn.disabled = false; }
   }
   function resetShop(){ $("shopOut").textContent = ""; $("shopBtn").hidden = false; $("shopWait").hidden = true; }
-  $("shopBtn").addEventListener("click", function(){ loadItems(state.after, $("shopOut"), $("shopWait"), $("shopSecs"), $("shopBtn")); });
+  var AR_COL = { white:"أبيض", black:"أسود", grey:"رمادي", blue:"أزرق", cyan:"سماوي", purple:"بنفسجي", pink:"وردي", red:"أحمر", orange:"برتقالي", green:"أخضر", "white or light wood":"أبيض أو خشب فاتح" };
+  function itemsFromPlan(plan){
+    var reqs = plan.product_requirements || [], tmin = 0, tmax = 0;
+    var items = reqs.map(function(r){
+      var lo = r.range_sar ? r.range_sar[0] : r.budget_sar, hi = r.range_sar ? r.range_sar[1] : r.budget_sar; tmin += lo; tmax += hi;
+      return { name_ar: (AR_CAT[r.category] || r.label) + (r.status === "verified" ? "" : " (مقترح)"), quantity: 1, material_ar: r.spec && r.spec.width_cm ? r.spec.width_cm + " سم" : "", color_ar: AR_COL[r.spec && r.spec.colour] || "",
+        price_min_sar: r.status === "verified" ? r.product.price_sar : lo, price_max_sar: r.status === "verified" ? r.product.price_sar : hi, links: r.status === "verified" ? [{ store: r.product.store || "المتجر", url: r.product.url }] : r.links };
+    });
+    return { items: items, total_min: tmin, total_max: tmax };
+  }
+  $("shopBtn").addEventListener("click", function(){
+    if(state.plan && state.plan.product_requirements && state.plan.product_requirements.length){ renderItems($("shopOut"), itemsFromPlan(state.plan)); $("shopBtn").hidden = true; return; }
+    loadItems(state.after, $("shopOut"), $("shopWait"), $("shopSecs"), $("shopBtn"));
+  });
   $("shopOnly").addEventListener("click", function(){
     $("shop0").hidden = false;
     loadItems(state.image, $("shopOut0"), $("shopWait0"), $("shopSecs0"), $("shopOnly"));
