@@ -142,3 +142,16 @@ test("endpoints: /api/evaluate reviews original + result against the plan", asyn
     assert.equal(bad.code, 400, "foreign image hosts are not fetched");
   } finally { m.restore(); require("../../api/_lib/gemini")._reset(); for (const k of Object.keys(process.env)) if (!(k in saved)) delete process.env[k]; Object.assign(process.env, saved); }
 });
+
+test("fal client: sends the photo + prompt with the server key and returns the image url", async () => {
+  const { falKontext } = require("../../api/_lib/fal");
+  let seen;
+  const fake = async (url, o) => { seen = { url, o }; return { ok: true, status: 200, json: async () => ({ images: [{ url: "https://fal.media/x.jpg" }] }) }; };
+  const r = await falKontext("k1", "data:image/jpeg;base64,AA", "keep the floor", { fetch: fake });
+  assert.equal(r.output, "https://fal.media/x.jpg");
+  assert.match(seen.url, /fal\.run\/fal-ai\/flux-pro\/kontext$/);
+  assert.equal(seen.o.headers.Authorization, "Key k1");
+  assert.equal(JSON.parse(seen.o.body).prompt, "keep the floor");
+  const bad = async () => ({ ok: false, status: 403, json: async () => ({ detail: "Exhausted balance" }) });
+  await assert.rejects(falKontext("k", "d", "p", { fetch: bad }), (e) => e.message === "fal_403" && /balance/.test(e.detail));
+});

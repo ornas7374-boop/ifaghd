@@ -55,6 +55,26 @@ module.exports = async (req, res) => {
       const t0 = Date.now();
       const per = await perceive(process.env.GEMINI_API_KEY, `data:image/jpeg;base64,${jpg.toString("base64")}`, brief, { model: process.env.GEMINI_VISION_MODEL || undefined, budgetMs: 52000 });
       const plan = planDesign({ ...per, brief });
+      if (req.query.render === "1") {
+        // Paid (~$0.04 on fal): draw the plan, then measure how much the protected areas changed.
+        if (req.query.confirm !== "1") return res.status(400).json({ error: "add confirm=1 to start a paid render", plan_passed: plan.validation_results.passed });
+        if (!process.env.FAL_KEY) return res.status(500).json({ error: "missing_fal_key" });
+        if (!plan.rendering_instructions) return res.status(200).json({ mode: "render", error: "plan_not_validated", validation: plan.validation_results });
+        const t1 = Date.now();
+        const f = await require("../_lib/fal").falKontext(process.env.FAL_KEY, `data:image/jpeg;base64,${jpg.toString("base64")}`, plan.rendering_instructions.prompt, { timeoutMs: 45000 });
+        const render_ms = Date.now() - t1;
+        const gen = Buffer.from(await (await fetch(f.output)).arrayBuffer());
+        const W = 256, H = Math.round(256 * meta.height / meta.width);
+        const px = (b) => sharp(b).resize(W, H, { fit: "fill" }).removeAlpha().raw().toBuffer();
+        const [a, g] = await Promise.all([px(jpg), px(gen)]);
+        const er = plan.rendering_instructions.edit_region;
+        const zone = (fn) => { let d = 0, n = 0; for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { if (!fn(x / W, y / H)) continue; const i = (y * W + x) * 3; d += Math.abs(a[i] - g[i]) + Math.abs(a[i + 1] - g[i + 1]) + Math.abs(a[i + 2] - g[i + 2]); n += 3; } return n ? +(d / n).toFixed(1) : null; };
+        const diff = { outside_edit_region: zone((x) => x < er.x0 || x > er.x1), floor_band_bottom_12pct: zone((x, y) => y > 0.88), ceiling_band_top_10pct: zone((x, y) => y < 0.1), left_wall_window: zone((x) => x < Math.min(er.x0, 0.2)), inside_edit_region: zone((x) => x >= er.x0 && x <= er.x1) };
+        const half = 512, hh = Math.round(half * meta.height / meta.width);
+        const side = await sharp({ create: { width: half * 2, height: hh, channels: 3, background: "#000" } })
+          .composite([{ input: await sharp(jpg).resize(half, hh).toBuffer(), left: 0, top: 0 }, { input: await sharp(gen).resize(half, hh, { fit: "fill" }).toBuffer(), left: half, top: 0 }]).jpeg({ quality: 80 }).toBuffer();
+        return res.status(200).json({ mode: "render", provider: "fal", model: f.model, perceive_ms: t1 - t0, render_ms, output: f.output, gen_size: (await sharp(gen).metadata()), mean_abs_diff_0_255: diff, edit_region: er, prompt: plan.rendering_instructions.prompt, side_by_side_jpg_b64: side.toString("base64") });
+      }
       return res.status(200).json({ mode: "plan", model: per.model, perceive_ms: Date.now() - t0, image: { w: meta.width, h: meta.height }, raw_perception: per, plan });
     }
     let p;
