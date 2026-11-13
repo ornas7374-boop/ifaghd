@@ -46,6 +46,10 @@ module.exports = async (req, res) => {
     // same preparation as the app: max 1024 px JPEG
     const jpg = await sharp(raw).rotate().resize(1024, 1024, { fit: "inside", withoutEnlargement: true }).jpeg({ quality: 88 }).toBuffer();
     const meta = await sharp(jpg).metadata();
+    if (req.query.segcredits === "1") {
+      if (!process.env.SEGMIND_API_KEY) return res.status(500).json({ error: "missing_segmind_key" });
+      return res.status(200).json({ mode: "segmind_credits", ...(await require("../_lib/segmind").credits(process.env.SEGMIND_API_KEY)) });
+    }
     if (req.query.plan === "1") {
       if (!process.env.GEMINI_API_KEY) return res.status(500).json({ error: "missing_gemini_key" });
       const { perceive } = require("../_lib/planner/perceive");
@@ -58,12 +62,17 @@ module.exports = async (req, res) => {
       if (req.query.render === "1") {
         // Paid (~$0.04 on fal): draw the plan, then measure how much the protected areas changed.
         if (req.query.confirm !== "1") return res.status(400).json({ error: "add confirm=1 to start a paid render", plan_passed: plan.validation_results.passed });
-        if (!process.env.FAL_KEY) return res.status(500).json({ error: "missing_fal_key" });
+        const prov = req.query.provider === "segmind" ? "segmind" : "fal";
+        const pkey = prov === "segmind" ? process.env.SEGMIND_API_KEY : process.env.FAL_KEY;
+        if (!pkey) return res.status(500).json({ error: `missing_${prov}_key` });
         if (!plan.rendering_instructions) return res.status(200).json({ mode: "render", error: "plan_not_validated", validation: plan.validation_results });
         const t1 = Date.now();
-        const f = await require("../_lib/fal").falKontext(process.env.FAL_KEY, `data:image/jpeg;base64,${jpg.toString("base64")}`, plan.rendering_instructions.prompt, { timeoutMs: 45000 });
+        const src = `data:image/jpeg;base64,${jpg.toString("base64")}`;
+        const f = prov === "segmind"
+          ? await require("../_lib/segmind").segmindKontext(pkey, src, plan.rendering_instructions.prompt, { timeoutMs: 45000 })
+          : await require("../_lib/fal").falKontext(pkey, src, plan.rendering_instructions.prompt, { timeoutMs: 45000 });
         const render_ms = Date.now() - t1;
-        const gen = Buffer.from(await (await fetch(f.output)).arrayBuffer());
+        const gen = f.output.startsWith("data:") ? Buffer.from(f.output.split(",")[1], "base64") : Buffer.from(await (await fetch(f.output)).arrayBuffer());
         const W = 256, H = Math.round(256 * meta.height / meta.width);
         const px = (b) => sharp(b).resize(W, H, { fit: "fill" }).removeAlpha().raw().toBuffer();
         const [a, g] = await Promise.all([px(jpg), px(gen)]);
@@ -73,7 +82,7 @@ module.exports = async (req, res) => {
         const half = 512, hh = Math.round(half * meta.height / meta.width);
         const side = await sharp({ create: { width: half * 2, height: hh, channels: 3, background: "#000" } })
           .composite([{ input: await sharp(jpg).resize(half, hh).toBuffer(), left: 0, top: 0 }, { input: await sharp(gen).resize(half, hh, { fit: "fill" }).toBuffer(), left: half, top: 0 }]).jpeg({ quality: 80 }).toBuffer();
-        return res.status(200).json({ mode: "render", provider: "fal", model: f.model, perceive_ms: t1 - t0, render_ms, output: f.output, gen_size: (await sharp(gen).metadata()), mean_abs_diff_0_255: diff, edit_region: er, prompt: plan.rendering_instructions.prompt, side_by_side_jpg_b64: side.toString("base64") });
+        return res.status(200).json({ mode: "render", provider: prov, model: f.model, perceive_ms: t1 - t0, render_ms, output: f.output.startsWith("data:") ? "(inline image)" : f.output, gen_size: (await sharp(gen).metadata()), mean_abs_diff_0_255: diff, edit_region: er, prompt: plan.rendering_instructions.prompt, side_by_side_jpg_b64: side.toString("base64") });
       }
       return res.status(200).json({ mode: "plan", model: per.model, perceive_ms: Date.now() - t0, image: { w: meta.width, h: meta.height }, raw_perception: per, plan });
     }

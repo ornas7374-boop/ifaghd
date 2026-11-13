@@ -74,8 +74,9 @@ module.exports = async function handler(req, res) {
   // SADU_PROVIDER. So analysis can stay on (free) Gemini while Replicate designs.
   // "fal" uses fal.ai (same FLUX Kontext model) with FAL_KEY.
   const provider = process.env.SADU_DESIGN_PROVIDER || process.env.SADU_PROVIDER;
-  const useGemini = provider === "gemini", useFal = provider === "fal";
-  if (!(useFal ? process.env.FAL_KEY : useGemini ? process.env.GEMINI_API_KEY : process.env.REPLICATE_API_TOKEN)) {
+  const useGemini = provider === "gemini", useFal = provider === "fal" || provider === "segmind";
+  const imageKey = provider === "segmind" ? process.env.SEGMIND_API_KEY : process.env.FAL_KEY;
+  if (!(useFal ? imageKey : useGemini ? process.env.GEMINI_API_KEY : process.env.REPLICATE_API_TOKEN)) {
     return reply(res, 500, { status: "failed", error: "missing_token" });
   }
 
@@ -88,10 +89,12 @@ module.exports = async function handler(req, res) {
       if (typeof b.image !== "string" || !/^data:image\/(jpeg|png|webp);base64,/.test(b.image)) return reply(res, 400, { status: "failed", error: "bad_image" });
       if (b.image.length > 4_000_000) return reply(res, 413, { status: "failed", error: "too_large" });
       try {
-        const f = await require("./_lib/fal").falKontext(process.env.FAL_KEY, b.image, pr.prompt);
+        const f = provider === "segmind"
+          ? await require("./_lib/segmind").segmindKontext(imageKey, b.image, pr.prompt)
+          : await require("./_lib/fal").falKontext(imageKey, b.image, pr.prompt);
         return reply(res, 200, { status: "succeeded", output: f.output });
       } catch (e) {
-        return reply(res, 502, { status: "failed", error: e.message || "fal_failed", detail: e.detail || "" });
+        return reply(res, 502, { status: "failed", error: e.message || "design_failed", detail: e.detail || "" });
       }
     }
     if (useGemini) {
