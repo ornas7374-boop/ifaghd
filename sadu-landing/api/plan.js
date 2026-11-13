@@ -10,7 +10,7 @@ function reply(res, code, body) { res.setHeader("Cache-Control", "no-store"); re
 
 /** Server-only signing secret derived from a server key (never sent to the browser). */
 function planSecret(env = process.env) {
-  const base = env.SADU_PLAN_SECRET || env.REPLICATE_API_TOKEN || env.GEMINI_API_KEY || "";
+  const base = env.SADU_PLAN_SECRET || env.GEMINI_API_KEY || "";
   return base ? crypto.createHash("sha256").update(`sadu-plan:${base}`).digest("hex") : "";
 }
 

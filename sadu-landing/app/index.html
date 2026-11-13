@@ -337,32 +337,17 @@ fieldset.field{border:0;margin:0;padding:0}
   }
 
   function wait(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
-  async function poll(id){
-    for(var i = 0; i < 40; i++){
-      await wait(2500);
-      var r = await fetch("/api/design?id=" + encodeURIComponent(id)).then(function(x){ return x.json(); });
-      if(r.status !== "processing") return r;
-    }
-    return { status:"failed", error:"timeout" };
-  }
-
   var ERR = {
     missing_token: "المفتاح غير مضاف في إعدادات Vercel.",
     bad_image: "الصورة غير صالحة. جرّب صورة أخرى.",
     too_large: "الصورة كبيرة جداً. جرّب صورة أصغر.",
     timeout: "التصميم تأخر أكثر من المعتاد. جرّب مرة ثانية.",
-    replicate_401: "مفتاح Replicate غير صحيح أو ملغى.",
-    replicate_429: "الخدمة مزدحمة الآن. انتظر دقيقة ثم جرّب مرة ثانية.",
-    replicate_402: "رصيد Replicate انتهى. اشحن الحساب ثم جرّب.",
-    segmind_401: "مفتاح خدمة الرسم (Segmind) غير صحيح.",
-    segmind_406: "رصيد خدمة الرسم (Segmind) انتهى. الخطة والميزانية جاهزة، والرسم يرجع بعد شحن الرصيد.",
-    segmind_timeout: "خدمة الرسم تأخرت. جرّب مرة ثانية.",
-    replicate_422: "النموذج رفض الطلب. جرّب صورة أخرى.",
     gemini_400: "Gemini رفض الطلب. جرّب صورة أخرى.",
     gemini_401: "مفتاح Gemini غير صحيح.",
     gemini_403: "مفتاح Gemini غير صحيح أو غير مفعّل لهذا النموذج.",
     gemini_404: "نموذج Gemini غير متاح. أرسل الخطأ للمطوّر.",
-    gemini_429: "حد استخدام Gemini تجاوز. انتظر دقيقة أو فعّل الفوترة.",
+    gemini_429: "رسم الصور يحتاج تفعيل الفوترة (Billing) في حساب Google. الخطة والميزانية جاهزة.",
+    gemini_503: "Google مزدحم الآن. جرّب بعد دقيقة.",
     gemini_timeout: "Gemini تأخر أكثر من اللازم. جرّب مرة ثانية.",
     http_504: "الخادم تأخر أكثر من دقيقة. جرّب مرة ثانية.",
     http_413: "الصورة أو النتيجة كبيرة جداً.",
@@ -374,8 +359,7 @@ fieldset.field{border:0;margin:0;padding:0}
     plan_failed: "ما قدرنا نطلع بخطة آمنة لهذا المكان.",
     perceive_no_json: "تعذّر فهم الصورة. جرّب مرة ثانية.",
     perceive_bad_json: "تعذّر فهم الصورة. جرّب مرة ثانية.",
-    analysis_model_unavailable: "نموذج التحليل غير متاح على الحساب.",
-    analysis_failed: "تعذّر تحليل الصورة. جرّب مرة ثانية.",
+        analysis_failed: "تعذّر تحليل الصورة. جرّب مرة ثانية.",
     analysis_bad_room: "ما قدرنا نحدد نوع المكان. جرّب صورة أوضح وأوسع.",
     analysis_bad_style: "تعذّر اختيار أسلوب. جرّب مرة ثانية.",
     analysis_no_json: "تعذّر تحليل الصورة. جرّب مرة ثانية.",
@@ -387,7 +371,7 @@ fieldset.field{border:0;margin:0;padding:0}
       var r = await fetch(url, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(body) })
         .then(function(x){ return x.json().catch(function(){ return { status:"failed", error:"http_" + x.status }; }); });
       // the service is busy: wait and retry once more before showing an error
-      if(r && r.error === "replicate_429" && attempt < 1){ $("loadText").textContent = "الخدمة مزدحمة، نعيد المحاولة…"; await wait(15000); continue; }
+      if(r && r.error === "gemini_503" && attempt < 1){ $("loadText").textContent = "الخدمة مزدحمة، نعيد المحاولة…"; await wait(15000); continue; }
       return r;
     }
   }
@@ -411,7 +395,6 @@ fieldset.field{border:0;margin:0;padding:0}
       // 2) draw exactly the approved plan
       $("loadText").textContent = "نصمّم حسب الخطة…";
       var r = await postJson("/api/design", { image: state.image, plan: plan });
-      if(r.status === "processing") r = await poll(r.id);
       if(r.status !== "succeeded") throw r;
       show(r.output, (Date.now() - t0) / 1000);
       // 3) review the result against the plan (does not block the result)

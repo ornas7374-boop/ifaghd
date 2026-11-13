@@ -1,12 +1,9 @@
 // sadu — the AI decides the setup space and the style (the customer only uploads a photo).
 //
-// A vision-language model on Replicate looks at the photo and returns strict JSON:
+// A Gemini vision model (api/_lib/gemini.js) looks at the photo and returns strict JSON:
 //   { room, room_confidence, style, why (Arabic, shown to the customer), seen: [...] }
-// Model ids are tried in order until one exists on the account (SADU_VISION_MODELS overrides).
 // The token is passed in by the caller; this module never reads environment secrets itself.
 
-const API = "https://api.replicate.com/v1";
-const DEFAULT_MODELS = ["anthropic/claude-4.5-sonnet", "anthropic/claude-4-sonnet", "anthropic/claude-3.7-sonnet"];
 
 // Setup focus: the spaces and styles come from the shared catalogue (_lib/setup.js).
 const CATALOG = require("./setup");
@@ -78,60 +75,4 @@ function parseAnswer(text, exclude = []) {
     request: String(j.request || "").replace(/[\u0000-\u001f<>{}]/g, " ").replace(/\s+/g, " ").trim().slice(0, 400) };
 }
 
-const sleep = (ms) => new Promise(r => setTimeout(r, ms));
-
-async function call(token, path, body, wait) {
-  for (let attempt = 0; ; attempt++) {
-    const r = await fetch(API + path, {
-      method: body ? "POST" : "GET",
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json", ...(wait ? { Prefer: `wait=${wait}` } : {}) },
-      body: body ? JSON.stringify(body) : undefined
-    });
-    if ((r.status === 429 || r.status >= 500) && attempt < 3) {
-      // rate limited (Replicate is strict on low-credit accounts): wait as asked, then retry
-      const ra = Number(r.headers && r.headers.get && r.headers.get("retry-after"));
-      await sleep(Number.isFinite(ra) && ra > 0 ? Math.min(ra, 12) * 1000 : 2000 * 2 ** attempt);
-      continue;
-    }
-    const data = await r.json().catch(() => ({}));
-    return { ok: r.ok, status: r.status, data };
-  }
-}
-
-// The model id that worked last time on this server instance is tried first, so a normal
-// request costs one call instead of walking the fallback list.
-let workingModel = null;
-
-const outputText = (out) => (Array.isArray(out) ? out.join("") : typeof out === "string" ? out : "");
-
-/**
- * @param {string} token  Replicate token
- * @param {string} image  data URI of the room photo
- * @param {{exclude?: string[], models?: string[]}} opts
- */
-async function analyzeRoom(token, image, opts = {}) {
-  const exclude = (opts.exclude || []).filter(s => STYLES[s]).slice(0, 10);
-  if (exclude.length >= Object.keys(STYLES).length) exclude.length = 0;
-  let models = opts.models && opts.models.length ? opts.models : DEFAULT_MODELS;
-  if (workingModel && models.includes(workingModel)) models = [workingModel, ...models.filter(m => m !== workingModel)];
-  const input = { prompt: userPrompt(exclude, opts.brief), system_prompt: SYSTEM, image, max_tokens: 400 };
-  const tried = [];
-  for (const model of models) {
-    const res = await call(token, `/models/${model}/predictions`, { input }, 45);
-    if (res.status === 404 || res.status === 422) { tried.push(`${model}: ${res.status}`); await sleep(1200); continue; }
-    if (!res.ok) { const e = new Error(`replicate_${res.status}`); e.detail = String(res.data.detail || "").slice(0, 200); throw e; }
-    let p = res.data;
-    for (let i = 0; i < 20 && (p.status === "starting" || p.status === "processing"); i++) {
-      await new Promise(r => setTimeout(r, 1500));
-      p = (await call(token, `/predictions/${p.id}`)).data;
-    }
-    if (p.status !== "succeeded") { const e = new Error("analysis_failed"); e.detail = String(p.error || p.status).slice(0, 200); throw e; }
-    workingModel = model;
-    return { ...parseAnswer(outputText(p.output), exclude), model };
-  }
-  const e = new Error("analysis_model_unavailable");
-  e.detail = tried.join("; ");
-  throw e;
-}
-
-module.exports = { _resetWorkingModel: () => { workingModel = null; }, analyzeRoom, parseAnswer, ROOMS, STYLES, DEFAULT_MODELS, userPrompt, SYSTEM };
+module.exports = { parseAnswer, ROOMS, STYLES, userPrompt, SYSTEM };

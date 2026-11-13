@@ -1,4 +1,4 @@
-// sadu — Google Gemini provider (optional alternative to Replicate).
+// sadu — Google Gemini provider (the only AI provider: analysis, planning perception and design).
 //   generateImage: edit the room photo with a text instruction (synchronous; returns a data URI)
 //   analyzeRoomGemini: same JSON answer as roomAnalysis.analyzeRoom, from a Gemini vision model
 // The key is passed in by the caller; this module never reads environment secrets itself.

@@ -4,17 +4,17 @@
 // mistake. They respond only when ALL of these hold:
 //   1. VERCEL_ENV === "preview"        (set by Vercel; "production" on production deployments)
 //   2. SADU_EVAL === "1"                (explicit opt-in, set only for the preview environment)
-//   3. REPLICATE_API_TOKEN_EVAL exists  (a separate key; the production key is never used)
+//   3. SADU_LAB_KEY exists              (decrypts the private test photos; preview only)
 // Otherwise they answer 404 as if they did not exist.
 // Access control itself comes from Vercel Deployment Protection (login required on previews).
 
 const MAX_BODY_BYTES = 4 * 1024 * 1024; // Vercel's request limit is 4.5 MB
 
 function evalEnabled(env = process.env) {
-  return env.VERCEL_ENV === "preview" && env.SADU_EVAL === "1" && !!env.REPLICATE_API_TOKEN_EVAL;
+  return env.VERCEL_ENV === "preview" && env.SADU_EVAL === "1" && !!env.SADU_LAB_KEY;
 }
 
-/** Returns the eval token, or ends the response and returns null. */
+/** Returns true when allowed, or ends the response and returns null. */
 function guard(req, res, { methods = ["POST"], env = process.env } = {}) {
   res.setHeader("Cache-Control", "no-store");
   res.setHeader("X-Robots-Tag", "noindex, nofollow");
@@ -22,7 +22,7 @@ function guard(req, res, { methods = ["POST"], env = process.env } = {}) {
   if (!methods.includes(req.method)) { res.status(405).json({ error: "method_not_allowed" }); return null; }
   const len = Number(req.headers && req.headers["content-length"] || 0);
   if (len > MAX_BODY_BYTES) { res.status(413).json({ error: "too_large" }); return null; }
-  return env.REPLICATE_API_TOKEN_EVAL;
+  return true;
 }
 
 /** Parse a JSON body defensively. */

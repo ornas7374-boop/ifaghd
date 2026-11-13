@@ -103,11 +103,14 @@ const IMG = "data:image/jpeg;base64,AAAA";
 
 test("endpoints: /api/plan observes once and plans in code; /api/design draws only signed plans", async () => {
   const saved = { ...process.env };
-  Object.assign(process.env, { GEMINI_API_KEY: "g", REPLICATE_API_TOKEN: "r8_test", SADU_DESIGN_PROVIDER: "replicate", SADU_PROVIDER: "gemini" });
+  Object.assign(process.env, { GEMINI_API_KEY: "g" });
   require("../../api/_lib/gemini")._reset();
   const perception = { ...ROOMS.windowLeft(), space: "gaming_room", style: "grey_tech", why: "غرفة.", intent: { use: "gaming", colors: ["blue"], request_en: "blue LED light" } };
-  const m = mockFetch((url) => url.includes("generativelanguage") ? { json: { candidates: [{ content: { parts: [{ text: JSON.stringify(perception) }] } }] } }
-    : url.includes("api.replicate.com") ? { json: { id: "abcdef123456", status: "succeeded", output: "https://replicate.delivery/x.jpg" } } : { status: 500, json: {} });
+  // first Gemini call = perception (text); later Gemini calls = image generation (returns an image part)
+  let n = 0;
+  const m = mockFetch((url) => !url.includes("generativelanguage") ? { status: 500, json: {} }
+    : n++ === 0 ? { json: { candidates: [{ content: { parts: [{ text: JSON.stringify(perception) }] } }] } }
+    : { json: { candidates: [{ content: { parts: [{ inlineData: { mimeType: "image/jpeg", data: "QUJD" } }] } }] } });
   try {
     const r = mk(); await require("../../api/plan")({ method: "POST", body: { image: IMG, brief: { description: "قيمنق أزرق", budget_sar: 2500 } } }, r);
     assert.equal(r.code, 200, JSON.stringify(r.body));
@@ -117,7 +120,7 @@ test("endpoints: /api/plan observes once and plans in code; /api/design draws on
     const design = require("../../api/design");
     const d1 = mk(); await design({ method: "POST", body: { image: IMG, plan } }, d1);
     assert.equal(d1.code, 200, JSON.stringify(d1.body));
-    const sent = m.calls.find(c => c.url.includes("api.replicate.com")).body.input.prompt;
+    const sent = m.calls[1].body.contents[0].parts.find(x => typeof x.text === "string").text;
     assert.equal(sent, plan.rendering_instructions.prompt, "the image model gets exactly the plan's instruction");
     const tampered = JSON.parse(JSON.stringify(plan)); tampered.rendering_instructions.prompt += " Also paint the floor red.";
     const d2 = mk(); await design({ method: "POST", body: { image: IMG, plan: tampered } }, d2);
@@ -143,16 +146,3 @@ test("endpoints: /api/evaluate reviews original + result against the plan", asyn
   } finally { m.restore(); require("../../api/_lib/gemini")._reset(); for (const k of Object.keys(process.env)) if (!(k in saved)) delete process.env[k]; Object.assign(process.env, saved); }
 });
 
-test("segmind client: sends the photo + prompt with the server key; image bytes come back as a data URI", async () => {
-  const { segmindKontext } = require("../../api/_lib/segmind");
-  let seen;
-  const fake = async (url, o) => { seen = { url, o }; return { ok: true, status: 200, headers: { get: () => "image/jpeg" }, arrayBuffer: async () => Buffer.from("img") }; };
-  const r = await segmindKontext("k1", "data:image/jpeg;base64,AA", "keep the floor", { fetch: fake });
-  assert.match(r.output, /^data:image\/jpeg;base64,/);
-  assert.match(seen.url, /api\.segmind\.com\/v1\/flux-kontext-pro$/);
-  assert.equal(seen.o.headers["x-api-key"], "k1");
-  const body = JSON.parse(seen.o.body);
-  assert.equal(body.prompt, "keep the floor"); assert.equal(body.input_image, "AA");
-  const bad = async () => ({ ok: false, status: 406, headers: { get: () => "application/json" }, text: async () => "insufficient credits" });
-  await assert.rejects(segmindKontext("k", "d", "p", { fetch: bad }), (e) => e.message === "segmind_406" && /credits/.test(e.detail));
-});

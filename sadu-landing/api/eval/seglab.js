@@ -1,23 +1,17 @@
-// GET /api/eval/seglab?photo=p1&confirm=1        run segmentation on a bundled test photo (costs one run)
-// GET /api/eval/seglab?photo=p1&pred=<id>        re-read an earlier run (free)
-// GET /api/eval/seglab?photo=p1&plan=1&desc=...&budget=2000   REAL planner test: Gemini perception (free tier)
-//                                                 + the Planning Engine on the photo; no image is generated
+// GET /api/eval/seglab?photo=p1&plan=1&desc=...&budget=2000             REAL planner test on a bundled photo:
+//                                                                       Gemini perception + the Planning Engine
+// GET /api/eval/seglab?photo=p1&plan=1&render=1&confirm=1&desc=...     + draw the plan with Gemini and measure how
+//                                                                       much the protected areas changed
 // Preview only. Private test photos live in eval-photos-enc/<name>.bin, encrypted with AES-256-GCM
-// (iv 12 bytes | tag 16 bytes | ciphertext). The key is only in the preview env (SADU_LAB_KEY), so the
-// files in git are unreadable without it.
-// Returns a compact class map (run-length encoded) so the result can be drawn and measured offline.
+// (iv 12 bytes | tag 16 bytes | ciphertext). The key is only in the preview env (SADU_LAB_KEY).
 const fs = require("fs");
 const path = require("path");
 const sharp = require("sharp");
+const crypto = require("crypto");
 const { guard } = require("../_lib/evalGuard");
-const rep = require("../_lib/replicate");
-const seg = require("../_lib/segmentation");
-const { buildMasks } = require("../_lib/masks");
-const { ADE20K } = require("../_lib/ade20k");
 
 const PHOTO_DIRS = [path.join(__dirname, "..", "..", "eval-photos-enc"), path.join(process.cwd(), "eval-photos-enc")];
 const PHOTO_DIR = PHOTO_DIRS.find(d => fs.existsSync(d)) || PHOTO_DIRS[0];
-const crypto = require("crypto");
 
 function decrypt(buf, keyB64) {
   const key = Buffer.from(String(keyB64 || ""), "base64");
@@ -27,29 +21,16 @@ function decrypt(buf, keyB64) {
   return Buffer.concat([d.update(buf.subarray(28)), d.final()]);
 }
 
-function rle(arr) {
-  const parts = [];
-  for (let i = 0; i < arr.length;) { let j = i; while (j < arr.length && arr[j] === arr[i]) j++; parts.push(`${arr[i]}:${j - i}`); i = j; }
-  return parts.join(",");
-}
-
 module.exports = async (req, res) => {
-  const token = guard(req, res, { methods: ["GET"] });
-  if (!token) return;
-  const cfg = seg.config();
+  if (!guard(req, res, { methods: ["GET"] })) return;
   const name = String(req.query.photo || "");
   if (!/^[a-z0-9_-]{1,20}$/i.test(name)) return res.status(400).json({ error: "bad_photo" });
   const file = path.join(PHOTO_DIR, `${name}.bin`);
-  if (!fs.existsSync(file)) return res.status(404).json({ error: "photo_not_bundled", looked: PHOTO_DIRS.map(d => ({ dir: d, exists: fs.existsSync(d), files: fs.existsSync(d) ? fs.readdirSync(d) : [] })) });
+  if (!fs.existsSync(file)) return res.status(404).json({ error: "photo_not_bundled" });
   try {
     const raw = decrypt(fs.readFileSync(file), process.env.SADU_LAB_KEY);
-    // same preparation as the app: max 1024 px JPEG
     const jpg = await sharp(raw).rotate().resize(1024, 1024, { fit: "inside", withoutEnlargement: true }).jpeg({ quality: 88 }).toBuffer();
     const meta = await sharp(jpg).metadata();
-    if (req.query.segcredits === "1") {
-      if (!process.env.SEGMIND_API_KEY) return res.status(500).json({ error: "missing_segmind_key" });
-      return res.status(200).json({ mode: "segmind_credits", ...(await require("../_lib/segmind").credits(process.env.SEGMIND_API_KEY)) });
-    }
     if (req.query.plan === "1") {
       if (!process.env.GEMINI_API_KEY) return res.status(500).json({ error: "missing_gemini_key" });
       const { perceive } = require("../_lib/planner/perceive");
@@ -60,24 +41,15 @@ module.exports = async (req, res) => {
       const per = await perceive(process.env.GEMINI_API_KEY, `data:image/jpeg;base64,${jpg.toString("base64")}`, brief, { model: process.env.GEMINI_VISION_MODEL || undefined, budgetMs: 52000 });
       const plan = planDesign({ ...per, brief });
       if (req.query.render === "1") {
-        // Paid (Segmind): draw the plan, then measure how much the protected areas changed.
+        // Gemini image model (needs billing on the Google project): draw the plan, then measure how much the protected areas changed.
         if (req.query.confirm !== "1") return res.status(400).json({ error: "add confirm=1 to start a paid render", plan_passed: plan.validation_results.passed });
-        const prov = ["segmind", "gemini"].includes(req.query.provider) ? req.query.provider : "replicate";
-        const pkey = prov === "segmind" ? process.env.SEGMIND_API_KEY : prov === "gemini" ? process.env.GEMINI_API_KEY : process.env.REPLICATE_API_TOKEN;
+        const prov = "gemini";
+        const pkey = process.env.GEMINI_API_KEY;
         if (!pkey) return res.status(500).json({ error: `missing_${prov}_key` });
         if (!plan.rendering_instructions) return res.status(200).json({ mode: "render", error: "plan_not_validated", validation: plan.validation_results });
         const t1 = Date.now();
         const src = `data:image/jpeg;base64,${jpg.toString("base64")}`;
-        let f;
-        if (prov === "gemini") f = await require("../_lib/gemini").generateImage(pkey, src, plan.rendering_instructions.prompt, { model: process.env.GEMINI_IMAGE_MODEL || undefined });
-        else if (prov === "segmind") f = await require("../_lib/segmind").segmindKontext(pkey, src, plan.rendering_instructions.prompt, { timeoutMs: 45000 });
-        else {
-          const model = process.env.REPLICATE_MODEL || "black-forest-labs/flux-kontext-pro";
-          const pr = await rep.createPrediction(pkey, model, { prompt: plan.rendering_instructions.prompt, input_image: src, aspect_ratio: "match_input_image", output_format: "jpg", safety_tolerance: 2 }, { waitSec: 45 });
-          const out = pr && (Array.isArray(pr.output) ? pr.output[0] : pr.output);
-          if (!pr || pr.status !== "succeeded" || !out) return res.status(200).json({ mode: "render", provider: prov, status: pr && pr.status, id: pr && pr.id, error: pr && (pr.error || pr.detail || pr.title) });
-          f = { output: out, model };
-        }
+        const f = await require("../_lib/gemini").generateImage(pkey, src, plan.rendering_instructions.prompt, { model: process.env.GEMINI_IMAGE_MODEL || undefined });
         const render_ms = Date.now() - t1;
         const gen = f.output.startsWith("data:") ? Buffer.from(f.output.split(",")[1], "base64") : Buffer.from(await (await fetch(f.output)).arrayBuffer());
         const W = 256, H = Math.round(256 * meta.height / meta.width);
@@ -93,30 +65,7 @@ module.exports = async (req, res) => {
       }
       return res.status(200).json({ mode: "plan", model: per.model, perceive_ms: Date.now() - t0, image: { w: meta.width, h: meta.height }, raw_perception: per, plan });
     }
-    let p;
-    if (req.query.pred) p = await rep.getPrediction(token, String(req.query.pred));
-    else {
-      if (req.query.confirm !== "1") return res.status(400).json({ error: "add confirm=1 to start a paid run" });
-      p = await rep.createPrediction(token, cfg.model, seg.segInput(`data:image/jpeg;base64,${jpg.toString("base64")}`, cfg), { waitSec: 50 });
-    }
-    const s = rep.summarize(p);
-    const base = { model: cfg.model, predictionId: p.id, status: p.status, predictTime: s.predictTime, error: s.error, image: { w: meta.width, h: meta.height } };
-    if (p.status !== "succeeded") return res.status(200).json(base);
-    const out = p.output;
-    base.rawOutput = Array.isArray(out)
-      ? { kind: `array(${out.length})`, first: out[0] && typeof out[0] === "object" ? Object.fromEntries(Object.entries(out[0]).map(([k, v]) => [k, typeof v === "string" ? `${v.slice(0, 60)}… (${v.length} chars)` : v])) : String(out[0]).slice(0, 80),
-          labels: out.map(o => o && typeof o === "object" ? { label: o.label, score: o.score } : null) }
-      : { kind: typeof out, preview: JSON.stringify(out).slice(0, 200) };
-    const parsed = await seg.parseOutput(out, rep.fetchOutput, cfg, meta.width / meta.height);
-    base.parsed = { kind: parsed.kind, reason: parsed.reason, segments: parsed.segments, unmatched: parsed.unmatched };
-    if (!parsed.classMap) return res.status(200).json(base);
-    const cm = parsed.classMap, counts = new Map();
-    for (const v of cm.data) counts.set(v, (counts.get(v) || 0) + 1);
-    base.classes = [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([id, n]) => ({ id, name: id === seg.UNKNOWN ? "unknown" : ADE20K[id - cfg.offset] || `#${id}`, share: +(n / cm.data.length).toFixed(4) }));
-    const m = buildMasks(cm, seg.nameOfFactory(cfg));
-    base.masks = { quality: m.quality, elements: m.elements.map(e => ({ type: e.type, label: e.label, area: e.area })) };
-    base.classMap = { w: cm.w, h: cm.h, unknownId: seg.UNKNOWN, rle: rle(cm.data) };
-    res.status(200).json(base);
+    return res.status(400).json({ error: "add plan=1" });
   } catch (e) {
     res.status(502).json({ error: e.message, detail: e.detail });
   }

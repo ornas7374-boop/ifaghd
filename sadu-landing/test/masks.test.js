@@ -134,20 +134,3 @@ test("end-to-end: masks from segmentation → architecture preserved for a redes
   assert.ok(bad.preservation.failures.some(f => f.element === "window_1"), bad.reasons.join("; "));
 });
 
-test("segmentation: segments with base64 masks and ADE20K labels become a class map; unknown labels stay unknown", async () => {
-  const sharp = require("sharp");
-  const seg = require("../api/_lib/segmentation");
-  const W = 40, H = 30;
-  const half = async (top) => { const px = Buffer.alloc(W * H, 0); for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (top ? y < H / 2 : y >= H / 2) px[y * W + x] = 255;
-    return (await sharp(px, { raw: { width: W, height: H, channels: 1 } }).png().toBuffer()).toString("base64"); };
-  const out = [{ label: "wall", mask: await half(true), score: null },
-               { label: "floor", mask: "data:image/png;base64," + await half(false), score: null },
-               { label: "spaceship", mask: await half(false) }];
-  const cfg = seg.config({});
-  const r = await seg.parseOutput(out, async () => { throw new Error("no fetch expected"); }, cfg, W / H);
-  assert.equal(r.kind, "segments"); assert.deepEqual(r.unmatched, ["spaceship"]);
-  const cm = r.classMap;
-  assert.equal(cm.data[0], 0, "top = wall (ADE20K id 0)");
-  assert.equal(cm.data[cm.data.length - 1], 3, "bottom = floor (ADE20K id 3)");
-  assert.equal(seg.labelIndex("windowpane, window"), 8);
-});

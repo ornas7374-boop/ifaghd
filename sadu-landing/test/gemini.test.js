@@ -54,19 +54,19 @@ test("analysis: parses the JSON answer and honours excluded styles", async () =>
   } finally { m.restore(); }
 });
 
-test("endpoints use Gemini only when SADU_PROVIDER=gemini", async () => {
+test("endpoints use Gemini only", async () => {
   const mk = () => ({ code: 0, body: null, setHeader() {}, status(c) { this.code = c; return this; }, json(b) { this.body = b; return this; } });
   const design = require("../api/design"), analyze = require("../api/analyze");
   const saved = { ...process.env };
   try {
-    process.env.SADU_PROVIDER = "gemini"; delete process.env.GEMINI_API_KEY; process.env.REPLICATE_API_TOKEN = "r8_x";
+    delete process.env.GEMINI_API_KEY;
     const r1 = mk(); await design({ method: "POST", body: {} }, r1); assert.equal(r1.body.error, "missing_token");
     process.env.GEMINI_API_KEY = "g-key";
     const m = mockFetch((url) => url.includes("generativelanguage") ? { json: reply([{ inlineData: { mimeType: "image/jpeg", data: "QUJD" } }]) } : { status: 500, json: {} });
     try {
       const r2 = mk(); await design({ method: "POST", body: { image: IMG, style: "white_blue", room: "setup_corner" } }, r2);
       assert.equal(r2.code, 200); assert.match(r2.body.output, /^data:image\/jpeg;base64,/);
-      assert.ok(m.calls.every(c => c.url.includes("generativelanguage")), "Replicate must not be called");
+      assert.ok(m.calls.every(c => c.url.includes("generativelanguage")), "only Google is called");
       m.restore();
       const m2 = mockFetch(() => ({ json: reply([{ text: '{"room":"home_office","room_confidence":0.9,"style":"rgb_setup","why":"مكتب."}' }]) }));
       try { const r3 = mk(); await analyze({ method: "POST", body: { image: IMG } }, r3); assert.equal(r3.code, 200); assert.equal(r3.body.room, "home_office"); }
@@ -127,19 +127,6 @@ test("overloaded model (503): falls back to the next model on the account", asyn
   });
   try { const a = await analyzeRoomGemini("k", IMG); assert.equal(a.model, "gemini-3.5-flash"); }
   finally { m.restore(); require("../api/_lib/gemini")._reset(); }
-});
-
-test("SADU_DESIGN_PROVIDER=replicate: analysis on Gemini, design on Replicate", async () => {
-  const mk = () => ({ code: 0, body: null, setHeader() {}, status(c) { this.code = c; return this; }, json(b) { this.body = b; return this; } });
-  const design = require("../api/design");
-  const saved = { ...process.env };
-  Object.assign(process.env, { SADU_PROVIDER: "gemini", SADU_DESIGN_PROVIDER: "replicate", GEMINI_API_KEY: "g", REPLICATE_API_TOKEN: "r8_x" });
-  const m = mockFetch((url) => url.includes("api.replicate.com") ? { json: { id: "abc123def456", status: "succeeded", output: "https://replicate.delivery/x.jpg" } } : { status: 500, json: {} });
-  try {
-    const r = mk(); await design({ method: "POST", body: { image: IMG, style: "white_blue", room: "gaming_room" } }, r);
-    assert.equal(r.code, 200); assert.equal(r.body.output, "https://replicate.delivery/x.jpg");
-    assert.ok(m.calls.every(c => c.url.includes("api.replicate.com")), "design must not call Gemini");
-  } finally { m.restore(); for (const k of Object.keys(process.env)) if (!(k in saved)) delete process.env[k]; Object.assign(process.env, saved); }
 });
 
 test("analysis: a stuck model is abandoned and a faster (lite) model answers", async () => {

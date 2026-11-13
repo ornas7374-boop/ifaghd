@@ -1,6 +1,6 @@
 // sadu — POST /api/items { image } → { status, items[], total_min, total_max }
 // "Shop the look": the furnishings in a design image, approximate price in SAR, store search links.
-// image: a data URI, or an https URL of a generated result on replicate.delivery.
+// image: a data URI (the design result from Gemini is also a data URI).
 
 const { shopItems } = require("./_lib/shopItems");
 
