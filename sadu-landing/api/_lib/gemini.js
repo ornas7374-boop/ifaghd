@@ -52,7 +52,8 @@ const ver = (n) => { const m = /gemini-(\d+(?:\.\d+)?)/.exec(n); return m ? Numb
 function pick(models, kind) {
   const ok = models.filter(m => (m.supportedGenerationMethods || []).includes("generateContent")).map(m => String(m.name || "").replace(/^models\//, ""));
   const fits = kind === "image"
-    ? ok.filter(n => /^gemini-/.test(n) && /image/.test(n))
+    // cost guard: only the cheap Flash image models (~$0.04); Pro image (~3x price) only if set explicitly
+    ? ok.filter(n => /^gemini-/.test(n) && /image/.test(n) && /flash/.test(n))
     : ok.filter(n => /^gemini-/.test(n) && /flash/.test(n) && !/(image|tts|audio|live|embed|thinking)/.test(n));
   const lite = (n) => (kind === "vision" && /lite/.test(n) ? 1 : 0);
   fits.sort((a, b) => (lite(b) - lite(a)) || (/preview|exp/.test(a) - /preview|exp/.test(b)) || (ver(b) - ver(a)) || (/flash/.test(b) - /flash/.test(a)));
