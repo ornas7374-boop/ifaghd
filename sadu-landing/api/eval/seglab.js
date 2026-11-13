@@ -60,17 +60,15 @@ module.exports = async (req, res) => {
       const per = await perceive(process.env.GEMINI_API_KEY, `data:image/jpeg;base64,${jpg.toString("base64")}`, brief, { model: process.env.GEMINI_VISION_MODEL || undefined, budgetMs: 52000 });
       const plan = planDesign({ ...per, brief });
       if (req.query.render === "1") {
-        // Paid (~$0.04 on fal): draw the plan, then measure how much the protected areas changed.
+        // Paid (Segmind): draw the plan, then measure how much the protected areas changed.
         if (req.query.confirm !== "1") return res.status(400).json({ error: "add confirm=1 to start a paid render", plan_passed: plan.validation_results.passed });
-        const prov = req.query.provider === "segmind" ? "segmind" : "fal";
-        const pkey = prov === "segmind" ? process.env.SEGMIND_API_KEY : process.env.FAL_KEY;
+        const prov = "segmind";
+        const pkey = process.env.SEGMIND_API_KEY;
         if (!pkey) return res.status(500).json({ error: `missing_${prov}_key` });
         if (!plan.rendering_instructions) return res.status(200).json({ mode: "render", error: "plan_not_validated", validation: plan.validation_results });
         const t1 = Date.now();
         const src = `data:image/jpeg;base64,${jpg.toString("base64")}`;
-        const f = prov === "segmind"
-          ? await require("../_lib/segmind").segmindKontext(pkey, src, plan.rendering_instructions.prompt, { timeoutMs: 45000 })
-          : await require("../_lib/fal").falKontext(pkey, src, plan.rendering_instructions.prompt, { timeoutMs: 45000 });
+        const f = await require("../_lib/segmind").segmindKontext(pkey, src, plan.rendering_instructions.prompt, { timeoutMs: 45000 });
         const render_ms = Date.now() - t1;
         const gen = f.output.startsWith("data:") ? Buffer.from(f.output.split(",")[1], "base64") : Buffer.from(await (await fetch(f.output)).arrayBuffer());
         const W = 256, H = Math.round(256 * meta.height / meta.width);
