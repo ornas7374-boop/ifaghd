@@ -62,14 +62,15 @@ module.exports = async (req, res) => {
       if (req.query.render === "1") {
         // Paid (Segmind): draw the plan, then measure how much the protected areas changed.
         if (req.query.confirm !== "1") return res.status(400).json({ error: "add confirm=1 to start a paid render", plan_passed: plan.validation_results.passed });
-        const prov = req.query.provider === "segmind" ? "segmind" : "replicate";
-        const pkey = prov === "segmind" ? process.env.SEGMIND_API_KEY : process.env.REPLICATE_API_TOKEN;
+        const prov = ["segmind", "gemini"].includes(req.query.provider) ? req.query.provider : "replicate";
+        const pkey = prov === "segmind" ? process.env.SEGMIND_API_KEY : prov === "gemini" ? process.env.GEMINI_API_KEY : process.env.REPLICATE_API_TOKEN;
         if (!pkey) return res.status(500).json({ error: `missing_${prov}_key` });
         if (!plan.rendering_instructions) return res.status(200).json({ mode: "render", error: "plan_not_validated", validation: plan.validation_results });
         const t1 = Date.now();
         const src = `data:image/jpeg;base64,${jpg.toString("base64")}`;
         let f;
-        if (prov === "segmind") f = await require("../_lib/segmind").segmindKontext(pkey, src, plan.rendering_instructions.prompt, { timeoutMs: 45000 });
+        if (prov === "gemini") f = await require("../_lib/gemini").generateImage(pkey, src, plan.rendering_instructions.prompt, { model: process.env.GEMINI_IMAGE_MODEL || undefined });
+        else if (prov === "segmind") f = await require("../_lib/segmind").segmindKontext(pkey, src, plan.rendering_instructions.prompt, { timeoutMs: 45000 });
         else {
           const model = process.env.REPLICATE_MODEL || "black-forest-labs/flux-kontext-pro";
           const pr = await rep.createPrediction(pkey, model, { prompt: plan.rendering_instructions.prompt, input_image: src, aspect_ratio: "match_input_image", output_format: "jpg", safety_tolerance: 2 }, { waitSec: 45 });
