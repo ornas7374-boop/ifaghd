@@ -33,7 +33,8 @@ export class BallTracker {
     for (const d of res.detections || []) {
       const b = d.boundingBox, sc = d.categories[0]?.score || 0;
       // mirrored, normalized box
-      const box = { cx: 1 - (b.originX + b.width / 2) / W, top: b.originY / H, bottom: (b.originY + b.height) / H, w: b.width / W, h: b.height / H, score: sc };
+      const ux = (b.originX + b.width / 2) / W;
+      const box = { cx: this.mirror === false ? ux : 1 - ux, top: b.originY / H, bottom: (b.originY + b.height) / H, w: b.width / W, h: b.height / H, score: sc };
       const p = floor?.result ? floor.rayToPlane(box.cx, box.bottom, floor.result.floorY) : null;
       if (p) {
         // expected angular size of a 22 cm ball at that distance vs. observed

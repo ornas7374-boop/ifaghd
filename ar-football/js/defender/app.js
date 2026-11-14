@@ -14,7 +14,7 @@ const $ = (s) => document.querySelector(s);
 const show = (s, on = true) => ($(s).hidden = !on);
 const store = { get(k, d) { try { const v = localStorage.getItem('rbd.' + k); return v == null ? d : JSON.parse(v); } catch { return d; } }, set(k, v) { try { localStorage.setItem('rbd.' + k, JSON.stringify(v)); } catch { /* ignore */ } } };
 
-const S = { height: store.get('height', 170), level: store.get('level', 'medium'), occlusion: store.get('occ', false), roundSec: 90 };
+const S = { height: store.get('height', 170), level: store.get('level', 'medium'), occlusion: store.get('occ', false), facing: store.get('facing', 'user'), roundSec: 90 };
 const video = $('#cam');
 const cam = new FrontCamera(video);
 const floor = new FloorEstimator();
@@ -33,13 +33,21 @@ iH.oninput = () => { S.height = +iH.value; store.set('height', S.height); syncH(
 const diffBtns = document.querySelectorAll('#diff button');
 const syncD = () => diffBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.d === S.level)));
 diffBtns.forEach((b) => (b.onclick = () => { S.level = b.dataset.d; store.set('level', S.level); syncD(); })); syncD();
+const camBtns = document.querySelectorAll('#camSel button');
+const syncCam = () => {
+  camBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.f === S.facing)));
+  $('#camHint').textContent = S.facing === 'user'
+    ? 'الأمامية: تشاهد نفسك على الشاشة وأنت تلعب (الجوال على حامل يواجهك).'
+    : 'الخلفية: صورة أوضح، لكنك لن ترى الشاشة وأنت تلعب إلا إذا أمسك أحد الجوال أو استخدمت شاشة أخرى. الصورة غير معكوسة.';
+};
+camBtns.forEach((b) => (b.onclick = () => { S.facing = b.dataset.f; store.set('facing', S.facing); syncCam(); })); syncCam();
 $('#iOcc').checked = S.occlusion; $('#iOcc').onchange = (e) => { S.occlusion = e.target.checked; store.set('occ', S.occlusion); };
 
 $('#bStart').onclick = async () => {
   $('#err').hidden = true;
   // iOS: these must start inside the tap, before any await
   const tiltP = tilt.start(); sfx.unlock();
-  try { await cam.start(); } catch (e) { $('#err').textContent = cameraErrorMessage(e); $('#err').hidden = false; return; }
+  try { await cam.start({ facing: S.facing }); applyCameraFlags(); } catch (e) { $('#err').textContent = cameraErrorMessage(e); $('#err').hidden = false; return; }
   await tiltP;
   show('#start', false); show('#loading'); $('#lText').textContent = 'تحميل تتبع الجسم ورصد الكرة (مرة واحدة)…';
   try { await Promise.all([pose.loadModel(), ball.load()]); }
@@ -51,6 +59,27 @@ $('#bStart').onclick = async () => {
   requestAnimationFrame(loop);
 };
 
+// Front camera = mirror view, back camera = true view: every coordinate path follows the same flag.
+function applyCameraFlags() {
+  const m = cam.mirrored;
+  pose.mirror = m; ball.mirror = m;
+  video.classList.toggle('nomirror', !m);
+  if (personOcc) personOcc.mat.uniforms.uMirror.value = m ? 1 : 0;
+  floor.setVideo(video.videoWidth, video.videoHeight);
+  pose.filters?.forEach((f) => { f[0].reset(); f[1].reset(); }); // landmarks jump when the image flips
+  ball.pos = null; ball.lastSeen = 0;
+}
+async function flipCamera() {
+  if (phase === 'start') return;
+  S.facing = S.facing === 'user' ? 'environment' : 'user'; store.set('facing', S.facing);
+  try { await cam.start({ facing: S.facing }); }
+  catch (e) { flash('تعذّر فتح الكاميرا الأخرى', 'warn', 1800); console.error(e); S.facing = S.facing === 'user' ? 'environment' : 'user'; try { await cam.start({ facing: S.facing }); } catch { /* ignore */ } }
+  applyCameraFlags();
+  show('#over', false); show('#pause', false);
+  beginSetup(); flash(cam.mirrored ? 'الكاميرا الأمامية' : 'الكاميرا الخلفية', 'info', 1200);
+}
+$('#bFlip').onclick = flipCamera;
+
 function setup3D() {
   view = new MirrorView($('#gl'));
   defender = makeLifeSizePlayer(1.8, { shirt: 0xc8102e, shorts: 0x111111, socks: 0xc8102e, skin: 0x8d5a3b, number: '4' });
@@ -60,7 +89,7 @@ function setup3D() {
   // Real ball as a depth-only occluder: the defender's legs hide behind your ball when it's nearer the phone.
   ballOcc = new THREE.Mesh(new THREE.SphereGeometry(BALL_D / 2, 20, 14), new THREE.MeshBasicMaterial({ colorWrite: false }));
   ballOcc.renderOrder = -50; ballOcc.visible = false; view.world.add(ballOcc);
-  personOcc = new PersonOccluder(view); personOcc.enabled = S.occlusion;
+  personOcc = new PersonOccluder(view); personOcc.enabled = S.occlusion; personOcc.mat.uniforms.uMirror.value = cam.mirrored ? 1 : 0;
   addEventListener('resize', () => view.resize());
 }
 
@@ -70,7 +99,7 @@ function beginSetup() {
   floor.userHeight = S.height / 100;
   floor.setVideo(video.videoWidth, video.videoHeight);
   defender && (defender.visible = false);
-  show('#hud', false); show('#chips'); show('#prompt');
+  show('#hud'); show('#chips'); show('#prompt');
 }
 function beginRound() {
   stats = { drib: 0, loss: 0, foul: 0 }; timeLeft = S.roundSec;
@@ -113,7 +142,13 @@ let last = performance.now();
 function loop() {
   requestAnimationFrame(loop);
   const now = performance.now(), dt = Math.min(0.05, (now - last) / 1000), wdt = Math.min(0.25, (now - last) / 1000); last = now; // dt: motion, wdt: clocks
-  if (tilt.available) { floor.pitch = tilt.pitch; floor.pitchSource = 'sensor'; }
+  // the sensor gives the SCREEN normal's elevation: the front camera looks along it, the back camera opposite
+  if (tilt.available) { floor.pitch = cam.mirrored ? tilt.pitch : -tilt.pitch; floor.pitchSource = 'sensor'; }
+  // phone rotated (portrait ↔ landscape) or camera switched → the stream size changes → recalibrate
+  if (video.videoWidth && (video.videoWidth !== floor.videoW || video.videoHeight !== floor.videoH)) {
+    floor.setVideo(video.videoWidth, video.videoHeight);
+    if (phase !== 'start' && phase !== 'setup') { beginSetup(); flash('تغيّر اتجاه الصورة: نعيد المعايرة', 'warn', 1800); }
+  }
   pose.update();
   ball.update(floor);
   const est = floor.estimate(pose.raw);

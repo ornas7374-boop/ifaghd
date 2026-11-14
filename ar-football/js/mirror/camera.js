@@ -9,14 +9,16 @@ export class FrontCamera {
   }
 
   // Must be called from a user gesture (tap) on iOS.
-  async start({ width = 640, height = 480 } = {}) {
+  // facing: 'user' (front, shown mirrored) | 'environment' (back camera)
+  async start({ width = 640, height = 480, facing = 'user' } = {}) {
+    this.stop();
     if (!window.isSecureContext) throw Object.assign(new Error('INSECURE'), { name: 'InsecureContext' });
     if (!navigator.mediaDevices?.getUserMedia) throw Object.assign(new Error('NO_MEDIA'), { name: 'NoMedia' });
     const v = this.video;
     v.setAttribute('playsinline', ''); v.setAttribute('autoplay', ''); v.muted = true; v.playsInline = true;
     this.stream = await navigator.mediaDevices.getUserMedia({
       audio: false,
-      video: { facingMode: 'user', width: { ideal: width }, height: { ideal: height }, frameRate: { ideal: 30, max: 30 } },
+      video: { facingMode: { ideal: facing }, width: { ideal: width }, height: { ideal: height }, frameRate: { ideal: 30, max: 30 } },
     });
     v.srcObject = this.stream;
     await v.play();
@@ -25,7 +27,7 @@ export class FrontCamera {
     const s = track.getSettings?.() || {};
     this.info = {
       label: track.label, width: v.videoWidth, height: v.videoHeight,
-      facingMode: s.facingMode || 'unknown', requestedFps: s.frameRate || null,
+      facingMode: s.facingMode || (facing === 'environment' ? 'environment?' : 'unknown'), requested: facing, requestedFps: s.frameRate || null,
     };
     this._countFrames();
     return this.info;
@@ -51,7 +53,19 @@ export class FrontCamera {
 
   get running() { return !!this.stream && this.stream.getVideoTracks()[0]?.readyState === 'live'; }
 
-  stop() { this.stream?.getTracks().forEach((t) => t.stop()); this.stream = null; this.video.srcObject = null; }
+  stop() {
+    if (this._cbId && this.video?.cancelVideoFrameCallback) this.video.cancelVideoFrameCallback(this._cbId);
+    this._cbId = 0;
+    this.stream?.getTracks().forEach((t) => t.stop()); this.stream = null; if (this.video) this.video.srcObject = null;
+  }
+
+  // Front camera = mirror view; back camera = true view.
+  get mirrored() {
+    const f = this.info.facingMode || '';
+    if (f.startsWith('environment')) return false;
+    if (f === 'user') return true;
+    return this.info.requested !== 'environment';
+  }
 }
 
 export function cameraErrorMessage(e) {
@@ -59,7 +73,7 @@ export function cameraErrorMessage(e) {
   if (n === 'NotAllowedError' || n === 'SecurityError') return 'لم يُسمح باستخدام الكاميرا. على iPhone: الإعدادات ← Safari ← الكاميرا ← اسمح.';
   if (n === 'InsecureContext') return 'الكاميرا تحتاج رابط https (أو localhost).';
   if (n === 'NoMedia') return 'هذا المتصفح لا يدعم الوصول للكاميرا.';
-  if (n === 'NotFoundError' || n === 'OverconstrainedError') return 'لم يتم العثور على كاميرا أمامية.';
+  if (n === 'NotFoundError' || n === 'OverconstrainedError') return 'لم يتم العثور على الكاميرا المطلوبة (أمامية/خلفية).';
   if (n === 'NotReadableError') return 'الكاميرا مستخدمة من تطبيق آخر. أغلقه وحاول مجدداً.';
   return 'تعذّر تشغيل الكاميرا: ' + (e?.message || e);
 }

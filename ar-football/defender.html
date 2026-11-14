@@ -29,6 +29,7 @@
   <div class="stat good"><b id="hDrib">0</b><span>مراوغات</span></div>
   <div class="stat bad"><b id="hLoss">0</b><span>كرات ضائعة</span></div>
   <div class="stat warn"><b id="hFoul">0</b><span>أخطاء لك</span></div>
+  <button class="icon" id="bFlip" aria-label="قلب الكاميرا">🔄</button>
   <button class="icon" id="bPause" aria-label="إيقاف">❚❚</button>
 </header>
 <div id="chips" class="chips" hidden><span id="cBody">الجسم</span><span id="cBall">الكرة</span><span id="cCal">المعايرة</span></div>
@@ -50,6 +51,12 @@
       <button data-d="medium"><b>Medium</b><small>يتوقع اتجاهك</small></button>
       <button data-d="hard"><b>Hard</b><small>سريع وينقضّ</small></button>
     </div>
+    <div class="camsel" id="camSel">
+      <span>الكاميرا:</span>
+      <button data-f="user">🤳 الأمامية (مرآة)</button>
+      <button data-f="environment">📷 الخلفية</button>
+    </div>
+    <p class="hint" id="camHint"></p>
     <label class="check"><input type="checkbox" id="iOcc"> جسمك يحجب المدافع حين تتجاوزه (تجريبي)</label>
     <button class="primary" id="bStart">ابدأ وافتح الكاميرا</button>
     <p class="err" id="err" hidden></p>

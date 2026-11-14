@@ -136,15 +136,15 @@ export class PersonOccluder {
     this.tex.minFilter = this.tex.magFilter = THREE.LinearFilter;
     this.mat = new THREE.ShaderMaterial({
       glslVersion: THREE.GLSL3,
-      uniforms: { uMask: { value: this.tex }, uDepth: { value: 0.5 }, uScale: { value: new THREE.Vector2(1, 1) }, uOffset: { value: new THREE.Vector2(0, 0) } },
+      uniforms: { uMask: { value: this.tex }, uMirror: { value: 1 }, uDepth: { value: 0.5 }, uScale: { value: new THREE.Vector2(1, 1) }, uOffset: { value: new THREE.Vector2(0, 0) } },
       vertexShader: `out vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }`,
-      fragmentShader: `precision highp float; in vec2 vUv; uniform sampler2D uMask; uniform float uDepth; uniform vec2 uScale, uOffset; out vec4 o;
+      fragmentShader: `precision highp float; in vec2 vUv; uniform sampler2D uMask; uniform float uMirror; uniform float uDepth; uniform vec2 uScale, uOffset; out vec4 o;
         void main(){
           // screen uv (0..1, y up) → mirrored video uv → raw mask uv (un-mirror x, flip y)
           vec2 s = vec2(vUv.x, 1.0 - vUv.y);
           vec2 v = uOffset + s * uScale;            // mirrored video coords 0..1
           if (v.x < 0.0 || v.x > 1.0 || v.y < 0.0 || v.y > 1.0) discard;
-          float m = texture(uMask, vec2(1.0 - v.x, v.y)).r;
+          float m = texture(uMask, vec2(mix(v.x, 1.0 - v.x, uMirror), v.y)).r;
           if (m < 0.5) discard;
           gl_FragDepth = uDepth; o = vec4(0.0);
         }`,

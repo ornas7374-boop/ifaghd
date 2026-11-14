@@ -116,7 +116,7 @@ export class PoseTracker {
       const raw = new Array(33), pts = new Array(33);
       for (let i = 0; i < 33; i++) {
         const p = lms[i];
-        const mx = 1 - p.x; // mirror: your right = screen right
+        const mx = this.mirror === false ? p.x : 1 - p.x; // front camera: mirror (your right = screen right)
         const vis = p.visibility ?? 1;
         raw[i] = { x: mx, y: p.y, v: vis };
         pts[i] = { x: this.filters[i][0].filter(mx * aspect, t), y: this.filters[i][1].filter(p.y, t), v: vis };
