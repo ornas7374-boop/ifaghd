@@ -12,7 +12,8 @@
 import * as THREE from 'three';
 
 const _inv = new THREE.Quaternion(), _p = new THREE.Vector3(), _d = new THREE.Vector3();
-const B = 8, S = 4; // block size, search radius (px at 96-px width)
+const B = 8; // block size (px at 96-px width)
+const clampAbs = (v, m) => Math.max(-m, Math.min(m, v));
 
 export class Odometry {
   constructor({ W = 96 } = {}) {
@@ -22,7 +23,7 @@ export class Odometry {
     this.pos = { x: 0, z: 0 }; this.vel = { x: 0, z: 0 };
     this.quality = 0; this.confidence = 0; this.tracking = false; this.lostT = 0;
     this.stats = { blocks: 0, inliers: 0, rms: 0, ms: 0, hz: 0 }; this._n = 0; this._t0 = performance.now();
-    this.minInterval = 0.05; this.horizonMargin = 0.28; this.ridge = 1e-2;
+    this.minInterval = 0.05; this.horizonMargin = 0.28; this.ridge = 1e-2; this.S = 4; this.usePred = true;   // S>4 measured WORSE (false matches); velocity prior helps slow frame gaps
   }
 
   _gray(src) {
@@ -54,7 +55,8 @@ export class Odometry {
     let out = null;
     if (this.prev && this.prev.length === gray.length && h > 0.2) {
       const dt = Math.max(0.02, now - this.prevT);
-      out = this._solve(this.prev, gray, this.prevQ, q, h, tH, tV, skip);
+      const tPred = new THREE.Vector3(clampAbs(this.vel.x * dt, 0.35), 0, clampAbs(this.vel.z * dt, 0.35));
+      out = this._solve(this.prev, gray, this.prevQ, q, h, tH, tV, skip, tPred);
       if (out) {
         this.pos.x += out.t.x; this.pos.z += out.t.z;
         const k = Math.min(1, dt * 6);
@@ -71,7 +73,9 @@ export class Odometry {
     return out;
   }
 
-  _solve(A, Bm, q0, q1, h, tH, tV, skip) {
+  _solve(A, Bm, q0, q1, h, tH, tV, skip, tPred) {
+    const S = this.S;
+    if (!this.usePred) tPred = new THREE.Vector3();
     const W = this.W, H = this.H;
     // relative rotation must be modest (the gyro-predicted search window is only ±S px)
     if (2 * Math.acos(Math.min(1, Math.abs(q0.dot(q1)))) > 0.35) return null;
@@ -88,7 +92,7 @@ export class Odometry {
       for (let y = 0; y < B; y++) for (let x = 0; x < B - 1; x++) tex += Math.abs(A[(by + y) * W + bx + x + 1] - A[(by + y) * W + bx + x]);
       if (tex < 3.2 * B * B * 0.25) continue;
       // where would a pure rotation put it in the new frame?
-      _d.copy(rw).applyQuaternion(_inv);
+      _d.copy(rw).multiplyScalar(h / -rw.y).sub(tPred).applyQuaternion(_inv);   // floor point after the predicted move
       if (_d.z > -0.05) continue;
       const px = (0.5 + (_d.x / -_d.z) / (2 * tH)) * W, py = (0.5 - (_d.y / -_d.z) / (2 * tV)) * H;
       const rx = Math.round(px), ry = Math.round(py);
@@ -115,7 +119,7 @@ export class Odometry {
     if (blocks.length < 14) return null;
 
     // Gauss-Newton on the translation t = (tx, ty, tz) of the camera in world axes.
-    const t = new THREE.Vector3(), N = blocks.length;
+    const t = tPred.clone(), N = blocks.length;
     const res = (tt, i, o) => {
       const b = blocks[i], k = h / -b.rw.y;
       _p.copy(b.rw).multiplyScalar(k).sub(tt).applyQuaternion(_inv);
