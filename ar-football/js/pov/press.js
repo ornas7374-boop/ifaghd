@@ -72,14 +72,22 @@ export class Agent {
           if (miss < c.winR && ball.seen) { this.state = 'won'; this.t = 0; ev.push({ type: 'won', how: 'lunge', agent: this, exposed: L.exposed, ballDist: L.ballDist }); }
           else if (L.body && miss > 0.55) { this.state = 'recover'; this.t = 0; this.cool = c.cooldown + 0.6; ev.push({ type: 'foul', agent: this }); }
           else { this.state = 'recover'; this.t = 0; this.cool = c.cooldown; ev.push({ type: 'miss', agent: this }); }
+          this.afterRecover = this.beatenReported ? 'chase' : 'charge';
         }
         break;
       }
-      case 'recover': vmax = c.sprint * 0.4; if (this.t > 0.6) this.state = 'charge'; break;      // straight back at you
+      case 'recover': vmax = c.sprint * 0.55; tx = bx; tz = bz; if (this.t > 0.45) this.state = this.afterRecover || 'charge'; break;   // straight back at your ball
       case 'won': vmax = 0.7; tx = ball.x; tz = ball.z; break;
       case 'chase': {
-        tx = ball.x - f.x * 0.9; tz = ball.z - f.z * 0.9; vmax = c.sprint * 0.85;
-        if (this.t > 2.6) this.state = 'gone';
+        // you beat him — he turns and runs the ball down: intercept point, full sprint, tackle from behind
+        const T = clamp(dBall / c.sprint, 0.15, 0.8);
+        tx = bx + h.vx * T * (0.5 + c.predict * 0.5); tz = bz + h.vz * T * (0.5 + c.predict * 0.5); vmax = c.sprint * 0.95;
+        if (this.cool <= 0 && dBall < c.reach * 0.9 && ball.seen && Math.random() < c.lungeRate * 1.2 * dt) {
+          const lead = 0.12 + c.predict * 0.15;
+          this.lunge = { x: ball.x + ball.vx * lead, z: ball.z + ball.vz * lead, t: 0, body: false, exposed, ballDist: ballFromUser, behind: true };
+          this.state = 'lunge'; this.t = 0; ev.push({ type: 'lunge', agent: this });
+        }
+        if (dBall > 9) this.state = 'gone';          // the ball is long gone: a fresh defender steps up ahead
         break;
       }
       default: break;
@@ -91,9 +99,10 @@ export class Agent {
     }
     // you got the ball past him: it is behind his line and clear of his reach sideways
     if ((this.state === 'jockey' || this.state === 'recover' || this.state === 'charge') && ball.seen && depth > 0.25 && Math.abs(lat) > c.beatDx && dBall < 2.2) {   // ball now AHEAD of him along your travel
-      this.state = 'chase'; this.t = 0; ev.push({ type: 'beaten', agent: this });
+      this.state = 'chase'; this.t = 0; this.beatenReported = true; ev.push({ type: 'beaten', agent: this });
     }
 
+    if (this.state === 'chase' && depth < -0.5 && dBall < 1.6) { this.state = 'jockey'; this.beatenReported = false; this.cool = Math.max(this.cool, 0.3); }   // got back in front of it
     // steering (arrive), never inside you or on top of a team-mate
     let dvx = tx - this.x, dvz = tz - this.z; const dl = Math.hypot(dvx, dvz);
     const want = this.state === 'won' ? Math.min(vmax, dl * 3) : Math.min(vmax, 1.2 + dl * 3);
@@ -146,7 +155,7 @@ export class Press {
     // retire chasers that gave up, keep the number of attackers topped up
     const before = this.agents.length;
     this.agents = this.agents.filter((a) => a.state !== 'gone');
-    const alive = this.agents.filter((a) => a.state !== 'chase').length + this.spawnQueue.length;
+    const alive = this.agents.length + this.spawnQueue.length;
     if (!this.restartAt) for (let i = alive; i < this.cfg.count; i++) this.spawn(W, 0.5);
     void before;
     return ev;

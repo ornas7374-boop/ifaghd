@@ -102,9 +102,12 @@ const tans = () => {
   return a >= 1 ? { tH: tLong, tV: tLong / a } : { tH: tLong * a, tV: tLong };
 };
 function world() {
-  const U = odo.pos;
-  const seen = ball.seen && !!bw;
-  return { user: { x: U.x, z: U.z }, f: hd, ball: seen ? { x: bw.x, z: bw.z, vx: bv.x, vz: bv.z, seen: true } : { x: U.x + hd.x * 1.0, z: U.z + hd.z * 1.0, vx: 0, vz: 0, seen: false } };
+  const U = odo.pos, now = performance.now() / 1000, age = now - bwT;
+  // The ball is the defenders' one and only target. Seen now → exact. Lost for a moment → keep going to
+  // where it was heading (dead-reckoning, up to 2.5 s). Lost for longer → a spot just ahead of you.
+  if (bw && age < 0.7 && ball.seen) return { user: { x: U.x, z: U.z }, f: hd, ball: { x: bw.x, z: bw.z, vx: bv.x, vz: bv.z, seen: true } };
+  if (bw && age < 2.5) { const k = Math.min(age, 0.9); return { user: { x: U.x, z: U.z }, f: hd, ball: { x: bw.x + bv.x * k, z: bw.z + bv.z * k, vx: bv.x * 0.5, vz: bv.z * 0.5, seen: age < 1.0 } }; }
+  return { user: { x: U.x, z: U.z }, f: hd, ball: { x: U.x + hd.x * 1.0, z: U.z + hd.z * 1.0, vx: 0, vz: 0, seen: false } };
 }
 function flash(msg, kind = 'info', ms = 1200) { const el = $('#flash'); el.textContent = msg; el.className = `flash ${kind} show`; clearTimeout(flash.t); flash.t = setTimeout(() => el.classList.remove('show'), ms); }
 function hint(msg, ms = 4000) { const el = $('#hintLine'); el.hidden = !msg; if (msg) { el.textContent = msg; clearTimeout(hint.t); hint.t = setTimeout(() => (el.hidden = true), ms); } }
