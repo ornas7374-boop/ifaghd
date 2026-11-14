@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0b1620">
+<title>Mirror AR Lab</title>
+<meta name="description" content="مختبر وضع المرآة: الكاميرا، الأرضية، اللاعب، تتبع الجسم، اللعب، والأداء، مرحلة بمرحلة.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="css/lab.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/",
+    "@mediapipe/tasks-vision": "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.21/vision_bundle.mjs"
+  }
+}
+</script>
+</head>
+<body>
+<video id="cam" playsinline muted autoplay></video>
+<canvas id="gl"></canvas>
+<canvas id="overlay"></canvas>
+
+<div id="start" class="start">
+  <div class="card">
+    <h1>مختبر وضع المرآة</h1>
+    <p>ست مراحل، كل مرحلة لها اختبار يظهر أمامك. لا تنتقل للمرحلة التالية حتى تنجح الحالية.</p>
+    <ol>
+      <li>الكاميرا الأمامية</li><li>الأرضية والقدمان والمعايرة</li><li>لاعب 3D بجانبك</li>
+      <li>تتبع الجسم</li><li>المدافعون والكرة والتصادمات</li><li>الأداء</li>
+    </ol>
+    <p class="muted">ضع الجوال على حامل بشكل عمودي، وقف على بعد 2 إلى 3 أمتار.</p>
+    <button id="btnStart" class="primary">ابدأ: شغّل الكاميرا الأمامية</button>
+    <p id="startErr" class="err" hidden></p>
+  </div>
+</div>
+
+<section id="panel" hidden>
+  <header>
+    <div class="steps" id="steps"></div>
+    <button id="btnCollapse" class="ghost sm" aria-label="تصغير">▾</button>
+  </header>
+  <div id="panelBody">
+    <h2 id="stageTitle"></h2>
+    <p id="stageHint" class="hint"></p>
+    <ul id="checks" class="checks"></ul>
+    <dl id="metrics" class="metrics"></dl>
+    <div id="stageControls" class="controls"></div>
+    <details class="limits"><summary>حدود هذه المرحلة</summary><div id="limits"></div></details>
+    <div class="row">
+      <button id="btnPrev" class="ghost">السابق</button>
+      <button id="btnNext" class="primary" disabled>المرحلة التالية</button>
+    </div>
+  </div>
+</section>
+
+<script type="module" src="js/mirror/lab.js"></script>
+</body>
+</html>
