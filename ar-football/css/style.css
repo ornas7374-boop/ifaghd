@@ -12,13 +12,17 @@ body{background:var(--bg);color:var(--fg);font-family:var(--body);overflow:hidde
   -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 button{font:inherit;color:inherit;cursor:pointer}
 button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-#app{position:fixed;inset:0;overflow:hidden}
-#scene{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
-#arVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1);opacity:0;pointer-events:none}
-body.ar #arVideo{opacity:1}
+#scene{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;z-index:1}
+#camVideo{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1);opacity:0;pointer-events:none;z-index:0;background:#000}
+body.mirror #camVideo{opacity:1}
+body.preview{background:radial-gradient(ellipse at 50% 30%,#22313d,#0b1620)}
+#ui{position:fixed;inset:0;z-index:2;overflow:hidden;pointer-events:none}
+#ui > *{pointer-events:auto}
+#ui > #flash,#ui > #flashSmall,#ui > #arBadge{pointer-events:none}
+#hud{pointer-events:none!important}
 
 /* HUD */
-#hud{position:absolute;top:0;left:0;right:0;z-index:5;pointer-events:none;
+#hud{position:absolute;top:0;left:0;right:0;z-index:5;display:flex;flex-direction:column;gap:6px;align-items:center;
   padding:max(8px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) 0 max(10px,env(safe-area-inset-left))}
 .hud-row{display:flex;gap:6px;align-items:stretch;flex-wrap:wrap;justify-content:center}
 .clock{font-family:var(--display);font-size:1.7rem;line-height:1;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 14px;
@@ -29,6 +33,12 @@ body.ar #arVideo{opacity:1}
 .stat span{display:block;font-size:.66rem;color:var(--muted);white-space:nowrap}
 .stat.good b{color:var(--good)} .stat.bad b{color:var(--bad)} .stat.warn b{color:var(--warn)}
 .hud-btns{display:flex;gap:6px;pointer-events:auto}
+.ar-badge{font-size:.7rem;background:var(--panel);border:1px solid var(--line);border-radius:99px;padding:4px 10px;color:var(--muted)}
+#gestureLayer{position:absolute;inset:0;z-index:3;touch-action:none;background:transparent}
+.place-bar{position:absolute;z-index:6;left:50%;transform:translateX(-50%);bottom:max(16px,env(safe-area-inset-bottom));width:min(560px,calc(100% - 24px));
+  background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;text-align:center;font-size:.9rem}
+.row.center{justify-content:center}
+.sm{padding:8px 12px;font-size:.9rem}
 .icon{background:var(--panel);border:1px solid var(--line);border-radius:10px;min-width:44px;font-size:1.05rem}
 @media (max-width:640px){
   .stat{min-width:0;flex:1 1 22%;padding:3px 4px}
@@ -91,8 +101,15 @@ p{margin:0;line-height:1.7}
 .primary{background:var(--accent);color:#04121e;border:0;border-radius:12px;padding:13px 18px;font-weight:700;font-size:1rem}
 .ghost{background:transparent;border:1px solid var(--line);border-radius:12px;padding:11px 16px}
 .link{background:none;border:0;color:var(--accent);padding:6px 2px}
-.modes{display:flex;gap:8px;flex-wrap:wrap}
-.modes .primary{flex:2 1 260px} .modes .ghost{flex:1 1 180px}
+.modes{display:flex;flex-direction:column;gap:8px}
+.mode{display:flex;flex-direction:column;gap:2px;text-align:right;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.mode b{font-size:1.02rem} .mode small{font-size:.78rem;opacity:.85;line-height:1.5}
+.mode.primary{background:var(--accent);color:#04121e;border-color:var(--accent)}
+.mode:disabled{opacity:.45;cursor:not-allowed}
+.support{display:flex;flex-direction:column;gap:4px;font-size:.84rem;background:rgba(255,255,255,.04);border-radius:10px;padding:10px 12px}
+.support .ok{color:var(--good)} .support .no{color:var(--warn)}
+.overlay.see-through{background:transparent;place-items:end center}
+.sheet.compact{width:min(480px,100%);padding:14px;gap:8px;background:rgba(16,29,39,.9)}
 .diff{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .diff button{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:right;display:flex;flex-direction:column;gap:2px}
 .diff button b{font-size:1.05rem}

@@ -1,42 +1,47 @@
 // Game constants, difficulty presets and persisted settings.
 
+// Room-scale arena (metres, arena-local). The whole arena can be scaled down in AR (tabletop).
+// The attacker runs toward -z; the mini goal sits on the -z end.
 export const PITCH = {
-  halfWidth: 24,      // playable half-width (m), touchlines at ±halfWidth
-  startZ: 8,          // kick-off point of every attack
-  backZ: 16,          // back boundary (behind the attacker's start)
-  goalZ: -50,         // goal line (attacker runs toward -z)
-  goalHalfWidth: 3.66,
-  goalHeight: 2.44,
-  boxDepth: 16.5,
+  halfWidth: 3,
+  startZ: 3.6,
+  backZ: 4.5,
+  goalZ: -4.5,
+  goalHalfWidth: 1.1,
+  goalHeight: 1.0,
+  shootRange: 3.8,      // shots allowed when this close to the goal line
 };
 
+// Distance unit for the AI (1 = a full-size pitch metre; arena is ~0.42 of that).
+export const AI_UNIT = 0.42;
+
 export const ATTACKER = {
-  maxSpeed: 6.6,        // m/s sprint without the ball
-  dribbleSpeed: 5.6,    // m/s sprint while dribbling
-  lateralSpeed: 4.7,    // m/s full side-step
-  backSpeed: 2.2,       // m/s retreat (step back)
-  accel: 16,            // m/s²
-  bodyRadius: 0.38,
-  controlRadius: 1.45,  // ball must be inside this to touch it
-  looseRadius: 3.6,     // beyond this the ball is loose
+  maxSpeed: 2.8,
+  dribbleSpeed: 2.5,
+  lateralSpeed: 2.2,
+  backSpeed: 1.0,
+  accel: 8,
+  bodyRadius: 0.3,
+  controlRadius: 1.0,
+  looseRadius: 2.2,
 };
 
 // Each preset tunes the defender brain (see js/ai.js for how each value is used).
 export const DIFFICULTY = {
   easy: {
-    label: 'سهل', speed: 4.6, accel: 9, reaction: 0.55, predict: 0.0,
-    tackleRange: 1.9, tackleSuccess: 0.5, tackleCooldown: 2.2, aggression: 0.6,
-    coop: 0.0, laneBlock: 0.0, engageRange: 11, readFeint: 0.05, foolTime: 1.2, gkReflex: 0.5,
+    label: 'سهل', speed: 1.95, accel: 4, reaction: 0.55, predict: 0.0,
+    tackleRange: 0.85, tackleSuccess: 0.5, tackleCooldown: 2.2, aggression: 0.6,
+    coop: 0.0, laneBlock: 0.0, engageRange: 4.5, readFeint: 0.05, foolTime: 1.2, gkReflex: 0.5,
   },
   medium: {
-    label: 'متوسط', speed: 5.6, accel: 13, reaction: 0.25, predict: 0.5,
-    tackleRange: 2.1, tackleSuccess: 0.68, tackleCooldown: 1.5, aggression: 0.8,
-    coop: 0.5, laneBlock: 0.55, engageRange: 16, readFeint: 0.3, foolTime: 0.8, gkReflex: 0.7,
+    label: 'متوسط', speed: 2.45, accel: 6, reaction: 0.25, predict: 0.5,
+    tackleRange: 0.95, tackleSuccess: 0.68, tackleCooldown: 1.5, aggression: 0.8,
+    coop: 0.5, laneBlock: 0.55, engageRange: 6.5, readFeint: 0.3, foolTime: 0.8, gkReflex: 0.7,
   },
   hard: {
-    label: 'صعب', speed: 6.4, accel: 18, reaction: 0.14, predict: 0.85,
-    tackleRange: 2.4, tackleSuccess: 0.82, tackleCooldown: 1.1, aggression: 1.0,
-    coop: 1.0, laneBlock: 1.0, engageRange: 24, readFeint: 0.5, foolTime: 0.5, gkReflex: 0.85,
+    label: 'صعب', speed: 2.8, accel: 8.5, reaction: 0.14, predict: 0.85,
+    tackleRange: 1.05, tackleSuccess: 0.82, tackleCooldown: 1.1, aggression: 1.0,
+    coop: 1.0, laneBlock: 1.0, engageRange: 10, readFeint: 0.5, foolTime: 0.5, gkReflex: 0.85,
   },
 };
 
@@ -47,7 +52,8 @@ const DEFAULTS = {
   roundSec: 120,
   sensitivity: 1.0,
   showCam: true,
-  arMode: false,
+  arScale: 0.4,
+  touchMirror: false,
   sound: true,
   goalkeeper: true,
 };
