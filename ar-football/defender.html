@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0b1620">
+<title>Real Ball Defender</title>
+<meta name="description" content="مدافع افتراضي بحجم حقيقي يقف أمامك في غرفتك ويحاول أخذ كرتك الحقيقية.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lalezar&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="css/defender.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/",
+    "@mediapipe/tasks-vision": "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.21/vision_bundle.mjs"
+  }
+}
+</script>
+</head>
+<body>
+<video id="cam" playsinline muted autoplay></video>
+<canvas id="gl"></canvas>
+<canvas id="overlay"></canvas>
+
+<header id="hud" hidden>
+  <div class="clock" id="hTime">1:30</div>
+  <div class="stat good"><b id="hDrib">0</b><span>مراوغات</span></div>
+  <div class="stat bad"><b id="hLoss">0</b><span>كرات ضائعة</span></div>
+  <div class="stat warn"><b id="hFoul">0</b><span>أخطاء لك</span></div>
+  <button class="icon" id="bPause" aria-label="إيقاف">❚❚</button>
+</header>
+<div id="chips" class="chips" hidden><span id="cBody">الجسم</span><span id="cBall">الكرة</span><span id="cCal">المعايرة</span></div>
+<div id="flash" class="flash"></div>
+<div id="prompt" class="prompt" hidden></div>
+
+<section id="start" class="sheet-wrap">
+  <div class="sheet">
+    <p class="eyebrow">مدافع افتراضي • كرة حقيقية • جسمك الحقيقي</p>
+    <h1>Real Ball Defender</h1>
+    <ol class="steps">
+      <li>ضع الجوال على حامل <b>بالطول</b> (عمودي)، والكاميرا الأمامية باتجاهك، على ارتفاع الخصر تقريباً.</li>
+      <li>ابتعد <b>3.5 إلى 4 أمتار</b> ومعك كرة قدم حقيقية عند قدميك، بحيث يظهر جسمك كاملاً.</li>
+      <li>يظهر مدافع بحجم إنسان بينك وبين الجوال. <b>راوغه بالكرة نحو الجوال</b>.</li>
+    </ol>
+    <label class="field"><span>طولك <output id="oH"></output></span><input type="range" id="iH" min="120" max="210" step="1"></label>
+    <div class="diff" id="diff">
+      <button data-d="easy"><b>Easy</b><small>بطيء ومتأخر</small></button>
+      <button data-d="medium"><b>Medium</b><small>يتوقع اتجاهك</small></button>
+      <button data-d="hard"><b>Hard</b><small>سريع وينقضّ</small></button>
+    </div>
+    <label class="check"><input type="checkbox" id="iOcc"> جسمك يحجب المدافع حين تتجاوزه (تجريبي)</label>
+    <button class="primary" id="bStart">ابدأ وافتح الكاميرا</button>
+    <p class="err" id="err" hidden></p>
+    <details class="limits"><summary>ما الذي يعمل وما حدوده؟</summary>
+      <ul>
+        <li>المدافع <b>مرسوم فوق صورة الكاميرا</b>، ومقاسه الحقيقي مأخوذ من طولك وموضع قدميك. يبقى مكانه ما دام الجوال ثابتاً؛ إذا تحرك الجوال أعد المعايرة.</li>
+        <li>الكرة الحقيقية تُرصد بالذكاء الاصطناعي وتُحسب مكانها على الأرض (دقة الاختبار: 1–3 سم). في الإضاءة الضعيفة أو الكرة غير المألوفة قد تضيع.</li>
+        <li>المدافع <b>لا يستطيع لمس كرتك فعلاً</b>: «فقدت الكرة» تعني أن قدمه الافتراضية وصلت لمكان كرتك قبل أن تبعدها.</li>
+        <li>الظل واتجاه الضوء تقريبيان. الأثاث لا يحجب المدافع.</li>
+        <li>المساحة محدودة بمجال الكاميرا (حوالي 2.5 م عرضاً على بعد 3 م).</li>
+      </ul>
+    </details>
+  </div>
+</section>
+
+<section id="pause" class="sheet-wrap" hidden>
+  <div class="sheet">
+    <h2>إيقاف مؤقت</h2>
+    <div class="row">
+      <button class="primary" id="bResume">استئناف</button>
+      <button class="ghost" id="bRecal">إعادة المعايرة</button>
+      <button class="ghost" id="bEnd">إنهاء</button>
+    </div>
+  </div>
+</section>
+
+<section id="over" class="sheet-wrap" hidden>
+  <div class="sheet">
+    <p class="eyebrow">انتهت الجولة</p>
+    <h2 id="oTitle"></h2>
+    <div class="res" id="oRes"></div>
+    <div class="row"><button class="primary" id="bAgain">جولة جديدة</button></div>
+  </div>
+</section>
+
+<div id="loading" class="loading" hidden><div class="spinner"></div><p id="lText"></p></div>
+<script type="module" src="js/defender/app.js"></script>
+</body>
+</html>

@@ -52,6 +52,27 @@ export class FloorEstimator {
     return { u: 0.5 + (c.x / -c.z) / (2 * tH), v: 0.5 - (c.y / -c.z) / (2 * tV) };
   }
 
+  // Intersect the ray through mirrored (u,v) with the horizontal plane y = planeY.
+  rayToPlane(u, v, planeY) {
+    const d = this.ray(u, v);
+    if (d.y > -1e-4) return null;            // ray doesn't go down to the floor
+    const t = planeY / d.y;                   // camera at origin
+    return t > 0 ? d.multiplyScalar(t) : null;
+  }
+
+  // Live feet position on the CALIBRATED floor (more stable than re-solving with the nose).
+  feetOnFloor(raw) {
+    const r = this.result; if (!r || !raw) return null;
+    const hl = raw[29], hr = raw[30], al = raw[27], ar = raw[28];
+    let L, R, h;
+    if (hl?.v > 0.5 && hr?.v > 0.5) { L = hl; R = hr; h = HEEL_H; }
+    else if (al?.v > 0.5 && ar?.v > 0.5) { L = al; R = ar; h = ANKLE_H; }
+    else return null;
+    const pl = this.rayToPlane(L.x, L.y, r.floorY + h), pr = this.rayToPlane(R.x, R.y, r.floorY + h);
+    if (!pl || !pr) return null;
+    return { x: (pl.x + pr.x) / 2, z: (pl.z + pr.z) / 2, left: pl, right: pr };
+  }
+
   // Per-frame estimate from mirrored normalized landmarks. Returns {ok, reason, ...}.
   estimate(raw) {
     if (!raw) return (this.last = { ok: false, reason: 'no-person' });
@@ -81,7 +102,8 @@ export class FloorEstimator {
     if (!e?.ok) { this.samples.length = 0; return 0; }
     this.samples.push({ ...e, dt });
     let T = 0; for (const s of this.samples) T += s.dt;
-    while (T > 1.6 && this.samples.length > 2) T -= this.samples.shift().dt;
+    // keep a ≥1.5 s window (dropping the oldest sample only if the rest still covers 1.5 s)
+    while (this.samples.length > 2 && T - this.samples[0].dt >= 1.5) T -= this.samples.shift().dt;
     // Must be still: if the feet moved > 6 cm during the window, restart.
     const zs = this.samples.map((s) => s.Z), xs = this.samples.map((s) => s.X);
     if (Math.max(...xs) - Math.min(...xs) > 0.12 || Math.max(...zs) - Math.min(...zs) > 0.35) { this.samples = this.samples.slice(-3); return 0; }
