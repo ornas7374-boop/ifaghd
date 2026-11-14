@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0b1620">
+<title>AI Football Defender</title>
+<meta name="description" content="لعبة كرة قدم ثلاثية الأبعاد تتحكم فيها بحركات جسمك أمام الكاميرا، وتراوغ مدافعين أذكياء.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lalezar&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+    "@mediapipe/tasks-vision": "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.21/vision_bundle.mjs"
+  }
+}
+</script>
+</head>
+<body>
+<div id="app">
+  <video id="arVideo" playsinline muted></video>
+  <canvas id="scene"></canvas>
+
+  <!-- HUD -->
+  <header id="hud" hidden>
+    <div class="hud-row">
+      <div class="clock" id="hudTime">2:00</div>
+      <div class="stat"><b id="hudScore">0</b><span>النقاط</span></div>
+      <div class="stat"><b id="hudGoals">0</b><span>أهداف</span></div>
+      <div class="stat good"><b id="hudDribbles">0</b><span>مراوغات</span></div>
+      <div class="stat bad"><b id="hudLosses">0</b><span>كرات ضائعة</span></div>
+      <div class="stat warn"><b id="hudFouls">0</b><span>أخطاء لك</span></div>
+      <div class="stat"><b id="hudPoss">0%</b><span>استحواذ</span></div>
+      <div class="hud-btns">
+        <button class="icon" id="btnPause" aria-label="إيقاف مؤقت">❚❚</button>
+        <button class="icon" id="btnRestart" aria-label="إعادة">↻</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Camera picture-in-picture with skeleton + live control meters -->
+  <aside id="pip" hidden>
+    <canvas id="pipCanvas" width="320" height="240"></canvas>
+    <div class="meters">
+      <div class="meter"><span>اتجاه</span><div class="bar steer"><i id="mSteer"></i></div></div>
+      <div class="meter"><span>جري</span><div class="bar"><i id="mRun"></i></div></div>
+      <div class="pip-foot" id="pipStatus">—</div>
+    </div>
+  </aside>
+
+  <div id="flash" class="flash"></div>
+  <div id="flashSmall" class="flash-small"></div>
+
+  <!-- Touch / keyboard fallback controls -->
+  <div id="touch" hidden>
+    <div id="joy" class="joy"><i></i></div>
+    <div class="tbtns">
+      <button id="btnFeintL" class="tbtn">تمويه ◀</button>
+      <button id="btnKick" class="tbtn kick">سدّد</button>
+      <button id="btnFeintR" class="tbtn">▶ تمويه</button>
+    </div>
+  </div>
+
+  <!-- MENU -->
+  <section id="menu" class="overlay">
+    <div class="sheet wide">
+      <p class="eyebrow">كرة قدم بالواقع المعزز • تحكم بجسمك</p>
+      <h1>AI Football Defender</h1>
+      <p class="lede">قف أمام الكاميرا، اجرِ في مكانك لتتقدم بالكرة، تحرّك يميناً ويساراً لتراوغ، وارفع قدمك بقوة لتسدد. ثلاثة مدافعين أذكياء يحاولون قطع الكرة منك.</p>
+
+      <h3>اختر الصعوبة</h3>
+      <div class="diff" id="diffPick">
+        <button data-d="easy"><b>سهل</b><small>بطيئون، رد فعل متأخر، مساحات واسعة</small></button>
+        <button data-d="medium"><b>متوسط</b><small>يتوقعون اتجاهك ويغلقون بعض المسارات</small></button>
+        <button data-d="hard"><b>صعب</b><small>سريعون، يتعاونون ويغلقون المساحات</small></button>
+      </div>
+
+      <h3>طريقة التحكم</h3>
+      <div class="modes">
+        <button class="primary" id="startCam">▶ ابدأ بالكاميرا (تحكم بالجسم)</button>
+        <button class="ghost" id="startKeys">تجربة بالكيبورد / اللمس</button>
+      </div>
+      <div class="row">
+        <button class="link" id="openSettings">⚙ الإعدادات</button>
+        <button class="link" id="openHelp">؟ كيف أقف أمام الكاميرا</button>
+      </div>
+      <p class="best" id="bestLine"></p>
+      <p class="fine">الكاميرا تُعالج داخل جهازك فقط (MediaPipe على المتصفح) ولا يُرسل أي فيديو لأي خادم.</p>
+    </div>
+  </section>
+
+  <!-- HELP -->
+  <section id="help" class="overlay" hidden>
+    <div class="sheet">
+      <h2>كيف تقف وتتحرك</h2>
+      <ol class="steps">
+        <li><b>ضع الجهاز</b> على ارتفاع الخصر تقريباً (طاولة أو رف)، والكاميرا الأمامية باتجاهك.</li>
+        <li><b>ابتعد 2 إلى 3 أمتار</b> حتى يظهر جسمك كاملاً من الرأس إلى القدمين. إضاءة جيدة من الأمام.</li>
+        <li><b>اثبت ثانية</b> في المنتصف أثناء المعايرة. هذا هو مكانك "المحايد".</li>
+      </ol>
+      <table class="map">
+        <thead><tr><th>حركتك</th><th>في اللعبة</th></tr></thead>
+        <tbody>
+          <tr><td>الجري في المكان (رفع القدمين بالتناوب)</td><td>تتقدم بالكرة. كل رفعة قدم = لمسة للكرة. أسرع = جري أسرع</td></tr>
+          <tr><td>خطوة أو ميلان يمين / يسار</td><td>تتحرك يمين / يسار</td></tr>
+          <tr><td>تبديل سريع للاتجاه (يمين ثم يسار بسرعة)</td><td>تمويه: المدافع القريب قد ينخدع ويتجمد لحظة</td></tr>
+          <tr><td>رفع قدم بقوة وبسرعة (ركلة)</td><td>تسديد على المرمى قرب منطقة الجزاء، أو دفع الكرة للأمام بعيداً عنها</td></tr>
+          <tr><td>خطوة للخلف (بعيداً عن الكاميرا)</td><td>تراجع وسحب الكرة للخلف</td></tr>
+          <tr><td>خطوة للأمام (نحو الكاميرا)</td><td>انطلاقة أسرع</td></tr>
+          <tr><td>رفع اليدين فوق الرأس ثانية</td><td>إيقاف مؤقت / استئناف</td></tr>
+        </tbody>
+      </table>
+      <p class="note">إذا لم تظهر القدمان، تعتمد اللعبة على الركبتين، ثم على حركة الورك. الأفضل أن يظهر الجسم كاملاً.</p>
+      <p class="note">الكيبورد: الأسهم أو WASD للحركة، Shift للانطلاق، مسافة للتسديد، Q / E للتمويه.</p>
+      <button class="primary" data-close>فهمت</button>
+    </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section id="settings" class="overlay" hidden>
+    <div class="sheet">
+      <h2>الإعدادات</h2>
+      <label class="field"><span>مستوى الصعوبة</span>
+        <select id="sDiff"><option value="easy">سهل</option><option value="medium">متوسط</option><option value="hard">صعب</option></select></label>
+      <label class="field"><span>عدد المدافعين <output id="oDef"></output></span>
+        <input type="range" id="sDef" min="1" max="5" step="1"></label>
+      <label class="field"><span>سرعة المدافعين <output id="oSpeed"></output></span>
+        <input type="range" id="sSpeed" min="0.6" max="1.5" step="0.05"></label>
+      <label class="field"><span>مدة الجولة</span>
+        <select id="sRound"><option value="60">دقيقة</option><option value="90">دقيقة ونصف</option><option value="120">دقيقتان</option><option value="180">3 دقائق</option><option value="300">5 دقائق</option></select></label>
+      <label class="field"><span>حساسية تتبع الكاميرا <output id="oSens"></output></span>
+        <input type="range" id="sSens" min="0.5" max="2" step="0.05"></label>
+      <label class="check"><input type="checkbox" id="sGk"> حارس مرمى</label>
+      <label class="check"><input type="checkbox" id="sCam"> عرض صورة الكاميرا والهيكل العظمي</label>
+      <label class="check"><input type="checkbox" id="sAR"> وضع الواقع المعزز (الملعب فوق صورة الكاميرا)</label>
+      <label class="check"><input type="checkbox" id="sSound"> المؤثرات الصوتية</label>
+      <button class="primary" data-close>حفظ وإغلاق</button>
+    </div>
+  </section>
+
+  <!-- CALIBRATION -->
+  <section id="calib" class="overlay" hidden>
+    <div class="sheet">
+      <h2 id="calibTitle">جاري تشغيل الكاميرا…</h2>
+      <div class="calib-view">
+        <canvas id="calibCanvas" width="480" height="360"></canvas>
+        <div class="frame-guide"></div>
+      </div>
+      <ul class="checks" id="checks">
+        <li data-k="body">الجسم ظاهر</li>
+        <li data-k="shoulders">الكتفان</li>
+        <li data-k="hips">الورك</li>
+        <li data-k="knees">الركبتان</li>
+        <li data-k="feet">القدمان</li>
+      </ul>
+      <div class="progress"><i id="calibBar"></i></div>
+      <p class="note" id="calibHint">ابتعد حتى يظهر جسمك كاملاً داخل الإطار، ثم اثبت في المنتصف.</p>
+      <div class="row">
+        <button class="ghost" id="calibCancel">رجوع</button>
+        <button class="ghost" id="calibSkip">ابدأ بدون القدمين</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAUSE -->
+  <section id="pause" class="overlay" hidden>
+    <div class="sheet">
+      <h2>إيقاف مؤقت</h2>
+      <p class="note">ارفع يديك فوق رأسك ثانية للاستئناف، أو اضغط الزر.</p>
+      <div class="row">
+        <button class="primary" id="resume">استئناف</button>
+        <button class="ghost" id="recalib">إعادة المعايرة</button>
+        <button class="ghost" id="pauseSettings">الإعدادات</button>
+        <button class="ghost" id="toMenu">القائمة</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results" class="overlay" hidden>
+    <div class="sheet">
+      <p class="eyebrow">نهاية الجولة</p>
+      <h2 id="resTitle">النتيجة</h2>
+      <div class="res-grid" id="resGrid"></div>
+      <p class="best" id="resBest"></p>
+      <div class="row">
+        <button class="primary" id="playAgain">العب مرة أخرى</button>
+        <button class="ghost" id="resMenu">القائمة</button>
+      </div>
+    </div>
+  </section>
+
+  <div id="loading" class="loading" hidden><div class="spinner"></div><p id="loadingText">تحميل نموذج تتبع الجسم…</p></div>
+</div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
