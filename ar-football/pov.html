@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#000000">
+<title>Defender POV</title>
+<meta name="description" content="افتح الكاميرا فيظهر مدافع أمامك في مكانك الحقيقي، وراوغه بكرتك الحقيقية.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lalezar&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="css/defender.css">
+<style>
+  #cam{transform:none}
+  .start-min{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px;
+    background:radial-gradient(ellipse at top,#173a2c,#05090c)}
+  .start-min h1{font-family:var(--display);font-weight:400;font-size:clamp(2.2rem,9vw,3.4rem);margin:0;text-align:center}
+  .start-min p{margin:0;color:var(--muted);text-align:center;max-width:420px;line-height:1.7}
+  .big{width:min(420px,100%);font-size:1.3rem;padding:20px;border-radius:18px}
+  .mini{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+  .mini button{background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:99px;padding:8px 16px}
+  .mini button[aria-pressed=true]{border-color:var(--accent);background:rgba(63,167,255,.18)}
+  .arrow{position:fixed;z-index:4;top:50%;transform:translateY(-50%);font-size:3rem;color:#fff;text-shadow:0 2px 12px #000;pointer-events:none}
+  .arrow.l{left:12px} .arrow.r{right:12px}
+  details.limits{max-width:440px}
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/",
+    "@mediapipe/tasks-vision": "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.21/vision_bundle.mjs"
+  }
+}
+</script>
+</head>
+<body>
+<video id="cam" playsinline muted autoplay></video>
+<canvas id="gl"></canvas>
+
+<header id="hud" hidden>
+  <div class="clock" id="hTime">2:00</div>
+  <div class="stat good"><b id="hDrib">0</b><span>مراوغات</span></div>
+  <div class="stat bad"><b id="hLoss">0</b><span>كرات ضائعة</span></div>
+  <div class="stat warn"><b id="hFoul">0</b><span>أخطاء لك</span></div>
+  <button class="icon" id="bHere" aria-label="أعد المدافع أمامي">⟲</button>
+</header>
+<div id="flash" class="flash"></div>
+<div id="prompt" class="prompt" hidden></div>
+<div id="arrow" class="arrow" hidden></div>
+
+<section id="start" class="start-min">
+  <h1>⚽ مدافع أمامك</h1>
+  <p>امسك الجوال والكاميرا الخلفية للأمام، وكرتك عند قدميك. يظهر مدافع بحجم حقيقي أمامك؛ راوغه بالكرة وأنت تنظر من خلال الشاشة.</p>
+  <div class="mini" id="lvl">
+    <button data-d="easy">Easy</button><button data-d="medium">Medium</button><button data-d="hard">Hard</button>
+  </div>
+  <button class="primary big" id="bGo">افتح الكاميرا</button>
+  <p class="err" id="err" hidden></p>
+  <details class="limits"><summary>حدود التجربة</summary>
+    <ul>
+      <li>المدافع يثبت في مكانه عندما <b>تدير</b> الجوال (حساس الاتجاه)، لكن مشيك للأمام لا يُقاس على iPhone؛ لذلك يتراجع أمامك بنفس المسافة كأنه يغطيك.</li>
+      <li>مستوى الأرض يُحسب من حجم كرتك في الصورة (كرة مقاس 5). قبل أن تُرصد الكرة يُقدَّر من ارتفاع الجوال.</li>
+      <li>المدافع لا يلمس كرتك فعلاً؛ «فقدت الكرة» تعني أن قدمه الافتراضية وصلت لمكانها قبل أن تبعدها.</li>
+      <li>ساقاك لا تحجبان المدافع (فقط الكرة تحجبه)، والظل اتجاهه تقريبي.</li>
+    </ul>
+  </details>
+</section>
+
+<script type="module" src="js/pov/app.js"></script>
+</body>
+</html>
