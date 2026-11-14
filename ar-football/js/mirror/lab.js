@@ -1,6 +1,7 @@
 // Mirror AR lab: runs the mirror pipeline one stage at a time, each with live pass/fail checks.
 import { FrontCamera, cameraErrorMessage } from './camera.js';
 import { STAGES } from './stages.js';
+import { Sfx } from '../audio.js';
 
 const $ = (s) => document.querySelector(s);
 
@@ -56,6 +57,7 @@ $('#btnCollapse').onclick = () => $('#panel').classList.toggle('collapsed');
 $('#btnStart').onclick = async () => {
   $('#startErr').hidden = true;
   try {
+    lab.sfx = new Sfx(); lab.sfx.unlock(); // audio must be unlocked inside the tap on iOS
     lab.camera = new FrontCamera(lab.video);
     await lab.camera.start();
   } catch (e) {
@@ -91,6 +93,7 @@ function loop() {
     if (all) lab.passed.add(lab.stage);
     $('#btnNext').disabled = !lab.passed.has(lab.stage) || lab.stage === STAGES.length - 1;
     $('#metrics').innerHTML = Object.entries(lab._metrics).map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
+    lab._metrics = {}; // stages re-post their metrics every frame; drop stale ones
     renderSteps();
   }
 }

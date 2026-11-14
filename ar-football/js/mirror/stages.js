@@ -2,7 +2,8 @@
 // test() returns true (pass), false (fail, shown as warning) or null (not yet known).
 
 import * as THREE from 'three';
-import { PoseTracker, BONES } from '../pose.js';
+import { PoseTracker, BodyController, BONES } from '../pose.js';
+import { playKick } from '../models.js';
 import { FloorEstimator, TiltSensor } from './floor.js';
 import { MirrorView, makeLifeSizePlayer, idle } from './view.js';
 
@@ -182,10 +183,12 @@ function screenOf3D(l, v) { // three.js camera projection → screen px
 }
 function placePlayer(l) {
   const c = l.ctx, r = c.floor.result, pl = c.player;
+  if (!r || !pl) return false;
   const side = c.side ?? (r.X < 0 ? 1 : -1);
   pl.position.set(r.X + side * c.gap, 0, -r.Z + c.depthOff);
   pl.rotation.y = Math.PI; // face the camera (you)
   c.view.aimLight(pl.position.x, pl.position.z);
+  return true;
 }
 STAGES.push({
   title: 'لاعب 3D بجانبك',
@@ -264,5 +267,75 @@ STAGES.push({
     l.metric('انحراف الأرض عن قدميك', s3.feetErr != null ? `${s3.feetErr.toFixed(1)} px` : '—');
     l.metric('الإضاءة المقدرة', `سطوع ${(c.view.lum * 100).toFixed(0)}%`);
     l.metric('العرض', `${(s3.fps || 0).toFixed(0)} fps • ${c.view.frameMs.toFixed(1)} ms`);
+  },
+});
+
+// ---------------- Stage 4: body tracking drives the player ----------------
+STAGES.push({
+  title: 'تتبع الجسم',
+  hint: 'اللاعب يقلّدك الآن: اجرِ في مكانك فيجري، تحرّك يميناً ويساراً فيتحرك، ارفع قدمك بقوة فيركل، وبدّل الاتجاه بسرعة للتمويه.',
+  limits: `<ul>
+    <li><b>التأخير:</b> بين حركتك وحركة اللاعب زمن الإطار (33 ms) + زمن التتبع (يظهر أدناه) + التنعيم (~30–60 ms). على الآيفون المتوقع 80–150 ms إجمالاً.</li>
+    <li>تتبع ثنائي الأبعاد من كاميرا واحدة: الحركة نحو الكاميرا تُقاس من تغيّر حجم الجسم فقط، وهي أقل دقة من الحركة الجانبية.</li>
+    <li>الركلة تُكشف من ارتفاع القدم وسرعتها، وليس من اتجاهها. الركلة الجانبية الخفيفة قد لا تُكشف.</li>
+    <li>الملابس الواسعة والإضاءة الخافتة والخلفية المزدحمة تقلّل الدقة؛ القدمان أول ما يضيع.</li>
+    <li>شخص واحد فقط: إذا دخل شخص آخر قد ينتقل التتبع إليه.</li>
+  </ul>`,
+  checks: [
+    { label: 'معايرة وضع الجسم المحايد', test: (l) => (l.ctx.body?.calib ? true : null) },
+    { label: 'التتبع ≥ 15 إطاراً/ث', test: (l) => (l.ctx.tracker?.fps ? l.ctx.tracker.fps >= 15 : null) },
+    { label: 'رُصد الجري في المكان', test: (l) => l.ctx.s4?.seen.run || null },
+    { label: 'رُصدت حركة لليمين', test: (l) => l.ctx.s4?.seen.right || null },
+    { label: 'رُصدت حركة لليسار', test: (l) => l.ctx.s4?.seen.left || null },
+    { label: 'رُصدت ركلة', test: (l) => l.ctx.s4?.seen.kick || null },
+    { label: 'رُصد تمويه', optional: true, test: (l) => l.ctx.s4?.seen.feint || null },
+  ],
+  enter(l, ui) {
+    const c = l.ctx;
+    c.body ||= new BodyController();
+    c.body.reset(); c.body.sensitivity = c.sens ?? 1;
+    c.s4 = { seen: {}, x: 0, events: [] };
+    ui.innerHTML = `<label>حساسية التتبع: <b id="sOut"></b><input type="range" id="sIn" min="0.5" max="2" step="0.05"></label>
+      <div class="row"><button class="ghost sm" id="bRe4">أعد معايرة الوضع المحايد</button></div>`;
+    const sIn = ui.querySelector('#sIn'), sync = () => (ui.querySelector('#sOut').textContent = `×${(+sIn.value).toFixed(2)}`);
+    sIn.value = c.body.sensitivity; sIn.oninput = () => { c.body.sensitivity = c.sens = +sIn.value; sync(); }; sync();
+    ui.querySelector('#bRe4').onclick = () => { c.body.reset(); c.body.sensitivity = c.sens ?? 1; };
+  },
+  update(l, dt, g, current) {
+    const c = l.ctx, B = c.body, T = c.tracker, s4 = c.s4;
+    if (!B || !current) return;
+    if (!c.floor?.result || !c.player) { l.metric('تنبيه', 'أكمل معايرة الأرض (المرحلة 2) أولاً'); drawSkeleton(l, g, 0.6); return; }
+    const t = performance.now() / 1000;
+    if (!B.calib) {
+      // wall-clock step: frame dt is capped at 50 ms, which would slow calibration on slow devices
+      const now = performance.now(), rdt = Math.min(0.3, (now - (s4.lastCal || now)) / 1000); s4.lastCal = now;
+      const p = B.calibrate(T.points, rdt);
+      l.metric('معايرة الوضع', `${Math.round(p * 100)}%`);
+      drawSkeleton(l, g, 0.6);
+      return;
+    }
+    B.update(T.points, t);
+    for (const e of B.drain()) {
+      s4.events.unshift(`${{ touch: 'لمسة', kick: 'ركلة', feint: 'تمويه', handsUp: 'يدان' }[e.type]}${e.foot ? ' ' + e.foot : ''}${e.dir ? (e.dir > 0 ? ' →' : ' ←') : ''}`); s4.events.length = Math.min(s4.events.length, 6);
+      if (e.type === 'kick') { s4.seen.kick = true; playKick(c.player.userData.model, e.foot === 'L' ? -1 : 1); }
+      if (e.type === 'feint') { s4.seen.feint = true; s4.vx = (s4.vx || 0) + e.dir * 1.5; }
+    }
+    if (B.run > 0.5) s4.seen.run = true;
+    if (B.steer > 0.6) s4.seen.right = true;
+    if (B.steer < -0.6) s4.seen.left = true;
+    // Player mirrors you: lateral velocity from steer, running animation from cadence.
+    s4.vx = (s4.vx || 0) + (B.steer * 2.0 - (s4.vx || 0)) * Math.min(1, dt * 8);
+    s4.x = Math.max(-1.5, Math.min(1.5, s4.x + s4.vx * dt));
+    const pl = c.player;
+    placePlayer(l); pl.position.x += s4.x;
+    // never stand inside you: keep ≥ 0.6 m from your live position (same depth assumed)
+    const e = c.floor.last;
+    if (e?.ok) { const d = pl.position.x - e.X; if (Math.abs(d) < 0.6) pl.position.x = e.X + (Math.sign(d) || 1) * 0.6; }
+    idle(pl, dt, B.run * 5 + Math.abs(s4.vx), { tilt: -B.steer });
+    drawSkeleton(l, g, 0.35);
+    l.metric('اتجاه', B.steer.toFixed(2)); l.metric('جري', B.run.toFixed(2)); l.metric('عمق', B.depth.toFixed(2));
+    l.metric('مصدر الخطوات', { feet: 'القدمان', knees: 'الركبتان', hips: 'الورك', none: '—' }[B.source]);
+    l.metric('آخر الأحداث', s4.events.join(' • ') || '—');
+    l.metric('تتبع الجسم', `${T.fps.toFixed(0)} fps • ${T.inferMs.toFixed(0)} ms • ${T.delegate}`);
   },
 });
