@@ -5,6 +5,7 @@
 // wins and every other item is placed relative to it, each with its reason.
 // Lengths in metres come from the room's scale (estimated); positions are normalised image x.
 const { width, overlap, positionWords } = require("./schema");
+const { RULES } = require("./rules");
 
 const CHAIR_ZONE_M = 0.5;            // the chair itself
 const BEHIND_CHAIR_M = [0.9, 1.07];  // guide: 90-107 cm behind the chair
@@ -31,7 +32,18 @@ function evaluateCandidate(room, intent, deskSpec, wall, seg) {
   const deskImgW = (deskCm / 100) * imgPerM;
   const outlet = room.outlets.find(o => o.wall === wall.id && o.x >= seg.x0 && o.x <= seg.x1);
   let centre = outlet ? outlet.x : (seg.x0 + seg.x1) / 2;
-  centre = Math.min(seg.x1 - deskImgW / 2, Math.max(seg.x0 + deskImgW / 2, centre));
+  // WIN-01: a window on the neighbouring wall that runs into the shared corner stays reachable:
+  // keep the desk end ~60 cm from that corner when the stretch allows it
+  let lo = seg.x0, hi = seg.x1, keptFromCorner = null;
+  const keepImg = (RULES["WIN-01"].min_cm / 100) * imgPerM;
+  for (const w of room.windows.filter(w => ADJACENT[wall.id].includes(w.wall))) {
+    const other = room.walls.find(x => x.id === w.wall && x.extent);
+    if (!other) continue;
+    if (wall.id === "back" && w.wall === "left" && other.extent.x1 - w.x1 < 0.03 && seg.x0 - wall.extent.x0 < keepImg) { lo = Math.max(lo, wall.extent.x0 + keepImg); keptFromCorner = "left"; }
+    if (wall.id === "back" && w.wall === "right" && w.x0 - other.extent.x0 < 0.03 && wall.extent.x1 - seg.x1 < keepImg) { hi = Math.min(hi, wall.extent.x1 - keepImg); keptFromCorner = "right"; }
+  }
+  if (hi - lo < deskImgW) { lo = seg.x0; hi = seg.x1; if (keptFromCorner) warnings.push(`desk reaches the ${keptFromCorner} corner: keep ~60 cm free in front of the window there (WIN-01)`); keptFromCorner = null; }
+  centre = Math.min(hi - deskImgW / 2, Math.max(lo + deskImgW / 2, centre));
   const desk = { x0: +(centre - deskImgW / 2).toFixed(3), x1: +(centre + deskImgW / 2).toFixed(3) };
   let score = 50;
 
@@ -63,6 +75,7 @@ function evaluateCandidate(room, intent, deskSpec, wall, seg) {
   const certain = room.size.certainty !== "unknown";
   if (depthM < need) { score -= certain ? 100 : 30; (certain ? blockers : warnings).push(`about ${depthM.toFixed(1)} m in front of this wall; the desk, chair and 90 cm behind it need ~${need.toFixed(1)} m`); }
   else reasons.push(`room to move: ~${depthM.toFixed(1)} m in front of the wall, ~${need.toFixed(1)} m needed${certain ? "" : " (estimated from the room size)"}`);
+  if (keptFromCorner) reasons.push(`kept ~60 cm from the ${keptFromCorner} corner so the window there can still be reached and opened (WIN-01)`);
   if (outlet) { score += 10; reasons.push("power outlet on this wall behind the desk"); }
   if (wall.id === "back") { score += 5; reasons.push("back wall: the whole setup is visible from this camera angle"); }
   score += Math.min(10, (segM - deskCm / 100) * 5);
@@ -81,7 +94,7 @@ function placeItems(room, intent, decisions, best) {
   const awayFromWindow = winSide === "left" ? "right" : winSide === "right" ? "left" : sideWithSpace;
   const at = (s) => ({ x0: +Math.max(0, s.x0).toFixed(3), x1: +Math.min(1, s.x1).toFixed(3) });
   let key = null; // the decided item being placed (links placement, budget and products)
-  const put = (item, anchor, s, reason) => out.push({ key, item, anchor, wall: best.wall, ...at(s), where: where(s), reason });
+  const put = (item, anchor, s, reason, band) => out.push({ key, item, anchor, wall: best.wall, ...at(s), where: where(s), reason, ...(band ? { band } : {}) });
   for (const it of decisions.items) {
     key = it.key;
     switch (it.key) {
@@ -95,14 +108,19 @@ function placeItems(room, intent, decisions, best) {
       case "mousepad": put("desk mat", "desk", { x0: d.x0 + w * 0.2, x1: d.x1 - w * 0.2 }, "under keyboard and mouse"); break;
       case "monitor_light": put("monitor light bar", "desk", { x0: d.x0 + w * 0.32, x1: d.x1 - w * 0.32 }, "on top of the monitor: desk light without screen glare"); break;
       case "desk_lamp": put("desk lamp", "desk", awayFromWindow === "left" ? { x0: d.x0, x1: d.x0 + w * 0.12 } : { x0: d.x1 - w * 0.12, x1: d.x1 }, `at the ${awayFromWindow} edge, away from the window light`); break;
-      case "accent_light": put("wall LED light bars", "wall", { x0: d.x0 + w * 0.05, x1: d.x1 - w * 0.05 }, "on the wall above the desk, outside the direct view"); break;
+      case "accent_light": {
+        // low band behind the monitor; leaves the side of the pegboard free so they never overlap (GEOM-01)
+        const storage = decisions.items.some(i => i.key === "wall_storage");
+        const span = !storage ? { x0: d.x0 + w * 0.05, x1: d.x1 - w * 0.05 } : sideWithSpace === "right" ? { x0: d.x0 + w * 0.05, x1: d.x1 - w * 0.38 } : { x0: d.x0 + w * 0.38, x1: d.x1 - w * 0.05 };
+        put("wall LED light bars", "wall", span, "on the wall just above the desk, outside the direct view", "low"); break;
+      }
       case "key_light": put("key light", "floor", decisions.lighting.streaming && /right/.test(decisions.lighting.streaming.key) ? { x0: d.x1, x1: d.x1 + w * 0.12 } : { x0: d.x0 - w * 0.12, x1: d.x0 }, decisions.lighting.streaming ? decisions.lighting.streaming.key : "beside the desk"); break;
       case "microphone": put("microphone on boom arm", "desk", sideWithSpace === "right" ? { x0: d.x1 - w * 0.2, x1: d.x1 } : { x0: d.x0, x1: d.x0 + w * 0.2 }, "boom arm clamped at the edge, mic close to the mouth"); break;
       case "webcam": put("webcam", "desk", { x0: d.x0 + w * 0.45, x1: d.x1 - w * 0.45 }, "on top of the main monitor, at eye level"); break;
-      case "wall_storage": put("wall pegboard and shelf", "wall", sideWithSpace === "right" ? { x0: d.x1 - w * 0.35, x1: d.x1 } : { x0: d.x0, x1: d.x0 + w * 0.35 }, "above the desk on the side with more space: vertical storage"); break;
+      case "wall_storage": put("wall pegboard and shelf", "wall", sideWithSpace === "right" ? { x0: d.x1 - w * 0.35, x1: d.x1 } : { x0: d.x0, x1: d.x0 + w * 0.35 }, "above the desk on the side with more space: vertical storage", "mid"); break;
       case "drawers": put("drawer unit", "floor", awayFromWindow === "left" ? { x0: d.x0, x1: d.x0 + w * 0.25 } : { x0: d.x1 - w * 0.25, x1: d.x1 }, "under the desk at one end, legs stay free"); break;
       case "plant": put("small plant", "desk", sideWithSpace === "right" ? { x0: d.x1 - w * 0.08, x1: d.x1 } : { x0: d.x0, x1: d.x0 + w * 0.08 }, "at the edge of the desk (outer reach zone)"); break;
-      case "wall_art": put("framed art print", "wall", sideWithSpace === "right" ? { x0: d.x1, x1: d.x1 + w * 0.25 } : { x0: d.x0 - w * 0.25, x1: d.x0 }, "beside the desk, outside the main view"); break;
+      case "wall_art": put("framed art print", "wall", sideWithSpace === "right" ? { x0: d.x1, x1: d.x1 + w * 0.25 } : { x0: d.x0 - w * 0.25, x1: d.x0 }, "beside the desk, outside the main view", "mid"); break;
       case "wall_treatment": put("wall treatment", "wall", { x0: d.x0 - w * 0.1, x1: d.x1 + w * 0.1 }, "only on the wall behind the desk (customer allowed)"); break;
       default: break;
     }

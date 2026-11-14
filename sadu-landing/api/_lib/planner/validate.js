@@ -37,6 +37,15 @@ function validatePlan(p) {
       const hit = onWall.find(o => overlap(o, it) > 0 && (it.anchor === "wall" || (it.anchor === "floor" && room.doors.includes(o))));
       if (hit) { checks.push({ name: `${it.item} placement`, result: "fail" }); errors.push({ code: "covers_opening", key: it.key, message: `${it.item} would cover a ${room.windows.includes(hit) ? "window" : "door"}` }); }
     }
+    // GEOM-01 (planhaus): two wall items in the same height band must not overlap
+    const wallItems = spatial.placement.filter(it => it.anchor === "wall");
+    let collide = null;
+    for (let a = 0; a < wallItems.length && !collide; a++) for (let b = a + 1; b < wallItems.length; b++) {
+      const A = wallItems[a], B = wallItems[b];
+      if (A.wall === B.wall && (A.band || "mid") === (B.band || "mid") && overlap(A, B) > 0.005) { collide = [A, B]; break; }
+    }
+    check("wall items do not overlap (GEOM-01)", !collide, "items_collide", collide ? `${collide[0].item} and ${collide[1].item} would overlap on the wall` : "");
+    if (collide) errors[errors.length - 1].key = [collide[0].key, collide[1].key];
     if (best.warnings.length) for (const w of best.warnings) warnings.push({ code: "placement_note", message: w });
   }
   // 6. budget

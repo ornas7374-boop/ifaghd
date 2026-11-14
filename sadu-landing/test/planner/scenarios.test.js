@@ -133,3 +133,21 @@ test("plan output has every required section and a signed, length-limited render
   assert.ok(JSON.parse(JSON.stringify(p)).validation_results, "plan is plain JSON");
   assert.ok(!("_internal" in JSON.parse(JSON.stringify(p))), "internal state is not sent to the browser");
 });
+
+test("rules from the skills (planhaus / interior-design-expert): window corner kept reachable, wall items never overlap, lux targets and 60-30-10", () => {
+  // window on the left wall running into the corner: the desk keeps ~60 cm from that corner (WIN-01)
+  const obs = ROOMS.windowLeft(); obs.windows[0].x1 = 0.2; obs.outlets = [];
+  const p = plan(obs, { description: "سيت أب قيمنق أزرق", budget_sar: 3000 });
+  assert.equal(p.validation_results.passed, true, JSON.stringify(p.validation_results.errors));
+  const d = p.spatial_plan.desk;
+  assert.ok(d.x0 > 0.2 + 0.05, `desk starts away from the corner (x0=${d.x0})`);
+  assert.ok(d.reasons.some(r => /WIN-01/.test(r)));
+  // GEOM-01: wall items in the same band do not overlap
+  const wall = p.furniture_placement.filter(x => x.anchor === "wall");
+  for (let a = 0; a < wall.length; a++) for (let b = a + 1; b < wall.length; b++)
+    if ((wall[a].band || "mid") === (wall[b].band || "mid")) assert.equal(overlap(wall[a], wall[b]), 0, `${wall[a].item} vs ${wall[b].item}`);
+  assert.ok(p.validation_results.checks.some(c => /GEOM-01/.test(c.name) && c.result === "pass"));
+  // IES lux targets and the 60-30-10 palette
+  assert.match(p.lighting_plan.targets.task, /300-500 lux/);
+  assert.equal(p.color_palette.proportions.rule, "60-30-10 (COL-60)");
+});

@@ -41,7 +41,7 @@ function renderInstructions(plan) {
   const parts = [
     `Edit this photo of ${space.prompt}. This is an edit of the existing photo, not a new room.`,
     ...prot,
-    ...(intent.request_en ? [`THE CUSTOMER'S REQUEST: ${intent.request_en}.`] : []),
+    ...(intent.request_en ? [`THE CUSTOMER'S REQUEST: ${intent.request_en.replace(/[.\s]+$/, "")}.`] : []),
     `Add exactly these items and nothing else: ${lines.join("; ")}.`,
     `Lighting: ${[light.monitor, light.task, light.accent, light.bias].filter(Boolean).join("; ")}.`,
     `Colours: ${decisions.palette.furniture} furniture, accents ${decisions.palette.accents.join(" and ")} in lights and small items only.`,

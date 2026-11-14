@@ -3,6 +3,8 @@
 // colour palette, lighting layers and the style, from the room (size, light, surfaces) and the intent
 // (use, colours, devices, minimal...). Every decision carries its reason.
 
+const { RULES } = require("./rules");
+
 const ITEMS = {
   desk:            { cat: "desk",            anchor: "floor", label: "desk" },
   chair:           { cat: "chair",           anchor: "floor", label: "chair" },
@@ -96,7 +98,8 @@ function decide(room, intent, opts = {}) {
   const furnitureColour = intent.minimal ? (lightRoom ? "white" : "black") : style === "white_blue" || style === "grey_tech" ? (lightRoom ? "white" : "grey") : lightRoom ? "white or light wood" : "black";
   const accents = (intent.accents.length ? intent.accents : [STYLE_ACCENT[style]]).slice(0, intent.minimal ? 1 : 2);
   const palette = { keep: { floor: room.surfaces.floor || "existing floor", walls: room.surfaces.walls || "existing walls", ceiling: room.surfaces.ceiling || "existing ceiling" },
-    furniture: furnitureColour, accents, rule: "large surfaces stay calm; accents only in lights and small items" };
+    furniture: furnitureColour, accents, rule: "large surfaces stay calm; accents only in lights and small items",
+    proportions: { "60% kept room surfaces (walls, floor)": 60, [`30% ${furnitureColour} furniture`]: 30, [`10% ${accents.join(" and ")} accents`]: 10, rule: "60-30-10 (COL-60)" } };
   why("furniture colour", `${furnitureColour}: sits with the existing ${lightRoom ? "light" : "dark"} walls and floor, which are kept`);
 
   // --- lighting plan (layers + direction relative to the window)
@@ -109,6 +112,13 @@ function decide(room, intent, opts = {}) {
     monitor: items.some(i => i.key === "monitor_light") ? "light bar on top of the monitor" : null,
     bias: intent.accents.length ? `soft ${intent.accents[0]} glow behind the monitor (customer's choice)` : "soft white glow behind the monitor (6500K, guide)",
     accent: items.some(i => i.key === "accent_light") ? `${accents.join(" and ")} wall light bars above the desk` : null,
+    targets: {
+      ambient: `${RULES["LUX-AMB"].lux.join("-")} lux from the existing ceiling light`,
+      task: `${RULES["LUX-TASK"].lux.join("-")} lux on the desk surface, neutral white 4000K`,
+      evening: "warm 2700-3000K ambient in the evening; blue/RGB accents stay low, never the only light",
+      ...(use === "streaming" ? { face: `${RULES["LUX-FACE"].lux[0]}+ lux on the face, even from both sides` } : {}),
+      source: "IES levels via interior-design-expert"
+    },
     streaming: use === "streaming" ? { key: `key light on the ${keySide} of the camera, 30-45 degrees and above eye level`, fill: "softer light on the opposite side", back: "back light behind the user" } : null
   };
   if (intent.accents.length && use !== "work") why("bias light colour", "the guide prefers white behind the screen; the customer's colour wins");

@@ -64,6 +64,11 @@ function planDesign(input = {}) {
       if (removable.length) { decisions.items = decisions.items.filter(it => !removable.includes(it.key)); fixed = true; attempts[i].fix = `${attempts[i].fix ? attempts[i].fix + "; " : ""}left out ${removable.join(", ")} (would cover a window or door)`; }
       else if (spatial.best && !excludeWalls.includes(spatial.best.wall)) { excludeWalls.push(spatial.best.wall); fixed = true; attempts[i].fix = `try another wall than ${spatial.best.wall}`; }
     }
+    if (codes.includes("items_collide")) {
+      const e = validation.errors.find(x => x.code === "items_collide");
+      const drop = (e.key || []).find(k => (decisions.items.find(it => it.key === k) || {}).priority !== "essential");
+      if (drop) { decisions.items = decisions.items.filter(it => it.key !== drop); fixed = true; attempts[i].fix = `${attempts[i].fix ? attempts[i].fix + "; " : ""}left out ${drop} (overlapped another wall item)`; }
+    }
     if (codes.includes("colour_missing")) { decisions.palette.accents = intent.accents.slice(0, 2); fixed = true; attempts[i].fix = "palette set to the requested colours"; }
     if (!fixed) break; // nothing left to change (e.g. budget too small for a desk): report honestly
   }
