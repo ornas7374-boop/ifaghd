@@ -162,3 +162,11 @@ export class ARScene {
 
   render() { this.renderer.render(this.scene, this.camera); }
 }
+
+// Field lines, mini goal and cones for any arena group (used by the mirror lab).
+export function addArenaProps(arena) {
+  const ctx = { arena };
+  ARScene.prototype._field.call(ctx);
+  ARScene.prototype._goal.call(ctx);
+  ARScene.prototype._cones.call(ctx);
+}

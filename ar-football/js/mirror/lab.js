@@ -84,6 +84,7 @@ function loop() {
   g.clearRect(0, 0, innerWidth, innerHeight);
   // Every stage up to the current one keeps running (they build on each other).
   for (let i = 0; i <= lab.stage; i++) STAGES[i].update?.(lab, dt, g, i === lab.stage);
+  lab.ctx.view?.render(); // one render per frame, after every stage has updated the scene
   checkT -= dt;
   if (checkT <= 0) {
     checkT = 0.25;

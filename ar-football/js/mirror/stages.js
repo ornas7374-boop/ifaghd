@@ -4,6 +4,10 @@
 import * as THREE from 'three';
 import { PoseTracker, BodyController, BONES } from '../pose.js';
 import { playKick } from '../models.js';
+import { Game } from '../game.js';
+import { addArenaProps } from '../arscene.js';
+import { FallbackControls } from '../controls.js';
+import { PITCH } from '../config.js';
 import { FloorEstimator, TiltSensor } from './floor.js';
 import { MirrorView, makeLifeSizePlayer, idle } from './view.js';
 
@@ -234,13 +238,12 @@ STAGES.push({
     if (!c.view) return;
     c.view.fit(F, l.video);
     c.view.updateLight(l.video, dt);
-    if (!r) { c.player.visible = false; c.view.render(); return; }
+    if (!r) { c.player.visible = false; return; }
     c.view.setFloor(r.floorY);
     const pl = c.player;
     pl.visible = l.stage <= 2 || c.keepSidePlayer !== false;
     pl.scale.setScalar((F.userHeight * c.sizeK) / pl.userData.natH);
     if (l.stage === 2) { placePlayer(l); idle(pl, dt, 0); }
-    c.view.render();
     if (!current) return;
     // --- checks ---
     const s3 = c.s3; s3.frames++;
@@ -337,5 +340,125 @@ STAGES.push({
     l.metric('مصدر الخطوات', { feet: 'القدمان', knees: 'الركبتان', hips: 'الورك', none: '—' }[B.source]);
     l.metric('آخر الأحداث', s4.events.join(' • ') || '—');
     l.metric('تتبع الجسم', `${T.fps.toFixed(0)} fps • ${T.inferMs.toFixed(0)} ms • ${T.delegate}`);
+  },
+});
+
+// ---------------- Stage 5: defenders, ball and collisions (existing game system) ----------------
+function flashEl() {
+  let el = document.querySelector('#labFlash');
+  if (!el) { el = document.createElement('div'); el.id = 'labFlash'; el.className = 'lab-flash'; document.body.append(el); }
+  return el;
+}
+function placeArena(l) {
+  const c = l.ctx, r = c.floor.result, A = c.arena;
+  if (!r || !A) return false;
+  const s = c.arenaScale;
+  const side = c.side ?? (r.X < 0 ? 1 : -1);
+  // kick-off spot beside you (where the stage-3 player stood); the goal further into the room
+  A.position.set(r.X + side * c.gap, 0, -r.Z - PITCH.startZ * s);
+  A.scale.setScalar(s);
+  A.updateMatrixWorld(true);
+  const sc = c.view.sun.shadow.camera, e = 5.5 * s + 1;
+  sc.left = -e; sc.right = e; sc.top = e; sc.bottom = -e; sc.far = 30; sc.updateProjectionMatrix();
+  c.view.sun.position.set(A.position.x - 1.5, 4, A.position.z + 2.5);
+  c.view.sun.target.position.set(A.position.x, c.view.world.position.y, A.position.z);
+  return true;
+}
+STAGES.push({
+  title: 'المدافعون والكرة والتصادمات',
+  hint: 'الملعب يوضع على أرضك بجانبك والمرمى أبعد داخل الغرفة. اجرِ في مكانك لتتقدم بالكرة، تحرك يميناً ويساراً لتراوغ، وارفع قدمك للتسديد. (على الكمبيوتر: WASD / الأسهم + مسافة)',
+  limits: `<ul>
+    <li><b>التصادمات افتراضية فقط:</b> بين اللاعب الافتراضي والمدافعين والكرة داخل المحاكاة. جسمك الحقيقي لا يصطدم بهم ولا يمنعهم.</li>
+    <li>الملعب الافتراضي أكبر من معظم الغرف؛ أجزاؤه البعيدة تُرسم «داخل» الجدار لأنه لا يوجد حجب. صغّر الحجم لتقليل ذلك.</li>
+    <li>الظلال على الأرض من ضوء افتراضي واحد؛ لا تتأثر بأثاث الغرفة ولا تسقط عليه.</li>
+    <li>كل شيء صحيح فقط ما دام الجوال لم يتحرك منذ المعايرة.</li>
+  </ul>`,
+  checks: [
+    { label: 'الملعب موضوع على الأرض المعايرة', test: (l) => (l.ctx.arena?.visible && l.ctx.floor?.result ? true : null) },
+    { label: 'وضع الجسم المحايد معاير', test: (l) => (l.ctx.body?.calib ? true : null) },
+    { label: 'المباراة تعمل', test: (l) => (l.ctx.game ? ['play', 'countdown', 'dead'].includes(l.ctx.game.state) : null) },
+    { label: 'المدافعون يتحركون', test: (l) => l.ctx.s5?.defMoved || null },
+    { label: 'حدث تدخل / تصادم', test: (l) => l.ctx.s5?.tackles > 0 || null },
+    { label: 'المحاكاة + العرض ≥ 24 إطاراً/ث', test: (l) => (l.ctx.s5?.fps ? l.ctx.s5.fps >= 24 : null) },
+  ],
+  enter(l, ui) {
+    const c = l.ctx;
+    c.arenaScale ??= 0.5; c.gap ??= 0.9;
+    c.body ||= new BodyController();
+    c.s5 = { tackles: 0, msgs: [], frames: 0, t0: performance.now() };
+    if (!c.arena) {
+      c.arena = new THREE.Group(); c.view.world.add(c.arena);
+      addArenaProps(c.arena);
+      const flash = flashEl();
+      const ui5 = {
+        flash(msg, kind = 'info', time = 1.2) { flash.textContent = msg; flash.className = `lab-flash show ${kind}`; clearTimeout(ui5._t); ui5._t = setTimeout(() => flash.classList.remove('show'), time * 1000); c.s5.msgs.unshift(msg); c.s5.msgs.length = Math.min(5, c.s5.msgs.length); },
+        flashSmall(msg) { if (msg.includes('تدخّل')) c.s5.tackles++; c.s5.msgs.unshift(msg); c.s5.msgs.length = Math.min(5, c.s5.msgs.length); },
+        onMatchOver(s) { l.toast(`انتهت الجولة: ${s.goals} أهداف، ${s.dribbles} مراوغات، ${s.losses} كرات ضائعة`, 5000); },
+      };
+      c.game = new Game(c.arena, l.sfx, ui5);
+      c.keys = new FallbackControls(document);
+    }
+    c.arena.visible = true;
+    c.keys.enabled = true;
+    c.keepSidePlayer = false;
+    c.settings5 ||= { difficulty: 'medium', defenders: 3, speedMul: 1, roundSec: 120, goalkeeper: true };
+    c.game.newMatch(c.settings5);
+    l.sfx?.startCrowd();
+    ui.innerHTML = `
+      <label>حجم الملعب: <b id="aOut"></b><input type="range" id="aIn" min="0.25" max="1" step="0.05"></label>
+      <label>الصعوبة <select id="dIn"><option value="easy">Easy</option><option value="medium">Medium</option><option value="hard">Hard</option></select></label>
+      <label>عدد المدافعين: <b id="nOut"></b><input type="range" id="nIn" min="1" max="5" step="1"></label>
+      <div class="row"><button class="ghost sm" id="bRestart">جولة جديدة</button></div>`;
+    const aIn = ui.querySelector('#aIn'), dIn = ui.querySelector('#dIn'), nIn = ui.querySelector('#nIn');
+    const sync = () => { ui.querySelector('#aOut').textContent = `${Math.round(c.arenaScale * 100)}%`; ui.querySelector('#nOut').textContent = c.settings5.defenders; };
+    aIn.value = c.arenaScale; dIn.value = c.settings5.difficulty; nIn.value = c.settings5.defenders;
+    aIn.oninput = () => { c.arenaScale = +aIn.value; sync(); };
+    dIn.onchange = () => { c.settings5.difficulty = dIn.value; c.game.newMatch(c.settings5); };
+    nIn.oninput = () => { c.settings5.defenders = +nIn.value; c.game.newMatch(c.settings5); sync(); };
+    ui.querySelector('#bRestart').onclick = () => c.game.newMatch(c.settings5);
+    sync();
+  },
+  exit(l) {
+    const c = l.ctx;
+    if (c.arena) c.arena.visible = false;
+    if (c.game) c.game.state = 'idle';
+    if (c.keys) c.keys.enabled = false;
+    c.keepSidePlayer = true;
+    l.sfx?.stopCrowd();
+  },
+  update(l, dt, g, current) {
+    const c = l.ctx, B = c.body, T = c.tracker, s5 = c.s5;
+    if (!current || !c.game) return;
+    if (!c.floor?.result) { l.metric('تنبيه', 'أكمل معايرة الأرض (المرحلة 2) أولاً'); c.arena.visible = false; return; }
+    c.arena.visible = true; c.player.visible = false;
+    placeArena(l);
+    let intent = { steer: 0, run: 0, depth: 0, events: [] };
+    const now = performance.now(), t = now / 1000;
+    if (!B.calib) {
+      const rdt = Math.min(0.3, (now - (s5.lastCal || now)) / 1000); s5.lastCal = now;
+      const p = B.calibrate(T.points, rdt); l.metric('معايرة الوضع', `${Math.round(p * 100)}%`);
+    } else {
+      B.update(T.points, t);
+      intent = { steer: B.steer, run: B.run, depth: B.depth, events: B.drain().filter((e) => e.type !== 'handsUp') };
+    }
+    const fb = c.keys.read(dt);
+    if (Math.abs(fb.steer) > Math.abs(intent.steer)) intent.steer = fb.steer;
+    if (fb.run > intent.run) intent.run = fb.run;
+    if (fb.depth) intent.depth = fb.depth;
+    intent.events = intent.events.concat(fb.events);
+    const tSim = performance.now();
+    c.game.update(dt, intent);
+    s5.simMs = (s5.simMs || 0) * 0.9 + (performance.now() - tSim) * 0.1;
+    if (c.game.defenders.some((d) => d.speed > 0.3)) s5.defMoved = true;
+    s5.frames++; if (now - s5.t0 > 1000) { s5.fps = s5.frames * 1000 / (now - s5.t0); s5.frames = 0; s5.t0 = now; }
+    drawSkeleton(l, g, 0.25);
+    const st = c.game.summary();
+    l.metric('الوقت', `${Math.ceil(c.game.timeLeft)} ث`);
+    l.metric('أهداف / مراوغات', `${st.goals} / ${st.dribbles}`);
+    l.metric('كرات ضائعة / أخطاء لك', `${st.losses} / ${st.fouls}`);
+    l.metric('تدخلات', s5.tackles);
+    l.metric('آخر الأحداث', s5.msgs.join(' • ') || '—');
+    l.metric('المحاكاة', `${s5.simMs.toFixed(2)} ms`);
+    l.metric('الإطارات', `${(s5.fps || 0).toFixed(0)} fps`);
   },
 });

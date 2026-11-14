@@ -47,3 +47,7 @@ h2{margin:0;font-size:1.1rem}
 .limits ul{margin:4px 0;padding-inline-start:18px}
 .row{display:flex;gap:8px;justify-content:space-between}
 .toast{position:fixed;z-index:6;left:50%;top:12px;transform:translateX(-50%);background:var(--panel);border:1px solid var(--warn);color:var(--warn);border-radius:99px;padding:6px 14px;font-size:.85rem}
+.lab-flash{position:fixed;z-index:3;left:50%;top:38%;transform:translate(-50%,-50%) scale(.85);opacity:0;pointer-events:none;font-weight:700;
+  font-size:clamp(1.8rem,7vw,3.6rem);text-shadow:0 3px 18px rgba(0,0,0,.7);transition:opacity .15s,transform .15s;white-space:nowrap}
+.lab-flash.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.lab-flash.good{color:var(--good)} .lab-flash.bad{color:var(--bad)} .lab-flash.warn{color:var(--warn)} .lab-flash.goal{color:#ffe066}
