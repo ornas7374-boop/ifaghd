@@ -43,7 +43,7 @@ async function enterStage(i) {
   $('#stageHint').textContent = s.hint;
   $('#limits').innerHTML = s.limits;
   $('#stageControls').innerHTML = '';
-  $('#checks').innerHTML = s.checks.map((c) => `<li>${c.label}</li>`).join('');
+  $('#checks').innerHTML = s.checks.map((c) => `<li>${c.label}${c.optional ? ' <small>(اختياري)</small>' : ''}</li>`).join('');
   $('#btnPrev').disabled = i === 0;
   renderSteps();
   try { await s.enter?.(lab, $('#stageControls')); } catch (e) { console.error(e); lab.toast('خطأ: ' + (e.message || e), 5000); }
@@ -87,7 +87,7 @@ function loop() {
     checkT = 0.25;
     const lis = $('#checks').children;
     let all = true;
-    s.checks.forEach((c, k) => { const r = c.test(lab); lis[k].className = r === true ? 'ok' : r === false ? 'fail' : ''; if (r !== true) all = false; });
+    s.checks.forEach((c, k) => { const r = c.test(lab); lis[k].className = r === true ? 'ok' : r === false ? 'fail' : ''; if (r !== true && !c.optional) all = false; });
     if (all) lab.passed.add(lab.stage);
     $('#btnNext').disabled = !lab.passed.has(lab.stage) || lab.stage === STAGES.length - 1;
     $('#metrics').innerHTML = Object.entries(lab._metrics).map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
