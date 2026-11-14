@@ -54,6 +54,16 @@ export class PoseTracker {
     this.filters = Array.from({ length: 33 }, () => [new OneEuro(), new OneEuro()]);
     this.delegate = 'GPU';
     this.onResult = null;
+    this.maskOn = false;       // person segmentation (optional, used for occlusion in the mirror lab)
+    this.mask = null;          // { data: Uint8Array (0..255), w, h, version }
+  }
+
+  // Enable/disable the person segmentation mask (extra cost per frame).
+  async setMask(on) {
+    if (!this.landmarker || this.maskOn === on) return;
+    await this.landmarker.setOptions({ outputSegmentationMasks: on });
+    this.maskOn = on;
+    if (!on) this.mask = null;
   }
 
   async startCamera() {
@@ -68,7 +78,7 @@ export class PoseTracker {
     await new Promise((r) => (this.video.readyState >= 2 ? r() : this.video.addEventListener('loadeddata', r, { once: true })));
   }
 
-  async loadModel() {
+  async loadModel(prefer = 'GPU') {
     const fileset = await FilesetResolver.forVisionTasks(WASM_URL);
     const opts = (delegate) => ({
       baseOptions: { modelAssetPath: MODEL_URL, delegate },
@@ -76,6 +86,7 @@ export class PoseTracker {
       minPoseDetectionConfidence: 0.5, minPosePresenceConfidence: 0.5, minTrackingConfidence: 0.5,
     });
     try {
+      if (prefer !== 'GPU') throw new Error('CPU requested');
       this.landmarker = await PoseLandmarker.createFromOptions(fileset, opts('GPU'));
       this.delegate = 'GPU';
     } catch (e) {
@@ -111,6 +122,24 @@ export class PoseTracker {
         pts[i] = { x: this.filters[i][0].filter(mx * aspect, t), y: this.filters[i][1].filter(p.y, t), v: vis };
       }
       this.raw = raw; this.points = pts; this.lastSeen = now;
+      const m = res.segmentationMasks?.[0];
+      if (m) {
+        // Copy out now: the mask is only valid inside this callback.
+        // Uint8 readback is the most portable (float readback fails on some WebGL drivers).
+        const n = m.width * m.height;
+        if (!this.mask || this.mask.data.length !== n) this.mask = { data: new Uint8Array(n), w: m.width, h: m.height, version: 0 };
+        try {
+          this.mask.data.set(m.getAsUint8Array().subarray(0, n));
+        } catch {
+          const f = m.getAsFloat32Array(), d = this.mask.data;
+          for (let i = 0; i < n; i++) d[i] = f[i] * 255;
+        }
+        this.mask.version++;
+        // health: share of pixels marked "person" (sampled). 0 while a body is tracked = broken readback.
+        let hit = 0, cnt = 0; const d = this.mask.data;
+        for (let i = 0; i < n; i += 211) { cnt++; if (d[i] > 127) hit++; }
+        this.mask.coverage = hit / cnt;
+      }
     });
     this.inferMs = this.inferMs * 0.9 + (performance.now() - t0) * 0.1;
     this._fc++;

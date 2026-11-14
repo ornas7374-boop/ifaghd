@@ -123,3 +123,60 @@ export function idle(holder, dt, speed = 0, opts) {
     u.arms.forEach((A) => { A.upper.rotation.x *= 0.85; });
   }
 }
+
+// Person occlusion: a full-screen pass that writes ONLY depth where the segmentation mask says
+// "person", at the person's measured distance. Virtual objects behind you then fail the depth
+// test there and the real camera image (you) shows through. Objects in front of you still draw.
+// Limits: one flat depth for your whole body; mask edges are soft/laggy (~1 frame); other real
+// objects (furniture, walls) are still NOT occluders.
+export class PersonOccluder {
+  constructor(view) {
+    this.view = view;
+    this.tex = new THREE.DataTexture(new Uint8Array(4), 1, 1, THREE.RedFormat, THREE.UnsignedByteType);
+    this.tex.minFilter = this.tex.magFilter = THREE.LinearFilter;
+    this.mat = new THREE.ShaderMaterial({
+      glslVersion: THREE.GLSL3,
+      uniforms: { uMask: { value: this.tex }, uDepth: { value: 0.5 }, uScale: { value: new THREE.Vector2(1, 1) }, uOffset: { value: new THREE.Vector2(0, 0) } },
+      vertexShader: `out vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }`,
+      fragmentShader: `precision highp float; in vec2 vUv; uniform sampler2D uMask; uniform float uDepth; uniform vec2 uScale, uOffset; out vec4 o;
+        void main(){
+          // screen uv (0..1, y up) → mirrored video uv → raw mask uv (un-mirror x, flip y)
+          vec2 s = vec2(vUv.x, 1.0 - vUv.y);
+          vec2 v = uOffset + s * uScale;            // mirrored video coords 0..1
+          if (v.x < 0.0 || v.x > 1.0 || v.y < 0.0 || v.y > 1.0) discard;
+          float m = texture(uMask, vec2(1.0 - v.x, v.y)).r;
+          if (m < 0.5) discard;
+          gl_FragDepth = uDepth; o = vec4(0.0);
+        }`,
+      // NB: with depthTest off WebGL also skips depth writes → keep it on with ALWAYS
+      colorWrite: false, depthWrite: true, depthTest: true, depthFunc: THREE.AlwaysDepth,
+    });
+    this.mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), this.mat);
+    this.mesh.frustumCulled = false; this.mesh.renderOrder = -100;
+    this.enabled = false; this.mesh.visible = false; this._ver = -1;
+    view.scene.add(this.mesh);
+  }
+
+  // mask: {data,w,h,version}; distance: metres along the view axis to your body.
+  update(mask, distance, video) {
+    this.mesh.visible = this.enabled && !!mask;
+    if (!this.mesh.visible) return;
+    if (mask.version !== this._ver) {
+      if (this.tex.image.width !== mask.w || this.tex.image.height !== mask.h) {
+        this.tex.dispose();
+        this.tex = new THREE.DataTexture(mask.data, mask.w, mask.h, THREE.RedFormat, THREE.UnsignedByteType);
+        this.tex.minFilter = this.tex.magFilter = THREE.LinearFilter; this.tex.flipY = false; this.tex.unpackAlignment = 1;
+        this.mat.uniforms.uMask.value = this.tex;
+      } else this.tex.image.data = mask.data;
+      this.tex.needsUpdate = true; this._ver = mask.version;
+    }
+    // object-fit: cover crop, as fractions of the video
+    const W = innerWidth, H = innerHeight, vw = video.videoWidth || 640, vh = video.videoHeight || 480;
+    const s = Math.max(W / vw, H / vh), fw = W / (vw * s), fh = H / (vh * s);
+    this.mat.uniforms.uScale.value.set(fw, fh); this.mat.uniforms.uOffset.value.set((1 - fw) / 2, (1 - fh) / 2);
+    // depth-buffer value of a point `distance` in front of the camera
+    const cam = this.view.camera, n = cam.near, f = cam.far, z = Math.max(n * 1.01, distance);
+    const ndc = (f + n) / (f - n) - (2 * f * n) / ((f - n) * z);
+    this.mat.uniforms.uDepth.value = ndc * 0.5 + 0.5;
+  }
+}

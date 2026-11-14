@@ -9,7 +9,7 @@ import { addArenaProps } from '../arscene.js';
 import { FallbackControls } from '../controls.js';
 import { PITCH } from '../config.js';
 import { FloorEstimator, TiltSensor } from './floor.js';
-import { MirrorView, makeLifeSizePlayer, idle } from './view.js';
+import { MirrorView, makeLifeSizePlayer, idle, PersonOccluder } from './view.js';
 
 export const STAGES = [];
 const cm = (m) => `${(m * 100).toFixed(1)} سم`;
@@ -222,13 +222,21 @@ STAGES.push({
       <label>المسافة الجانبية: <b id="gOut"></b><input type="range" id="gIn" min="0.5" max="2.5" step="0.05"></label>
       <label>أمامك / خلفك: <b id="dOut"></b><input type="range" id="dIn" min="-1.2" max="2" step="0.05"></label>
       <label>الطول نسبةً لطولك: <b id="kOut"></b><input type="range" id="kIn" min="0.6" max="1.3" step="0.02"></label>
-      <div class="row"><button class="ghost sm" id="bSide">بدّل الجهة</button></div>`;
+      <div class="row"><button class="ghost sm" id="bSide">بدّل الجهة</button></div>
+      <label style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" id="occIn"> جسمك يحجب ما خلفه (تجريبي، يكلّف أداءً)</label>`;
     const sync = () => { ui.querySelector('#gOut').textContent = `${c.gap.toFixed(2)} م`; ui.querySelector('#dOut').textContent = `${c.depthOff >= 0 ? 'أقرب للكاميرا' : 'أبعد'} ${Math.abs(c.depthOff).toFixed(2)} م`; ui.querySelector('#kOut').textContent = `${Math.round(c.sizeK * 100)}%`; };
     const gIn = ui.querySelector('#gIn'), dIn = ui.querySelector('#dIn'), kIn = ui.querySelector('#kIn');
     gIn.value = c.gap; dIn.value = c.depthOff; kIn.value = c.sizeK;
     gIn.oninput = () => { c.gap = +gIn.value; sync(); };
     dIn.oninput = () => { c.depthOff = +dIn.value; sync(); };
     kIn.oninput = () => { c.sizeK = +kIn.value; sync(); };
+    c.occluder ||= new PersonOccluder(c.view);
+    const occIn = ui.querySelector('#occIn'); occIn.checked = c.occluder.enabled;
+    occIn.onchange = async () => { c.occluder.enabled = occIn.checked; c.maskBadT = 0; await c.tracker.setMask(occIn.checked); };
+    const cpuBtn = document.createElement('button'); cpuBtn.className = 'ghost sm'; cpuBtn.id = 'bCpu'; cpuBtn.hidden = true;
+    cpuBtn.textContent = 'جرّب الحجب بالمعالج CPU (أبطأ)';
+    cpuBtn.onclick = async () => { const T = c.tracker; T.landmarker.close(); T.landmarker = null; T.maskOn = false; await T.loadModel('CPU'); await T.setMask(true); c.maskBadT = 0; cpuBtn.hidden = true; };
+    ui.append(cpuBtn); c.cpuBtn = cpuBtn;
     ui.querySelector('#bSide').onclick = () => { const r = c.floor.result; c.side = -(c.side ?? (r?.X < 0 ? 1 : -1)); };
     sync();
   },
@@ -244,6 +252,14 @@ STAGES.push({
     pl.visible = l.stage <= 2 || c.keepSidePlayer !== false;
     pl.scale.setScalar((F.userHeight * c.sizeK) / pl.userData.natH);
     if (l.stage === 2) { placePlayer(l); idle(pl, dt, 0); }
+    if (c.occluder) {
+      const e = F.last, dist = (e?.ok ? e.Z : r.Z) / Math.cos(F.pitch);
+      // Mask health: a tracked body with an empty mask for 2 s means the GPU readback isn't working here.
+      if (c.occluder.enabled && c.tracker.tracking && c.tracker.mask && c.tracker.mask.coverage === 0) c.maskBadT = (c.maskBadT || 0) + dt; else c.maskBadT = 0;
+      c.maskBroken = c.maskBadT > 2;
+      if (c.cpuBtn) c.cpuBtn.hidden = !(c.maskBroken && c.tracker.delegate === 'GPU');
+      c.occluder.update(c.tracker.mask, dist, l.video);
+    }
     if (!current) return;
     // --- checks ---
     const s3 = c.s3; s3.frames++;
@@ -270,6 +286,7 @@ STAGES.push({
     l.metric('انحراف الأرض عن قدميك', s3.feetErr != null ? `${s3.feetErr.toFixed(1)} px` : '—');
     l.metric('الإضاءة المقدرة', `سطوع ${(c.view.lum * 100).toFixed(0)}%`);
     l.metric('العرض', `${(s3.fps || 0).toFixed(0)} fps • ${c.view.frameMs.toFixed(1)} ms`);
+    l.metric('الحجب', c.maskBroken ? '✗ القناع فارغ على هذا الجهاز (GPU)' : c.occluder?.enabled ? (c.tracker.mask ? `يعمل • قناع ${c.tracker.mask.w}×${c.tracker.mask.h} • تتبع ${c.tracker.inferMs.toFixed(0)} ms` : 'بانتظار القناع…') : 'متوقف');
   },
 });
 
