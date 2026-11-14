@@ -37,7 +37,7 @@ function renderSteps() {
 }
 async function enterStage(i) {
   const prev = STAGES[lab.stage];
-  if (prev && prev !== STAGES[i]) prev.exit?.(lab);
+  if (prev && prev !== STAGES[i]) prev.exit?.(lab, i);
   lab.stage = i; lab._metrics = {};
   const s = STAGES[i];
   $('#stageTitle').textContent = `${i + 1}. ${s.title}`;

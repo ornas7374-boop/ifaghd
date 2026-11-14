@@ -435,8 +435,9 @@ STAGES.push({
     ui.querySelector('#bRestart').onclick = () => c.game.newMatch(c.settings5);
     sync();
   },
-  exit(l) {
+  exit(l, to) {
     const c = l.ctx;
+    if (to === 5) return; // the performance stage measures the running game
     if (c.arena) c.arena.visible = false;
     if (c.game) c.game.state = 'idle';
     if (c.keys) c.keys.enabled = false;
@@ -445,7 +446,7 @@ STAGES.push({
   },
   update(l, dt, g, current) {
     const c = l.ctx, B = c.body, T = c.tracker, s5 = c.s5;
-    if (!current || !c.game) return;
+    if (!c.game || (l.stage !== 4 && l.stage !== 5)) return; // runs in stage 5 and keeps running in stage 6
     if (!c.floor?.result) { l.metric('تنبيه', 'أكمل معايرة الأرض (المرحلة 2) أولاً'); c.arena.visible = false; return; }
     c.arena.visible = true; c.player.visible = false;
     placeArena(l);
@@ -468,6 +469,7 @@ STAGES.push({
     s5.simMs = (s5.simMs || 0) * 0.9 + (performance.now() - tSim) * 0.1;
     if (c.game.defenders.some((d) => d.speed > 0.3)) s5.defMoved = true;
     s5.frames++; if (now - s5.t0 > 1000) { s5.fps = s5.frames * 1000 / (now - s5.t0); s5.frames = 0; s5.t0 = now; }
+    if (!current) return;
     drawSkeleton(l, g, 0.25);
     const st = c.game.summary();
     l.metric('الوقت', `${Math.ceil(c.game.timeLeft)} ث`);
@@ -477,5 +479,107 @@ STAGES.push({
     l.metric('آخر الأحداث', s5.msgs.join(' • ') || '—');
     l.metric('المحاكاة', `${s5.simMs.toFixed(2)} ms`);
     l.metric('الإطارات', `${(s5.fps || 0).toFixed(0)} fps`);
+  },
+});
+
+// ---------------- Stage 6: performance (built for testing on a real iPhone) ----------------
+const pct = (a, q) => { if (!a.length) return 0; const s = [...a].sort((x, y) => x - y); return s[Math.min(s.length - 1, Math.floor(q * s.length))]; };
+function deviceInfo(l) {
+  const gl = l.ctx.view?.renderer.getContext();
+  const dbg = gl?.getExtension('WEBGL_debug_renderer_info');
+  const ua = navigator.userAgent;
+  return {
+    ua, iOS: /iP(hone|ad|od)/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1),
+    gpu: dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : (gl?.getParameter(gl.RENDERER) || '?'),
+    screen: `${innerWidth}×${innerHeight} @${devicePixelRatio}x`, cores: navigator.hardwareConcurrency || '?',
+    video: `${l.video.videoWidth}×${l.video.videoHeight}`, delegate: l.ctx.tracker?.delegate,
+  };
+}
+STAGES.push({
+  title: 'الأداء',
+  hint: 'شغّل «اختبار 20 ثانية» أثناء اللعب (العب فعلاً أمام الكاميرا). على الآيفون: أغلق وضع توفير الطاقة، وكرر الاختبار بعد 3 دقائق لرصد السخونة. ثم انسخ التقرير وأرسله.',
+  limits: `<ul>
+    <li><b>لم يُختبر على iPhone حقيقي حتى الآن.</b> بيئة التطوير هنا بلا GPU ولا Safari؛ الأرقام فيها (2–6 fps) لا تمثل الجوال. هذه المرحلة مصممة لتقيس على جهازك وتعطيك تقريراً.</li>
+    <li>تتبع الجسم يعمل على نفس الخيط (Main thread) مع الرسم: كل ms في التتبع تُخصم من وقت الإطار.</li>
+    <li>الحجب يضيف قراءة قناع من GPU كل إطار — قد يكون أغلى بند على الآيفون.</li>
+    <li>Safari يحدّ الأداء في «وضع توفير الطاقة» وعند السخونة، وقد يخفض معدل الكاميرا تلقائياً.</li>
+  </ul>`,
+  checks: [
+    { label: 'تم تشغيل الاختبار', test: (l) => (l.ctx.bench?.done ? true : null) },
+    { label: 'الإطارات (الوسيط) ≥ 30 fps', test: (l) => (l.ctx.bench?.done ? l.ctx.bench.r.fpsP50 >= 30 : null) },
+    { label: 'أسوأ 5% من الإطارات ≤ 50 ms', test: (l) => (l.ctx.bench?.done ? l.ctx.bench.r.frameP95 <= 50 : null) },
+    { label: 'تتبع الجسم ≥ 15 fps', test: (l) => (l.ctx.bench?.done ? l.ctx.bench.r.poseFps >= 15 : null) },
+    { label: 'زمن التتبع (الوسيط) ≤ 35 ms', test: (l) => (l.ctx.bench?.done ? l.ctx.bench.r.inferP50 <= 35 : null) },
+  ],
+  enter(l, ui) {
+    const c = l.ctx;
+    c.perf = { frames: [], infer: [], lastV: -1, last: performance.now() };
+    ui.innerHTML = `
+      <label>دقة الرسم (Pixel ratio): <b id="prOut"></b><input type="range" id="prIn" min="0.5" max="2" step="0.25"></label>
+      <label style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" id="shIn"> الظلال</label>
+      <label style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" id="autoIn" checked> خفض الجودة تلقائياً عند البطء</label>
+      <div class="row">
+        <button class="primary" id="bBench">اختبار 20 ثانية</button>
+        <button class="ghost sm" id="bCopy" disabled>انسخ التقرير</button>
+      </div>
+      <textarea id="report" readonly rows="6" style="width:100%;font:11px monospace;direction:ltr;background:#0c1820;color:#cfe;border:1px solid #234;border-radius:8px" hidden></textarea>`;
+    const R = c.view.renderer;
+    const prIn = ui.querySelector('#prIn'), shIn = ui.querySelector('#shIn');
+    const sync = () => (ui.querySelector('#prOut').textContent = `${R.getPixelRatio().toFixed(2)}`);
+    prIn.value = R.getPixelRatio(); shIn.checked = R.shadowMap.enabled;
+    prIn.oninput = () => { R.setPixelRatio(+prIn.value); c.view.resize(); sync(); };
+    shIn.onchange = () => { R.shadowMap.enabled = shIn.checked; c.view.scene.traverse((o) => { if (o.material) o.material.needsUpdate = true; }); };
+    ui.querySelector('#autoIn').onchange = (e) => (c.autoQ = e.target.checked); c.autoQ = true;
+    ui.querySelector('#bBench').onclick = () => { c.bench = { t0: performance.now(), frames: [], infer: [], poseFps: [], done: false }; l.toast('جاري القياس 20 ثانية… العب بشكل طبيعي'); };
+    ui.querySelector('#bCopy').onclick = async () => {
+      const txt = ui.querySelector('#report').value;
+      try { await navigator.clipboard.writeText(txt); l.toast('تم نسخ التقرير'); } catch { ui.querySelector('#report').select(); l.toast('حدّد النص وانسخه يدوياً'); }
+    };
+    c.syncPerfUI = () => { sync(); prIn.value = R.getPixelRatio(); shIn.checked = R.shadowMap.enabled; };
+    sync();
+  },
+  update(l, dt, g, current) {
+    const c = l.ctx, P = c.perf, T = c.tracker; if (!current || !P) return;
+    const now = performance.now(), ft = now - P.last; P.last = now;
+    P.frames.push(ft); if (P.frames.length > 120) P.frames.shift();
+    if (T.lastInferMs != null && T.lastInferMs !== P.lastInf) { P.infer.push(T.lastInferMs); P.lastInf = T.lastInferMs; if (P.infer.length > 60) P.infer.shift(); }
+    // adaptive quality: sustained slow frames → lower pixel ratio, then shadows
+    if (c.autoQ) {
+      P.slowT = pct(P.frames, 0.5) > 40 ? (P.slowT || 0) + dt : 0;
+      if (P.slowT > 2) {
+        const R = c.view.renderer; P.slowT = 0;
+        if (R.getPixelRatio() > 1) { R.setPixelRatio(Math.max(1, R.getPixelRatio() - 0.25)); c.view.resize(); l.toast('خُفّضت دقة الرسم تلقائياً'); }
+        else if (R.shadowMap.enabled) { R.shadowMap.enabled = false; c.view.scene.traverse((o) => { if (o.material) o.material.needsUpdate = true; }); l.toast('أُطفئت الظلال تلقائياً'); }
+        c.syncPerfUI?.();
+      }
+    }
+    const B = c.bench;
+    if (B && !B.done) {
+      B.frames.push(ft); if (T.lastInferMs != null) B.infer.push(T.lastInferMs); B.poseFps.push(T.fps);
+      const el = (now - B.t0) / 1000;
+      l.metric('الاختبار', `${el.toFixed(0)} / 20 ث`);
+      if (el >= 20) {
+        const R = c.view.renderer;
+        B.r = {
+          fpsP50: +(1000 / pct(B.frames, 0.5)).toFixed(1), frameP50: +pct(B.frames, 0.5).toFixed(1), frameP95: +pct(B.frames, 0.95).toFixed(1),
+          longFrames: B.frames.filter((x) => x > 100).length, poseFps: +(B.poseFps.reduce((a, b) => a + b, 0) / B.poseFps.length).toFixed(1),
+          inferP50: +pct(B.infer, 0.5).toFixed(1), inferP95: +pct(B.infer, 0.95).toFixed(1), renderMs: +c.view.frameMs.toFixed(2), simMs: +(c.s5?.simMs || 0).toFixed(2),
+          cameraFps: +(l.camera?.fps || 0).toFixed(1), pixelRatio: R.getPixelRatio(), shadows: R.shadowMap.enabled, occlusion: !!c.occluder?.enabled,
+          stage5Running: !!(c.game && c.game.state !== 'idle'),
+        };
+        B.done = true;
+        const rep = { when: new Date().toISOString(), device: deviceInfo(l), result: B.r, calib: c.floor?.result && { Z: +c.floor.result.Z.toFixed(2), camH: +(-c.floor.result.floorY).toFixed(2), pitchSrc: c.floor.pitchSource } };
+        const ta = document.querySelector('#report'); ta.hidden = false; ta.value = JSON.stringify(rep, null, 1);
+        document.querySelector('#bCopy').disabled = false;
+        l.toast('انتهى الاختبار');
+      }
+    }
+    const R = c.view.renderer;
+    l.metric('الإطارات الآن', `${(1000 / pct(P.frames, 0.5)).toFixed(0)} fps (p95 ${pct(P.frames, 0.95).toFixed(0)} ms)`);
+    l.metric('تتبع الجسم', `${T.fps.toFixed(0)} fps • ${pct(P.infer, 0.5).toFixed(0)} ms • ${T.delegate}`);
+    l.metric('الرسم', `${c.view.frameMs.toFixed(1)} ms • دقة ${R.getPixelRatio()} • ظلال ${R.shadowMap.enabled ? 'نعم' : 'لا'}`);
+    l.metric('الحجب', c.occluder?.enabled ? 'يعمل' : 'متوقف');
+    l.metric('الكاميرا', `${(l.camera?.fps || 0).toFixed(0)} fps`);
+    if (B?.done) l.metric('النتيجة', `${B.r.fpsP50} fps • p95 ${B.r.frameP95} ms • تتبع ${B.r.inferP50} ms`);
   },
 });

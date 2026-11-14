@@ -131,8 +131,10 @@ export class PoseTracker {
         try {
           this.mask.data.set(m.getAsUint8Array().subarray(0, n));
         } catch {
-          const f = m.getAsFloat32Array(), d = this.mask.data;
-          for (let i = 0; i < n; i++) d[i] = f[i] * 255;
+          try {
+            const f = m.getAsFloat32Array(), d = this.mask.data;
+            for (let i = 0; i < n; i++) d[i] = f[i] * 255;
+          } catch { this.mask.data.fill(0); } // never let a mask failure break pose tracking
         }
         this.mask.version++;
         // health: share of pixels marked "person" (sampled). 0 while a body is tracked = broken readback.
@@ -141,7 +143,8 @@ export class PoseTracker {
         this.mask.coverage = hit / cnt;
       }
     });
-    this.inferMs = this.inferMs * 0.9 + (performance.now() - t0) * 0.1;
+    this.lastInferMs = performance.now() - t0;
+    this.inferMs = this.inferMs * 0.9 + this.lastInferMs * 0.1;
     this._fc++;
     if (now - this._ft > 1000) { this.fps = (this._fc * 1000) / (now - this._ft); this._fc = 0; this._ft = now; }
     return true;
