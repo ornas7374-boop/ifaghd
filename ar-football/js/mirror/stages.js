@@ -4,6 +4,7 @@
 import * as THREE from 'three';
 import { PoseTracker, BONES } from '../pose.js';
 import { FloorEstimator, TiltSensor } from './floor.js';
+import { MirrorView, makeLifeSizePlayer, idle } from './view.js';
 
 export const STAGES = [];
 const cm = (m) => `${(m * 100).toFixed(1)} سم`;
@@ -171,5 +172,97 @@ STAGES.push({
     }
     l.metric('الميلان', `${deg(F.pitch)} (${F.pitchSource})`);
     l.metric('تتبع الجسم', `${T.fps.toFixed(0)} fps • ${T.inferMs.toFixed(0)} ms • ${T.delegate}`);
+  },
+});
+
+// ---------------- Stage 3: a life-size 3D player beside you ----------------
+function screenOf3D(l, v) { // three.js camera projection → screen px
+  const p = v.clone().project(l.ctx.view.camera);
+  return [(p.x + 1) / 2 * innerWidth, (1 - p.y) / 2 * innerHeight, p.z];
+}
+function placePlayer(l) {
+  const c = l.ctx, r = c.floor.result, pl = c.player;
+  const side = c.side ?? (r.X < 0 ? 1 : -1);
+  pl.position.set(r.X + side * c.gap, 0, -r.Z + c.depthOff);
+  pl.rotation.y = Math.PI; // face the camera (you)
+  c.view.aimLight(pl.position.x, pl.position.z);
+}
+STAGES.push({
+  title: 'لاعب 3D بجانبك',
+  hint: 'يجب أن يظهر لاعب بحجم إنسان واقفاً على أرض غرفتك بجانبك، وقدماه على نفس مستوى قدميك. حرّك المنزلقات لتغيير مكانه.',
+  limits: `<ul>
+    <li><b>هو صورة مرسومة فوق الكاميرا، وليس مثبتاً بتتبع للمكان.</b> يبقى في مكانه فقط لأن الجوال ثابت. إذا تحرك الجوال يتحرك اللاعب معه ويجب إعادة المعايرة.</li>
+    <li><b>لا حجب (Occlusion):</b> إذا مررت أمامه يبقى مرسوماً فوقك. لا نعرف عمق الأشياء الحقيقية.</li>
+    <li><b>الظل:</b> اتجاه الضوء مفترض (من الأعلى والأمام)، وليس مقاساً من غرفتك. شدة الضوء ولونه فقط مأخوذان من الصورة. لذلك قد لا يتطابق ظله مع ظلك.</li>
+    <li><b>المظهر:</b> نموذج بسيط بأشكال هندسية، لا خامات واقعية ولا انعكاسات؛ سيبدو «لعبة» فوق صورة حقيقية.</li>
+    <li>دقة وقوفه على الأرض = دقة معايرة المرحلة 2 (حوالي 2–3 سم مع ميلان مقاس، وأكثر بكثير بدونه).</li>
+  </ul>`,
+  checks: [
+    { label: 'معايرة الأرض موجودة (المرحلة 2)', test: (l) => (l.ctx.floor?.result ? true : false) },
+    { label: 'اللاعب ظاهر داخل الشاشة', test: (l) => l.ctx.s3?.visible ?? null },
+    { label: 'كاميرا العرض = كاميرا القياس (فرق < 3 بكسل)', test: (l) => (l.ctx.s3?.camErr != null ? l.ctx.s3.camErr < 3 : null) },
+    { label: 'الأرض المعايرة ما زالت تحت قدميك (< 15 بكسل)', test: (l) => (l.ctx.s3?.feetErr != null ? l.ctx.s3.feetErr < 15 : null) },
+    { label: 'العرض ≥ 24 إطاراً/ث', test: (l) => (l.ctx.s3?.fps ? l.ctx.s3.fps >= 24 : null) },
+  ],
+  enter(l, ui) {
+    const c = l.ctx;
+    c.view ||= new MirrorView(l.glCanvas);
+    c.gap ??= 0.9; c.depthOff ??= 0; c.sizeK ??= 1;
+    if (!c.player) { c.player = makeLifeSizePlayer(c.floor.userHeight); c.view.world.add(c.player); }
+    c.player.visible = true;
+    c.s3 = { frames: 0, t0: performance.now() };
+    ui.innerHTML = `
+      <label>المسافة الجانبية: <b id="gOut"></b><input type="range" id="gIn" min="0.5" max="2.5" step="0.05"></label>
+      <label>أمامك / خلفك: <b id="dOut"></b><input type="range" id="dIn" min="-1.2" max="2" step="0.05"></label>
+      <label>الطول نسبةً لطولك: <b id="kOut"></b><input type="range" id="kIn" min="0.6" max="1.3" step="0.02"></label>
+      <div class="row"><button class="ghost sm" id="bSide">بدّل الجهة</button></div>`;
+    const sync = () => { ui.querySelector('#gOut').textContent = `${c.gap.toFixed(2)} م`; ui.querySelector('#dOut').textContent = `${c.depthOff >= 0 ? 'أقرب للكاميرا' : 'أبعد'} ${Math.abs(c.depthOff).toFixed(2)} م`; ui.querySelector('#kOut').textContent = `${Math.round(c.sizeK * 100)}%`; };
+    const gIn = ui.querySelector('#gIn'), dIn = ui.querySelector('#dIn'), kIn = ui.querySelector('#kIn');
+    gIn.value = c.gap; dIn.value = c.depthOff; kIn.value = c.sizeK;
+    gIn.oninput = () => { c.gap = +gIn.value; sync(); };
+    dIn.oninput = () => { c.depthOff = +dIn.value; sync(); };
+    kIn.oninput = () => { c.sizeK = +kIn.value; sync(); };
+    ui.querySelector('#bSide').onclick = () => { const r = c.floor.result; c.side = -(c.side ?? (r?.X < 0 ? 1 : -1)); };
+    sync();
+  },
+  exit(l) { /* keep the player for later stages */ },
+  update(l, dt, g, current) {
+    const c = l.ctx, F = c.floor, r = F.result;
+    if (!c.view) return;
+    c.view.fit(F, l.video);
+    c.view.updateLight(l.video, dt);
+    if (!r) { c.player.visible = false; c.view.render(); return; }
+    c.view.setFloor(r.floorY);
+    const pl = c.player;
+    pl.visible = l.stage <= 2 || c.keepSidePlayer !== false;
+    pl.scale.setScalar((F.userHeight * c.sizeK) / pl.userData.natH);
+    if (l.stage === 2) { placePlayer(l); idle(pl, dt, 0); }
+    c.view.render();
+    if (!current) return;
+    // --- checks ---
+    const s3 = c.s3; s3.frames++;
+    const now = performance.now(); if (now - s3.t0 > 1000) { s3.fps = s3.frames * 1000 / (now - s3.t0); s3.frames = 0; s3.t0 = now; }
+    const foot = new THREE.Vector3(pl.position.x, r.floorY, pl.position.z);
+    const head = foot.clone().add(new THREE.Vector3(0, F.userHeight * c.sizeK, 0));
+    const [fx, fy] = screenOf3D(l, foot), [hx, hy] = screenOf3D(l, head);
+    s3.visible = fy > 0 && hy < innerHeight && fx > -50 && fx < innerWidth + 50;
+    const pf = F.project(foot); const [mx, my] = l.videoToScreen(pf.u, pf.v);
+    s3.camErr = Math.hypot(mx - fx, my - fy);
+    const e = F.last;
+    if (e?.ok) {
+      // project the CALIBRATED floor at your CURRENT feet position, compare with where your heels are now
+      const footH = e.footSource === 'heels' ? 0.03 : 0.075;
+      const pc = F.project(new THREE.Vector3(e.X, r.floorY + footH, -e.Z));
+      const [, cy] = l.videoToScreen(pc.u, pc.v);
+      const [, uy] = l.videoToScreen(0.5, e.footV);
+      s3.feetErr = Math.abs(cy - uy);
+      g.strokeStyle = 'rgba(255,210,63,.9)'; g.setLineDash([4, 4]); g.beginPath(); g.moveTo(0, cy); g.lineTo(innerWidth, cy); g.stroke(); g.setLineDash([]);
+    }
+    l.metric('مكان اللاعب', `x=${pl.position.x.toFixed(2)} z=${pl.position.z.toFixed(2)} م`);
+    l.metric('طول اللاعب على الشاشة', `${Math.round(fy - hy)} px`);
+    l.metric('فرق الكاميرتين', `${s3.camErr.toFixed(2)} px`);
+    l.metric('انحراف الأرض عن قدميك', s3.feetErr != null ? `${s3.feetErr.toFixed(1)} px` : '—');
+    l.metric('الإضاءة المقدرة', `سطوع ${(c.view.lum * 100).toFixed(0)}%`);
+    l.metric('العرض', `${(s3.fps || 0).toFixed(0)} fps • ${c.view.frameMs.toFixed(1)} ms`);
   },
 });
