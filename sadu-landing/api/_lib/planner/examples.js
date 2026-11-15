@@ -11,7 +11,7 @@ const STYLE_EXAMPLES = {
     items: {
       accent_light: "geometric hexagon LED light panels glowing soft {accent}",
       monitor_light: "slim light bar on top of the monitor",
-      mousepad: "large dark grey leather desk mat",
+      mousepad: "large dark grey leather desk pad lying on the desktop",
       keyboard: "grey and black mechanical keyboard with an aluminium knob",
       desk: "{furniture} desk with a grey concrete-look top",
       plant: "small speckled ceramic pot with a plant",
@@ -24,7 +24,7 @@ const STYLE_EXAMPLES = {
     items: {
       accent_light: "{accent} LED strip under the front edge of the desk and behind it, plus thin {accent} light bars on the wall",
       wall_storage: "white pegboard with headphones hanging, a small shelf and a white LED digital clock",
-      mousepad: "large blue and white Japanese wave pattern desk mat",
+      mousepad: "large blue and white Japanese wave pattern desk pad lying on the desktop under the keyboard",
       monitor: "curved monitor",
       monitor_light: "light bar on top of the curved monitor",
       plant: "small cactus in a white pot",
@@ -37,7 +37,7 @@ const STYLE_EXAMPLES = {
     mood: "bold night gaming corner with neon colour",
     items: {
       accent_light: "{accent} triangular light panels on the wall above the desk",
-      mousepad: "large bright orange desk mat",
+      mousepad: "large bright orange desk pad lying on the desktop",
       keyboard: "white keyboard",
       monitor: "wide curved monitor",
       wall_art: "large frame with a handwritten quote",
@@ -65,7 +65,7 @@ const STYLE_EXAMPLES = {
       desk: "{furniture} floating wall-mounted desk with a concrete-look top",
       chair: "grey mesh ergonomic chair",
       wall_storage: "large white pegboard showing keyboards, headphones and controllers, with white floating shelves",
-      mousepad: "marble-pattern desk mat",
+      mousepad: "marble-pattern desk pad lying on the desktop",
       monitor: "wide curved monitor"
     }
   }
@@ -75,7 +75,7 @@ const STYLE_EXAMPLES = {
 const SADU_TOUCH = {
   refs: [74, 75, 76],
   items: {
-    mousepad: "large Sadu-pattern desk mat (traditional red, black and white Bedouin weave)",
+    mousepad: "large Sadu-pattern desk pad (traditional red, black and white Bedouin weave) lying on the desktop",
     wall_art: "framed Sadu weave pattern in red, black and white"
   }
 };

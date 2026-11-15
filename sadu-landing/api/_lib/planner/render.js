@@ -15,7 +15,9 @@ function itemPhrase(p, palette, decisions, desk) {
   const name = ex || `${colour}${p.item}`;
   const mid = (p.x0 + p.x1) / 2, dMid = (desk.x0 + desk.x1) / 2;
   const side = mid < dMid - 0.02 ? "left" : mid > dMid + 0.02 ? "right" : "centre";
-  if (p.key === "desk") return `${name} about ${desk.cm} cm wide against the ${p.wall} wall, ${p.where.split(" of the ")[0]}`;
+  if (p.key === "desk") return `${name} about ${desk.cm} cm wide against the ${p.wall} wall, ${p.where.split(" of the ")[0]}${desk.share < 0.6 ? `, not spanning the whole wall` : ""}`;
+  if (p.key === "mousepad" && !ex) return `${name} lying on the desktop under the keyboard and mouse`;
+  if (ex && /\b(desktop|on the wall|on top of|under the front edge)\b/.test(ex)) return ex; // the detail already says where
   if (p.key === "chair") return `${name} in front of the desk`;
   if (p.key === "mouse") return `${name} beside the keyboard`;
   if (p.anchor === "desk") return side === "centre" ? `${name} on the desk` : `${name} at the ${side} end of the desk`;
@@ -37,7 +39,9 @@ function renderInstructions(plan) {
   const budgeted = new Set(plan.budget_allocation.lines.map(l => l.key));
   const included = new Set(plan.budget_allocation.lines.filter(l => l.included).map(l => l.key));
   const placed = spatial.placement.filter(p => p.key === "own_device" || included.has(p.key) || !budgeted.has(p.key));
-  const deskRef = { x0: spatial.best.desk.x0, x1: spatial.best.desk.x1, cm: spatial.best.desk_cm };
+  const wallExt = (room.walls.find(w => w.id === spatial.best.wall) || {}).extent;
+  const deskRef = { x0: spatial.best.desk.x0, x1: spatial.best.desk.x1, cm: spatial.best.desk_cm,
+    share: wallExt ? (spatial.best.desk.x1 - spatial.best.desk.x0) / Math.max(0.01, wallExt.x1 - wallExt.x0) : 1 };
   const lines = placed.map(p => itemPhrase(p, decisions.palette, decisions, deskRef));
   const light = decisions.lighting;
   const parts = [

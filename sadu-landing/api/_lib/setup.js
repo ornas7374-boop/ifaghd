@@ -32,7 +32,7 @@ const STYLES = {
   night_setup: {
     ar: "ركن ليلي",
     hint: "dark, calm and mature: suits rooms with little daylight, dark existing walls or floors, small spaces, people who want a cosy night mood",
-    prompt: "a dark night desk setup: a black desk with a grey concrete-texture top and a large grey leather desk mat; one large monitor and a second vertical monitor; " +
+    prompt: "a dark night desk setup: a black desk with a grey concrete-texture top and a large grey leather desk pad on the desktop; one large monitor and a second vertical monitor; " +
       "a slim light bar on top of the monitor; one or two warm amber LED light bars in a geometric line shape mounted on the wall behind the desk; dim, warm, moody lighting; " +
       "a grey and black mechanical keyboard; a black PC tower with a glass side; small decor: a silver astronaut figure, black die-cast cars, a speckled ceramic mug, a glass coffee carafe; tidy, no clutter",
     wall: "matte charcoal paint on the wall behind the desk"
@@ -41,14 +41,14 @@ const STYLES = {
     ar: "أبيض وأزرق",
     hint: "bright, fresh and youthful: suits white or light walls, daylight, teenagers and students, small bedrooms that should feel bigger",
     prompt: "a white and blue gaming setup: a white desk; a royal-blue LED strip under the desk edge and behind the monitor; a white pegboard mounted on the wall holding two headphones, a small shelf and a white LED digital clock; " +
-      "a curved monitor on an arm with a light bar; a large desk mat with a blue and white wave pattern; a white game controller; a microphone on a boom arm; a small succulent in a white pot; " +
+      "a curved monitor on an arm with a light bar; a large desk pad with a blue and white wave pattern lying on the desktop; a white game controller; a microphone on a boom arm; a small succulent in a white pot; " +
       "a glowing moon lamp; two small framed black-and-white posters without readable text; clean and organised",
     wall: "white 3D geometric diamond wall panels behind the desk"
   },
   neon_purple: {
     ar: "نيون بنفسجي",
     hint: "bold and colourful: suits a full gaming room or a young person's room, people who want a party / streamer vibe",
-    prompt: "a purple neon gaming setup: a vertical column of triangular purple and blue LED light panels mounted on the wall; a dark wood desk with an ultrawide curved monitor, a second vertical monitor and a large orange-red desk mat; " +
+    prompt: "a purple neon gaming setup: a vertical column of triangular purple and blue LED light panels mounted on the wall; a dark wood desk with an ultrawide curved monitor, a second vertical monitor and a large orange-red desk pad on the desktop; " +
       "a white glass-panel PC case with purple fans; a floor lamp with a glowing purple shade; a light grey gaming chair; a small aurora projector on the desk; " +
       "a large framed black-and-white art print hanging on the wall; a tall faux olive tree in a pot",
     wall: "a soft purple accent paint on the wall behind the desk"
@@ -58,7 +58,7 @@ const STYLES = {
     hint: "organised and playful: suits people who like changing colours, rooms with a wall that can take shelves and panels, gamers who want everything on display",
     prompt: "an RGB gaming setup: RGB light bars mounted on the wall in a zig-zag mountain line above a wide white floating shelf; small round puck lights under the shelf; " +
       "trailing artificial plants hanging from both ends of the shelf; a neon cloud-and-lightning sign on a white pegboard mounted on the wall; the pegboard holds headphones and a white LED digital clock; " +
-      "a white desk with a light grey marble-texture desk mat, a compact white mechanical keyboard, a white monitor with a light bar, an RGB microphone on a boom arm, a headphone stand and a white game console; " +
+      "a white desk with a light grey marble-texture desk pad on the desktop, a compact white mechanical keyboard, a white monitor with a light bar, an RGB microphone on a boom arm, a headphone stand and a white game console; " +
       "all lighting in one colour theme (cyan, purple or magenta)",
     wall: "white 3D geometric diamond wall panels behind the desk"
   },
@@ -82,9 +82,9 @@ function protectionLines({ keep = {}, allowWall = false, wallTreatment = "" } = 
     ? `the walls keep their position and size; only the wall behind the desk may get ${clip(wallTreatment, 120)}`
     : `every wall exactly as it is${walls ? ` (${walls})` : ""}, same paint and texture, no new paint, panels, slats or wallpaper`;
   return [
-    `Keep unchanged: the floor exactly as it is${floor ? ` (${floor})` : ""}, same material, colour, pattern and reflections, no rugs;`,
+    `Keep unchanged: the floor exactly as it is${floor ? ` (${floor})` : ""}, same material, colour, pattern and reflections, bare: no rug, carpet or mat on the floor;`,
     `${wallRule};`,
-    `the ceiling${ceiling ? ` (${ceiling})` : ""}, every window and door, and the camera angle exactly as they are. Lights may glow but must not repaint walls or floor.`
+    `the ceiling${ceiling ? ` (${ceiling})` : ""} with every existing ceiling light in its place and its original warm white colour, every window and door, and the camera angle exactly as they are. New lights may glow but must not repaint walls, floor or ceiling.`
   ];
 }
 

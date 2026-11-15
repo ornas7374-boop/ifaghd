@@ -156,7 +156,7 @@ test("owner's reference setups shape the look: details per style, the Sadu touch
   const blue = plan(ROOMS.windowLeft(), { description: "سيت أب أبيض وأزرق", budget_sar: 3000 });
   assert.equal(blue.color_palette.accents[0], "blue");
   assert.deepEqual(blue.inspiration.reference_images, [58, 59, 60]);
-  assert.match(blue.rendering_instructions.prompt, /wave pattern desk mat/);
+  assert.match(blue.rendering_instructions.prompt, /wave pattern desk pad lying on the desktop/);
   assert.match(blue.rendering_instructions.prompt, /Look and mood: like a real/);
   // every detail belongs to an item that is in the plan (examples never add items)
   const planned = new Set(blue.furniture_placement.map(p => p.key));

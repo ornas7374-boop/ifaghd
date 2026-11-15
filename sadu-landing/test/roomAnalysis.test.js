@@ -47,7 +47,7 @@ test("walls and floor are kept: style text never repaints them; analysis descrip
     const p = buildPrompt(k, "setup_corner", { keep: { floor: "light beige marble tiles", walls: "off-white paint", ceiling: "tray ceiling" } });
     assert.match(p, /floor exactly as it is \(light beige marble tiles\)/);
     assert.match(p, /every wall exactly as it is \(off-white paint\)/);
-    assert.match(p, /no rugs/);
+    assert.match(p, /no rug, carpet or mat on the floor/);
     assert.ok(!p.includes(st.wall), "wall treatment is not used unless allowed");
     assert.ok(buildPrompt(k, "setup_corner", { allowWall: true }).includes(st.wall));
   }
