@@ -40,6 +40,15 @@ module.exports = async (req, res) => {
       const t0 = Date.now();
       const per = await perceive(process.env.GEMINI_API_KEY, `data:image/jpeg;base64,${jpg.toString("base64")}`, brief, { model: process.env.GEMINI_VISION_MODEL || undefined, budgetMs: 52000 });
       const plan = planDesign({ ...per, brief });
+      if (req.query.review) {
+        // free (Gemini): compare the original with an earlier result against this plan
+        const { readImage } = require("../_lib/imageInput");
+        const gen = await readImage(String(req.query.review));
+        if (!gen) return res.status(400).json({ error: "bad_review_url" });
+        const { evaluateResult } = require("../_lib/planner/evaluate");
+        const ev = await evaluateResult(process.env.GEMINI_API_KEY, `data:image/jpeg;base64,${jpg.toString("base64")}`, gen, plan);
+        return res.status(200).json({ mode: "review", evaluation: ev });
+      }
       if (req.query.render === "1") {
         // Gemini image model (needs billing on the Google project): draw the plan, then measure how much the protected areas changed.
         if (req.query.confirm !== "1") return res.status(400).json({ error: "add confirm=1 to start a paid render", plan_passed: plan.validation_results.passed });
@@ -56,7 +65,7 @@ module.exports = async (req, res) => {
         const render_ms = Date.now() - t1;
         const gen = f.output.startsWith("data:") ? Buffer.from(f.output.split(",")[1], "base64") : Buffer.from(await (await fetch(f.output)).arrayBuffer());
         const W = 256, H = Math.round(256 * meta.height / meta.width);
-        const px = (b) => sharp(b).resize(W, H, { fit: "fill" }).removeAlpha().raw().toBuffer();
+        const px = (b) => sharp(b).resize(W, H, { fit: "cover" }).removeAlpha().raw().toBuffer();
         const [a, g] = await Promise.all([px(jpg), px(gen)]);
         const er = plan.rendering_instructions.edit_region;
         const zone = (fn) => { let d = 0, n = 0; for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { if (!fn(x / W, y / H)) continue; const i = (y * W + x) * 3; d += Math.abs(a[i] - g[i]) + Math.abs(a[i + 1] - g[i + 1]) + Math.abs(a[i + 2] - g[i + 2]); n += 3; } return n ? +(d / n).toFixed(1) : null; };
