@@ -159,3 +159,12 @@ test("design on Replicate (SADU_DESIGN_PROVIDER=replicate): draws exactly the si
     assert.equal(m.calls[0].body.input.prompt, plan.rendering_instructions.prompt);
   } finally { m.restore(); for (const k of Object.keys(process.env)) if (!(k in saved)) delete process.env[k]; Object.assign(process.env, saved); }
 });
+
+test("evaluation: an added rug counts as a changed floor even when the reviewer said the floor is unchanged", () => {
+  const { scoreEvaluation } = require("../../api/_lib/planner/evaluate");
+  const p = planDesign({ observations: ROOMS.windowLeft(), brief: { budget_sar: 3000 }, suggested: { style: "grey_tech" }, secret: "s" });
+  const ev = scoreEvaluation({ preservation: { floor: "yes", walls: "yes", ceiling: "yes", windows_doors: "yes", camera: "yes" }, items: [], extra_items: ["area rug"], quality: 5 }, p);
+  assert.equal(ev.preservation.visual.floor, "no");
+  assert.ok(ev.failures.some(f => f.type === "architecture_changed" && /rug/.test(f.detail.join(" "))));
+  assert.equal(ev.next_action, "regenerate_strict");
+});

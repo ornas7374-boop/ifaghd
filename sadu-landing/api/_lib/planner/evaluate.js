@@ -43,6 +43,9 @@ function scoreEvaluation(raw, plan, pixelPreservation = null) {
   const colours = ["yes", "partly", "no"].includes(j.colors_match) ? j.colors_match : "partly";
   const request = ["yes", "partly", "no"].includes(j.request_met) ? j.request_met : "partly";
 
+  // a rug / carpet / floor covering the model added means the floor was changed, whatever it said above
+  const floorCover = extra.filter(x => /\b(rug|carpet|floor mat|flooring|runner)\b/i.test(x));
+  if (floorCover.length && pres.floor === "yes") pres.floor = "no";
   const changed = SURFACES.filter(k => pres[k] === "no");
   const present = items.filter(i => i.present === "yes").length, missing = items.filter(i => i.present === "no").map(i => i.item);
   const misplaced = items.filter(i => i.present === "yes" && i.placed_as_planned === "no").map(i => i.item);
@@ -54,7 +57,7 @@ function scoreEvaluation(raw, plan, pixelPreservation = null) {
     quality: q * 20
   };
   const failures = [];
-  if (changed.length) failures.push({ type: "architecture_changed", detail: changed, action: "regenerate_strict" });
+  if (changed.length) failures.push({ type: "architecture_changed", detail: floorCover.length ? changed.map(k => k === "floor" ? `floor (added ${floorCover.join(", ")})` : k) : changed, action: "regenerate_strict" });
   if (pixelPreservation && pixelPreservation.passed === false) failures.push({ type: "pixel_preservation_failed", detail: pixelPreservation.reasons || [], action: "regenerate_strict" });
   if (missing.length) failures.push({ type: "planned_items_missing", detail: missing, action: "regenerate" });
   if (misplaced.length) failures.push({ type: "items_misplaced", detail: misplaced, action: "regenerate" });
