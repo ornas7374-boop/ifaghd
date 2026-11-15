@@ -27,11 +27,17 @@ Field rules:
 - camera.view: frontal|corner|angled; camera.height: eye|high|low
 - size.class: small|medium|large; width_m / depth_m: a number only if you can base it on something visible (say what in "basis"), otherwise null
 - furniture.type: bed|desk|chair|sofa|wardrobe|shelf|tv|tv_unit|dresser|table|plant|other
+- room_type: what the room is (bedroom, living room, office, majlis...)
+- door_position / window_position: where each door / window (with curtains) is, in words: which wall, left/centre/right, e.g. "right wall, near the front corner, white wooden door"; "none visible" if there is none
+- existing_furniture: every existing piece with its place, e.g. "grey sofa against the back wall"; clutter (bottles, bags, trash) is NOT furniture
+- furniture_zones: the zones used by furniture, e.g. "back wall: sofa"; ceiling_lights: kind, number and positions; floor_type: material, colour and tile size
 - intent.use: gaming|streaming|work|study|mixed; intent.wall_change: true only if the customer explicitly asks to change a wall
 - intent.request_en: the customer's request as short concrete English design instructions (max 60 words), never about changing the floor; "" if none
 
 Return ONLY valid JSON, no comments, no text around it:
 {"space":"setup_corner","style":"grey_tech","why":"...",
+"room_type":"bedroom","door_position":"right wall, near the front corner, white wooden door","window_position":"back wall, centre, with beige curtains",
+"existing_furniture":["grey sofa against the back wall"],"furniture_zones":["back wall: sofa"],"ceiling_lights":"two recessed spot lights near the back wall","floor_type":"large light grey porcelain tiles",
 "camera":{"view":"frontal","height":"eye","certainty":"estimated"},
 "size":{"class":"medium","width_m":null,"depth_m":null,"basis":""},
 "surfaces":{"floor":"light grey porcelain tiles","walls":"white matte paint","ceiling":"flat white with recessed spots"},

@@ -5,7 +5,9 @@
 // go) so the Preservation Engine can restrict generation to it with a mask.
 const { protectionLines, SPACES, STYLES } = require("../setup");
 
-const MAX_WORDS = 360; // image-model prompts are read only up to a limited length
+const MAX_WORDS = 360;
+const STYLE_EN = { night_setup: "dark, calm night gaming setup", white_blue: "bright white and royal blue gaming setup", neon_purple: "bold neon purple gaming",
+  rgb_setup: "organised RGB gaming setup", grey_tech: "clean grey technical desk setup" }; // image-model prompts are read only up to a limited length
 
 /** Words for one placed item, relative to the desk (what image models follow best). */
 function itemPhrase(p, palette, decisions, desk) {
@@ -44,21 +46,34 @@ function renderInstructions(plan) {
     share: wallExt ? (spatial.best.desk.x1 - spatial.best.desk.x0) / Math.max(0.01, wallExt.x1 - wallExt.x0) : 1 };
   const lines = placed.map(p => itemPhrase(p, decisions.palette, decisions, deskRef));
   const light = decisions.lighting;
-  const parts = [
-    `Edit this photo of ${space.prompt}. This is an edit of the existing photo, not a new room.`,
-    ...prot,
-    ...(intent.request_en ? [`THE CUSTOMER'S REQUEST: ${intent.request_en.replace(/[.\s]+$/, "")}.`] : []),
-    `Add exactly these items and nothing else: ${lines.join("; ")}.`,
-    `Lighting: ${[light.monitor, light.task, light.accent, light.bias].filter(Boolean).join("; ")}.`,
-    ...(decisions.examples ? [`Look and mood: like a real ${decisions.examples.mood} setup.`] : []),
-    `Colours: ${decisions.palette.furniture} furniture, accents ${decisions.palette.accents.join(" and ")} in lights and small items only.`,
-    "Keyboard and mouse centred; screens at eye level; cables hidden.",
-    "Remove any people. No logos or readable text; screens show abstract wallpapers. Photorealistic, natural proportions."
+  // structure-locked template, filled from Gemini's structured room analysis (never a generic prompt)
+  const st = plan.room_analysis.structure || {};
+  const allowWall = !!(intent.allow_wall && wallItem);
+  const existing = (st.existing_furniture || []).join(", ");
+  const changeable = allowWall
+    ? "furniture, decor, wall finishes and paint colors on the wall behind the desk, and decorative lighting"
+    : "furniture, decor and decorative lighting (the wall paint and the floor stay exactly as they are)";
+  const head = [
+    `Redesign the interior of this exact room in ${STYLE_EN[decisions.style] || "modern gaming setup"} style.`,
+    "Keep the exact same camera angle, perspective, framing and lens.",
+    `Keep all architecture unchanged and in the exact same position: walls, ceiling height, ceiling lights positions (${st.ceiling_lights || "existing ceiling lights"}), the door (${st.door_position || "no door visible in the photo"}), the window and curtains area (${st.window_position || "no window visible in the photo"}), floor tiles (${st.floor_type || room.surfaces.floor || "existing floor"}) and room dimensions.`,
+    "Do not add, remove or move any door, window, wall, column or opening.",
+    `Only change: ${changeable}. No rugs or carpets on the floor.`
   ];
-  let prompt = parts.join(" ");
-  // keep within the length the image model reads: drop the least important items first (decor), never the protection
+  const tail = [
+    ...(intent.request_en ? [`The customer asks for: ${intent.request_en.replace(/[.\s]+$/, "")}.`] : []),
+    `Lighting: ${[light.monitor, light.accent, light.bias].filter(Boolean).join("; ")}; colours: ${decisions.palette.furniture} furniture, ${decisions.palette.accents.join(" and ")} accents.`,
+    "Remove clutter (bottles, bags, trash). No people, no logos or readable text.",
+    "Photorealistic, natural lighting consistent with the original photo, real-estate photography quality."
+  ];
+  const furnitureLine = () => existing
+    ? `Replace the existing ${existing} with ${lines.join("; ")}, placed in the same zones.`
+    : `Place ${lines.join("; ")} in the free zone (the room has no furniture to replace).`;
+  const build = () => [...head, furnitureLine(), ...tail].join(" ");
+  let prompt = build();
+  // keep within the length the image model reads: drop the least important items first (decor), never the structure lines
   let words = prompt.split(/\s+/).length;
-  while (words > MAX_WORDS && lines.length > 3) { lines.pop(); parts[parts.findIndex(x => x.startsWith("Add exactly"))] = `Add exactly these items and nothing else: ${lines.join("; ")}.`; prompt = parts.join(" "); words = prompt.split(/\s+/).length; }
+  while (words > MAX_WORDS && lines.length > 3) { lines.pop(); prompt = build(); words = prompt.split(/\s+/).length; }
 
   const xs = placed.map(p => [p.x0, p.x1]).flat();
   // the mask: only this box is redrawn; every pixel outside stays the original photo.

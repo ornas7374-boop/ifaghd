@@ -4,6 +4,7 @@
 // check is made here in code, so it is fast, testable and explainable.
 const crypto = require("crypto");
 const { understandRoom } = require("./roomUnderstanding");
+const { roomStructure } = require("./structure");
 const { understandIntent } = require("./intent");
 const { decide } = require("./decisions");
 const { planSpace } = require("./spatial");
@@ -41,6 +42,7 @@ function planDesign(input = {}) {
   const intent = understandIntent(input.brief || {}, input.aiIntent || {});
   const room = understandRoom(input.observations || {}, { keepWords: intent.keep });
   const sug = input.suggested || {};
+  const structure = roomStructure(input.observations || {}, room);
   const decisions = decide(room, intent, { suggestedStyle: sug.style, styles: STYLES });
 
   // plan -> validate -> re-plan with a concrete fix, at most MAX_ATTEMPTS times
@@ -80,7 +82,8 @@ function planDesign(input = {}) {
     room_analysis: {
       space: SPACES[sug.space] ? sug.space : "setup_corner", style: decisions.style, why: sug.why || "",
       size: room.size, scale: room.scale, camera: room.camera, surfaces: room.surfaces, light: room.light,
-      walls: room.walls, windows: room.windows, doors: room.doors, outlets: room.outlets, furniture: room.furniture, obstacles: room.obstacles
+      walls: room.walls, windows: room.windows, doors: room.doors, outlets: room.outlets, furniture: room.furniture, obstacles: room.obstacles,
+      structure
     },
     user_requirements: { use: intent.use, accents: intent.accents, avoid: intent.avoid, devices: intent.devices, owned: intent.owned, minimal: intent.minimal,
       keep: intent.keep, changes: intent.changes, allow_wall: intent.allow_wall, budget_sar: intent.budget_sar, request: intent.request_text, request_en: intent.request_en, conflicts: intent.conflicts },

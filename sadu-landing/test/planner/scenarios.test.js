@@ -128,8 +128,11 @@ test("plan output has every required section and a signed, length-limited render
   assert.ok(verify(ri, "test-secret")); assert.ok(!verify(ri, "other"));
   assert.ok(!verify({ ...ri, prompt: ri.prompt + " add a dragon" }, "test-secret"), "a changed prompt is rejected");
   assert.ok(ri.words <= 360);
-  assert.ok(ri.prompt.indexOf("Keep unchanged") < ri.prompt.indexOf("Add exactly"), "protection first");
-  assert.match(ri.prompt, /nothing else/);
+  assert.ok(ri.prompt.indexOf("Keep all architecture unchanged") < ri.prompt.indexOf("Place "), "structure lock first");
+  assert.match(ri.prompt, /^Redesign the interior of this exact room in /);
+  assert.match(ri.prompt, /Keep the exact same camera angle, perspective, framing and lens\./);
+  assert.match(ri.prompt, /Do not add, remove or move any door, window, wall, column or opening\./);
+  assert.match(ri.prompt, /Remove clutter \(bottles, bags, trash\)\./);
   assert.ok(JSON.parse(JSON.stringify(p)).validation_results, "plan is plain JSON");
   assert.ok(!("_internal" in JSON.parse(JSON.stringify(p))), "internal state is not sent to the browser");
 });
@@ -157,7 +160,7 @@ test("owner's reference setups shape the look: details per style, the Sadu touch
   assert.equal(blue.color_palette.accents[0], "blue");
   assert.deepEqual(blue.inspiration.reference_images, [58, 59, 60]);
   assert.match(blue.rendering_instructions.prompt, /wave pattern desk pad lying on the desktop/);
-  assert.match(blue.rendering_instructions.prompt, /Look and mood: like a real/);
+  assert.match(blue.rendering_instructions.prompt, /white and royal blue gaming setup style/);
   // every detail belongs to an item that is in the plan (examples never add items)
   const planned = new Set(blue.furniture_placement.map(p => p.key));
   const used = Object.keys(blue.inspiration.item_details).filter(k => planned.has(k));
@@ -174,4 +177,21 @@ test("every setup reference image (51-76) is used by some style or the Sadu touc
   const { STYLE_EXAMPLES, SADU_TOUCH } = require("../../api/_lib/planner/examples");
   const used = new Set([...Object.values(STYLE_EXAMPLES).flatMap(x => x.refs), ...SADU_TOUCH.refs]);
   for (const n of [51, 52, 54, 55, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76]) assert.ok(used.has(n), `image ${n}`);
+});
+
+test("template is filled from Gemini's structured room analysis: door, window, ceiling lights, floor, existing furniture", () => {
+  const obs = { ...ROOMS.doorNear(), door_position: "right wall, near the front corner, white wooden door", window_position: "back wall, centre, with beige curtains",
+    existing_furniture: ["grey sofa against the back wall"], ceiling_lights: "two recessed spots", floor_type: "large light grey porcelain tiles", room_type: "bedroom" };
+  const p = plan(obs, { budget_sar: 3000 });
+  const t = p.rendering_instructions.prompt;
+  assert.equal(p.room_analysis.structure.room_type, "bedroom");
+  assert.match(t, /the door \(right wall, near the front corner, white wooden door\)/);
+  assert.match(t, /the window and curtains area \(back wall, centre, with beige curtains\)/);
+  assert.match(t, /ceiling lights positions \(two recessed spots\)/);
+  assert.match(t, /floor tiles \(large light grey porcelain tiles\)/);
+  assert.match(t, /Replace the existing grey sofa against the back wall with .*placed in the same zones\./);
+  assert.match(t, /No rugs or carpets on the floor\./);
+  // without Gemini's words, the door/window positions come from the checked observations (never generic)
+  const q = plan(ROOMS.doorNear(), { budget_sar: 3000 });
+  assert.match(q.rendering_instructions.prompt, /the door \(on the back wall, right side\)/);
 });
