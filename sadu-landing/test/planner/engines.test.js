@@ -223,23 +223,28 @@ test("free Cloudflare path: only the box is redrawn and pasted back; outside the
   assert.ok(near(px(250, 100), [255, 0, 0]), "inside the box: redrawn");
 });
 
-test("FLUX.2 on Cloudflare: sends the photo as multipart, keeps only the box, the rest stays the original", async () => {
+test("FLUX.2 on Cloudflare: multipart request; only what really changed is kept, windows stay original", async () => {
   const sharp = require("sharp");
   const cfl = require("../../api/_lib/cloudflare"); cfl._reset();
-  const orig = await sharp({ create: { width: 400, height: 200, channels: 3, background: { r: 200, g: 180, b: 160 } } }).jpeg({ quality: 100 }).toBuffer();
-  const red = await sharp({ create: { width: 400, height: 200, channels: 3, background: { r: 255, g: 0, b: 0 } } }).jpeg().toBuffer();
+  const orig = await sharp({ create: { width: 400, height: 200, channels: 3, background: { r: 200, g: 180, b: 160 } } }).png().toBuffer();
+  // the model adds a red desk (x 200-300) and also changes the "window" area (x 0-60) and tints the wall slightly
+  const tint = await sharp({ create: { width: 400, height: 200, channels: 3, background: { r: 206, g: 184, b: 164 } } }).png().toBuffer();
+  const redBox = await sharp({ create: { width: 100, height: 80, channels: 3, background: { r: 255, g: 0, b: 0 } } }).png().toBuffer();
+  const blueWin = await sharp({ create: { width: 60, height: 100, channels: 3, background: { r: 0, g: 0, b: 255 } } }).png().toBuffer();
+  const gen = await sharp(tint).composite([{ input: redBox, left: 200, top: 100 }, { input: blueWin, left: 0, top: 20 }]).png().toBuffer();
   let sent;
   const fake = async (url, o = {}) => {
     if (url.includes("/accounts?")) return { ok: true, status: 200, json: async () => ({ result: [{ id: "acc1" }] }) };
     sent = { url, body: o.body };
-    return { ok: true, status: 200, json: async () => ({ result: { image: red.toString("base64") } }) };
+    return { ok: true, status: 200, json: async () => ({ result: { image: gen.toString("base64") } }) };
   };
-  const r = await cfl.cfFlux2("t", "data:image/jpeg;base64," + orig.toString("base64"), { x0: 0.5, x1: 0.75, y0: 0.2, y1: 0.9 }, "add a desk", { fetch: fake });
+  const r = await cfl.cfFlux2("t", "data:image/png;base64," + orig.toString("base64"), null, "add a desk", { fetch: fake, protect: [{ x0: 0, x1: 0.16, y0: 0.05, y1: 0.65 }] });
   assert.match(sent.url, /flux-2-klein-9b$/);
   assert.ok(sent.body instanceof FormData); assert.equal(sent.body.get("prompt"), "add a desk"); assert.ok(sent.body.get("input_image_0"));
   const out = await sharp(Buffer.from(r.output.split(",")[1], "base64")).raw().toBuffer({ resolveWithObject: true });
   const px = (x, y) => { const i = (y * 400 + x) * out.info.channels; return [out.data[i], out.data[i + 1], out.data[i + 2]]; };
-  const near = (a, b, t = 6) => a.every((v, i) => Math.abs(v - b[i]) <= t);
-  assert.ok(near(px(20, 100), [200, 180, 160]), "far outside: original " + px(20, 100));
-  assert.ok(near(px(250, 120), [255, 0, 0], 12), "inside: new " + px(250, 120));
+  const near = (p, q, t = 8) => p.every((v, i) => Math.abs(v - q[i]) <= t);
+  assert.ok(near(px(250, 140), [255, 0, 0], 20), "new object kept " + px(250, 140));
+  assert.ok(near(px(350, 40), [200, 180, 160]), "a slight wall tint is ignored: original " + px(350, 40));
+  assert.ok(near(px(30, 60), [200, 180, 160]), "protected window stays original " + px(30, 60));
 });

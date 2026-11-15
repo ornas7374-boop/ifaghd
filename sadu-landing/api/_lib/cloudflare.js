@@ -92,6 +92,38 @@ async function pasteBox(orig, gen, region, feather = 10) {
   return sharp(out, { raw: { width: W, height: H, channels: 3 } }).jpeg({ quality: 90 }).toBuffer();
 }
 
+/**
+ * Keep the new image ONLY where it really changed (new furniture, lights), and the original photo everywhere
+ * else: a change mask (difference > threshold), grown a little and feathered. Windows/doors in `protect`
+ * (normalised boxes) always stay the original.
+ */
+async function pasteChanged(orig, gen, protect = [], opts = {}) {
+  const sharp = require("sharp");
+  const { width: W, height: H } = await sharp(orig).metadata();
+  const sw = 320, sh = Math.max(1, Math.round(H * sw / W));
+  const [a, b] = await Promise.all([orig, gen].map(x => sharp(x).resize(sw, sh, { fit: "fill" }).removeAlpha().blur(1.2).raw().toBuffer()));
+  const thr = opts.threshold || 34;
+  const m = Buffer.alloc(sw * sh);
+  for (let i = 0, j = 0; i < sw * sh; i++, j += 3) {
+    const d = (Math.abs(a[j] - b[j]) + Math.abs(a[j + 1] - b[j + 1]) + Math.abs(a[j + 2] - b[j + 2])) / 3;
+    m[i] = d > thr ? 255 : 0;
+  }
+  for (const r of protect) for (let y = Math.floor(r.y0 * sh); y < Math.ceil(r.y1 * sh); y++) for (let x = Math.floor(r.x0 * sw); x < Math.ceil(r.x1 * sw); x++) if (x >= 0 && y >= 0 && x < sw && y < sh) m[y * sw + x] = 0;
+  // grow (close small gaps inside objects), then feather when scaling up
+  const grown = await sharp(m, { raw: { width: sw, height: sh, channels: 1 } }).blur(2.5).threshold(40).extractChannel(0).raw().toBuffer();
+  for (const r of protect) for (let y = Math.floor(r.y0 * sh); y < Math.ceil(r.y1 * sh); y++) for (let x = Math.floor(r.x0 * sw); x < Math.ceil(r.x1 * sw); x++) if (x >= 0 && y >= 0 && x < sw && y < sh) grown[y * sw + x] = 0;
+  const alpha = await sharp(grown, { raw: { width: sw, height: sh, channels: 1 } }).resize(W, H, { fit: "fill" }).blur(3).extractChannel(0).raw().toBuffer();
+  const genFull = await sharp(gen).resize(W, H, { fit: "fill" }).removeAlpha().raw().toBuffer();
+  const base = await sharp(orig).removeAlpha().raw().toBuffer();
+  const out = Buffer.alloc(W * H * 3);
+  let changed = 0;
+  for (let i = 0, j = 0; i < W * H; i++, j += 3) {
+    const k = alpha[i] / 255; if (k > 0.5) changed++;
+    for (let c = 0; c < 3; c++) out[j + c] = Math.round(genFull[j + c] * k + base[j + c] * (1 - k));
+  }
+  return { buf: await sharp(out, { raw: { width: W, height: H, channels: 3 } }).jpeg({ quality: 90 }).toBuffer(), changed_share: +(changed / (W * H)).toFixed(3) };
+}
+
 /** FLUX.2 on Workers AI: edits the whole photo from the instruction, then only the planned box is kept. */
 async function cfFlux2(token, image, region, prompt, opts = {}) {
   const sharp = require("sharp"), f = opts.fetch || fetch;
@@ -111,8 +143,9 @@ async function cfFlux2(token, image, region, prompt, opts = {}) {
   const b64 = d && d.result && d.result.image;
   if (!r.ok || !b64) { const e = new Error(`cloudflare_${r.status}`); e.detail = JSON.stringify(d.errors || d).slice(0, 300); throw e; }
   const gen = Buffer.from(b64, "base64");
-  const out = region ? await pasteBox(orig, gen, region) : gen;
-  const res = { status: "succeeded", output: `data:image/jpeg;base64,${out.toString("base64")}`, model };
+  // keep only what really changed (new pieces); windows and doors always stay the original
+  const kept = opts.raw ? { buf: gen, changed_share: null } : await pasteChanged(orig, gen, opts.protect || []);
+  const res = { status: "succeeded", output: `data:image/jpeg;base64,${kept.buf.toString("base64")}`, model, changed_share: kept.changed_share };
   if (opts.debug) res.raw = (await sharp(gen).resize(512).jpeg({ quality: 75 }).toBuffer()).toString("base64");
   return res;
 }
@@ -124,4 +157,4 @@ async function schema(token, model, f = fetch) {
   return { status: r.status, body: (await r.text()).slice(0, 6000) };
 }
 
-module.exports = { schema, cfFlux2, pasteBox, EDIT_MODEL, cfInpaint, check, accountId, MODEL, _reset: () => { accountCache = null; } };
+module.exports = { schema, cfFlux2, pasteBox, pasteChanged, EDIT_MODEL, cfInpaint, check, accountId, MODEL, _reset: () => { accountCache = null; } };

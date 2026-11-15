@@ -24,7 +24,7 @@ function promptFor(b) {
   if (b.plan) {
     const ri = b.plan.rendering_instructions;
     if (!ri || !verify(ri, planSecret())) return { error: "plan_not_signed" };
-    return { prompt: ri.prompt, fill: ri.fill_prompt || null, region: ri.edit_region || null };
+    return { prompt: ri.prompt, fill: ri.fill_prompt || null, region: ri.edit_region || null, protect: ri.protect || [] };
   }
   if (!STYLES[b.style]) return { error: "bad_style" };
   return { prompt: buildPrompt(b.style, b.room, { keep: keepOf(b.keep), ...briefOf(b) }) };
@@ -58,7 +58,7 @@ module.exports = async function handler(req, res) {
         const cfl = require("./_lib/cloudflare");
         // FLUX.2 edits with the full instruction; only the planned box is pasted onto the original photo
         if (process.env.SADU_CF_MODE === "inpaint") return reply(res, 200, await cfl.cfInpaint(token, b.image, pr.region, pr.fill));
-        return reply(res, 200, await cfl.cfFlux2(token, b.image, pr.region, pr.prompt));
+        return reply(res, 200, await cfl.cfFlux2(token, b.image, pr.region, pr.prompt, { protect: pr.protect }));
       }
       if (useRep) {
         const rd = require("./_lib/replicateDesign");

@@ -74,7 +74,9 @@ function renderInstructions(plan) {
     `Continue the existing ${room.surfaces.walls || "wall paint"} on the wall and the existing ${room.surfaces.floor || "floor"} on the floor seamlessly; bare floor, no rug or carpet.`,
     "No people, no logos, no readable text."
   ].join(" ");
-  return { prompt, words, edit_region, fill_prompt, protected: ["floor", intent.allow_wall && wallItem ? "walls except behind the desk" : "all walls", "ceiling", "windows", "doors", "camera angle"],
+  const protect = room.windows.concat(room.doors).filter(o => typeof o.y0 === "number" && typeof o.y1 === "number")
+    .map(o => ({ x0: +Math.max(0, o.x0 - 0.01).toFixed(3), x1: +Math.min(1, o.x1 + 0.01).toFixed(3), y0: +Math.max(0, o.y0 - 0.01).toFixed(3), y1: +Math.min(1, o.y1 + 0.01).toFixed(3) }));
+  return { prompt, words, edit_region, fill_prompt, protect, protected: ["floor", intent.allow_wall && wallItem ? "walls except behind the desk" : "all walls", "ceiling", "windows", "doors", "camera angle"],
     items_allowed: placed.map(p => p.item) };
 }
 
