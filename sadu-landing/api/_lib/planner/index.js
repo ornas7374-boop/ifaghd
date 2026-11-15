@@ -94,6 +94,8 @@ function planDesign(input = {}) {
     furniture_placement: spatial.placement,
     lighting_plan: decisions.lighting,
     color_palette: decisions.palette,
+    inspiration: decisions.examples ? { style: decisions.examples.style, reference_images: decisions.examples.refs, mood: decisions.examples.mood,
+      sadu_touch: decisions.examples.sadu, item_details: decisions.examples.items, note: "details distilled from the owner's private reference images; the images themselves are never sent" } : null,
     product_requirements: products.requirements,
     budget_allocation: budget,
     design_rationale: [...decisions.rationale, ...(best ? best.reasons.map(r => ({ decision: `desk on the ${best.wall} wall`, why: r })) : [])],

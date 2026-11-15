@@ -441,6 +441,8 @@ fieldset.field{border:0;margin:0;padding:0}
       why.append(li(/to the side of the screen/.test(r) ? "الشباك على جنب الشاشة، لا قدامها ولا وراك" : /power outlet/.test(r) ? "قريب من فيش كهرباء" : /room to move/.test(r) ? "فيه مساحة كافية ورا الكرسي" : /back wall/.test(r) ? "الجدار المقابل يبيّن السيت أب كامل" : /replaces/.test(r) ? "يحل محل قطعة موجودة" : r));
     });
     if(why.childNodes.length) box.append(why);
+    if(plan.inspiration && plan.inspiration.reference_images && plan.inspiration.reference_images.length)
+      box.append(el("p", null, "شكل القطع مستوحى من سيت أبات حقيقية في مراجعنا" + (plan.inspiration.sadu_touch ? "، مع لمسة السدو اللي طلبتها" : "") + "."));
     var b = plan.budget_allocation;
     var t = el("table", "btable");
     b.lines.forEach(function(l){ var tr = el("tr", l.included ? "" : "out"); tr.append(el("td", null, (AR_CAT[l.category] || l.label) + (l.priority === "essential" ? "" : " (إضافي)")), el("td", "num", l.included ? SAR(l.planned_sar) + " ريال" : "خارج الميزانية")); t.append(tr); });

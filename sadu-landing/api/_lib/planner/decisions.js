@@ -4,6 +4,7 @@
 // (use, colours, devices, minimal...). Every decision carries its reason.
 
 const { RULES } = require("./rules");
+const { pickExamples } = require("./examples");
 
 const ITEMS = {
   desk:            { cat: "desk",            anchor: "floor", label: "desk" },
@@ -123,7 +124,11 @@ function decide(room, intent, opts = {}) {
   };
   if (intent.accents.length && use !== "work") why("bias light colour", "the guide prefers white behind the screen; the customer's colour wins");
 
-  return { style, items, palette, lighting, rationale, desk: items.find(i => i.key === "desk") ? items.find(i => i.key === "desk").spec : null };
+  // --- real-setup examples from the owner's reference images: make each planned item look like them
+  const examples = pickExamples(style, intent, palette);
+  why("look of the items", `modelled on the owner's reference setups #${examples.refs.join(", #")}${examples.sadu ? " (with the Sadu touch the customer asked for)" : ""}`);
+
+  return { style, items, palette, lighting, rationale, examples, desk: items.find(i => i.key === "desk") ? items.find(i => i.key === "desk").spec : null };
 }
 
 module.exports = { decide, ITEMS, STYLE_FOR_COLOUR, DESK_WIDTH_CM };

@@ -151,3 +151,21 @@ test("rules from the skills (planhaus / interior-design-expert): window corner k
   assert.match(p.lighting_plan.targets.task, /300-500 lux/);
   assert.equal(p.color_palette.proportions.rule, "60-30-10 (COL-60)");
 });
+
+test("owner's reference setups shape the look: details per style, the Sadu touch on request, never extra items", () => {
+  const blue = plan(ROOMS.windowLeft(), { description: "سيت أب أبيض وأزرق", budget_sar: 3000 });
+  assert.equal(blue.color_palette.accents[0], "blue");
+  assert.deepEqual(blue.inspiration.reference_images, [58, 59, 60]);
+  assert.match(blue.rendering_instructions.prompt, /wave pattern desk mat/);
+  assert.match(blue.rendering_instructions.prompt, /Look and mood: like a real/);
+  // every detail belongs to an item that is in the plan (examples never add items)
+  const planned = new Set(blue.furniture_placement.map(p => p.key));
+  const used = Object.keys(blue.inspiration.item_details).filter(k => planned.has(k));
+  assert.ok(used.length >= 3);
+  // the Sadu touch only when asked
+  const sadu = plan(ROOMS.windowLeft(), { description: "أبغى سيت أب فيه لمسة سدو", budget_sar: 3000 });
+  assert.equal(sadu.inspiration.sadu_touch, true);
+  assert.match(sadu.rendering_instructions.prompt, /Sadu-pattern/);
+  assert.equal(blue.inspiration.sadu_touch, false);
+  assert.ok(blue.rendering_instructions.words <= 360);
+});

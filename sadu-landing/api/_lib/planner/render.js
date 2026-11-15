@@ -9,8 +9,10 @@ const MAX_WORDS = 360; // image-model prompts are read only up to a limited leng
 
 /** Words for one placed item, relative to the desk (what image models follow best). */
 function itemPhrase(p, palette, decisions, desk) {
+  // a detail from the owner's reference setups replaces the generic name (it already carries its colour)
+  const ex = decisions.examples && decisions.examples.items && decisions.examples.items[p.key];
   const colour = ["desk", "chair", "wall_storage", "drawers", "desk_lamp", "monitor_light"].includes(p.key) ? `${palette.furniture} ` : p.key === "accent_light" ? `${palette.accents.join(" and ")} ` : "";
-  const name = `${colour}${p.item}`;
+  const name = ex || `${colour}${p.item}`;
   const mid = (p.x0 + p.x1) / 2, dMid = (desk.x0 + desk.x1) / 2;
   const side = mid < dMid - 0.02 ? "left" : mid > dMid + 0.02 ? "right" : "centre";
   if (p.key === "desk") return `${name} about ${desk.cm} cm wide against the ${p.wall} wall, ${p.where.split(" of the ")[0]}`;
@@ -44,6 +46,7 @@ function renderInstructions(plan) {
     ...(intent.request_en ? [`THE CUSTOMER'S REQUEST: ${intent.request_en.replace(/[.\s]+$/, "")}.`] : []),
     `Add exactly these items and nothing else: ${lines.join("; ")}.`,
     `Lighting: ${[light.monitor, light.task, light.accent, light.bias].filter(Boolean).join("; ")}.`,
+    ...(decisions.examples ? [`Look and mood: like a real ${decisions.examples.mood} setup.`] : []),
     `Colours: ${decisions.palette.furniture} furniture, accents ${decisions.palette.accents.join(" and ")} in lights and small items only.`,
     "Keyboard and mouse centred; screens at eye level; cables hidden.",
     "Remove any people. No logos or readable text; screens show abstract wallpapers. Photorealistic, natural proportions."
