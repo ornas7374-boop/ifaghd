@@ -13,20 +13,39 @@ async function call(token, path, opts = {}, f = fetch) {
   }
 }
 
-/** photo (data URI) + prompt -> { output: image URL } or { status: "processing", id }. */
+/** Before upload: apply EXIF orientation, longest side at most 1536 px, same aspect ratio, never cropped. */
+async function prepareImage(image, maxSide = 1536) {
+  const sharp = require("sharp");
+  const buf = Buffer.from(String(image).split(",")[1] || "", "base64");
+  const out = await sharp(buf).rotate().resize(maxSide, maxSide, { fit: "inside", withoutEnlargement: true }).jpeg({ quality: 92 }).toBuffer();
+  const meta = await sharp(out).metadata();
+  return { dataUri: `data:image/jpeg;base64,${out.toString("base64")}`, width: meta.width, height: meta.height };
+}
+
+const newSeed = () => Math.floor(Math.random() * 2147483647);
+
+/**
+ * photo (data URI) + prompt -> { status, output: image URL, seed } or { status: "processing", id, seed }.
+ * aspect_ratio "match_input_image" keeps the before/after slider aligned; prompt_upsampling false stops the
+ * model rewriting our prompt; a fixed seed per request (logged) makes a retry reproducible.
+ */
 async function replicateKontext(token, image, prompt, opts = {}) {
   const f = opts.fetch || fetch, t0 = Date.now(), budget = opts.budgetMs || 50000;
-  const r = await call(token, `/models/${opts.model || MODEL}/predictions`, {
+  const prepared = opts.skipPrepare ? { dataUri: image } : await prepareImage(image);
+  const seed = Number.isInteger(opts.seed) ? opts.seed : newSeed();
+  const model = opts.model || MODEL;
+  console.log(JSON.stringify({ replicate: model, seed, width: prepared.width, height: prepared.height }));
+  const r = await call(token, `/models/${model}/predictions`, {
     method: "POST", headers: { Prefer: "wait=45" },
-    body: JSON.stringify({ input: { prompt, input_image: image, aspect_ratio: "match_input_image", output_format: "jpg", safety_tolerance: 2 } })
+    body: JSON.stringify({ input: { prompt, input_image: prepared.dataUri, aspect_ratio: "match_input_image", prompt_upsampling: false, output_format: "png", safety_tolerance: 2, seed } })
   }, f);
   if (!r.ok) { const e = new Error(`replicate_${r.status}`); e.detail = String(r.data.detail || r.data.title || "").slice(0, 300); throw e; }
   let p = r.data;
   while ((p.status === "starting" || p.status === "processing") && Date.now() - t0 < budget) { await sleep(2000); p = (await call(token, `/predictions/${p.id}`, {}, f)).data; }
   const out = Array.isArray(p.output) ? p.output[0] : p.output;
-  if (p.status === "succeeded" && out) return { status: "succeeded", output: out, model: opts.model || MODEL };
+  if (p.status === "succeeded" && out) return { status: "succeeded", output: out, model, seed };
   if (p.status === "failed" || p.status === "canceled") { const e = new Error("replicate_failed"); e.detail = String(p.error || p.status).slice(0, 300); throw e; }
-  return { status: "processing", id: p.id };
+  return { status: "processing", id: p.id, seed };
 }
 
 /** Build the mask PNG (white = redraw, black = keep) the size of the photo. */
@@ -67,4 +86,4 @@ async function getPrediction(token, id, f = fetch) {
   return { status: "processing", id: p.id };
 }
 
-module.exports = { replicateKontext, replicateFill, makeMask, getPrediction, MODEL };
+module.exports = { prepareImage, replicateKontext, replicateFill, makeMask, getPrediction, MODEL };

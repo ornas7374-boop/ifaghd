@@ -147,16 +147,27 @@ test("endpoints: /api/evaluate reviews original + result against the plan", asyn
 });
 
 
-test("design on Replicate (SADU_DESIGN_PROVIDER=replicate): draws exactly the signed plan, Gemini only analyses", async () => {
+test("design on Replicate (kontext): match_input_image, no prompt upsampling, png, a logged fixed seed, EXIF + 1536 px, no crop", async () => {
+  const sharp = require("sharp");
   const saved = { ...process.env };
   Object.assign(process.env, { GEMINI_API_KEY: "g", REPLICATE_API_TOKEN: "r8_test", SADU_DESIGN_PROVIDER: "replicate", SADU_DESIGN_MODE: "kontext" });
+  // a 4000 x 3000 photo stored sideways with EXIF orientation 6 (a phone in portrait)
+  const big = await sharp({ create: { width: 4000, height: 3000, channels: 3, background: "#888" } }).jpeg().withMetadata({ orientation: 6 }).toBuffer();
+  const photo = "data:image/jpeg;base64," + big.toString("base64");
   const plan = JSON.parse(JSON.stringify(planDesign({ observations: ROOMS.windowLeft(), brief: { budget_sar: 3000 }, suggested: { style: "grey_tech" }, secret: require("../../api/plan").planSecret() })));
-  const m = mockFetch((url) => url.includes("api.replicate.com") ? { json: { id: "abcdef123456", status: "succeeded", output: "https://replicate.delivery/x.jpg" } } : { status: 500, json: {} });
+  const m = mockFetch((url) => url.includes("api.replicate.com") ? { json: { id: "abcdef123456", status: "succeeded", output: "https://replicate.delivery/x.png" } } : { status: 500, json: {} });
   try {
-    const r = mk(); await require("../../api/design")({ method: "POST", body: { image: IMG, plan } }, r);
-    assert.equal(r.code, 200, JSON.stringify(r.body)); assert.equal(r.body.output, "https://replicate.delivery/x.jpg");
+    const r = mk(); await require("../../api/design")({ method: "POST", body: { image: photo, plan, seed: 1234 } }, r);
+    assert.equal(r.code, 200, JSON.stringify(r.body)); assert.equal(r.body.output, "https://replicate.delivery/x.png");
+    assert.equal(r.body.seed, 1234, "the seed is returned for a reproducible retry");
     assert.ok(m.calls.every(c => c.url.includes("api.replicate.com")), "no Gemini call for drawing");
-    assert.equal(m.calls[0].body.input.prompt, plan.rendering_instructions.prompt);
+    const input = m.calls[0].body.input;
+    assert.equal(input.prompt, plan.rendering_instructions.prompt);
+    assert.equal(input.aspect_ratio, "match_input_image"); assert.equal(input.prompt_upsampling, false);
+    assert.equal(input.output_format, "png"); assert.equal(input.seed, 1234);
+    const meta = await sharp(Buffer.from(input.input_image.split(",")[1], "base64")).metadata();
+    assert.equal(Math.max(meta.width, meta.height), 1536, "longest side 1536");
+    assert.equal(meta.width, 1152); assert.equal(meta.height, 1536, "EXIF applied (portrait) and ratio kept, not cropped");
   } finally { m.restore(); for (const k of Object.keys(process.env)) if (!(k in saved)) delete process.env[k]; Object.assign(process.env, saved); }
 });
 

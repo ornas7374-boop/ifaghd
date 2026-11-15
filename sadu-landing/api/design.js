@@ -64,7 +64,7 @@ module.exports = async function handler(req, res) {
         const rd = require("./_lib/replicateDesign");
         // mask path (default): only the planned box is redrawn, the rest of the photo stays pixel-identical
         if (pr.fill && pr.region && process.env.SADU_DESIGN_MODE !== "kontext") return reply(res, 200, await rd.replicateFill(token, b.image, pr.region, pr.fill));
-        return reply(res, 200, await rd.replicateKontext(token, b.image, pr.prompt));
+        return reply(res, 200, await rd.replicateKontext(token, b.image, pr.prompt, { seed: Number.isInteger(b.seed) ? b.seed : undefined }));
       }
       const g = await require("./_lib/gemini").generateImage(token, b.image, pr.prompt, { model: process.env.GEMINI_IMAGE_MODEL || undefined });
       return reply(res, 200, { status: "succeeded", output: g.output });
