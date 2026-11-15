@@ -32,6 +32,29 @@ Report ONLY this JSON:
 
 const yn = (v) => (YN.includes(v) ? v : "unsure");
 
+// --- structure check: is the AFTER image the same room from the same camera? (asked as specified)
+const STRUCTURE_PROMPT = "Compare these two images. Return JSON: { same_camera_angle: bool, door_preserved: bool, window_preserved: bool, walls_preserved: bool, score_0_to_10: number, issues: string[] }";
+const STRUCTURE_MIN_SCORE = 7; // below this, or any false, the design is redone once with a new seed
+
+/** Pure normalisation of the structure answer (testable without a model). */
+function scoreStructure(raw) {
+  const j = raw && typeof raw === "object" ? raw : {};
+  const b = (v) => v === true || v === "true";
+  const score = Math.max(0, Math.min(10, Number(j.score_0_to_10) || 0));
+  const out = { same_camera_angle: b(j.same_camera_angle), door_preserved: b(j.door_preserved), window_preserved: b(j.window_preserved),
+    walls_preserved: b(j.walls_preserved), score_0_to_10: score, issues: (Array.isArray(j.issues) ? j.issues : []).map(x => String(x).slice(0, 160)).slice(0, 8) };
+  out.pass = score >= STRUCTURE_MIN_SCORE && out.same_camera_angle && out.door_preserved && out.window_preserved && out.walls_preserved;
+  return out;
+}
+
+/** BEFORE + AFTER to Gemini with the structure prompt. */
+async function structureCheck(key, before, after, opts = {}) {
+  const { visionJSONImages } = require("../gemini");
+  const { parseJson } = require("./perceive");
+  const r = await visionJSONImages(key, [before, after], { system: "You compare two photos of a room. Answer with JSON only.", prompt: STRUCTURE_PROMPT, model: opts.model, budgetMs: opts.budgetMs || 45000, maxTokens: 600 });
+  return { ...scoreStructure(parseJson(r.text)), model: r.model };
+}
+
 /** Pure scoring of the reviewer's answer (testable without any model). */
 function scoreEvaluation(raw, plan, pixelPreservation = null) {
   const j = raw && typeof raw === "object" ? raw : {};
@@ -82,4 +105,4 @@ async function evaluateResult(key, original, generated, plan, opts = {}) {
   return { ...scoreEvaluation(parseJson(r.text), plan, opts.pixelPreservation || null), model: r.model };
 }
 
-module.exports = { evaluateResult, scoreEvaluation, evaluationPrompt };
+module.exports = { STRUCTURE_PROMPT, STRUCTURE_MIN_SCORE, scoreStructure, structureCheck, evaluateResult, scoreEvaluation, evaluationPrompt };

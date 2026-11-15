@@ -282,3 +282,25 @@ test("FLUX.2 on Cloudflare: a falsely flagged result is retried with a new seed,
   await assert.rejects(cfl.cfFlux2("t", "data:image/png;base64," + img.toString("base64"), null, "x", { fetch: bad }), /cloudflare_401/);
   assert.equal(n, 1);
 });
+
+test("structure check: exact prompt, before + after to Gemini, pass only with score >= 7 and every part preserved", async () => {
+  const { STRUCTURE_PROMPT, scoreStructure } = require("../../api/_lib/planner/evaluate");
+  assert.equal(STRUCTURE_PROMPT, "Compare these two images. Return JSON: { same_camera_angle: bool, door_preserved: bool, window_preserved: bool, walls_preserved: bool, score_0_to_10: number, issues: string[] }");
+  const ok = { same_camera_angle: true, door_preserved: true, window_preserved: true, walls_preserved: true, score_0_to_10: 8, issues: [] };
+  assert.equal(scoreStructure(ok).pass, true);
+  assert.equal(scoreStructure({ ...ok, score_0_to_10: 6 }).pass, false, "low score");
+  assert.equal(scoreStructure({ ...ok, door_preserved: false, issues: ["door on the right wall disappeared"] }).pass, false, "door gone");
+  assert.equal(scoreStructure({}).pass, false, "an empty answer never passes");
+  const saved = { ...process.env };
+  Object.assign(process.env, { GEMINI_API_KEY: "g" });
+  require("../../api/_lib/gemini")._reset();
+  const m = mockFetch(() => ({ json: { candidates: [{ content: { parts: [{ text: JSON.stringify({ ...ok, same_camera_angle: false, score_0_to_10: 4, issues: ["camera moved"] }) }] } }] } }));
+  try {
+    const r = mk(); await require("../../api/evaluate")({ method: "POST", body: { mode: "structure", original: IMG, generated: IMG } }, r);
+    assert.equal(r.code, 200, JSON.stringify(r.body));
+    assert.equal(r.body.structure.pass, false); assert.deepEqual(r.body.structure.issues, ["camera moved"]);
+    const parts = m.calls[0].body.contents[0].parts;
+    assert.equal(parts.filter(x => x.inline_data).length, 2, "before + after are sent");
+    assert.ok(parts.some(x => x.text === STRUCTURE_PROMPT), "the exact prompt");
+  } finally { m.restore(); require("../../api/_lib/gemini")._reset(); for (const k of Object.keys(process.env)) if (!(k in saved)) delete process.env[k]; Object.assign(process.env, saved); }
+});

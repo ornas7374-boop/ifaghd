@@ -415,6 +415,16 @@ fieldset.field{border:0;margin:0;padding:0}
       var r = await postJson("/api/design", { image: state.image, plan: plan });
       if(r.status === "processing") r = await poll(r.id);
       if(r.status !== "succeeded") throw r;
+      // 3) structure check: same room, same camera? If not, redo once with a new seed and keep the better one
+      $("loadText").textContent = "نتأكد إنها نفس الغرفة ونفس زاوية التصوير…";
+      var sc = await checkStructure(r.output);
+      if(sc && !sc.pass){
+        $("loadText").textContent = "الغرفة تغيّرت، نعيد التصميم بمحاولة ثانية…";
+        var r2 = await postJson("/api/design", { image: state.image, plan: plan, seed: Math.floor(Math.random() * 2147483647) });
+        if(r2.status === "processing") r2 = await poll(r2.id);
+        if(r2.status === "succeeded"){ var sc2 = await checkStructure(r2.output); if(sc2 && sc2.score_0_to_10 >= sc.score_0_to_10){ r = r2; sc = sc2; } }
+      }
+      state.structure = sc;
       show(r.output, (Date.now() - t0) / 1000);
       // 3) review the result against the plan (does not block the result)
       evaluate(r.output, plan);
@@ -466,6 +476,11 @@ fieldset.field{border:0;margin:0;padding:0}
   var AR_FAIL = { architecture_changed:"تغيّر شيء من معمار الغرفة", pixel_preservation_failed:"فحص البكسل لم ينجح", planned_items_missing:"قطع من الخطة ناقصة", items_misplaced:"قطع في غير مكانها",
     unplanned_items_added:"أُضيفت قطع ليست في الخطة", request_not_met_by_plan:"الخطة ما حققت طلبك", colours_wrong:"الألوان غير مطابقة" };
   var AR_NEXT = { accept:"النتيجة مقبولة", regenerate:"يُنصح بإعادة التصميم", regenerate_strict:"يُنصح بإعادة التصميم مع حماية أقوى", replan:"يُنصح بإعادة التخطيط" };
+  async function checkStructure(url){
+    try{ var r = await postJson("/api/evaluate", { mode: "structure", original: state.image, generated: url }); return r.status === "succeeded" ? r.structure : null; }
+    catch(e){ return null; }
+  }
+
   async function evaluate(url, plan){
     var box = $("evalBox"); box.hidden = false; box.textContent = ""; box.append(el("p", null, "نراجع النتيجة مقابل الخطة…"));
     try{
@@ -473,6 +488,7 @@ fieldset.field{border:0;margin:0;padding:0}
       if(r.status !== "succeeded") throw r;
       var ev = r.evaluation; box.textContent = "";
       box.append(el("h3", null, "مراجعة النتيجة: " + (AR_NEXT[ev.next_action] || ev.next_action)));
+      if(state.structure) box.append(el("p", null, "فحص الهيكل: " + state.structure.score_0_to_10 + " من 10" + (state.structure.pass ? " ✓ نفس الغرفة ونفس الزاوية" : " · " + (state.structure.issues[0] || "تغيّر شيء من الغرفة"))));
       box.append(el("p", null, "المحافظة على الغرفة " + ev.scores.preservation + "٪ · مطابقة الخطة " + Math.max(0, ev.scores.plan_match) + "٪ · طلبك " + ev.scores.request + "٪"));
       if(ev.failures.length){ var fl = el("ul"); ev.failures.forEach(function(f){ fl.append(li(AR_FAIL[f.type] || f.type)); }); box.append(fl); }
       box.append(el("p", "small", "فحص المحافظة هنا بصري بالذكاء الاصطناعي، ولم يُتحقق منه بالبكسل بعد."));
