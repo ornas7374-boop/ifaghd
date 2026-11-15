@@ -337,11 +337,25 @@ fieldset.field{border:0;margin:0;padding:0}
   }
 
   function wait(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+  function wait2(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+  async function poll(id){
+    for(var i = 0; i < 40; i++){
+      await wait2(2500);
+      var r = await fetch("/api/design?id=" + encodeURIComponent(id)).then(function(x){ return x.json(); });
+      if(r.status !== "processing") return r;
+    }
+    return { status:"failed", error:"timeout" };
+  }
+
   var ERR = {
     missing_token: "المفتاح غير مضاف في إعدادات Vercel.",
     bad_image: "الصورة غير صالحة. جرّب صورة أخرى.",
     too_large: "الصورة كبيرة جداً. جرّب صورة أصغر.",
     timeout: "التصميم تأخر أكثر من المعتاد. جرّب مرة ثانية.",
+    replicate_401: "مفتاح خدمة الرسم غير صحيح.",
+    replicate_402: "رصيد خدمة الرسم انتهى. الخطة والميزانية جاهزة، والرسم يرجع بعد شحن الرصيد.",
+    replicate_429: "خدمة الرسم مزدحمة. انتظر دقيقة ثم جرّب.",
+    replicate_failed: "خدمة الرسم ما قدرت ترسم هالصورة. جرّب مرة ثانية.",
     gemini_400: "Gemini رفض الطلب. جرّب صورة أخرى.",
     gemini_401: "مفتاح Gemini غير صحيح.",
     gemini_403: "مفتاح Gemini غير صحيح أو غير مفعّل لهذا النموذج.",
@@ -395,6 +409,7 @@ fieldset.field{border:0;margin:0;padding:0}
       // 2) draw exactly the approved plan
       $("loadText").textContent = "نصمّم حسب الخطة…";
       var r = await postJson("/api/design", { image: state.image, plan: plan });
+      if(r.status === "processing") r = await poll(r.id);
       if(r.status !== "succeeded") throw r;
       show(r.output, (Date.now() - t0) / 1000);
       // 3) review the result against the plan (does not block the result)

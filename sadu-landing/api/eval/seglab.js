@@ -43,13 +43,16 @@ module.exports = async (req, res) => {
       if (req.query.render === "1") {
         // Gemini image model (needs billing on the Google project): draw the plan, then measure how much the protected areas changed.
         if (req.query.confirm !== "1") return res.status(400).json({ error: "add confirm=1 to start a paid render", plan_passed: plan.validation_results.passed });
-        const prov = "gemini";
-        const pkey = process.env.GEMINI_API_KEY;
+        const prov = req.query.provider === "gemini" ? "gemini" : "replicate";
+        const pkey = prov === "gemini" ? process.env.GEMINI_API_KEY : process.env.REPLICATE_API_TOKEN;
         if (!pkey) return res.status(500).json({ error: `missing_${prov}_key` });
         if (!plan.rendering_instructions) return res.status(200).json({ mode: "render", error: "plan_not_validated", validation: plan.validation_results });
         const t1 = Date.now();
         const src = `data:image/jpeg;base64,${jpg.toString("base64")}`;
-        const f = await require("../_lib/gemini").generateImage(pkey, src, plan.rendering_instructions.prompt, { model: process.env.GEMINI_IMAGE_MODEL || undefined });
+        const f = prov === "gemini"
+          ? await require("../_lib/gemini").generateImage(pkey, src, plan.rendering_instructions.prompt, { model: process.env.GEMINI_IMAGE_MODEL || undefined })
+          : await require("../_lib/replicateDesign").replicateKontext(pkey, src, plan.rendering_instructions.prompt, { budgetMs: 42000 });
+        if (f.status === "processing") return res.status(200).json({ mode: "render", provider: prov, status: "processing", id: f.id });
         const render_ms = Date.now() - t1;
         const gen = f.output.startsWith("data:") ? Buffer.from(f.output.split(",")[1], "base64") : Buffer.from(await (await fetch(f.output)).arrayBuffer());
         const W = 256, H = Math.round(256 * meta.height / meta.width);

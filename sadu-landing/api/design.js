@@ -1,8 +1,10 @@
 // sadu — sends the photo of the corner or room and returns the setup design.
-// Google Gemini only: the key is read from GEMINI_API_KEY on the server and never reaches the browser.
+// Drawing: Replicate (FLUX Kontext) when SADU_DESIGN_PROVIDER=replicate, otherwise Gemini.
+// Keys (REPLICATE_API_TOKEN / GEMINI_API_KEY) stay on the server and never reach the browser.
 //
 // POST /api/design   { image: "data:image/jpeg;base64,...", plan }  (or the legacy { style, room })
-//   -> { status: "succeeded", output: "data:image/...;base64,..." }
+//   -> { status: "succeeded", output: <image URL or data URI> }  or  { status: "processing", id }
+// GET  /api/design?id=...   (Replicate only) status of a slow prediction
 
 // Setup focus: spaces, styles and the preservation rule live in _lib/setup.js (shared with analysis).
 const { STYLES, buildPrompt } = require("./_lib/setup");
@@ -35,7 +37,13 @@ function reply(res, code, body) {
 }
 
 module.exports = async function handler(req, res) {
-  if (!process.env.GEMINI_API_KEY) return reply(res, 500, { status: "failed", error: "missing_token" });
+  const useRep = process.env.SADU_DESIGN_PROVIDER === "replicate";
+  const token = useRep ? process.env.REPLICATE_API_TOKEN : process.env.GEMINI_API_KEY;
+  if (!token) return reply(res, 500, { status: "failed", error: "missing_token" });
+  if (useRep && req.method === "GET") {
+    try { return reply(res, 200, await require("./_lib/replicateDesign").getPrediction(token, String((req.query || {}).id || ""))); }
+    catch (e) { return reply(res, e.message === "bad_id" ? 400 : 502, { status: "failed", error: e.message }); }
+  }
   if (req.method !== "POST") return reply(res, 405, { status: "failed", error: "method" });
   try {
     const b = typeof req.body === "string" ? JSON.parse(req.body || "{}") : (req.body || {});
@@ -44,10 +52,11 @@ module.exports = async function handler(req, res) {
     if (typeof b.image !== "string" || !/^data:image\/(jpeg|png|webp);base64,/.test(b.image)) return reply(res, 400, { status: "failed", error: "bad_image" });
     if (b.image.length > 4_000_000) return reply(res, 413, { status: "failed", error: "too_large" });
     try {
-      const g = await require("./_lib/gemini").generateImage(process.env.GEMINI_API_KEY, b.image, pr.prompt, { model: process.env.GEMINI_IMAGE_MODEL || undefined });
+      if (useRep) return reply(res, 200, await require("./_lib/replicateDesign").replicateKontext(token, b.image, pr.prompt));
+      const g = await require("./_lib/gemini").generateImage(token, b.image, pr.prompt, { model: process.env.GEMINI_IMAGE_MODEL || undefined });
       return reply(res, 200, { status: "succeeded", output: g.output });
     } catch (e) {
-      return reply(res, 502, { status: "failed", error: e.message || "gemini_failed", detail: e.detail || "" });
+      return reply(res, 502, { status: "failed", error: e.message || "design_failed", detail: e.detail || "" });
     }
   } catch (e) {
     return reply(res, 500, { status: "failed", error: "server_error" });

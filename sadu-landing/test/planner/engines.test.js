@@ -146,3 +146,16 @@ test("endpoints: /api/evaluate reviews original + result against the plan", asyn
   } finally { m.restore(); require("../../api/_lib/gemini")._reset(); for (const k of Object.keys(process.env)) if (!(k in saved)) delete process.env[k]; Object.assign(process.env, saved); }
 });
 
+
+test("design on Replicate (SADU_DESIGN_PROVIDER=replicate): draws exactly the signed plan, Gemini only analyses", async () => {
+  const saved = { ...process.env };
+  Object.assign(process.env, { GEMINI_API_KEY: "g", REPLICATE_API_TOKEN: "r8_test", SADU_DESIGN_PROVIDER: "replicate" });
+  const plan = JSON.parse(JSON.stringify(planDesign({ observations: ROOMS.windowLeft(), brief: { budget_sar: 3000 }, suggested: { style: "grey_tech" }, secret: require("../../api/plan").planSecret() })));
+  const m = mockFetch((url) => url.includes("api.replicate.com") ? { json: { id: "abcdef123456", status: "succeeded", output: "https://replicate.delivery/x.jpg" } } : { status: 500, json: {} });
+  try {
+    const r = mk(); await require("../../api/design")({ method: "POST", body: { image: IMG, plan } }, r);
+    assert.equal(r.code, 200, JSON.stringify(r.body)); assert.equal(r.body.output, "https://replicate.delivery/x.jpg");
+    assert.ok(m.calls.every(c => c.url.includes("api.replicate.com")), "no Gemini call for drawing");
+    assert.equal(m.calls[0].body.input.prompt, plan.rendering_instructions.prompt);
+  } finally { m.restore(); for (const k of Object.keys(process.env)) if (!(k in saved)) delete process.env[k]; Object.assign(process.env, saved); }
+});
