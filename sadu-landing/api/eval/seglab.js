@@ -60,7 +60,9 @@ module.exports = async (req, res) => {
         const src = `data:image/jpeg;base64,${jpg.toString("base64")}`;
         const f = prov === "gemini"
           ? await require("../_lib/gemini").generateImage(pkey, src, plan.rendering_instructions.prompt, { model: process.env.GEMINI_IMAGE_MODEL || undefined })
-          : await require("../_lib/replicateDesign").replicateKontext(pkey, src, plan.rendering_instructions.prompt, { budgetMs: 42000 });
+          : req.query.mode === "kontext"
+            ? await require("../_lib/replicateDesign").replicateKontext(pkey, src, plan.rendering_instructions.prompt, { budgetMs: 42000 })
+            : await require("../_lib/replicateDesign").replicateFill(pkey, src, plan.rendering_instructions.edit_region, plan.rendering_instructions.fill_prompt, { budgetMs: 42000 });
         if (f.status === "processing") return res.status(200).json({ mode: "render", provider: prov, status: "processing", id: f.id });
         const render_ms = Date.now() - t1;
         const gen = f.output.startsWith("data:") ? Buffer.from(f.output.split(",")[1], "base64") : Buffer.from(await (await fetch(f.output)).arrayBuffer());

@@ -61,8 +61,20 @@ function renderInstructions(plan) {
   while (words > MAX_WORDS && lines.length > 3) { lines.pop(); parts[parts.findIndex(x => x.startsWith("Add exactly"))] = `Add exactly these items and nothing else: ${lines.join("; ")}.`; prompt = parts.join(" "); words = prompt.split(/\s+/).length; }
 
   const xs = placed.map(p => [p.x0, p.x1]).flat();
-  const edit_region = xs.length ? { wall: spatial.best.wall, x0: +Math.max(0, Math.min(...xs) - 0.03).toFixed(3), x1: +Math.min(1, Math.max(...xs) + 0.03).toFixed(3), note: "planned items go here; everything outside stays original (for the mask path)" } : null;
-  return { prompt, words, edit_region, protected: ["floor", intent.allow_wall && wallItem ? "walls except behind the desk" : "all walls", "ceiling", "windows", "doors", "camera angle"],
+  // the mask: only this box is redrawn; every pixel outside stays the original photo.
+  // x: the planned items (+ margin) kept inside the desk wall; y: below the ceiling line, down to the floor in front of the desk
+  let x0 = Math.min(...xs) - 0.03, x1 = Math.max(...xs) + 0.03;
+  if (wallExt) { x0 = Math.max(x0, wallExt.x0 + 0.005); x1 = Math.min(x1, wallExt.x1 - 0.005); }
+  const edit_region = xs.length ? { wall: spatial.best.wall, x0: +Math.max(0, x0).toFixed(3), x1: +Math.min(1, x1).toFixed(3), y0: 0.2, y1: 0.97,
+    note: "only this box is redrawn (mask); everything outside stays the original photo" } : null;
+  // short instruction for the mask (inpainting) model: it only sees the box, so it describes what goes in it
+  const fill_prompt = [
+    `Photorealistic interior photo. Inside this area of the room add exactly: ${lines.join("; ")}.`,
+    `Lighting: ${[light.monitor, light.accent, light.bias].filter(Boolean).join("; ")}.`,
+    `Continue the existing ${room.surfaces.walls || "wall paint"} on the wall and the existing ${room.surfaces.floor || "floor"} on the floor seamlessly; bare floor, no rug or carpet.`,
+    "No people, no logos, no readable text."
+  ].join(" ");
+  return { prompt, words, edit_region, fill_prompt, protected: ["floor", intent.allow_wall && wallItem ? "walls except behind the desk" : "all walls", "ceiling", "windows", "doors", "camera angle"],
     items_allowed: placed.map(p => p.item) };
 }
 

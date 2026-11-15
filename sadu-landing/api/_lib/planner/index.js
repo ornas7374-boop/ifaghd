@@ -19,7 +19,7 @@ const PLACEMENT_ERRORS = new Set(["no_desk_position", "blocks_door", "window_beh
 
 /** Sign the render instruction so the design endpoint only draws plans made by this server. */
 function sign(instr, secret) {
-  return crypto.createHmac("sha256", String(secret || "")).update(JSON.stringify({ p: instr.prompt, r: instr.edit_region })).digest("hex");
+  return crypto.createHmac("sha256", String(secret || "")).update(JSON.stringify({ p: instr.prompt, r: instr.edit_region, f: instr.fill_prompt || null })).digest("hex");
 }
 function verify(instr, secret) {
   if (!instr || typeof instr.prompt !== "string" || typeof instr.signature !== "string" || !secret) return false;

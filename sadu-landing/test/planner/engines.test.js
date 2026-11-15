@@ -149,7 +149,7 @@ test("endpoints: /api/evaluate reviews original + result against the plan", asyn
 
 test("design on Replicate (SADU_DESIGN_PROVIDER=replicate): draws exactly the signed plan, Gemini only analyses", async () => {
   const saved = { ...process.env };
-  Object.assign(process.env, { GEMINI_API_KEY: "g", REPLICATE_API_TOKEN: "r8_test", SADU_DESIGN_PROVIDER: "replicate" });
+  Object.assign(process.env, { GEMINI_API_KEY: "g", REPLICATE_API_TOKEN: "r8_test", SADU_DESIGN_PROVIDER: "replicate", SADU_DESIGN_MODE: "kontext" });
   const plan = JSON.parse(JSON.stringify(planDesign({ observations: ROOMS.windowLeft(), brief: { budget_sar: 3000 }, suggested: { style: "grey_tech" }, secret: require("../../api/plan").planSecret() })));
   const m = mockFetch((url) => url.includes("api.replicate.com") ? { json: { id: "abcdef123456", status: "succeeded", output: "https://replicate.delivery/x.jpg" } } : { status: 500, json: {} });
   try {
@@ -167,4 +167,34 @@ test("evaluation: an added rug counts as a changed floor even when the reviewer 
   assert.equal(ev.preservation.visual.floor, "no");
   assert.ok(ev.failures.some(f => f.type === "architecture_changed" && /rug/.test(f.detail.join(" "))));
   assert.equal(ev.next_action, "regenerate_strict");
+});
+
+test("mask path: only the planned box is redrawn; the mask is the photo's size, white inside the box, black outside", async () => {
+  const sharp = require("sharp");
+  const saved = { ...process.env };
+  Object.assign(process.env, { GEMINI_API_KEY: "g", REPLICATE_API_TOKEN: "r8_test", SADU_DESIGN_PROVIDER: "replicate" });
+  delete process.env.SADU_DESIGN_MODE;
+  const photo = "data:image/jpeg;base64," + (await sharp({ create: { width: 400, height: 200, channels: 3, background: "#ccc" } }).jpeg().toBuffer()).toString("base64");
+  const plan = JSON.parse(JSON.stringify(planDesign({ observations: ROOMS.windowLeft(), brief: { budget_sar: 3000 }, suggested: { style: "grey_tech" }, secret: require("../../api/plan").planSecret() })));
+  const ri = plan.rendering_instructions;
+  assert.ok(ri.fill_prompt && /no rug/.test(ri.fill_prompt));
+  assert.ok(ri.edit_region.x0 >= 0.2, "the box stays on the desk wall, away from the window wall");
+  const m = mockFetch((url) => url.includes("flux-fill-pro") ? { json: { id: "abcdef123456", status: "succeeded", output: "https://replicate.delivery/f.jpg" } } : { status: 500, json: {} });
+  try {
+    const r = mk(); await require("../../api/design")({ method: "POST", body: { image: photo, plan } }, r);
+    assert.equal(r.code, 200, JSON.stringify(r.body)); assert.equal(r.body.output, "https://replicate.delivery/f.jpg");
+    const input = m.calls[0].body.input;
+    assert.equal(input.prompt, ri.fill_prompt);
+    const mask = Buffer.from(input.mask.split(",")[1], "base64");
+    const meta = await sharp(mask).metadata(); assert.equal(meta.width, 400); assert.equal(meta.height, 200);
+    const px = await sharp(mask).raw().toBuffer();
+    const at = (x, y) => px[(y * 400 + x) * meta.channels];
+    assert.equal(at(5, 100), 0, "window side stays black (kept)");
+    assert.equal(at(5, 5), 0, "ceiling band stays black (kept)");
+    assert.equal(at(Math.round((ri.edit_region.x0 + ri.edit_region.x1) / 2 * 400), 120), 255, "inside the box is white (redrawn)");
+    // a tampered fill prompt is refused
+    const t = JSON.parse(JSON.stringify(plan)); t.rendering_instructions.fill_prompt += " and a red rug";
+    const r2 = mk(); await require("../../api/design")({ method: "POST", body: { image: photo, plan: t } }, r2);
+    assert.equal(r2.body.error, "plan_not_signed");
+  } finally { m.restore(); for (const k of Object.keys(process.env)) if (!(k in saved)) delete process.env[k]; Object.assign(process.env, saved); }
 });

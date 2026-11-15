@@ -24,7 +24,7 @@ function promptFor(b) {
   if (b.plan) {
     const ri = b.plan.rendering_instructions;
     if (!ri || !verify(ri, planSecret())) return { error: "plan_not_signed" };
-    return { prompt: ri.prompt };
+    return { prompt: ri.prompt, fill: ri.fill_prompt || null, region: ri.edit_region || null };
   }
   if (!STYLES[b.style]) return { error: "bad_style" };
   return { prompt: buildPrompt(b.style, b.room, { keep: keepOf(b.keep), ...briefOf(b) }) };
@@ -52,7 +52,12 @@ module.exports = async function handler(req, res) {
     if (typeof b.image !== "string" || !/^data:image\/(jpeg|png|webp);base64,/.test(b.image)) return reply(res, 400, { status: "failed", error: "bad_image" });
     if (b.image.length > 4_000_000) return reply(res, 413, { status: "failed", error: "too_large" });
     try {
-      if (useRep) return reply(res, 200, await require("./_lib/replicateDesign").replicateKontext(token, b.image, pr.prompt));
+      if (useRep) {
+        const rd = require("./_lib/replicateDesign");
+        // mask path (default): only the planned box is redrawn, the rest of the photo stays pixel-identical
+        if (pr.fill && pr.region && process.env.SADU_DESIGN_MODE !== "kontext") return reply(res, 200, await rd.replicateFill(token, b.image, pr.region, pr.fill));
+        return reply(res, 200, await rd.replicateKontext(token, b.image, pr.prompt));
+      }
       const g = await require("./_lib/gemini").generateImage(token, b.image, pr.prompt, { model: process.env.GEMINI_IMAGE_MODEL || undefined });
       return reply(res, 200, { status: "succeeded", output: g.output });
     } catch (e) {
