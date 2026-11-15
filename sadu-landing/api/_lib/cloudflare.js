@@ -69,4 +69,11 @@ async function cfInpaint(token, image, region, prompt, opts = {}) {
   return res;
 }
 
-module.exports = { cfInpaint, check, accountId, MODEL, _reset: () => { accountCache = null; } };
+/** Free: the input/output schema of a model. */
+async function schema(token, model, f = fetch) {
+  const acct = await accountId(token, f);
+  const r = await cf(token, `/accounts/${acct}/ai/models/schema?model=${encodeURIComponent(model)}`, {}, f);
+  return { status: r.status, body: (await r.text()).slice(0, 6000) };
+}
+
+module.exports = { schema, cfInpaint, check, accountId, MODEL, _reset: () => { accountCache = null; } };

@@ -31,6 +31,9 @@ module.exports = async (req, res) => {
     const raw = decrypt(fs.readFileSync(file), process.env.SADU_LAB_KEY);
     const jpg = await sharp(raw).rotate().resize(1024, 1024, { fit: "inside", withoutEnlargement: true }).jpeg({ quality: 88 }).toBuffer();
     const meta = await sharp(jpg).metadata();
+    if (req.query.cfschema) {
+      return res.status(200).json({ mode: "cloudflare_schema", ...(await require("../_lib/cloudflare").schema(process.env.CLOUDFLARE_API_TOKEN, String(req.query.cfschema))) });
+    }
     if (req.query.cfcheck === "1") {
       // free: token valid? account? inpainting model listed? (no drawing)
       if (!process.env.CLOUDFLARE_API_TOKEN) return res.status(500).json({ error: "missing_cloudflare_token" });
