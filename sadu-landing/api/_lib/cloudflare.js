@@ -102,7 +102,7 @@ async function pasteChanged(orig, gen, protect = [], opts = {}) {
   const { width: W, height: H } = await sharp(orig).metadata();
   const sw = 320, sh = Math.max(1, Math.round(H * sw / W));
   const [a, b] = await Promise.all([orig, gen].map(x => sharp(x).resize(sw, sh, { fit: "fill" }).removeAlpha().blur(1.2).raw().toBuffer()));
-  const thr = opts.threshold || 34;
+  const thr = opts.threshold || 20;
   const m = Buffer.alloc(sw * sh);
   for (let i = 0, j = 0; i < sw * sh; i++, j += 3) {
     const d = (Math.abs(a[j] - b[j]) + Math.abs(a[j + 1] - b[j + 1]) + Math.abs(a[j + 2] - b[j + 2])) / 3;
@@ -110,7 +110,7 @@ async function pasteChanged(orig, gen, protect = [], opts = {}) {
   }
   for (const r of protect) for (let y = Math.floor(r.y0 * sh); y < Math.ceil(r.y1 * sh); y++) for (let x = Math.floor(r.x0 * sw); x < Math.ceil(r.x1 * sw); x++) if (x >= 0 && y >= 0 && x < sw && y < sh) m[y * sw + x] = 0;
   // grow (close small gaps inside objects), then feather when scaling up
-  const grown = await sharp(m, { raw: { width: sw, height: sh, channels: 1 } }).blur(2.5).threshold(40).extractChannel(0).raw().toBuffer();
+  const grown = await sharp(m, { raw: { width: sw, height: sh, channels: 1 } }).blur(opts.grow || 9).threshold(opts.growThreshold || 10).extractChannel(0).raw().toBuffer();
   for (const r of protect) for (let y = Math.floor(r.y0 * sh); y < Math.ceil(r.y1 * sh); y++) for (let x = Math.floor(r.x0 * sw); x < Math.ceil(r.x1 * sw); x++) if (x >= 0 && y >= 0 && x < sw && y < sh) grown[y * sw + x] = 0;
   const alpha = await sharp(grown, { raw: { width: sw, height: sh, channels: 1 } }).resize(W, H, { fit: "fill" }).blur(3).extractChannel(0).raw().toBuffer();
   const genFull = await sharp(gen).resize(W, H, { fit: "fill" }).removeAlpha().raw().toBuffer();
@@ -138,7 +138,8 @@ async function cfFlux2(token, image, region, prompt, opts = {}) {
   form.append("width", String(w)); form.append("height", String(h));
   const acct = await accountId(token, f);
   const model = opts.model || EDIT_MODEL;
-  const r = await cf(token, `/accounts/${acct}/ai/run/${model}`, { method: "POST", body: form }, f);
+  let r = await cf(token, `/accounts/${acct}/ai/run/${model}`, { method: "POST", body: form }, f);
+  if (r.status >= 500) { await new Promise(ok => setTimeout(ok, 1500)); r = await cf(token, `/accounts/${acct}/ai/run/${model}`, { method: "POST", body: form }, f); } // one retry on a passing server error
   const d = await r.json().catch(() => ({}));
   const b64 = d && d.result && d.result.image;
   if (!r.ok || !b64) { const e = new Error(`cloudflare_${r.status}`); e.detail = JSON.stringify(d.errors || d).slice(0, 300); throw e; }
