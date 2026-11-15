@@ -22,13 +22,13 @@ async function accountId(token, f = fetch) {
 }
 
 /** Free checks only (no drawing): token valid? account? is the inpainting model listed? */
-async function check(token, f = fetch) {
+async function check(token, f = fetch, term = "inpainting") {
   const v = await (await cf(token, "/user/tokens/verify", {}, f)).json().catch(() => ({}));
   let acct = null, models = null, err = null;
   try {
     acct = await accountId(token, f);
-    const m = await (await cf(token, `/accounts/${acct}/ai/models/search?search=inpainting`, {}, f)).json().catch(() => ({}));
-    models = (m.result || []).map(x => x.name);
+    const m = await (await cf(token, `/accounts/${acct}/ai/models/search?search=${encodeURIComponent(term)}&per_page=50`, {}, f)).json().catch(() => ({}));
+    models = (m.result || []).map(x => ({ name: x.name, task: x.task && x.task.name, desc: String(x.description || "").slice(0, 160), props: (x.properties || []).map(p => `${p.property_id}=${String(p.value).slice(0, 40)}`).slice(0, 6) }));
   } catch (e) { err = `${e.message} ${e.detail || ""}`; }
   return { token_status: v && v.result && v.result.status, token_ok: !!(v && v.success), account_found: !!acct, inpaint_models: models, error: err };
 }

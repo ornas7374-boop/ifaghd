@@ -34,7 +34,7 @@ module.exports = async (req, res) => {
     if (req.query.cfcheck === "1") {
       // free: token valid? account? inpainting model listed? (no drawing)
       if (!process.env.CLOUDFLARE_API_TOKEN) return res.status(500).json({ error: "missing_cloudflare_token" });
-      return res.status(200).json({ mode: "cloudflare_check", ...(await require("../_lib/cloudflare").check(process.env.CLOUDFLARE_API_TOKEN)) });
+      return res.status(200).json({ mode: "cloudflare_check", ...(await require("../_lib/cloudflare").check(process.env.CLOUDFLARE_API_TOKEN, fetch, String(req.query.term || "inpainting"))) });
     }
     if (req.query.plan === "1") {
       if (!process.env.GEMINI_API_KEY) return res.status(500).json({ error: "missing_gemini_key" });
