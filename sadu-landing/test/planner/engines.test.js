@@ -198,3 +198,27 @@ test("mask path: only the planned box is redrawn; the mask is the photo's size, 
     assert.equal(r2.body.error, "plan_not_signed");
   } finally { m.restore(); for (const k of Object.keys(process.env)) if (!(k in saved)) delete process.env[k]; Object.assign(process.env, saved); }
 });
+
+test("free Cloudflare path: only the box is redrawn and pasted back; outside the box the photo is pixel-identical", async () => {
+  const sharp = require("sharp");
+  const cfl = require("../../api/_lib/cloudflare"); cfl._reset();
+  const orig = await sharp({ create: { width: 400, height: 200, channels: 3, background: { r: 200, g: 180, b: 160 } } }).png().toBuffer();
+  const photo = "data:image/png;base64," + orig.toString("base64");
+  const red = await sharp({ create: { width: 64, height: 32, channels: 3, background: { r: 255, g: 0, b: 0 } } }).png().toBuffer();
+  let sent;
+  const fake = async (url, o = {}) => {
+    if (url.includes("/accounts?")) return { ok: true, status: 200, json: async () => ({ result: [{ id: "acc1" }] }) };
+    sent = { url, body: JSON.parse(o.body) };
+    return { ok: true, status: 200, headers: { get: () => "image/png" }, arrayBuffer: async () => red };
+  };
+  const region = { x0: 0.5, x1: 0.75, y0: 0.2, y1: 0.9 };
+  const r = await cfl.cfInpaint("t", photo, region, "white desk", { fetch: fake });
+  assert.match(sent.url, /accounts\/acc1\/ai\/run\/@cf\/runwayml\/stable-diffusion-v1-5-inpainting$/);
+  assert.equal(sent.body.width % 8, 0); assert.equal(sent.body.image.length > 0, true); assert.equal(sent.body.mask.length > 0, true);
+  const out = await sharp(Buffer.from(r.output.split(",")[1], "base64")).raw().toBuffer({ resolveWithObject: true });
+  assert.equal(out.info.width, 400); assert.equal(out.info.height, 200);
+  const px = (x, y) => { const i = (y * 400 + x) * out.info.channels; return [out.data[i], out.data[i + 1], out.data[i + 2]]; };
+  const near = (a, b) => a.every((v, i) => Math.abs(v - b[i]) <= 3);
+  assert.ok(near(px(20, 100), [200, 180, 160]), "outside the box: original");
+  assert.ok(near(px(250, 100), [255, 0, 0]), "inside the box: redrawn");
+});

@@ -37,8 +37,8 @@ function reply(res, code, body) {
 }
 
 module.exports = async function handler(req, res) {
-  const useRep = process.env.SADU_DESIGN_PROVIDER === "replicate";
-  const token = useRep ? process.env.REPLICATE_API_TOKEN : process.env.GEMINI_API_KEY;
+  const useRep = process.env.SADU_DESIGN_PROVIDER === "replicate", useCf = process.env.SADU_DESIGN_PROVIDER === "cloudflare";
+  const token = useCf ? process.env.CLOUDFLARE_API_TOKEN : useRep ? process.env.REPLICATE_API_TOKEN : process.env.GEMINI_API_KEY;
   if (!token) return reply(res, 500, { status: "failed", error: "missing_token" });
   if (useRep && req.method === "GET") {
     try { return reply(res, 200, await require("./_lib/replicateDesign").getPrediction(token, String((req.query || {}).id || ""))); }
@@ -52,6 +52,11 @@ module.exports = async function handler(req, res) {
     if (typeof b.image !== "string" || !/^data:image\/(jpeg|png|webp);base64,/.test(b.image)) return reply(res, 400, { status: "failed", error: "bad_image" });
     if (b.image.length > 4_000_000) return reply(res, 413, { status: "failed", error: "too_large" });
     try {
+      if (useCf) {
+        // free (Cloudflare daily allowance): mask path only, needs a signed plan with a box
+        if (!pr.fill || !pr.region) return reply(res, 400, { status: "failed", error: "plan_required" });
+        return reply(res, 200, await require("./_lib/cloudflare").cfInpaint(token, b.image, pr.region, pr.fill));
+      }
       if (useRep) {
         const rd = require("./_lib/replicateDesign");
         // mask path (default): only the planned box is redrawn, the rest of the photo stays pixel-identical

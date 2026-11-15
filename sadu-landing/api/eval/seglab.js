@@ -31,6 +31,11 @@ module.exports = async (req, res) => {
     const raw = decrypt(fs.readFileSync(file), process.env.SADU_LAB_KEY);
     const jpg = await sharp(raw).rotate().resize(1024, 1024, { fit: "inside", withoutEnlargement: true }).jpeg({ quality: 88 }).toBuffer();
     const meta = await sharp(jpg).metadata();
+    if (req.query.cfcheck === "1") {
+      // free: token valid? account? inpainting model listed? (no drawing)
+      if (!process.env.CLOUDFLARE_API_TOKEN) return res.status(500).json({ error: "missing_cloudflare_token" });
+      return res.status(200).json({ mode: "cloudflare_check", ...(await require("../_lib/cloudflare").check(process.env.CLOUDFLARE_API_TOKEN)) });
+    }
     if (req.query.plan === "1") {
       if (!process.env.GEMINI_API_KEY) return res.status(500).json({ error: "missing_gemini_key" });
       const { perceive } = require("../_lib/planner/perceive");
@@ -52,13 +57,15 @@ module.exports = async (req, res) => {
       if (req.query.render === "1") {
         // Gemini image model (needs billing on the Google project): draw the plan, then measure how much the protected areas changed.
         if (req.query.confirm !== "1") return res.status(400).json({ error: "add confirm=1 to start a paid render", plan_passed: plan.validation_results.passed });
-        const prov = req.query.provider === "gemini" ? "gemini" : "replicate";
-        const pkey = prov === "gemini" ? process.env.GEMINI_API_KEY : process.env.REPLICATE_API_TOKEN;
+        const prov = ["gemini", "cloudflare"].includes(req.query.provider) ? req.query.provider : "replicate";
+        const pkey = prov === "gemini" ? process.env.GEMINI_API_KEY : prov === "cloudflare" ? process.env.CLOUDFLARE_API_TOKEN : process.env.REPLICATE_API_TOKEN;
         if (!pkey) return res.status(500).json({ error: `missing_${prov}_key` });
         if (!plan.rendering_instructions) return res.status(200).json({ mode: "render", error: "plan_not_validated", validation: plan.validation_results });
         const t1 = Date.now();
         const src = `data:image/jpeg;base64,${jpg.toString("base64")}`;
-        const f = prov === "gemini"
+        const f = prov === "cloudflare"
+          ? await require("../_lib/cloudflare").cfInpaint(pkey, src, plan.rendering_instructions.edit_region, plan.rendering_instructions.fill_prompt)
+          : prov === "gemini"
           ? await require("../_lib/gemini").generateImage(pkey, src, plan.rendering_instructions.prompt, { model: process.env.GEMINI_IMAGE_MODEL || undefined })
           : req.query.mode === "kontext"
             ? await require("../_lib/replicateDesign").replicateKontext(pkey, src, plan.rendering_instructions.prompt, { budgetMs: 42000 })
