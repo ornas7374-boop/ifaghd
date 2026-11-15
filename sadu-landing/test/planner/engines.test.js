@@ -248,3 +248,26 @@ test("FLUX.2 on Cloudflare: multipart request; only what really changed is kept,
   assert.ok(near(px(350, 40), [200, 180, 160]), "a slight wall tint is ignored: original " + px(350, 40));
   assert.ok(near(px(30, 60), [200, 180, 160]), "protected window stays original " + px(30, 60));
 });
+
+test("FLUX.2 on Cloudflare: a falsely flagged result is retried with a new seed, then the 4b model", async () => {
+  const sharp = require("sharp");
+  const cfl = require("../../api/_lib/cloudflare"); cfl._reset();
+  const img = await sharp({ create: { width: 64, height: 32, channels: 3, background: "#ccc" } }).png().toBuffer();
+  const calls = [];
+  const fake = async (url, o = {}) => {
+    if (url.includes("/accounts?")) return { ok: true, status: 200, json: async () => ({ result: [{ id: "acc1" }] }) };
+    calls.push({ url, seed: o.body.get("seed") });
+    if (calls.length < 3) return { ok: false, status: 400, json: async () => ({ errors: [{ message: "AiError: Your output has been flagged.", code: 3030 }] }) };
+    return { ok: true, status: 200, json: async () => ({ result: { image: img.toString("base64") } }) };
+  };
+  const r = await cfl.cfFlux2("t", "data:image/png;base64," + img.toString("base64"), null, "add a desk", { fetch: fake });
+  assert.equal(r.status, "succeeded");
+  assert.equal(calls.length, 3);
+  assert.notEqual(calls[0].seed, calls[1].seed, "a new seed on retry");
+  assert.match(calls[2].url, /flux-2-klein-4b$/, "then the other model");
+  // a real error is not retried
+  cfl._reset(); let n = 0;
+  const bad = async (url) => url.includes("/accounts?") ? { ok: true, status: 200, json: async () => ({ result: [{ id: "a" }] }) } : (n++, { ok: false, status: 401, json: async () => ({ errors: [{ message: "auth" }] }) });
+  await assert.rejects(cfl.cfFlux2("t", "data:image/png;base64," + img.toString("base64"), null, "x", { fetch: bad }), /cloudflare_401/);
+  assert.equal(n, 1);
+});

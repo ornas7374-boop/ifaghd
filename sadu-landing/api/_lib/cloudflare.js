@@ -132,17 +132,28 @@ async function cfFlux2(token, image, region, prompt, opts = {}) {
   const s = Math.min(1, 1024 / Math.max(W, H));
   const w = Math.round(W * s / 16) * 16, h = Math.round(H * s / 16) * 16;
   const input = await sharp(orig).resize(w, h, { fit: "fill" }).jpeg({ quality: 92 }).toBuffer();
-  const form = new FormData();
-  form.append("prompt", String(prompt).slice(0, 3000));
-  form.append("input_image_0", new Blob([input], { type: "image/jpeg" }), "room.jpg");
-  form.append("width", String(w)); form.append("height", String(h));
   const acct = await accountId(token, f);
-  const model = opts.model || EDIT_MODEL;
-  let r = await cf(token, `/accounts/${acct}/ai/run/${model}`, { method: "POST", body: form }, f);
-  if (r.status >= 500) { await new Promise(ok => setTimeout(ok, 1500)); r = await cf(token, `/accounts/${acct}/ai/run/${model}`, { method: "POST", body: form }, f); } // one retry on a passing server error
-  const d = await r.json().catch(() => ({}));
-  const b64 = d && d.result && d.result.image;
-  if (!r.ok || !b64) { const e = new Error(`cloudflare_${r.status}`); e.detail = JSON.stringify(d.errors || d).slice(0, 300); throw e; }
+  // the safety filter sometimes flags harmless rooms: try a new random seed, then the other FLUX.2 size
+  const first = opts.model || EDIT_MODEL;
+  const plan = [first, first, first.includes("9b") ? first.replace("9b", "4b") : first];
+  let b64 = null, model = first, lastErr = null;
+  for (let i = 0; i < plan.length && !b64; i++) {
+    model = plan[i];
+    const form = new FormData();
+    form.append("prompt", String(prompt).slice(0, 3000));
+    form.append("input_image_0", new Blob([input], { type: "image/jpeg" }), "room.jpg");
+    form.append("width", String(w)); form.append("height", String(h));
+    form.append("seed", String(Math.floor(Math.random() * 2147483647)));
+    let r = await cf(token, `/accounts/${acct}/ai/run/${model}`, { method: "POST", body: form }, f);
+    const d = await r.json().catch(() => ({}));
+    if (r.ok && d && d.result && d.result.image) { b64 = d.result.image; break; }
+    const txt = JSON.stringify(d.errors || d);
+    const flagged = /flagged|3030/.test(txt), passing = r.status >= 500;
+    lastErr = new Error(flagged ? "cloudflare_flagged" : `cloudflare_${r.status}`); lastErr.detail = txt.slice(0, 300);
+    if (!flagged && !passing) break; // a real error (bad key, quota...): do not retry
+    if (passing) await new Promise(ok => setTimeout(ok, 1200));
+  }
+  if (!b64) throw lastErr;
   const gen = Buffer.from(b64, "base64");
   // keep only what really changed (new pieces); windows and doors always stay the original
   const kept = opts.raw ? { buf: gen, changed_share: null } : await pasteChanged(orig, gen, opts.protect || []);
