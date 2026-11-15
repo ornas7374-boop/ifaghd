@@ -45,11 +45,12 @@ async function cfInpaint(token, image, region, prompt, opts = {}) {
   const bx = Math.round(region.x0 * w), by = Math.round((region.y0 || 0) * h);
   const bw = Math.max(8, Math.round((region.x1 - region.x0) * w)), bh = Math.max(8, Math.round(((region.y1 || 1) - (region.y0 || 0)) * h));
   const box = await sharp({ create: { width: bw, height: bh, channels: 3, background: "#fff" } }).png().toBuffer();
-  const mask = await sharp({ create: { width: w, height: h, channels: 3, background: "#000" } }).composite([{ input: box, left: bx, top: by }]).png().toBuffer();
+  let mask = await sharp({ create: { width: w, height: h, channels: 3, background: "#000" } }).composite([{ input: box, left: bx, top: by }]).png().toBuffer();
+  if (opts.invert) mask = await sharp(mask).negate({ alpha: false }).png().toBuffer();
   const acct = await accountId(token, f);
   const r = await cf(token, `/accounts/${acct}/ai/run/${opts.model || MODEL}`, {
     method: "POST", headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt: String(prompt).slice(0, 900), image: [...small], mask: [...mask], width: w, height: h, num_steps: 20, strength: 1, guidance: 7.5 })
+    body: JSON.stringify({ prompt: String(prompt).slice(0, 900), image: [...small], mask: [...mask], width: w, height: h, num_steps: opts.steps || 20, strength: opts.strength || 1, guidance: opts.guidance || 7.5 })
   }, f);
   const type = (r.headers && r.headers.get && r.headers.get("content-type")) || "";
   if (!r.ok || !/^image\//.test(type)) {
@@ -63,7 +64,9 @@ async function cfInpaint(token, image, region, prompt, opts = {}) {
   const genFull = await sharp(gen).resize(W, H, { fit: "fill" }).toBuffer();
   const patch = await sharp(genFull).extract({ left: X, top: Y, width: Math.min(BW, W - X), height: Math.min(BH, H - Y) }).toBuffer();
   const out = await sharp(orig).composite([{ input: patch, left: X, top: Y }]).jpeg({ quality: 90 }).toBuffer();
-  return { status: "succeeded", output: `data:image/jpeg;base64,${out.toString("base64")}`, model: opts.model || MODEL };
+  const res = { status: "succeeded", output: `data:image/jpeg;base64,${out.toString("base64")}`, model: opts.model || MODEL };
+  if (opts.debug) res.raw = (await sharp(gen).resize(512).jpeg({ quality: 75 }).toBuffer()).toString("base64");
+  return res;
 }
 
 module.exports = { cfInpaint, check, accountId, MODEL, _reset: () => { accountCache = null; } };

@@ -64,7 +64,8 @@ module.exports = async (req, res) => {
         const t1 = Date.now();
         const src = `data:image/jpeg;base64,${jpg.toString("base64")}`;
         const f = prov === "cloudflare"
-          ? await require("../_lib/cloudflare").cfInpaint(pkey, src, plan.rendering_instructions.edit_region, plan.rendering_instructions.fill_prompt)
+          ? await require("../_lib/cloudflare").cfInpaint(pkey, src, plan.rendering_instructions.edit_region, req.query.short === "1" ? "photorealistic white gaming desk with a monitor, keyboard, white chair and blue LED light strip on the wall, modern interior photo" : plan.rendering_instructions.fill_prompt,
+              { invert: req.query.invert === "1", debug: true, strength: Number(req.query.strength) || undefined, steps: Number(req.query.steps) || undefined })
           : prov === "gemini"
           ? await require("../_lib/gemini").generateImage(pkey, src, plan.rendering_instructions.prompt, { model: process.env.GEMINI_IMAGE_MODEL || undefined })
           : req.query.mode === "kontext"
@@ -82,7 +83,7 @@ module.exports = async (req, res) => {
         const half = 512, hh = Math.round(half * meta.height / meta.width);
         const side = await sharp({ create: { width: half * 2, height: hh, channels: 3, background: "#000" } })
           .composite([{ input: await sharp(jpg).resize(half, hh).toBuffer(), left: 0, top: 0 }, { input: await sharp(gen).resize(half, hh, { fit: "fill" }).toBuffer(), left: half, top: 0 }]).jpeg({ quality: 80 }).toBuffer();
-        return res.status(200).json({ mode: "render", provider: prov, model: f.model, perceive_ms: t1 - t0, render_ms, output: f.output.startsWith("data:") ? "(inline image)" : f.output, gen_size: (await sharp(gen).metadata()), mean_abs_diff_0_255: diff, edit_region: er, prompt: plan.rendering_instructions.prompt, side_by_side_jpg_b64: side.toString("base64") });
+        return res.status(200).json({ mode: "render", provider: prov, raw_b64: f.raw || null, model: f.model, perceive_ms: t1 - t0, render_ms, output: f.output.startsWith("data:") ? "(inline image)" : f.output, gen_size: (await sharp(gen).metadata()), mean_abs_diff_0_255: diff, edit_region: er, prompt: plan.rendering_instructions.prompt, side_by_side_jpg_b64: side.toString("base64") });
       }
       return res.status(200).json({ mode: "plan", model: per.model, perceive_ms: Date.now() - t0, image: { w: meta.width, h: meta.height }, raw_perception: per, plan });
     }
