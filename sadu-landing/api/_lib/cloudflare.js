@@ -112,7 +112,23 @@ async function pasteChanged(orig, gen, protect = [], opts = {}) {
   // grow (close small gaps inside objects), then feather when scaling up
   const grown = await sharp(m, { raw: { width: sw, height: sh, channels: 1 } }).blur(opts.grow || 9).threshold(opts.growThreshold || 10).extractChannel(0).raw().toBuffer();
   for (const r of protect) for (let y = Math.floor(r.y0 * sh); y < Math.ceil(r.y1 * sh); y++) for (let x = Math.floor(r.x0 * sw); x < Math.ceil(r.x1 * sw); x++) if (x >= 0 && y >= 0 && x < sw && y < sh) grown[y * sw + x] = 0;
-  const alpha = await sharp(grown, { raw: { width: sw, height: sh, channels: 1 } }).resize(W, H, { fit: "fill" }).blur(3).extractChannel(0).raw().toBuffer();
+  // a thin feather only at the edges: inside a changed piece it is fully new, outside fully original (no ghosts)
+  const soft = await sharp(grown, { raw: { width: sw, height: sh, channels: 1 } }).resize(W, H, { fit: "fill" }).blur(1.5).extractChannel(0).raw().toBuffer();
+  const alpha = Buffer.alloc(soft.length);
+  for (let i = 0; i < soft.length; i++) alpha[i] = soft[i] >= 200 ? 255 : soft[i] <= 55 ? 0 : soft[i];
+  // only around the zone the plan reserved for the setup; the weight fades out gradually (no hard seam)
+  if (opts.zone) {
+    const z = opts.zone, m = 0.1, fade = 0.08;
+    const zx0 = z.x0 - m, zx1 = z.x1 + m, zy0 = (z.y0 || 0) - 0.06, zy1 = (z.y1 || 1) + 0.03;
+    const ramp = (d) => d >= 0 ? 1 : d <= -fade ? 0 : 1 + d / fade;
+    for (let y = 0; y < H; y++) {
+      const ny = y / H, wy = Math.min(ramp(ny - zy0), ramp(zy1 - ny));
+      for (let x = 0; x < W; x++) {
+        const nx = x / W, wgt = Math.min(wy, ramp(nx - zx0), ramp(zx1 - nx));
+        const i = y * W + x; if (wgt < 1) alpha[i] = Math.round(alpha[i] * wgt);
+      }
+    }
+  }
   const genFull = await sharp(gen).resize(W, H, { fit: "fill" }).removeAlpha().raw().toBuffer();
   const base = await sharp(orig).removeAlpha().raw().toBuffer();
   const out = Buffer.alloc(W * H * 3);
@@ -156,7 +172,7 @@ async function cfFlux2(token, image, region, prompt, opts = {}) {
   if (!b64) throw lastErr;
   const gen = Buffer.from(b64, "base64");
   // keep only what really changed (new pieces); windows and doors always stay the original
-  const kept = opts.raw ? { buf: gen, changed_share: null } : await pasteChanged(orig, gen, opts.protect || []);
+  const kept = opts.raw ? { buf: gen, changed_share: null } : await pasteChanged(orig, gen, opts.protect || [], { zone: opts.zone || null });
   const res = { status: "succeeded", output: `data:image/jpeg;base64,${kept.buf.toString("base64")}`, model, changed_share: kept.changed_share };
   if (opts.debug) res.raw = (await sharp(gen).resize(512).jpeg({ quality: 75 }).toBuffer()).toString("base64");
   return res;
