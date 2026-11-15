@@ -55,7 +55,10 @@ module.exports = async function handler(req, res) {
       if (useCf) {
         // free (Cloudflare daily allowance): mask path only, needs a signed plan with a box
         if (!pr.fill || !pr.region) return reply(res, 400, { status: "failed", error: "plan_required" });
-        return reply(res, 200, await require("./_lib/cloudflare").cfInpaint(token, b.image, pr.region, pr.fill));
+        const cfl = require("./_lib/cloudflare");
+        // FLUX.2 edits with the full instruction; only the planned box is pasted onto the original photo
+        if (process.env.SADU_CF_MODE === "inpaint") return reply(res, 200, await cfl.cfInpaint(token, b.image, pr.region, pr.fill));
+        return reply(res, 200, await cfl.cfFlux2(token, b.image, pr.region, pr.prompt));
       }
       if (useRep) {
         const rd = require("./_lib/replicateDesign");

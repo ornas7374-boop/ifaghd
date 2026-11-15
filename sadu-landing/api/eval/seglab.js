@@ -66,7 +66,9 @@ module.exports = async (req, res) => {
         if (!plan.rendering_instructions) return res.status(200).json({ mode: "render", error: "plan_not_validated", validation: plan.validation_results });
         const t1 = Date.now();
         const src = `data:image/jpeg;base64,${jpg.toString("base64")}`;
-        const f = prov === "cloudflare"
+        const f = prov === "cloudflare" && req.query.mode !== "inpaint"
+          ? await require("../_lib/cloudflare").cfFlux2(pkey, src, req.query.nopaste === "1" ? null : plan.rendering_instructions.edit_region, plan.rendering_instructions.prompt, { debug: true, model: req.query.cfmodel || undefined })
+          : prov === "cloudflare"
           ? await require("../_lib/cloudflare").cfInpaint(pkey, src, plan.rendering_instructions.edit_region, req.query.short === "1" ? "photorealistic white gaming desk with a monitor, keyboard, white chair and blue LED light strip on the wall, modern interior photo" : plan.rendering_instructions.fill_prompt,
               { invert: req.query.invert === "1", debug: true, strength: Number(req.query.strength) || undefined, steps: Number(req.query.steps) || undefined })
           : prov === "gemini"

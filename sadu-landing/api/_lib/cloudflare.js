@@ -69,6 +69,54 @@ async function cfInpaint(token, image, region, prompt, opts = {}) {
   return res;
 }
 
+const EDIT_MODEL = process.env.CLOUDFLARE_EDIT_MODEL || "@cf/black-forest-labs/flux-2-klein-9b";
+
+/** Paste only the box of `gen` onto the original, with soft edges (no hard seam). */
+async function pasteBox(orig, gen, region, feather = 10) {
+  const sharp = require("sharp");
+  const { width: W, height: H } = await sharp(orig).metadata();
+  const X = Math.round(region.x0 * W), Y = Math.round((region.y0 || 0) * H);
+  const BW = Math.max(1, Math.min(W - X, Math.round((region.x1 - region.x0) * W))), BH = Math.max(1, Math.min(H - Y, Math.round(((region.y1 || 1) - (region.y0 || 0)) * H)));
+  const box = await sharp({ create: { width: BW, height: BH, channels: 3, background: "#fff" } }).png().toBuffer();
+  const alpha = await sharp({ create: { width: W, height: H, channels: 3, background: "#000" } }).composite([{ input: box, left: X, top: Y }])
+    .blur(feather).toColourspace("b-w").raw().toBuffer();
+  const genFull = await sharp(gen).resize(W, H, { fit: "fill" }).removeAlpha().raw().toBuffer();
+  const base = await sharp(orig).removeAlpha().raw().toBuffer();
+  const out = Buffer.alloc(W * H * 3);
+  for (let i = 0, j = 0; i < W * H; i++, j += 3) {
+    // inside the hard box use the new image; the blurred edge blends; outside stays the original
+    const inside = (i % W) >= X && (i % W) < X + BW && Math.floor(i / W) >= Y && Math.floor(i / W) < Y + BH;
+    const a = inside ? Math.max(alpha[i], 128) / 255 : 0;
+    for (let c = 0; c < 3; c++) out[j + c] = Math.round(genFull[j + c] * a + base[j + c] * (1 - a));
+  }
+  return sharp(out, { raw: { width: W, height: H, channels: 3 } }).jpeg({ quality: 90 }).toBuffer();
+}
+
+/** FLUX.2 on Workers AI: edits the whole photo from the instruction, then only the planned box is kept. */
+async function cfFlux2(token, image, region, prompt, opts = {}) {
+  const sharp = require("sharp"), f = opts.fetch || fetch;
+  const orig = Buffer.from(String(image).split(",")[1] || "", "base64");
+  const { width: W, height: H } = await sharp(orig).metadata();
+  const s = Math.min(1, 1024 / Math.max(W, H));
+  const w = Math.round(W * s / 16) * 16, h = Math.round(H * s / 16) * 16;
+  const input = await sharp(orig).resize(w, h, { fit: "fill" }).jpeg({ quality: 92 }).toBuffer();
+  const form = new FormData();
+  form.append("prompt", String(prompt).slice(0, 3000));
+  form.append("input_image_0", new Blob([input], { type: "image/jpeg" }), "room.jpg");
+  form.append("width", String(w)); form.append("height", String(h));
+  const acct = await accountId(token, f);
+  const model = opts.model || EDIT_MODEL;
+  const r = await cf(token, `/accounts/${acct}/ai/run/${model}`, { method: "POST", body: form }, f);
+  const d = await r.json().catch(() => ({}));
+  const b64 = d && d.result && d.result.image;
+  if (!r.ok || !b64) { const e = new Error(`cloudflare_${r.status}`); e.detail = JSON.stringify(d.errors || d).slice(0, 300); throw e; }
+  const gen = Buffer.from(b64, "base64");
+  const out = region ? await pasteBox(orig, gen, region) : gen;
+  const res = { status: "succeeded", output: `data:image/jpeg;base64,${out.toString("base64")}`, model };
+  if (opts.debug) res.raw = (await sharp(gen).resize(512).jpeg({ quality: 75 }).toBuffer()).toString("base64");
+  return res;
+}
+
 /** Free: the input/output schema of a model. */
 async function schema(token, model, f = fetch) {
   const acct = await accountId(token, f);
@@ -76,4 +124,4 @@ async function schema(token, model, f = fetch) {
   return { status: r.status, body: (await r.text()).slice(0, 6000) };
 }
 
-module.exports = { schema, cfInpaint, check, accountId, MODEL, _reset: () => { accountCache = null; } };
+module.exports = { schema, cfFlux2, pasteBox, EDIT_MODEL, cfInpaint, check, accountId, MODEL, _reset: () => { accountCache = null; } };
