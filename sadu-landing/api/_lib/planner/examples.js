@@ -1,12 +1,12 @@
 // sadu Planning Engine — real-setup examples, distilled from the owner's private reference images
-// (sadu-refs/README.md, batches 5-10, images 51-76). The images themselves are never sent anywhere:
+// (sadu-refs/README.md, batches 5-10: every setup image, 51-76). The images themselves are never sent anywhere:
 // only these short descriptions are used, to make each planned item look like the real setups.
 // {accent} is replaced with the plan's accent colour(s); {furniture} with the furniture colour.
 // Only items that are already in the plan get a detail: the examples never add items on their own.
 
 const STYLE_EXAMPLES = {
   night_setup: {
-    refs: [51, 52, 54, 55],
+    refs: [51, 52, 54, 55, 72, 73],
     mood: "dim, calm and focused night corner, tidy with no clutter",
     items: {
       accent_light: "geometric hexagon LED light panels glowing soft {accent}",
@@ -15,8 +15,10 @@ const STYLE_EXAMPLES = {
       keyboard: "grey and black mechanical keyboard with an aluminium knob",
       desk: "{furniture} desk with a grey concrete-look top",
       plant: "small speckled ceramic pot with a plant",
-      wall_art: "small framed black and white print"
-    }
+      wall_art: "small framed black and white print",
+      chair: "black gaming chair"
+    },
+    wall_option: "dark vertical wooden slat panels behind the desk with a stepped {accent} LED light bar"
   },
   white_blue: {
     refs: [58, 59, 60],
@@ -33,15 +35,16 @@ const STYLE_EXAMPLES = {
     wall_option: "white 3D diamond-pattern wall panels lit warm from below"
   },
   neon_purple: {
-    refs: [61, 62, 63],
-    mood: "bold night gaming corner with neon colour",
+    refs: [61, 62, 63, 64, 65, 66],
+    mood: "bold, young night gaming room with neon colour and soft glow",
     items: {
       accent_light: "{accent} triangular light panels on the wall above the desk",
       mousepad: "large bright orange desk pad lying on the desktop",
       keyboard: "white keyboard",
       monitor: "wide curved monitor",
-      wall_art: "large frame with a handwritten quote",
-      plant: "small artificial olive plant"
+      wall_art: "large frame with a handwritten quote and black and white art posters",
+      plant: "small artificial olive plant",
+      desk_lamp: "lamp with a glowing fabric shade"
     }
   },
   rgb_setup: {

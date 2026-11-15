@@ -169,3 +169,9 @@ test("owner's reference setups shape the look: details per style, the Sadu touch
   assert.equal(blue.inspiration.sadu_touch, false);
   assert.ok(blue.rendering_instructions.words <= 360);
 });
+
+test("every setup reference image (51-76) is used by some style or the Sadu touch", () => {
+  const { STYLE_EXAMPLES, SADU_TOUCH } = require("../../api/_lib/planner/examples");
+  const used = new Set([...Object.values(STYLE_EXAMPLES).flatMap(x => x.refs), ...SADU_TOUCH.refs]);
+  for (const n of [51, 52, 54, 55, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76]) assert.ok(used.has(n), `image ${n}`);
+});
