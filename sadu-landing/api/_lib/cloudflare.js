@@ -151,7 +151,7 @@ async function cfFlux2(token, image, region, prompt, opts = {}) {
   const acct = await accountId(token, f);
   // the safety filter sometimes flags harmless rooms: try a new random seed, then the other FLUX.2 size
   const first = opts.model || EDIT_MODEL;
-  const plan = [first, first, first.includes("9b") ? first.replace("9b", "4b") : first];
+  const plan = opts.once ? [first] : [first, first, first.includes("9b") ? first.replace("9b", "4b") : first];
   let b64 = null, model = first, lastErr = null;
   for (let i = 0; i < plan.length && !b64; i++) {
     model = plan[i];
@@ -160,6 +160,7 @@ async function cfFlux2(token, image, region, prompt, opts = {}) {
     form.append("input_image_0", new Blob([input], { type: "image/jpeg" }), "room.jpg");
     form.append("width", String(w)); form.append("height", String(h));
     form.append("seed", String(Math.floor(Math.random() * 2147483647)));
+    if (opts.safety != null) form.append("safety_tolerance", String(opts.safety));
     let r = await cf(token, `/accounts/${acct}/ai/run/${model}`, { method: "POST", body: form }, f);
     const d = await r.json().catch(() => ({}));
     if (r.ok && d && d.result && d.result.image) { b64 = d.result.image; break; }

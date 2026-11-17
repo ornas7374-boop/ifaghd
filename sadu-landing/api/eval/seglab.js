@@ -67,7 +67,8 @@ module.exports = async (req, res) => {
         const t1 = Date.now();
         const src = `data:image/jpeg;base64,${jpg.toString("base64")}`;
         const f = prov === "cloudflare" && req.query.mode !== "inpaint"
-          ? await require("../_lib/cloudflare").cfFlux2(pkey, src, plan.rendering_instructions.edit_region, plan.rendering_instructions.prompt, { debug: true, raw: req.query.nopaste === "1", protect: plan.rendering_instructions.protect, model: req.query.cfmodel || undefined })
+          ? await require("../_lib/cloudflare").cfFlux2(pkey, src, plan.rendering_instructions.edit_region, req.query.simple === "1" ? "Add a white gaming desk with a monitor, a white chair and blue LED lights against the left wall of this room. Keep everything else in the photo the same." : plan.rendering_instructions.prompt, { debug: true, raw: req.query.nopaste === "1", protect: plan.rendering_instructions.protect, model: req.query.cfmodel || undefined,
+              once: req.query.once === "1", safety: req.query.safety != null ? Number(req.query.safety) : undefined })
           : prov === "cloudflare"
           ? await require("../_lib/cloudflare").cfInpaint(pkey, src, plan.rendering_instructions.edit_region, req.query.short === "1" ? "photorealistic white gaming desk with a monitor, keyboard, white chair and blue LED light strip on the wall, modern interior photo" : plan.rendering_instructions.fill_prompt,
               { invert: req.query.invert === "1", debug: true, strength: Number(req.query.strength) || undefined, steps: Number(req.query.steps) || undefined })
