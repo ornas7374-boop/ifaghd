@@ -1,0 +1,416 @@
+{
+  "source": "Pinterest",
+  "usage": "internal style reference only - do not display or redistribute",
+  "styles": {
+    "setup_gaming": [
+      {
+        "id": "setup_gaming_01",
+        "url": "https://i.pinimg.com/736x/39/15/77/3915777b27b0fccde6232a3c53cba313.jpg"
+      },
+      {
+        "id": "setup_gaming_02",
+        "url": "https://i.pinimg.com/736x/df/ba/fe/dfbafefaa61f3217592eb3d1f9f572bb.jpg"
+      },
+      {
+        "id": "setup_gaming_03",
+        "url": "https://i.pinimg.com/736x/91/ac/8b/91ac8bff187a649d9720fff5ee5963d4.jpg"
+      },
+      {
+        "id": "setup_gaming_04",
+        "url": "https://i.pinimg.com/736x/64/6a/b8/646ab8720072bc7344ded76e494620f4.jpg"
+      },
+      {
+        "id": "setup_gaming_05",
+        "url": "https://i.pinimg.com/736x/b8/ab/ea/b8abeaf65cade24a726af901ce62b7b1.jpg"
+      },
+      {
+        "id": "setup_gaming_06",
+        "url": "https://i.pinimg.com/736x/6d/b6/61/6db66158a9a39b4f9a0803df356f770b.jpg"
+      },
+      {
+        "id": "setup_gaming_07",
+        "url": "https://i.pinimg.com/736x/30/27/13/30271353470f71704bb6aa86e4d0913d.jpg"
+      },
+      {
+        "id": "setup_gaming_08",
+        "url": "https://i.pinimg.com/736x/cc/af/f1/ccaff157d606e5f465bd2cd888405386.jpg"
+      },
+      {
+        "id": "setup_gaming_09",
+        "url": "https://i.pinimg.com/736x/99/2a/71/992a7153868611bade243f838bd6fddf.jpg"
+      },
+      {
+        "id": "setup_gaming_10",
+        "url": "https://i.pinimg.com/736x/7d/87/49/7d87492a10555e9ea3b5f27a04344bf9.jpg"
+      },
+      {
+        "id": "setup_gaming_11",
+        "url": "https://i.pinimg.com/736x/41/fc/bf/41fcbf368e0572aa21248a1138771b7b.jpg"
+      },
+      {
+        "id": "setup_gaming_12",
+        "url": "https://i.pinimg.com/736x/53/35/63/533563ae62d722fca4c6011e998b693d.jpg"
+      },
+      {
+        "id": "setup_gaming_13",
+        "url": "https://i.pinimg.com/736x/35/b5/31/35b5310a44edbc45b8a79618575b069f.jpg"
+      },
+      {
+        "id": "setup_gaming_14",
+        "url": "https://i.pinimg.com/736x/40/73/8b/40738bb3744825bdf0ca4e315f0fb077.jpg"
+      },
+      {
+        "id": "setup_gaming_15",
+        "url": "https://i.pinimg.com/736x/26/67/17/26671794fdc24c4c85e2a8a386d4489f.jpg"
+      },
+      {
+        "id": "setup_gaming_16",
+        "url": "https://i.pinimg.com/736x/f9/52/e8/f952e8ab9edf0e7b0c11791856f782cd.jpg"
+      },
+      {
+        "id": "setup_gaming_17",
+        "url": "https://i.pinimg.com/736x/d9/e5/1b/d9e51bc4efdb5512fadc272089476d28.jpg"
+      },
+      {
+        "id": "setup_gaming_18",
+        "url": "https://i.pinimg.com/736x/52/ec/1a/52ec1a88735ba53294dc357119491d7e.jpg"
+      },
+      {
+        "id": "setup_gaming_19",
+        "url": "https://i.pinimg.com/736x/55/ee/ac/55eeac980e89c2f937dddbc64e1b1a7c.jpg"
+      },
+      {
+        "id": "setup_gaming_20",
+        "url": "https://i.pinimg.com/736x/f9/ab/c0/f9abc0d7ab249bf5d5c0ff0b510b7a7b.jpg"
+      },
+      {
+        "id": "setup_gaming_21",
+        "url": "https://i.pinimg.com/736x/5e/48/96/5e48965d8b140d7a8417e05578313460.jpg"
+      }
+    ],
+    "setup_minimal": [
+      {
+        "id": "setup_minimal_01",
+        "url": "https://i.pinimg.com/736x/ae/cb/75/aecb751238e02628ad5feff754373c24.jpg"
+      },
+      {
+        "id": "setup_minimal_02",
+        "url": "https://i.pinimg.com/736x/0e/b6/5a/0eb65a6622a4e2ce5f12e0037012bf9e.jpg"
+      },
+      {
+        "id": "setup_minimal_03",
+        "url": "https://i.pinimg.com/736x/f9/b4/38/f9b4386b612d6c2faf2485e2d5c9c1fe.jpg"
+      },
+      {
+        "id": "setup_minimal_04",
+        "url": "https://i.pinimg.com/736x/6e/fe/1f/6efe1faa18c2a031ab1735ecfede936e.jpg"
+      },
+      {
+        "id": "setup_minimal_05",
+        "url": "https://i.pinimg.com/736x/40/b7/a1/40b7a17422a400221ced1fa93388aee3.jpg"
+      },
+      {
+        "id": "setup_minimal_06",
+        "url": "https://i.pinimg.com/736x/0c/99/d3/0c99d3f5e1366ec11e12d10357fe92d7.jpg"
+      },
+      {
+        "id": "setup_minimal_07",
+        "url": "https://i.pinimg.com/736x/06/ea/9f/06ea9fab5e3cfa7a441629d225f1c7cc.jpg"
+      },
+      {
+        "id": "setup_minimal_08",
+        "url": "https://i.pinimg.com/736x/c7/20/f9/c720f951feedd937b0e49a1680584eb3.jpg"
+      },
+      {
+        "id": "setup_minimal_09",
+        "url": "https://i.pinimg.com/736x/a5/b5/24/a5b52481e22de850db4e99e84f5e5ea5.jpg"
+      },
+      {
+        "id": "setup_minimal_10",
+        "url": "https://i.pinimg.com/736x/d7/76/b0/d776b01fc549f633af8cca838ccec381.jpg"
+      },
+      {
+        "id": "setup_minimal_11",
+        "url": "https://i.pinimg.com/736x/f2/0e/8f/f20e8f854870d5b1ccc72213b8c3ad5e.jpg"
+      },
+      {
+        "id": "setup_minimal_12",
+        "url": "https://i.pinimg.com/736x/05/52/0a/05520a76f14f8d7609e6cc5c65cdf05d.jpg"
+      },
+      {
+        "id": "setup_minimal_13",
+        "url": "https://i.pinimg.com/736x/f3/a4/7c/f3a47cf5c833bcc47e3ea1b3eb52e75a.jpg"
+      },
+      {
+        "id": "setup_minimal_14",
+        "url": "https://i.pinimg.com/736x/b4/50/8c/b4508c6d6895569dbf9e4520ba3ca407.jpg"
+      },
+      {
+        "id": "setup_minimal_15",
+        "url": "https://i.pinimg.com/736x/26/bd/76/26bd7640361b58a16da3b9055cb9dbcb.jpg"
+      },
+      {
+        "id": "setup_minimal_16",
+        "url": "https://i.pinimg.com/736x/ae/eb/2f/aeeb2fff16b70251170078e238ae98dc.jpg"
+      },
+      {
+        "id": "setup_minimal_17",
+        "url": "https://i.pinimg.com/736x/5e/e8/a5/5ee8a54859a8ec32ff8cf82e088b1908.jpg"
+      },
+      {
+        "id": "setup_minimal_18",
+        "url": "https://i.pinimg.com/736x/42/8d/53/428d53a09050b37492fc0643844b3180.jpg"
+      },
+      {
+        "id": "setup_minimal_19",
+        "url": "https://i.pinimg.com/736x/c1/65/b4/c165b40a8b1df6353c9a581d758fe7ee.jpg"
+      },
+      {
+        "id": "setup_minimal_20",
+        "url": "https://i.pinimg.com/736x/98/77/61/9877619e6f5dcd6d7b9c807938ea3758.jpg"
+      }
+    ],
+    "setup_cozy": [
+      {
+        "id": "setup_cozy_01",
+        "url": "https://i.pinimg.com/736x/54/b1/16/54b116b0a3f44829776f83f2aeb032e0.jpg"
+      },
+      {
+        "id": "setup_cozy_02",
+        "url": "https://i.pinimg.com/736x/a4/7d/3f/a47d3f9ad1c6a7eccbacb3e056c68d69.jpg"
+      },
+      {
+        "id": "setup_cozy_03",
+        "url": "https://i.pinimg.com/736x/1e/20/a0/1e20a070fea5998a7d16ef09a1c6e763.jpg"
+      },
+      {
+        "id": "setup_cozy_04",
+        "url": "https://i.pinimg.com/736x/78/0d/62/780d62a90779540854a5f4cf93740031.jpg"
+      },
+      {
+        "id": "setup_cozy_05",
+        "url": "https://i.pinimg.com/736x/4d/a6/9a/4da69ad6855ca1d9bdcf6ffecd11916d.jpg"
+      },
+      {
+        "id": "setup_cozy_06",
+        "url": "https://i.pinimg.com/736x/c8/56/99/c8569914e1ec2bd3d247980d52427156.jpg"
+      },
+      {
+        "id": "setup_cozy_07",
+        "url": "https://i.pinimg.com/736x/bf/b2/0e/bfb20e9c8f274491c24f5215c8600f9c.jpg"
+      },
+      {
+        "id": "setup_cozy_08",
+        "url": "https://i.pinimg.com/736x/6c/e1/97/6ce1975d59377fc71d4953514e2019a9.jpg"
+      },
+      {
+        "id": "setup_cozy_09",
+        "url": "https://i.pinimg.com/736x/34/00/08/34000883354651987a9919ea2b4de8c1.jpg"
+      },
+      {
+        "id": "setup_cozy_10",
+        "url": "https://i.pinimg.com/736x/3f/c5/2d/3fc52daab0a145931adc91d02b870366.jpg"
+      },
+      {
+        "id": "setup_cozy_11",
+        "url": "https://i.pinimg.com/736x/a0/51/ef/a051eff1b33f7006e688ccfd4c205f00.jpg"
+      },
+      {
+        "id": "setup_cozy_12",
+        "url": "https://i.pinimg.com/736x/1b/13/2d/1b132db5e11784837b8877dfbcf386eb.jpg"
+      },
+      {
+        "id": "setup_cozy_13",
+        "url": "https://i.pinimg.com/736x/ef/09/13/ef09130c322d573a54777135f2a492ce.jpg"
+      },
+      {
+        "id": "setup_cozy_14",
+        "url": "https://i.pinimg.com/736x/a7/15/54/a7155491c13604786ed867e3bd69832e.jpg"
+      },
+      {
+        "id": "setup_cozy_15",
+        "url": "https://i.pinimg.com/736x/4a/f6/9c/4af69c0d5e5a84052541f38319d75b46.jpg"
+      },
+      {
+        "id": "setup_cozy_16",
+        "url": "https://i.pinimg.com/736x/2e/10/ad/2e10ad988edceebb8ae5b7ca814a9d15.jpg"
+      },
+      {
+        "id": "setup_cozy_17",
+        "url": "https://i.pinimg.com/736x/cd/f2/1d/cdf21d1decb9fb39893a7d8167d90440.jpg"
+      },
+      {
+        "id": "setup_cozy_18",
+        "url": "https://i.pinimg.com/736x/f7/39/86/f73986f9599e25e75aec56a33f6f209d.jpg"
+      },
+      {
+        "id": "setup_cozy_19",
+        "url": "https://i.pinimg.com/736x/42/4b/e4/424be4cfa43699daa445a44f9977b147.jpg"
+      },
+      {
+        "id": "setup_cozy_20",
+        "url": "https://i.pinimg.com/736x/7f/40/13/7f4013675c2a146747da16664b497598.jpg"
+      }
+    ],
+    "setup_home_office": [
+      {
+        "id": "setup_home_office_01",
+        "url": "https://i.pinimg.com/736x/c0/73/28/c07328efb8dae64c52d7971e6c8b07e5.jpg"
+      },
+      {
+        "id": "setup_home_office_02",
+        "url": "https://i.pinimg.com/736x/75/08/00/7508002302cdac51c003d4d0b86ff74a.jpg"
+      },
+      {
+        "id": "setup_home_office_03",
+        "url": "https://i.pinimg.com/736x/fa/0e/34/fa0e34c6b38c2d1906598b8e87a6526a.jpg"
+      },
+      {
+        "id": "setup_home_office_04",
+        "url": "https://i.pinimg.com/736x/c8/4d/06/c84d0604d8998c780d6b01adf9f4a8d6.jpg"
+      },
+      {
+        "id": "setup_home_office_05",
+        "url": "https://i.pinimg.com/736x/36/60/09/3660093050be30630829889e8c89eada.jpg"
+      },
+      {
+        "id": "setup_home_office_06",
+        "url": "https://i.pinimg.com/736x/32/89/21/328921a3c2fd198daad3606568431b05.jpg"
+      },
+      {
+        "id": "setup_home_office_07",
+        "url": "https://i.pinimg.com/736x/de/33/94/de33944105c6aa9bee1fca82fa8b3d95.jpg"
+      },
+      {
+        "id": "setup_home_office_08",
+        "url": "https://i.pinimg.com/736x/d4/00/ae/d400ae5e628ba8432b7a652c86e2a3e2.jpg"
+      },
+      {
+        "id": "setup_home_office_09",
+        "url": "https://i.pinimg.com/736x/d5/ed/86/d5ed86826c083b22e3d8ddac9798df9d.jpg"
+      },
+      {
+        "id": "setup_home_office_10",
+        "url": "https://i.pinimg.com/736x/01/e4/50/01e450ccd4f218cebcb8f87bb32b9042.jpg"
+      },
+      {
+        "id": "setup_home_office_11",
+        "url": "https://i.pinimg.com/736x/e2/58/24/e25824f2064cf1afdca321807116cb2e.jpg"
+      },
+      {
+        "id": "setup_home_office_12",
+        "url": "https://i.pinimg.com/736x/83/f5/8d/83f58d36a661d5a5635dcb321eb3ae58.jpg"
+      },
+      {
+        "id": "setup_home_office_13",
+        "url": "https://i.pinimg.com/736x/73/6c/3e/736c3ea0639fe8cbf1c2ac30e27ab7d1.jpg"
+      },
+      {
+        "id": "setup_home_office_14",
+        "url": "https://i.pinimg.com/736x/67/67/8f/67678f5478994c83f3eb4ffa2ea0f343.jpg"
+      },
+      {
+        "id": "setup_home_office_15",
+        "url": "https://i.pinimg.com/736x/01/e6/4f/01e64fbec945a60df8665c83af7e67d1.jpg"
+      },
+      {
+        "id": "setup_home_office_16",
+        "url": "https://i.pinimg.com/736x/0b/b6/30/0bb630b1ff961049c3bae49008e43e1a.jpg"
+      },
+      {
+        "id": "setup_home_office_17",
+        "url": "https://i.pinimg.com/736x/8a/af/c2/8aafc2fd11e53a5bf6794a1bf8fae69c.jpg"
+      },
+      {
+        "id": "setup_home_office_18",
+        "url": "https://i.pinimg.com/736x/5b/7d/11/5b7d11cf3f03ea74a8afeb4a110d74a0.jpg"
+      },
+      {
+        "id": "setup_home_office_19",
+        "url": "https://i.pinimg.com/736x/6d/e6/cf/6de6cf1a8dbde531e58f16b6ac23e358.jpg"
+      },
+      {
+        "id": "setup_home_office_20",
+        "url": "https://i.pinimg.com/736x/e5/e5/05/e5e505964c4fd532f8b37241e862a149.jpg"
+      }
+    ],
+    "setup_dark_gaming": [
+      {
+        "id": "setup_dark_gaming_01",
+        "url": "https://i.pinimg.com/736x/ee/99/b0/ee99b0aa58c032e14bf2a44d8816d96b.jpg"
+      },
+      {
+        "id": "setup_dark_gaming_02",
+        "url": "https://i.pinimg.com/736x/23/c9/14/23c9143881ca5fd7af269381a390779f.jpg"
+      },
+      {
+        "id": "setup_dark_gaming_03",
+        "url": "https://i.pinimg.com/736x/0d/26/5f/0d265f5e904c5e34f6a2f20dfafecc9d.jpg"
+      },
+      {
+        "id": "setup_dark_gaming_04",
+        "url": "https://i.pinimg.com/736x/6e/30/bc/6e30bc7854994e37e7f382edabc7a2ee.jpg"
+      },
+      {
+        "id": "setup_dark_gaming_05",
+        "url": "https://i.pinimg.com/736x/69/f2/11/69f21191a2d68eaba1cc8fa6b8e39dc8.jpg"
+      },
+      {
+        "id": "setup_dark_gaming_06",
+        "url": "https://i.pinimg.com/736x/d7/39/4d/d7394d280a5559a32cbf7bf2ce9f12a3.jpg"
+      },
+      {
+        "id": "setup_dark_gaming_07",
+        "url": "https://i.pinimg.com/736x/b3/0b/05/b30b05b64e8bd5f5b28642f8627497dd.jpg"
+      },
+      {
+        "id": "setup_dark_gaming_08",
+        "url": "https://i.pinimg.com/736x/04/ec/b9/04ecb9ba3a16594667dbd9e13063b208.jpg"
+      },
+      {
+        "id": "setup_dark_gaming_09",
+        "url": "https://i.pinimg.com/736x/84/70/85/84708519ffb151b9bb1b2e6757d8934e.jpg"
+      },
+      {
+        "id": "setup_dark_gaming_10",
+        "url": "https://i.pinimg.com/736x/ef/a5/02/efa502932f84796a01e53edba0b70dd9.jpg"
+      },
+      {
+        "id": "setup_dark_gaming_11",
+        "url": "https://i.pinimg.com/736x/e1/c8/bf/e1c8bfffda35569faca9cecf719b739a.jpg"
+      },
+      {
+        "id": "setup_dark_gaming_12",
+        "url": "https://i.pinimg.com/736x/c9/0e/05/c90e0567155fe44c2844f74ae12a42b5.jpg"
+      },
+      {
+        "id": "setup_dark_gaming_13",
+        "url": "https://i.pinimg.com/736x/79/8d/06/798d067922cd7d08502752e0d823246f.jpg"
+      },
+      {
+        "id": "setup_dark_gaming_14",
+        "url": "https://i.pinimg.com/736x/87/0a/3f/870a3f01c834211b11457297974610f9.jpg"
+      },
+      {
+        "id": "setup_dark_gaming_15",
+        "url": "https://i.pinimg.com/736x/7b/d6/70/7bd67044f5f29f2a4b54d1fb1face6fa.jpg"
+      },
+      {
+        "id": "setup_dark_gaming_16",
+        "url": "https://i.pinimg.com/736x/81/8e/07/818e07c83f305ff157fa8966568247c2.jpg"
+      },
+      {
+        "id": "setup_dark_gaming_17",
+        "url": "https://i.pinimg.com/736x/7d/38/5a/7d385a5da5bb1f66325aff3919d2e8fe.jpg"
+      },
+      {
+        "id": "setup_dark_gaming_18",
+        "url": "https://i.pinimg.com/736x/d0/26/6f/d0266f5349f05a35ed97e74f23feae09.jpg"
+      },
+      {
+        "id": "setup_dark_gaming_19",
+        "url": "https://i.pinimg.com/736x/49/af/eb/49afeb260f91d27a47d241c9a71df137.jpg"
+      }
+    ]
+  }
+}
