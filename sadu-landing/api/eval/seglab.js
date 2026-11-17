@@ -23,17 +23,6 @@ function decrypt(buf, keyB64) {
 
 module.exports = async (req, res) => {
   if (!guard(req, res, { methods: ["GET"] })) return;
-  if (req.query.stylerecipe) {
-    // one-time: Pinterest references -> text style recipe (images are never returned or stored)
-    const refs = require("../../data/sadu-setup-references.json");
-    const style = String(req.query.stylerecipe);
-    const items = refs.styles[style];
-    if (!items) return res.status(400).json({ error: "unknown_style", styles: Object.keys(refs.styles) });
-    try {
-      const out = await require("../_lib/styleRecipe").extractStyle(process.env.GEMINI_API_KEY, style, items.map(x => x.url));
-      return res.status(200).json({ mode: "style_recipe", ...out });
-    } catch (e) { return res.status(502).json({ error: e.message, detail: e.detail }); }
-  }
   const name = String(req.query.photo || "");
   if (!/^[a-z0-9_-]{1,20}$/i.test(name)) return res.status(400).json({ error: "bad_photo" });
   const file = path.join(PHOTO_DIR, `${name}.bin`);

@@ -1,0 +1,72 @@
+{
+  "generated_at": "2026-11-17T23:02:57Z",
+  "source": "owner's Pinterest reference list (data/sadu-setup-references.json); images were only read once by Gemini and never stored or served",
+  "model": "gemini flash-lite (vision), batches of 10, then merged",
+  "styles": {
+    "setup_gaming": {
+      "images_used": 21,
+      "name_ar": "إعداد الألعاب المظلم",
+      "name_en": "Dark Gaming Setup",
+      "color_palette": ["#000000", "#1a1a1a", "#4b0082", "#8a2be2", "#ffffff"],
+      "lighting": "The space is defined by low-ambient lighting, utilizing vibrant purple or blue LED strips and case lighting to create a moody, high-contrast atmosphere.",
+      "materials": ["tempered glass", "brushed metal", "matte plastic", "microfiber"],
+      "key_elements": ["pc case with visible internal lighting", "large desk mat", "mechanical keyboard with backlighting", "dual monitor or ultrawide configuration", "minimalist desk surface"],
+      "layout_rules": ["position the PC case as a focal point on the desk", "keep the desk surface clear of clutter", "use monitor arms to maximize space", "align peripherals symmetrically"],
+      "avoid": ["cluttered cables", "warm yellow lighting", "ornate or traditional furniture", "excessive desk accessories", "bright natural daylight"],
+      "product_categories": ["desk", "chair", "monitor", "monitor_arm", "monitor_light", "keyboard", "mouse", "desk_mat", "led_strip", "pc_case"],
+      "flux_prompt_fragment": "A modern, minimalist gaming desk setup in a dark room. A sleek PC case with glowing purple internal hardware sits on a clean desk next to a large monitor displaying a game. A mechanical keyboard and gaming mouse rest on a wide desk mat. The scene is illuminated by vibrant purple LED accent lighting, creating a moody, high-tech, and immersive"
+    },
+    "setup_minimal": {
+      "images_used": 20,
+      "name_ar": "مكتب عصري هادئ وبسيط",
+      "name_en": "Minimalist Workspace",
+      "color_palette": ["#f7f7f7", "#f4f1ea", "#d4c5b9", "#8c7a6b", "#3a3532"],
+      "lighting": "Warm ambient backlighting combined with soft desk lamps creates a cozy, focused atmosphere with gentle golden tones.",
+      "materials": ["light wood", "felt", "matte metal", "ceramic", "textured fabric"],
+      "key_elements": ["felt desk mat", "floating wooden shelves", "trailing green plants", "minimalist desktop accessories", "hidden cable management"],
+      "layout_rules": ["keep primary work surfaces clean and free of clutter", "center the monitor on eye level", "place keyboard and mouse neatly on the desk mat", "position plants on shelves or desk corners for natural balance"],
+      "avoid": ["harsh RGB lighting", "visible tangled cables", "neon colors", "heavy plastic gaming peripherals", "crowded surfaces"],
+      "product_categories": ["desk", "chair", "monitor", "monitor_light", "keyboard", "mouse", "desk_mat", "desk_lamp", "shelf", "plants", "storage"],
+      "flux_prompt_fragment": "A serene minimalist workspace featuring a clean light wood desk, neutral felt desk mat, sleek monitor, mechanical keyboard, soft warm desk lamp lighting, trailing green potted plants, and minimalist floating shelves with completely hidden cables."
+    },
+    "setup_cozy": {
+      "images_used": 20,
+      "name_ar": "إعداد دافئ مريح",
+      "name_en": "Cozy Warm Setup",
+      "color_palette": ["#F5EBE0", "#E3D5CA", "#D5BDAF", "#8C7A6B", "#6B705C", "#E69A5D"],
+      "lighting": "Layered warm ambient lighting featuring warm desk lamps, accent LED strips, and soft backlighting with a low color temperature around 2700K.",
+      "materials": ["light wood", "textured fabric", "ceramic", "knit wool", "matte plastic"],
+      "key_elements": ["trailing house plants", "wooden monitor risers", "soft textured throws", "aesthetic desk mats", "ambient warm desk lamps"],
+      "layout_rules": ["center the monitor on a wooden riser", "layer decorative items densely but neatly", "position warm accent lighting around the perimeter", "integrate plants in corners and on shelves"],
+      "avoid": ["harsh RGB or cold lighting", "exposed cable clutter", "industrial metal finishes", "stark minimalist emptiness"],
+      "product_categories": ["desk", "chair", "monitor", "monitor_arm", "monitor_light", "keyboard", "mouse", "desk_mat", "led_strip", "light_bars", "desk_lamp", "shelf"],
+      "flux_prompt_fragment": "Cozy warm aesthetic desk setup, light wood desktop, matching wooden monitor riser, mechanical keyboard, soft desk mat, lush trailing houseplants in ceramic pots, ambient desk lamp, knitted throw blanket draped over an ergonomic chair, soft warm lighting, and neatly organized floating shelves with personal decor items."
+    },
+    "setup_home_office": {
+      "images_used": 20,
+      "name_ar": "مكتب منزلي دافئ وطبيعي",
+      "name_en": "Cozy Organic Workspace",
+      "color_palette": ["#2f3e2e", "#8b5a2b", "#d7ccc8", "#1c1c1c", "#fdfbf7", "#8c6d53"],
+      "lighting": "Warm ambient lighting featuring soft desk lamps and warm LED backlighting at 2700K, complemented by soft natural daylight.",
+      "materials": ["Natural wood", "Matte metal", "Textured fabric", "Felt", "Ceramic"],
+      "key_elements": ["Wooden desk", "Ergonomic chair", "Monitor on arm or riser", "Trailing houseplants", "Floating wooden shelves", "Textured desk mats", "Woven area rug"],
+      "layout_rules": ["Center the main monitor on the desk", "Position plants to frame the workspace", "Layer shelves above monitor height", "Keep frequently used items within arm's reach"],
+      "avoid": ["Flashing RGB lights", "Cluttered cable management", "Cold industrial aesthetics", "Bright neon colors"],
+      "product_categories": ["desk", "chair", "monitor", "monitor_arm", "monitor_light", "keyboard", "mouse", "desk_mat", "desk_lamp", "shelf", "plants", "speakers"],
+      "flux_prompt_fragment": "Cozy organic home office setup with a warm natural wooden desk, ergonomic upholstered chair, widescreen monitor with a light bar, mechanical keyboard and mouse on a felt desk mat. Floating wooden shelves decorated with lush trailing potted plants and framed art, warm ambient backlighting, earthy color palette, textured rug on the floor, peaceful and inspiring creative workspace aesthetic."
+    },
+    "setup_dark_gaming": {
+      "images_used": 19,
+      "name_ar": "ألعاب مظلمة",
+      "name_en": "Dark Gaming",
+      "color_palette": ["#111111", "#1a1a1a", "#282c34", "#4a90e2", "#d4af37"],
+      "lighting": "Atmospheric indirect lighting utilizing hidden LED strips, light bars, and backlit monitors casting a moody ambient glow.",
+      "materials": ["matte black metal", "dark wood veneer", "tempered glass", "felt desk mat", "mesh fabric"],
+      "key_elements": ["ultrawide monitor", "custom mechanical keyboard", "transparent PC chassis with internal lighting", "minimalist shelving", "ambient wall backlighting", "floating shelves with plants"],
+      "layout_rules": ["Center the primary monitor on the main desk surface", "Position the PC case to display internal lighting", "Keep cable management hidden for a clean silhouette", "Layer lighting behind furniture and screens"],
+      "avoid": ["harsh overhead lighting", "bright pastel colours", "exposed tangled cables", "cheap plastic finishes", "traditional office aesthetics"],
+      "product_categories": ["desk", "chair", "monitor", "monitor_arm", "keyboard", "mouse", "desk_mat", "led_strip", "light_bars", "shelf", "plants"],
+      "flux_prompt_fragment": "Moody dark gaming setup style, matte black desk, ultrawide monitor, custom mechanical keyboard, dark desk mat, transparent PC tower with glowing components, floating shelves with plants, ambient backlighting with LED strips, sleek tech aesthetic."
+    }
+  }
+}
