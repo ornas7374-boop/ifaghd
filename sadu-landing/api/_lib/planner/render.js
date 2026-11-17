@@ -63,7 +63,7 @@ function renderInstructions(plan) {
   const tail = [
     ...(intent.request_en ? [`The customer asks for: ${intent.request_en.replace(/[.\s]+$/, "")}.`] : []),
     `Lighting: ${[light.monitor, light.accent, light.bias].filter(Boolean).join("; ")}; colours: ${decisions.palette.furniture} furniture, ${decisions.palette.accents.join(" and ")} accents.`,
-    "Remove clutter (bottles, bags, trash). No people, no logos or readable text.",
+    "Remove clutter (bottles, bags, trash). No people, no faces, no posters of people, no logos or readable text; screens show abstract blue wallpapers.",
     "Photorealistic, natural lighting consistent with the original photo, real-estate photography quality."
   ];
   const furnitureLine = () => existing

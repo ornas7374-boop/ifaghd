@@ -30,7 +30,7 @@ const STYLE_EXAMPLES = {
       monitor: "curved monitor",
       monitor_light: "light bar on top of the curved monitor",
       plant: "small cactus in a white pot",
-      wall_art: "two black and white movie posters"
+      wall_art: "two framed abstract line-art prints (no people, no text)"
     },
     wall_option: "white 3D diamond-pattern wall panels lit warm from below"
   },
@@ -42,7 +42,7 @@ const STYLE_EXAMPLES = {
       mousepad: "large bright orange desk pad lying on the desktop",
       keyboard: "white keyboard",
       monitor: "wide curved monitor",
-      wall_art: "large frame with a handwritten quote and black and white art posters",
+      wall_art: "large framed abstract wave print (no people, no text)",
       plant: "small artificial olive plant",
       desk_lamp: "lamp with a glowing fabric shade"
     }

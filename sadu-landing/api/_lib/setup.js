@@ -34,7 +34,7 @@ const STYLES = {
     hint: "dark, calm and mature: suits rooms with little daylight, dark existing walls or floors, small spaces, people who want a cosy night mood",
     prompt: "a dark night desk setup: a black desk with a grey concrete-texture top and a large grey leather desk pad on the desktop; one large monitor and a second vertical monitor; " +
       "a slim light bar on top of the monitor; one or two warm amber LED light bars in a geometric line shape mounted on the wall behind the desk; dim, warm, moody lighting; " +
-      "a grey and black mechanical keyboard; a black PC tower with a glass side; small decor: a silver astronaut figure, black die-cast cars, a speckled ceramic mug, a glass coffee carafe; tidy, no clutter",
+      "a grey and black mechanical keyboard; a black PC tower with a glass side; small decor: a small geometric sculpture, a speckled ceramic mug, a glass coffee carafe; tidy, no clutter",
     wall: "matte charcoal paint on the wall behind the desk"
   },
   white_blue: {
@@ -42,7 +42,7 @@ const STYLES = {
     hint: "bright, fresh and youthful: suits white or light walls, daylight, teenagers and students, small bedrooms that should feel bigger",
     prompt: "a white and blue gaming setup: a white desk; a royal-blue LED strip under the desk edge and behind the monitor; a white pegboard mounted on the wall holding two headphones, a small shelf and a white LED digital clock; " +
       "a curved monitor on an arm with a light bar; a large desk pad with a blue and white wave pattern lying on the desktop; a white game controller; a microphone on a boom arm; a small succulent in a white pot; " +
-      "a glowing moon lamp; two small framed black-and-white posters without readable text; clean and organised",
+      "a glowing moon lamp; two small framed abstract prints (no people, no text); clean and organised",
     wall: "white 3D geometric diamond wall panels behind the desk"
   },
   neon_purple: {
@@ -67,7 +67,7 @@ const STYLES = {
     hint: "mature, clean and premium: suits grey or neutral existing walls and floors, adults, work-and-play setups, people who want it tidy and technical",
     prompt: "a grey tech setup: a long floating wall-mounted desk with a grey concrete-texture top and metal brackets; clean white light only: white triangular LED light panels forming a hexagon pattern mounted on the wall; " +
       "a light bar on the monitor and a soft white glow behind the desk; an ultrawide curved monitor with a second monitor on arms; a podcast microphone and an audio mixer on arms; " +
-      "a white glass PC case with white fans; a large white pegboard mounted on the wall displaying keyboards, headphones and controllers; small white floating shelves with a few figures; a grey ergonomic mesh office chair; a marble-pattern desk mat; very tidy and cable-managed",
+      "a white glass PC case with white fans; a large white pegboard mounted on the wall displaying keyboards, headphones and controllers; small white floating shelves with a few small plants; a grey ergonomic mesh office chair; a marble-pattern desk mat; very tidy and cable-managed",
     wall: "dark grey paint on the wall behind the desk"
   }
 };
