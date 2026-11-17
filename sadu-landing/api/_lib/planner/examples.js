@@ -4,6 +4,7 @@
 // {accent} is replaced with the plan's accent colour(s); {furniture} with the furniture colour.
 // Only items that are already in the plan get a detail: the examples never add items on their own.
 
+const { recipeExample } = require("../setupRecipes");
 const STYLE_EXAMPLES = {
   night_setup: {
     refs: [51, 52, 54, 55, 72, 73],
@@ -86,7 +87,7 @@ const SADU_WORDS = /سدو|سدوي|sadu/i;
 
 /** Pick the examples for a plan: the style's real setups, plus the Sadu touch when asked. */
 function pickExamples(style, intent, palette) {
-  const base = STYLE_EXAMPLES[style] || STYLE_EXAMPLES.grey_tech;
+  const base = STYLE_EXAMPLES[style] || recipeExample(style) || STYLE_EXAMPLES.grey_tech;
   const sadu = SADU_WORDS.test(String(intent.request_text || intent.request || ""));
   const accent = (palette.accents || []).join(" and ") || "white";
   const fill = (s) => s.replace(/\{accent\}/g, accent).replace(/\{furniture\}/g, palette.furniture || "white");

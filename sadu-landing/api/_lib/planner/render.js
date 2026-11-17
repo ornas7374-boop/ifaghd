@@ -7,7 +7,8 @@ const { protectionLines, SPACES, STYLES } = require("../setup");
 
 const MAX_WORDS = 360;
 const STYLE_EN = { night_setup: "dark, calm night gaming setup", white_blue: "bright white and royal blue gaming setup", neon_purple: "bold neon purple gaming",
-  rgb_setup: "organised RGB gaming setup", grey_tech: "clean grey technical desk setup" }; // image-model prompts are read only up to a limited length
+  rgb_setup: "organised RGB gaming setup", grey_tech: "clean grey technical desk setup" };
+for (const [k, r] of Object.entries(require("../setupRecipes").RECIPES)) STYLE_EN[k] = r.en; // image-model prompts are read only up to a limited length
 
 /** Words for one placed item, relative to the desk (what image models follow best). */
 function itemPhrase(p, palette, decisions, desk) {
@@ -58,7 +59,8 @@ function renderInstructions(plan) {
     "Keep the exact same camera angle, perspective, framing and lens.",
     `Keep all architecture unchanged and in the exact same position: walls, ceiling height, ceiling lights positions (${st.ceiling_lights || "existing ceiling lights"}), the door (${st.door_position || "no door visible in the photo"}), the window and curtains area (${st.window_position || "no window visible in the photo"}), floor tiles (${st.floor_type || room.surfaces.floor || "existing floor"}) and room dimensions.`,
     "Do not add, remove or move any door, window, wall, column or opening.",
-    `Only change: ${changeable}. No rugs or carpets on the floor.`
+    `Only change: ${changeable}. No rugs or carpets on the floor.`,
+    ...(STYLES[decisions.style] && STYLES[decisions.style].fragment ? [`Style: ${STYLES[decisions.style].fragment.replace(/[.\s]+$/, "")}.`] : [])
   ];
   const tail = [
     ...(intent.request_en ? [`The customer asks for: ${intent.request_en.replace(/[.\s]+$/, "")}.`] : []),

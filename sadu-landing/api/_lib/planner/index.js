@@ -75,7 +75,7 @@ function planDesign(input = {}) {
     if (!fixed) break; // nothing left to change (e.g. budget too small for a desk): report honestly
   }
 
-  const products = matchProducts(decisions.items, budget, decisions.palette, spatial.placement, { catalog: input.catalog, amazonTag: input.amazonTag });
+  const products = matchProducts(decisions.items, budget, decisions.palette, spatial.placement, { catalog: input.catalog, amazonTag: input.amazonTag, styleCategories: (STYLES[decisions.style] || {}).categories });
   const best = spatial.best;
   const plan = {
     version: VERSION,

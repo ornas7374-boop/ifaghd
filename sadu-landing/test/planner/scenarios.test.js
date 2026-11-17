@@ -195,3 +195,30 @@ test("template is filled from Gemini's structured room analysis: door, window, c
   const q = plan(ROOMS.doorNear(), { budget_sar: 3000 });
   assert.match(q.rendering_instructions.prompt, /the door \(on the back wall, right side\)/);
 });
+
+test("Pinterest recipe styles: each one plans and renders with its style line, keeps the structure lock, never a rug, and lists its pieces", () => {
+  const { RECIPES } = require("../../api/_lib/setupRecipes");
+  const { STYLES } = require("../../api/_lib/setup");
+  assert.equal(Object.keys(RECIPES).length, 5);
+  for (const key of Object.keys(RECIPES)) {
+    assert.ok(STYLES[key] && STYLES[key].ar && STYLES[key].hint && STYLES[key].fragment, key);
+    assert.ok(!/\brug\b|carpet/i.test(STYLES[key].fragment), `${key} fragment has no rug`);
+    assert.ok(STYLES[key].fragment.split(/\s+/).length <= 60, `${key} fragment <= 60 words`);
+    for (const space of ["setup_corner", "gaming_room", "home_office"]) {
+      const p = planDesign({ observations: ROOMS.small(), brief: { budget_sar: 3000 }, aiIntent: {}, suggested: { space, style: key, why: "x" }, secret: "test-secret" });
+      assert.equal(p.validation_results.passed, true, JSON.stringify(p.validation_results.errors));
+      const ri = p.rendering_instructions;
+      assert.match(ri.prompt, /Keep all architecture unchanged/);
+      assert.match(ri.prompt, /Style: /, `${key} style line`);
+      assert.ok(ri.prompt.indexOf("Keep all architecture unchanged") < ri.prompt.indexOf("Style: "), "structure lock first");
+      assert.match(ri.prompt, /No rugs or carpets on the floor/);
+      assert.ok(verify(ri, "test-secret"));
+      const reqs = p.product_requirements;
+      assert.ok(reqs.every(r => r.links.some(l => /amazon\.sa/.test(l.url)) && r.links.some(l => /noon\.com/.test(l.url))));
+      assert.ok(!reqs.some(r => r.category === "rug"));
+      for (const r of reqs.filter(x => x.status === "placeholder")) assert.equal(r.product, null);
+    }
+  }
+  const g = planDesign({ observations: ROOMS.small(), brief: { budget_sar: 3000 }, aiIntent: {}, suggested: { space: "gaming_room", style: "setup_gaming", why: "x" }, secret: "test-secret" });
+  assert.ok(g.product_requirements.some(r => r.category === "pc_case" && r.status === "placeholder"), "recipe piece not in the plan becomes a placeholder");
+});

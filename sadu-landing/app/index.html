@@ -260,7 +260,7 @@ fieldset.field{border:0;margin:0;padding:0}
 (function(){
   "use strict";
   var $ = function(id){ return document.getElementById(id); };
-  var STYLE_NAMES = {night_setup:"ركن ليلي",white_blue:"أبيض وأزرق",neon_purple:"نيون بنفسجي",rgb_setup:"RGB متغيّر",grey_tech:"رمادي تقني"};
+  var STYLE_NAMES = {night_setup:"ركن ليلي",white_blue:"أبيض وأزرق",neon_purple:"نيون بنفسجي",rgb_setup:"RGB متغيّر",grey_tech:"رمادي تقني",setup_gaming:"ألعاب بنفسجي RGB",setup_minimal:"أبيض وخشب فاتح",setup_cozy:"دافئ مريح",setup_home_office:"مكتب منزلي طبيعي",setup_dark_gaming:"ألعاب أسود مطفي"};
   var ROOM_NAMES = {setup_corner:"ركن سيت أب",gaming_room:"غرفة ألعاب",home_office:"مكتب منزلي"};
   var state = { image:null, ratio:4/3, room:null, style:null, why:"", tried:[], busy:false };
 
@@ -438,7 +438,7 @@ fieldset.field{border:0;margin:0;padding:0}
 
   /* عرض خطة المصمم بالعربي */
   var AR_WALL = { left: "الجدار الأيسر", back: "الجدار المقابل", right: "الجدار الأيمن" };
-  var AR_CAT = { desk:"مكتب", chair:"كرسي", monitor:"شاشة", monitor_arm:"ذراع شاشة", keyboard:"كيبورد", mouse:"ماوس", mousepad:"ماوس باد", lighting:"إضاءة الشاشة", desk_lamp:"أباجورة مكتب",
+  var AR_CAT = { pc_case:"كيس كمبيوتر", speakers:"سماعات مكتب", headphone_stand:"حامل سماعة", desk:"مكتب", chair:"كرسي", monitor:"شاشة", monitor_arm:"ذراع شاشة", keyboard:"كيبورد", mouse:"ماوس", mousepad:"ماوس باد", lighting:"إضاءة الشاشة", desk_lamp:"أباجورة مكتب",
     accent_lighting:"إضاءة جدارية LED", key_light:"إضاءة تصوير", microphone:"مايك مع ذراع", webcam:"كاميرا ويب", shelf:"لوح تعليق ورف", storage:"وحدة أدراج", plants:"نبتة", decor:"لوحة جدارية", wall_panels:"معالجة الجدار" };
   var AR_USE = { gaming:"قيمنق", streaming:"ستريم", work:"شغل", study:"دراسة", mixed:"مختلط" };
   var AR_ERR = { no_desk_position:"ما فيه جدار يناسب المكتب بأمان", blocks_door:"المكتب يسد الباب", window_behind_monitor:"الشاشة بتكون مقابل الشباك", no_clearance:"ما فيه مساحة كافية ورا الكرسي",
@@ -583,12 +583,12 @@ fieldset.field{border:0;margin:0;padding:0}
     }finally{ clearInterval(tick); waitEl.hidden = true; if(btn) btn.disabled = false; }
   }
   function resetShop(){ $("shopOut").textContent = ""; $("shopBtn").hidden = false; $("shopWait").hidden = true; }
-  var AR_COL = { white:"أبيض", black:"أسود", grey:"رمادي", blue:"أزرق", cyan:"سماوي", purple:"بنفسجي", pink:"وردي", red:"أحمر", orange:"برتقالي", green:"أخضر", "white or light wood":"أبيض أو خشب فاتح" };
+  var AR_COL = { white:"أبيض", black:"أسود", grey:"رمادي", blue:"أزرق", cyan:"سماوي", purple:"بنفسجي", pink:"وردي", red:"أحمر", orange:"برتقالي", green:"أخضر", "white or light wood":"أبيض أو خشب فاتح", "light wood":"خشب فاتح", "natural wood":"خشب طبيعي", "matte black":"أسود مطفي" };
   function itemsFromPlan(plan){
     var reqs = plan.product_requirements || [], tmin = 0, tmax = 0;
     var items = reqs.map(function(r){
       var lo = r.range_sar ? r.range_sar[0] : r.budget_sar, hi = r.range_sar ? r.range_sar[1] : r.budget_sar; tmin += lo; tmax += hi;
-      return { name_ar: (AR_CAT[r.category] || r.label) + (r.status === "verified" ? "" : " (مقترح)"), quantity: 1, material_ar: r.spec && r.spec.width_cm ? r.spec.width_cm + " سم" : "", color_ar: AR_COL[r.spec && r.spec.colour] || "",
+      return { name_ar: (AR_CAT[r.category] || r.label) + (r.status === "verified" ? "" : r.status === "placeholder" ? " (من الستايل)" : " (مقترح)"), quantity: 1, material_ar: r.spec && r.spec.width_cm ? r.spec.width_cm + " سم" : "", color_ar: AR_COL[r.spec && r.spec.colour] || "",
         price_min_sar: r.status === "verified" ? r.product.price_sar : lo, price_max_sar: r.status === "verified" ? r.product.price_sar : hi, links: r.status === "verified" ? [{ store: r.product.store || "المتجر", url: r.product.url }] : r.links };
     });
     return { items: items, total_min: tmin, total_max: tmax };

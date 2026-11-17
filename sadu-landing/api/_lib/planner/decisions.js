@@ -31,6 +31,8 @@ const ITEMS = {
 const STYLE_FOR_COLOUR = { blue: "white_blue", cyan: "rgb_setup", purple: "neon_purple", pink: "neon_purple", red: "night_setup", orange: "night_setup",
   yellow: "night_setup", gold: "night_setup", warm_white: "night_setup", black: "night_setup", grey: "grey_tech", white: "grey_tech", green: "rgb_setup", wood: "night_setup", beige: "grey_tech" };
 const STYLE_ACCENT = { night_setup: "warm amber", white_blue: "blue", neon_purple: "purple", rgb_setup: "cyan", grey_tech: "cool white" };
+const { RECIPES } = require("../setupRecipes");
+for (const [k, r] of Object.entries(RECIPES)) STYLE_ACCENT[k] = r.accent;
 const DESK_WIDTH_CM = { small: 120, medium: 140, large: 160 };
 
 function isLight(desc) { return /white|off-white|cream|beige|light|ivory|أبيض|بيج|فاتح/i.test(desc || ""); }
@@ -96,7 +98,8 @@ function decide(room, intent, opts = {}) {
 
   // --- palette: keep the room's surfaces, choose furniture colours that sit with them, 1-2 accents
   const lightRoom = isLight(room.surfaces.walls) || isLight(room.surfaces.floor);
-  const furnitureColour = intent.minimal ? (lightRoom ? "white" : "black") : style === "white_blue" || style === "grey_tech" ? (lightRoom ? "white" : "grey") : lightRoom ? "white or light wood" : "black";
+  const recipeFurniture = { setup_minimal: "white or light wood", setup_cozy: "light wood", setup_home_office: "natural wood", setup_gaming: "black", setup_dark_gaming: "matte black" }[style];
+  const furnitureColour = recipeFurniture || (intent.minimal ? (lightRoom ? "white" : "black") : style === "white_blue" || style === "grey_tech" ? (lightRoom ? "white" : "grey") : lightRoom ? "white or light wood" : "black");
   const accents = (intent.accents.length ? intent.accents : [STYLE_ACCENT[style]]).slice(0, intent.minimal ? 1 : 2);
   const palette = { keep: { floor: room.surfaces.floor || "existing floor", walls: room.surfaces.walls || "existing walls", ceiling: room.surfaces.ceiling || "existing ceiling" },
     furniture: furnitureColour, accents, rule: "large surfaces stay calm; accents only in lights and small items",

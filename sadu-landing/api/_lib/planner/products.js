@@ -11,9 +11,10 @@ const NAME = {
   lighting: ["إضاءة شاشة", "monitor light bar"], desk_lamp: ["أباجورة مكتب", "desk lamp"], accent_lighting: ["إضاءة LED جدارية", "LED wall light bars"],
   key_light: ["إضاءة تصوير", "key light"], microphone: ["مايك مع ذراع", "microphone with boom arm"], webcam: ["كاميرا ويب", "webcam"],
   shelf: ["لوح تعليق ورف", "pegboard and floating shelf"], storage: ["وحدة أدراج", "drawer unit"], plants: ["نبتة صناعية صغيرة", "small artificial plant"],
-  decor: ["لوحة جدارية", "framed art print"], wall_panels: ["ألواح جدارية", "wall panels"]
+  decor: ["لوحة جدارية", "framed art print"], wall_panels: ["ألواح جدارية", "wall panels"],
+  pc_case: ["كيس كمبيوتر زجاجي", "glass PC case"], speakers: ["سماعات مكتب", "desk speakers"], headphone_stand: ["حامل سماعة", "headphone stand"]
 };
-const AR_COLOUR = { white: "أبيض", black: "أسود", grey: "رمادي", blue: "أزرق", cyan: "سماوي", purple: "بنفسجي", pink: "وردي", red: "أحمر", orange: "برتقالي", green: "أخضر", "white or light wood": "أبيض" };
+const AR_COLOUR = { white: "أبيض", black: "أسود", grey: "رمادي", blue: "أزرق", cyan: "سماوي", purple: "بنفسجي", pink: "وردي", red: "أحمر", orange: "برتقالي", green: "أخضر", "white or light wood": "أبيض", "light wood": "خشب فاتح", "natural wood": "خشب طبيعي", "matte black": "أسود مطفي" };
 
 function colourFor(item, palette) {
   if (["accent_lighting"].includes(item.cat)) return palette.accents[0] || "";
@@ -54,6 +55,13 @@ function matchProducts(items, budget, palette, placement, opts = {}) {
     out.push({ ...req, status: verified ? "verified" : "suggested",
       product: verified ? { name: verified.name, price_sar: verified.price_sar, url: verified.url, store: verified.store, verified_at: verified.verified_at } : null,
       links: storeLinks({ name_ar: req.search.ar, name_en: req.search.en, search_ar: req.search.ar, search_en: req.search.en }, { amazonTag: opts.amazonTag }) });
+  }
+  // pieces the chosen style's recipe calls for that the plan did not include: placeholders with store searches
+  for (const cat of opts.styleCategories || []) {
+    if (!NAME[cat] || out.some(r => r.category === cat)) continue;
+    const [ar, en] = NAME[cat];
+    out.push({ key: `style_${cat}`, label: en, category: cat, priority: "optional", spec: {}, budget_sar: 0, range_sar: null, search: { ar, en },
+      status: "placeholder", product: null, links: storeLinks({ name_ar: ar, name_en: en, search_ar: ar, search_en: en }, { amazonTag: opts.amazonTag }) });
   }
   return { requirements: out, verified_count: out.filter(r => r.status === "verified").length,
     note: catalog.length ? "Verified products come from the catalogue; the rest are suggestions with store searches." : "No verified product catalogue yet: every item is a suggestion with store search links; prices are estimated ranges." };

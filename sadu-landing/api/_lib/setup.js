@@ -72,6 +72,10 @@ const STYLES = {
   }
 };
 
+// the 5 styles distilled from the owner's 100 Pinterest references (text recipes only)
+const { RECIPES } = require("./setupRecipes");
+for (const [k, r] of Object.entries(RECIPES)) STYLES[k] = { ar: r.ar, hint: r.hint, prompt: r.prompt, wall: r.wall, fragment: r.fragment, palette: r.palette, categories: r.categories, recipe: true };
+
 /**
  * The protection rules shared by every design prompt (legacy style prompt and the planning engine).
  * The floor, walls (unless allowed), ceiling, windows, doors and camera stay as they are.
