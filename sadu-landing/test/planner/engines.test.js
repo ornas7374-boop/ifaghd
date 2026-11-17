@@ -304,3 +304,16 @@ test("structure check: exact prompt, before + after to Gemini, pass only with sc
     assert.ok(parts.some(x => x.text === STRUCTURE_PROMPT), "the exact prompt");
   } finally { m.restore(); require("../../api/_lib/gemini")._reset(); for (const k of Object.keys(process.env)) if (!(k in saved)) delete process.env[k]; Object.assign(process.env, saved); }
 });
+
+test("FLUX.2: when most of the photo changed (light shift), the model's own image is used instead of a patchy paste", async () => {
+  const sharp = require("sharp");
+  const cfl = require("../../api/_lib/cloudflare"); cfl._reset();
+  const orig = await sharp({ create: { width: 200, height: 300, channels: 3, background: { r: 200, g: 200, b: 200 } } }).png().toBuffer();
+  const bluish = await sharp({ create: { width: 200, height: 300, channels: 3, background: { r: 150, g: 160, b: 255 } } }).png().toBuffer();
+  const fake = async (url) => url.includes("/accounts?") ? { ok: true, status: 200, json: async () => ({ result: [{ id: "a" }] }) }
+    : { ok: true, status: 200, json: async () => ({ result: { image: bluish.toString("base64") } }) };
+  const r = await cfl.cfFlux2("t", "data:image/png;base64," + orig.toString("base64"), null, "x", { fetch: fake });
+  assert.equal(r.whole_image, true);
+  const out = await sharp(Buffer.from(r.output.split(",")[1], "base64")).metadata();
+  assert.equal(out.width, 200); assert.equal(out.height, 300, "same size as the photo");
+});

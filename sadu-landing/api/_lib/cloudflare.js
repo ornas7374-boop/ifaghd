@@ -173,8 +173,13 @@ async function cfFlux2(token, image, region, prompt, opts = {}) {
   if (!b64) throw lastErr;
   const gen = Buffer.from(b64, "base64");
   // keep only what really changed (new pieces); windows and doors always stay the original
-  const kept = opts.raw ? { buf: gen, changed_share: null } : await pasteChanged(orig, gen, opts.protect || [], { zone: opts.zone || null });
-  const res = { status: "succeeded", output: `data:image/jpeg;base64,${kept.buf.toString("base64")}`, model, changed_share: kept.changed_share };
+  let kept = opts.raw ? { buf: gen, changed_share: null } : await pasteChanged(orig, gen, opts.protect || [], { zone: opts.zone || null });
+  // when the light/colour shifted over most of the photo, pasting leaves patches: use the model's own image
+  // (same framing and size), and let the structure check judge it
+  if (kept.changed_share != null && kept.changed_share > 0.4) {
+    kept = { buf: await sharp(gen).resize(W, H, { fit: "fill" }).jpeg({ quality: 90 }).toBuffer(), changed_share: kept.changed_share, whole: true };
+  }
+  const res = { status: "succeeded", output: `data:image/jpeg;base64,${kept.buf.toString("base64")}`, model, changed_share: kept.changed_share, whole_image: !!kept.whole };
   if (opts.debug) res.raw = (await sharp(gen).resize(512).jpeg({ quality: 75 }).toBuffer()).toString("base64");
   return res;
 }
