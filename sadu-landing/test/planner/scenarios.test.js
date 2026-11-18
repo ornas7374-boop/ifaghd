@@ -199,7 +199,7 @@ test("template is filled from Gemini's structured room analysis: door, window, c
 test("Pinterest recipe styles: each one plans and renders with its style line, keeps the structure lock, never a rug, and lists its pieces", () => {
   const { RECIPES } = require("../../api/_lib/setupRecipes");
   const { STYLES } = require("../../api/_lib/setup");
-  assert.equal(Object.keys(RECIPES).length, 5);
+  assert.equal(Object.keys(RECIPES).length, 6);
   for (const key of Object.keys(RECIPES)) {
     assert.ok(STYLES[key] && STYLES[key].ar && STYLES[key].hint && STYLES[key].fragment, key);
     assert.ok(!/\brug\b|carpet/i.test(STYLES[key].fragment), `${key} fragment has no rug`);

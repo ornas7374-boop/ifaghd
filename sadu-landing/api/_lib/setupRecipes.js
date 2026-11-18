@@ -5,6 +5,7 @@
 //   - screens show abstract wallpapers (no game scenes / readable text)
 //   - the truncated setup_gaming fragment is completed
 //   - clearer Arabic names
+//   - wall panels only as the optional wall treatment (walls are protected unless the customer asks)
 const RAW = require("../../data/style_presets_setup.json").styles;
 
 const FIX = {
@@ -39,6 +40,15 @@ const FIX = {
     drop: [/rug/i],
     wall: "deep olive green paint on the wall behind the desk"
   },
+  setup_gaming_real: {
+    ar: "ألعاب حقيقي أسود وأزرق",
+    en: "real-world black gaming setup with cool blue LED",
+    accent: "blue",
+    hint: "a real, practical gaming setup: black desk, two or more monitors on arms, glass PC case on show, cool blue LED backlight; the safest choice for most gamers and gaming rooms",
+    fragment: "A modern real-world gaming desk setup: a sleek black desk, an ergonomic mesh chair, two monitors on arms, a mechanical keyboard on a large clean desk mat, and a glowing glass PC case. Soft ambient cool blue LED backlighting behind the desk and minimalist floating shelves, tidy and immersive.",
+    drop: [/wall panel/i],
+    wall: "black slatted acoustic wall panels behind the desk"
+  },
   setup_dark_gaming: {
     ar: "ألعاب أسود مطفي",
     en: "matte black moody gaming setup",
@@ -50,7 +60,7 @@ const FIX = {
 
 // recipe product categories -> the planner's product categories (rugs are never offered: floor is protected)
 const CAT_MAP = { desk_mat: "mousepad", monitor_light: "lighting", led_strip: "accent_lighting", light_bars: "accent_lighting",
-  pegboard: "shelf", wall_art: "decor", rug: null };
+  pegboard: "shelf", wall_art: "decor", rug: null, wall_panels: null };
 
 const RECIPES = {};
 for (const [key, raw] of Object.entries(RAW)) {

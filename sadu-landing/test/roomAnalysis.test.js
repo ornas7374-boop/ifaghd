@@ -29,7 +29,7 @@ test("'another style' cannot return a style that was already tried", () => {
 test("setup focus: only setup spaces and styles are offered, and the design prompt keeps the architecture", () => {
   const { SPACES, STYLES: S, buildPrompt } = require("../api/_lib/setup");
   assert.deepEqual(Object.keys(SPACES), ["setup_corner", "gaming_room", "home_office"]);
-  assert.deepEqual(Object.keys(S), ["night_setup", "white_blue", "neon_purple", "rgb_setup", "grey_tech", "setup_gaming", "setup_minimal", "setup_cozy", "setup_home_office", "setup_dark_gaming"]);
+  assert.deepEqual(Object.keys(S), ["night_setup", "white_blue", "neon_purple", "rgb_setup", "grey_tech", "setup_gaming", "setup_minimal", "setup_cozy", "setup_home_office", "setup_dark_gaming", "setup_gaming_real"]);
   const { userPrompt } = require("../api/_lib/roomAnalysis");
   const p = userPrompt([]);
   for (const k of Object.keys(S)) assert.ok(p.includes(`- ${k}:`));

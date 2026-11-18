@@ -98,7 +98,7 @@ function decide(room, intent, opts = {}) {
 
   // --- palette: keep the room's surfaces, choose furniture colours that sit with them, 1-2 accents
   const lightRoom = isLight(room.surfaces.walls) || isLight(room.surfaces.floor);
-  const recipeFurniture = { setup_minimal: "white or light wood", setup_cozy: "light wood", setup_home_office: "natural wood", setup_gaming: "black", setup_dark_gaming: "matte black" }[style];
+  const recipeFurniture = { setup_minimal: "white or light wood", setup_cozy: "light wood", setup_home_office: "natural wood", setup_gaming: "black", setup_dark_gaming: "matte black", setup_gaming_real: "black" }[style];
   const furnitureColour = recipeFurniture || (intent.minimal ? (lightRoom ? "white" : "black") : style === "white_blue" || style === "grey_tech" ? (lightRoom ? "white" : "grey") : lightRoom ? "white or light wood" : "black");
   const accents = (intent.accents.length ? intent.accents : [STYLE_ACCENT[style]]).slice(0, intent.minimal ? 1 : 2);
   const palette = { keep: { floor: room.surfaces.floor || "existing floor", walls: room.surfaces.walls || "existing walls", ceiling: room.surfaces.ceiling || "existing ceiling" },
