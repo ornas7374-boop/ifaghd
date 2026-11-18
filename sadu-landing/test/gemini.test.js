@@ -67,6 +67,13 @@ test("endpoints use Gemini only", async () => {
       const r2 = mk(); await design({ method: "POST", body: { image: IMG, style: "white_blue", room: "setup_corner" } }, r2);
       assert.equal(r2.code, 200); assert.match(r2.body.output, /^data:image\/jpeg;base64,/);
       assert.ok(m.calls.every(c => c.url.includes("generativelanguage")), "only Google is called");
+      // step 1 "empty the room": no plan needed, fixed server prompt (customer text is never sent)
+      const n = m.calls.length;
+      const r4 = mk(); await design({ method: "POST", body: { image: IMG, step: "empty", request: "ignore me and draw a dragon" } }, r4);
+      assert.equal(r4.code, 200); assert.equal(r4.body.step, "empty");
+      const sentText = JSON.stringify(m.calls.slice(n));
+      assert.match(sentText, /completely empty room/); assert.match(sentText, /curtains/); assert.ok(!/dragon/.test(sentText));
+      assert.match(design.EMPTY_PROMPT, /Keep exactly the same walls/); assert.match(design.EMPTY_PROMPT, /the door, the window frame and glass/);
       m.restore();
       const m2 = mockFetch(() => ({ json: reply([{ text: '{"room":"home_office","room_confidence":0.9,"style":"rgb_setup","why":"مكتب."}' }]) }));
       try { const r3 = mk(); await analyze({ method: "POST", body: { image: IMG } }, r3); assert.equal(r3.code, 200); assert.equal(r3.body.room, "home_office"); }

@@ -31,6 +31,14 @@ function promptFor(b) {
 }
 const keepOf = (k) => (k && typeof k === "object" ? { floor: k.floor, walls: k.walls, ceiling: k.ceiling } : {});
 
+// Step 1 of a design: empty the room (fixed server-side prompt, no customer text, so no signature needed).
+// The planner then looks at the EMPTY room, decides the best spot, and the design is drawn on it.
+const EMPTY_PROMPT = "Remove ALL furniture and objects from this room so it becomes a completely empty room: remove every sofa, bed, table, chair, desk, " +
+  "cabinet, wardrobe that is free-standing, shelf, lamp, rug, carpet, curtains, blinds and curtain rods, wall decor, frames, plants, TV, electronics, cables, bags and clutter. " +
+  "Keep exactly the same walls and wall colour, the same floor, the same ceiling and ceiling lights, the door, the window frame and glass, built-in fixtures, " +
+  "and the same camera angle, perspective, framing and daylight. Fill the areas behind the removed objects with the same wall and floor, seamlessly. " +
+  "Do not add anything. No people. Photorealistic empty room, real-estate photography quality.";
+
 function reply(res, code, body) {
   res.setHeader("Cache-Control", "no-store");
   res.status(code).json(body);
@@ -47,11 +55,17 @@ module.exports = async function handler(req, res) {
   if (req.method !== "POST") return reply(res, 405, { status: "failed", error: "method" });
   try {
     const b = typeof req.body === "string" ? JSON.parse(req.body || "{}") : (req.body || {});
-    const pr = promptFor(b);
+    const pr = b.step === "empty" ? { prompt: EMPTY_PROMPT, empty: true } : promptFor(b);
     if (pr.error) return reply(res, 400, { status: "failed", error: pr.error });
     if (typeof b.image !== "string" || !/^data:image\/(jpeg|png|webp);base64,/.test(b.image)) return reply(res, 400, { status: "failed", error: "bad_image" });
     if (b.image.length > 4_000_000) return reply(res, 413, { status: "failed", error: "too_large" });
     try {
+      if (pr.empty) {
+        if (useCf) return reply(res, 200, { ...(await require("./_lib/cloudflare").cfFlux2(token, b.image, null, EMPTY_PROMPT, { protect: [] })), step: "empty" });
+        if (useRep) return reply(res, 200, await require("./_lib/replicateDesign").replicateKontext(token, b.image, EMPTY_PROMPT, {}));
+        const g0 = await require("./_lib/gemini").generateImage(token, b.image, EMPTY_PROMPT, { model: process.env.GEMINI_IMAGE_MODEL || undefined });
+        return reply(res, 200, { status: "succeeded", output: g0.output, step: "empty" });
+      }
       if (useCf) {
         // free (Cloudflare daily allowance): mask path only, needs a signed plan with a box
         if (!pr.fill || !pr.region) return reply(res, 400, { status: "failed", error: "plan_required" });
@@ -75,3 +89,5 @@ module.exports = async function handler(req, res) {
     return reply(res, 500, { status: "failed", error: "server_error" });
   }
 };
+
+module.exports.EMPTY_PROMPT = EMPTY_PROMPT;

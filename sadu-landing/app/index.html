@@ -313,7 +313,7 @@ fieldset.field{border:0;margin:0;padding:0}
     if(!f) return;
     clearErr();
     compress(f).then(function(r){
-      state.image = r.data; state.ratio = r.ratio; state.tried = [];
+      state.image = r.data; state.ratio = r.ratio; state.tried = []; state.empty = null;
       $("previewImg").src = r.data; $("preview").hidden = false; $("pick").hidden = true;
       $("shop0").hidden = true; $("shopOut0").textContent = "";
       refresh();
@@ -394,15 +394,35 @@ fieldset.field{border:0;margin:0;padding:0}
     }
   }
 
-  /* الذكاء الاصطناعي يحلل الغرفة ويختار الأسلوب، ثم يصمّم */
+  /* نتيجة مستضافة (رابط) إلى data URL عشان الخطوة اللي بعدها تقدر تستخدمها */
+  async function toDataUrl(src){
+    if(/^data:image\//.test(src)) return src;
+    var blob = await (await fetch(src)).blob();
+    return await new Promise(function(ok, no){ var fr = new FileReader(); fr.onload = function(){ ok(fr.result); }; fr.onerror = no; fr.readAsDataURL(blob); });
+  }
+
+  /* الذكاء الاصطناعي يفضّي الغرفة، يحللها فاضية، يخطط، ثم يصمّم */
   async function run(another){
     if(!state.image || state.busy) return;
     clearErr(); setBusy(true); $("loadText").textContent = "نفهم المكان ونخطط…";
     var t0 = Date.now();
     try{
       state.brief = readBrief();
-      // 1) Planning Engine: observe once, then plan / budget / validate on the server
-      var pl = await postJson("/api/plan", { image: state.image, brief: state.brief, exclude: another ? state.tried : [] });
+      // 0) empty the room first (all furniture, curtains, decor), unless the customer keeps things or only changes lighting
+      var ch = state.brief.changes || [], words = String(state.brief.description || "");
+      var mayClear = (!ch.length || ch.indexOf("furniture") >= 0 || ch.indexOf("full_setup") >= 0) && !/احتفظ|أحتفظ|ابقي|أبقي|ابقِ|خل[ّ]?ي\s|لا\s*تشيل|keep/i.test(words);
+      if(mayClear && !state.empty){
+        $("loadText").textContent = "نفضّي الغرفة من كل الأثاث والستارة…";
+        try{
+          var e0 = await postJson("/api/design", { image: state.image, step: "empty" });
+          if(e0.status === "processing") e0 = await poll(e0.id);
+          if(e0.status === "succeeded") state.empty = await toDataUrl(e0.output);
+        }catch(_){ state.empty = null; } // if emptying fails, the design itself still clears the room
+      }
+      var base = (mayClear && state.empty) || state.image;
+      // 1) Planning Engine: look at the EMPTY room, then decide the spot, plan / budget / validate on the server
+      $("loadText").textContent = "نحلل الغرفة الفاضية ونقرر وش يناسبها بالضبط…";
+      var pl = await postJson("/api/plan", { image: base, brief: state.brief, exclude: another ? state.tried : [] });
       if(pl.status !== "succeeded") throw pl;
       var plan = pl.plan; state.plan = plan;
       state.room = plan.room_analysis.space; state.style = plan.room_analysis.style; state.why = plan.room_analysis.why || "";
@@ -412,7 +432,7 @@ fieldset.field{border:0;margin:0;padding:0}
       }
       // 2) draw exactly the approved plan
       $("loadText").textContent = "نصمّم حسب الخطة…";
-      var r = await postJson("/api/design", { image: state.image, plan: plan });
+      var r = await postJson("/api/design", { image: base, plan: plan });
       if(r.status === "processing") r = await poll(r.id);
       if(r.status !== "succeeded") throw r;
       // 3) structure check: same room, same camera? If not, redo once with a new seed and keep the better one
@@ -420,7 +440,7 @@ fieldset.field{border:0;margin:0;padding:0}
       var sc = await checkStructure(r.output);
       if(sc && !sc.pass){
         $("loadText").textContent = "الغرفة تغيّرت، نعيد التصميم بمحاولة ثانية…";
-        var r2 = await postJson("/api/design", { image: state.image, plan: plan, seed: Math.floor(Math.random() * 2147483647) });
+        var r2 = await postJson("/api/design", { image: base, plan: plan, seed: Math.floor(Math.random() * 2147483647) });
         if(r2.status === "processing") r2 = await poll(r2.id);
         if(r2.status === "succeeded"){ var sc2 = await checkStructure(r2.output); if(sc2 && sc2.score_0_to_10 >= sc.score_0_to_10){ r = r2; sc = sc2; } }
       }
@@ -448,6 +468,7 @@ fieldset.field{border:0;margin:0;padding:0}
   function renderPlan(plan){
     var box = $("planCard"); box.textContent = ""; if(!plan){ box.hidden = true; return; }
     box.append(el("h3", null, "خطة المصمم"));
+    if(state.empty){ var em = el("figure", "emptyRoom"); var im = document.createElement("img"); im.src = state.empty; im.alt = "الغرفة بعد تفضيتها"; im.style.cssText = "width:100%;border-radius:10px"; em.append(im, el("figcaption", null, "الخطوة 1: فضّينا الغرفة من كل شيء، وعليها خططنا التصميم.")); box.append(em); }
     var d = plan.spatial_plan.desk, u = plan.user_requirements;
     if(d) box.append(el("p", null, "المكتب: " + d.width_cm + " سم على " + AR_WALL[d.wall] + ". الاستخدام: " + (AR_USE[u.use] || u.use) + "."));
     var why = el("ul");
@@ -518,7 +539,7 @@ fieldset.field{border:0;margin:0;padding:0}
     b.type = "button"; img.src = url; img.alt = ""; s.textContent = STYLE_NAMES[style];
     b.append(img, s); li.append(b); $("history").prepend(li); $("historyWrap").hidden = false;
     b.addEventListener("click", function(){
-      state.image = before; state.style = style; state.room = room; state.ratio = ratio; state.why = why || ""; state.plan = plan || null; renderPlan(state.plan); $("evalBox").hidden = true;
+      state.image = before; state.empty = null; state.style = style; state.room = room; state.ratio = ratio; state.why = why || ""; state.plan = plan || null; renderPlan(state.plan); $("evalBox").hidden = true;
       $("why").textContent = state.why; $("why").hidden = !state.why;
       $("compare").style.aspectRatio = String(ratio);
       $("beforeImg").src = before; $("afterImg").src = url; $("save").href = url; state.after = url; resetShop();
@@ -605,7 +626,7 @@ fieldset.field{border:0;margin:0;padding:0}
   function backToEditor(){ $("result").hidden = true; $("editor").hidden = false; $("go").hidden = false; refresh(); }
   $("another").addEventListener("click", function(){ run(true); });
   $("newPhoto").addEventListener("click", function(){
-    state.image = null; state.tried = []; $("preview").hidden = true; $("pick").hidden = false; backToEditor();
+    state.image = null; state.tried = []; state.empty = null; $("preview").hidden = true; $("pick").hidden = false; backToEditor();
     window.scrollTo({ top:0, behavior:"smooth" });
   });
 })();
