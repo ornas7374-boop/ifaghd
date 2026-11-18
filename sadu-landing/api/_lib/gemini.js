@@ -5,8 +5,8 @@
 // Model ids are overridable with GEMINI_IMAGE_MODEL / GEMINI_VISION_MODEL (set by the caller).
 
 const API = "https://generativelanguage.googleapis.com/v1beta";
-const DEFAULT_IMAGE_MODEL = "gemini-2.5-flash-image";
-const DEFAULT_VISION_MODEL = "gemini-2.5-flash";
+const DEFAULT_IMAGE_MODEL = "gemini-3.1-flash-image-preview"; // 2.5 models are closed to new users
+const DEFAULT_VISION_MODEL = "gemini-3.5-flash-lite";
 
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
@@ -48,6 +48,9 @@ async function generate(key, model, body, budgetMs = 50000) {
 // If a model id is not available on the account (404), ask the API which models exist and pick
 // the newest one that fits. The choice is remembered for this server instance.
 const chosen = {};
+const retired = new Set(); // models the API refused as no longer available: never tried again on this instance
+// a model that is listed but closed ("no longer available to new users", "not found", "not supported")
+const isRetired = (res) => [400, 403, 404].includes(res.status) && /no longer available|not found|not supported|deprecated|update your code/i.test(errDetail(res.data));
 const ver = (n) => { const m = /gemini-(\d+(?:\.\d+)?)/.exec(n); return m ? Number(m[1]) : 0; };
 function pick(models, kind) {
   const ok = models.filter(m => (m.supportedGenerationMethods || []).includes("generateContent")).map(m => String(m.name || "").replace(/^models\//, ""));
@@ -56,8 +59,9 @@ function pick(models, kind) {
     ? ok.filter(n => /^gemini-/.test(n) && /image/.test(n) && /flash/.test(n))
     : ok.filter(n => /^gemini-/.test(n) && /flash/.test(n) && !/(image|tts|audio|live|embed|thinking)/.test(n));
   const lite = (n) => (kind === "vision" && /lite/.test(n) ? 1 : 0);
-  fits.sort((a, b) => (lite(b) - lite(a)) || (/preview|exp/.test(a) - /preview|exp/.test(b)) || (ver(b) - ver(a)) || (/flash/.test(b) - /flash/.test(a)));
-  return fits;
+  // newest generation first (older ones get closed to new users), then lite for analysis, then stable over preview
+  fits.sort((a, b) => (ver(b) - ver(a)) || (lite(b) - lite(a)) || (/preview|exp/.test(a) - /preview|exp/.test(b)) || (/flash/.test(b) - /flash/.test(a)));
+  return fits.filter(n => !retired.has(n));
 }
 async function listModels(key) {
   const out = [];
@@ -91,7 +95,9 @@ async function generateWithFallback(key, kind, preferred, body, budgetMs) {
   let res = await send(model);
   // Not on the account (404), or overloaded (503/429/500 after retries): try the next suitable
   // model the account has, newest stable first, while time remains.
-  if ([404, 429, 500, 503, 504].includes(res.status) && left() > 8000) {
+  const fallBack = (r) => [404, 429, 500, 503, 504].includes(r.status) || isRetired(r);
+  if (isRetired(res)) retired.add(model);
+  if (fallBack(res) && left() > 8000) {
     const tried = new Set([model]);
     const list = pick(await listModels(key), kind).filter(n => !tried.has(n));
     for (const alt of list.slice(0, 3)) {
@@ -99,7 +105,8 @@ async function generateWithFallback(key, kind, preferred, body, budgetMs) {
       console.log(JSON.stringify({ gemini_fallback: kind, from: model, status: res.status, to: alt }));
       if (chosen[kind] === model) delete chosen[kind];
       model = alt; res = await send(model);
-      if (res.ok || ![404, 429, 500, 503, 504].includes(res.status)) break;
+      if (isRetired(res)) retired.add(model);
+      if (res.ok || !fallBack(res)) break;
     }
   }
   if (res.ok) chosen[kind] = model;
@@ -159,4 +166,4 @@ async function visionJSONImages(key, images, { system, prompt, model, budgetMs =
   return { text: parts(r.res.data).map(p => p.text || "").join(""), model: r.model };
 }
 
-module.exports = { _reset: () => { for (const k in chosen) delete chosen[k]; }, pick, generateImage, visionJSON, visionJSONImages, analyzeRoomGemini, splitDataUri, DEFAULT_IMAGE_MODEL, DEFAULT_VISION_MODEL };
+module.exports = { _reset: () => { for (const k in chosen) delete chosen[k]; retired.clear(); }, pick, generateImage, visionJSON, visionJSONImages, analyzeRoomGemini, splitDataUri, DEFAULT_IMAGE_MODEL, DEFAULT_VISION_MODEL };

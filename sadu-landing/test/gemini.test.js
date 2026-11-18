@@ -115,11 +115,34 @@ test("a model that hangs fails clearly inside the time budget (no 60 s Vercel ti
   } finally { global.fetch = real; }
 });
 
-test("analysis asks for low thinking on 2.5 models", async () => {
+test("analysis asks for low thinking (3.x default: minimal level; 2.5: zero budget)", async () => {
   require("../api/_lib/gemini")._reset();
   const m = mockFetch(() => ({ json: reply([{ text: '{"room":"gaming_room","style":"white_blue","why":"صالة."}' }]) }));
-  try { await analyzeRoomGemini("k", IMG); assert.deepEqual(m.calls[0].body.generationConfig.thinkingConfig, { thinkingBudget: 0 }); }
-  finally { m.restore(); }
+  try {
+    await analyzeRoomGemini("k", IMG);
+    assert.match(m.calls[0].url, /gemini-3\.5-flash-lite:/, "default is a current model, not a retired 2.5 one");
+    assert.deepEqual(m.calls[0].body.generationConfig.thinkingConfig, { thinkingLevel: "minimal" });
+    require("../api/_lib/gemini")._reset();
+    const n = m.calls.length; await analyzeRoomGemini("k", IMG, { model: "gemini-2.5-flash" });
+    assert.deepEqual(m.calls[n].body.generationConfig.thinkingConfig, { thinkingBudget: 0 });
+  } finally { m.restore(); }
+});
+
+test("a retired model (\"no longer available to new users\") falls back to the newest one and is not tried again", async () => {
+  require("../api/_lib/gemini")._reset();
+  const RETIRED = "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite";
+  const m = mockFetch((url) => {
+    if (url.includes("/models?")) return { json: { models: [
+      { name: "models/gemini-2.5-flash-lite", supportedGenerationMethods: ["generateContent"] },
+      { name: "models/gemini-3.5-flash-lite", supportedGenerationMethods: ["generateContent"] }] } };
+    if (url.includes("gemini-2.5-flash-lite:")) return { status: 404, json: { error: { message: RETIRED } } };
+    if (url.includes("gemini-3.5-flash-lite:")) return { json: reply([{ text: '{"room":"gaming_room","style":"white_blue","why":"صالة."}' }]) };
+    return { status: 500, json: {} };
+  });
+  try {
+    const a = await analyzeRoomGemini("k", IMG, { model: "gemini-2.5-flash-lite" });
+    assert.equal(a.model, "gemini-3.5-flash-lite");
+  } finally { m.restore(); require("../api/_lib/gemini")._reset(); }
 });
 
 test("overloaded model (503): falls back to the next model on the account", async () => {
