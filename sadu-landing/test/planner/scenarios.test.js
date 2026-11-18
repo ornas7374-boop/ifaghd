@@ -238,3 +238,18 @@ test("a style the customer picks from the suggestions is kept, even if the words
     suggested: { space: "setup_corner", style: "setup_cozy", why: "x" }, secret: "test-secret" });
   assert.notEqual(q.room_analysis.style, "setup_cozy", "without a pick, the requested colour still steers the style");
 });
+
+test("build plan: 2/3/4/5/7 days, day 1 = empty + order, every build step once and in order", () => {
+  const p = plan(ROOMS.windowLeft(), { budget_sar: 3000 });
+  const all = ["فضّ الغرفة وقِس المكان", "اطلب القطع", "ركّب الأثاث", "الشاشة والأجهزة", "الجدار", "الإضاءة والستارة", "ترتيب الأسلاك", "اللمسات الأخيرة"];
+  for (const d of [2, 3, 4, 5, 7]) {
+    const s = p.build_schedules[d];
+    assert.equal(s.length, d, `${d} days`);
+    assert.deepEqual(s[0].steps.map(x => x.title), all.slice(0, 2), "day 1 empties the room and orders the pieces");
+    const titles = s.flatMap(x => x.steps.map(y => y.title)).filter(t => t !== "انتظار التوصيل");
+    assert.deepEqual(titles.filter(t => all.includes(t)), all.filter(t => titles.includes(t)), "build order kept");
+    assert.ok(s.every(x => x.steps.length), "no empty day");
+    assert.ok(s.flatMap(x => x.steps.flatMap(y => y.tasks)).every(t => typeof t === "string" && t.length > 5));
+  }
+  assert.match(JSON.stringify(p.build_schedules[3]), /3000 ريال/, "uses the customer's budget");
+});

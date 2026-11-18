@@ -111,6 +111,8 @@ function planDesign(input = {}) {
     const instr = renderInstructions(plan);
     plan.rendering_instructions = { ...instr, signature: input.secret ? sign(instr, input.secret) : null };
   }
+  // day-by-day build plan (2/3/4/5/7 days) from the plan itself, in Arabic; no AI call
+  plan.build_schedules = require("./schedule").buildSchedules(plan);
   return plan;
 }
 

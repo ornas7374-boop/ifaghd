@@ -115,6 +115,23 @@ h1{font:700 34px/50px "IBM Plex Sans Arabic",system-ui,sans-serif;margin:28px 0 
 .linkbtn{display:block;margin:12px auto 0;min-block-size:44px;padding:0 8px;background:none;border:0;color:var(--text-secondary);text-decoration:underline;font:inherit;font-size:14px;cursor:pointer}
 
 /* طلب العميل — وصف، ميزانية، نوع التعديلات (غير مربوط بالتوليد بعد) */
+.descHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-block-end:6px}
+.descHead label{margin:0}
+.sugBtn{min-block-size:40px;padding:0 14px;border-radius:999px;border:1px solid var(--text);background:transparent;color:var(--text);font:600 15px/1 "IBM Plex Sans Arabic",system-ui,sans-serif;cursor:pointer;white-space:nowrap}
+.sugBtn[aria-expanded="true"]{background:var(--text);color:#000}
+.sugBtn[aria-expanded="true"] span{display:inline-block;transform:rotate(180deg)}
+.sugPanel{padding:12px;border-radius:14px;border:1px solid var(--border-subtle);background:var(--bg)}
+.sug b{font:600 16px/1.6 "IBM Plex Sans Arabic",system-ui,sans-serif}
+.sug span{font:400 14px/1.7 "IBM Plex Sans Arabic",system-ui,sans-serif !important;color:var(--text-secondary) !important}
+/* خطة التنفيذ */
+.build h3{margin:0 0 4px}
+.days{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 12px}
+.days button{min-block-size:40px;padding:0 16px;border-radius:999px;border:1px solid var(--border-strong);background:transparent;color:var(--text);font:600 15px/1 "IBM Plex Sans Arabic",system-ui,sans-serif;cursor:pointer}
+.days button[aria-pressed="true"]{background:var(--text);color:#000;border-color:var(--text)}
+.day{margin:0 0 12px;padding:12px 14px;border-radius:12px;border:1px solid var(--border-subtle);background:var(--bg)}
+.day h4{margin:0 0 6px;font:700 16px/1.6 "IBM Plex Sans Arabic",system-ui,sans-serif}
+.day h5{margin:8px 0 2px;font:600 15px/1.6 "IBM Plex Sans Arabic",system-ui,sans-serif;color:var(--text)}
+.day ul{margin:0;padding-inline-start:18px;font-size:14px;line-height:24px;color:var(--text-secondary)}
 .sugHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-block-end:8px}
 .sugTitle{font-weight:600}
 .lang{display:inline-flex;border:1px solid var(--border-subtle);border-radius:999px;overflow:hidden}
@@ -201,11 +218,12 @@ fieldset.field{border:0;margin:0;padding:0}
     <section class="brief" id="brief" aria-labelledby="s2">
       <h2 class="step__h" id="s2"><span class="step__n">02</span>ماذا تريد؟ (اختياري)</h2>
       <div class="field">
-        <label for="desc">صف لنا التصميم الذي تريده</label>
+        <div class="descHead"><label for="desc">صف لنا التصميم الذي تريده</label>
+          <button type="button" class="sugBtn" id="sugBtn" aria-expanded="false" aria-controls="sugPanel">اقتراحات وصف <span aria-hidden="true">▾</span></button></div>
         <textarea id="desc" maxlength="600" placeholder="مثال: أبغى سيت أب ألعاب بإضاءة LED زرقاء، وجدار بشرائح خشب، بدون ما نغيّر الأرضية."></textarea>
         <small>اكتب بالعربي أو الإنجليزي، أو اختر اقتراح من تحت.</small>
       </div>
-      <div class="field">
+      <div class="field sugPanel" id="sugPanel" hidden>
         <div class="sugHead"><span class="sugTitle">اقتراحات من مراجعنا</span>
           <div class="lang" role="group" aria-label="لغة الوصف"><button type="button" data-lang="ar" aria-pressed="true">عربي</button><button type="button" data-lang="en" aria-pressed="false">English</button></div>
         </div>
@@ -248,6 +266,7 @@ fieldset.field{border:0;margin:0;padding:0}
     <div class="result__meta"><span id="metaStyle"></span><span id="metaTime" class="num"></span></div>
     <p class="why" id="why" hidden></p>
     <section class="plan" id="planCard" hidden aria-label="خطة المصمم"></section>
+    <section class="plan build" id="buildPlan" hidden aria-label="خطة التنفيذ"></section>
     <div class="evalbox" id="evalBox" hidden aria-live="polite"></div>
     <div class="actions">
       <button class="btn btn--primary full" type="button" id="another">صمّم بأسلوب آخر</button>
@@ -366,6 +385,30 @@ fieldset.field{border:0;margin:0;padding:0}
   });
 
   renderSugs();
+  $("sugBtn").addEventListener("click", function(){
+    var open = $("sugPanel").hidden; $("sugPanel").hidden = !open; this.setAttribute("aria-expanded", open ? "true" : "false");
+  });
+
+  /* خطة التنفيذ: يومين إلى ٧ أيام، مبنية من خطة التصميم نفسها */
+  var DAY_WORD = { 2:"يومين", 3:"٣ أيام", 4:"٤ أيام", 5:"٥ أيام", 7:"٧ أيام" };
+  function renderBuild(days){
+    var box = $("buildPlan"), sch = state.plan && state.plan.build_schedules;
+    box.textContent = ""; if(!sch){ box.hidden = true; return; }
+    box.hidden = false;
+    box.append(el("h3", null, "خطة التنفيذ"), el("p", null, "كم يوم تبغى تخلّص فيها السيت أب؟ نرتّب لك الشغل يوم بيوم حسب تصميمك."));
+    var row = el("div", "days");
+    [2,3,4,5,7].forEach(function(d){
+      var b = el("button", null, DAY_WORD[d]); b.type = "button"; b.setAttribute("aria-pressed", d === days ? "true" : "false");
+      b.addEventListener("click", function(){ renderBuild(d); }); row.append(b);
+    });
+    box.append(row);
+    if(!days || !sch[days]) return;
+    sch[days].forEach(function(d){
+      var c = el("div", "day"); c.append(el("h4", null, "اليوم " + d.day));
+      d.steps.forEach(function(s){ c.append(el("h5", null, s.title)); var ul = el("ul"); s.tasks.forEach(function(t){ ul.append(li(t)); }); c.append(ul); });
+      box.append(c);
+    });
+  }
 
   function readBrief(){
     var b = Number($("budget").value);
@@ -539,6 +582,7 @@ fieldset.field{border:0;margin:0;padding:0}
   var AR_WARN = { narrow_desk:"المكتب أضيق من 117 سم الموصى بها", clearance_unsure:"عمق الغرفة غير معروف: تأكد من مساحة 90 سم ورا الكرسي", budget_too_low:"الميزانية ما تغطي كل الأساسيات", no_budget:"ما حددت ميزانية: الأسعار تقديرية متوسطة", crowded:"الغرفة صغيرة: قللنا الزينة" };
   function li(t){ var x = el("li"); x.textContent = t; return x; }
   function renderPlan(plan){
+    renderBuild(null);
     var box = $("planCard"); box.textContent = ""; if(!plan){ box.hidden = true; return; }
     box.append(el("h3", null, "خطة المصمم"));
     if(state.empty){ var em = el("figure", "emptyRoom"); var im = document.createElement("img"); im.src = state.empty; im.alt = "الغرفة بعد تفضيتها"; im.style.cssText = "width:100%;border-radius:10px"; em.append(im, el("figcaption", null, "الخطوة 1: فضّينا الغرفة من كل شيء، وعليها خططنا التصميم.")); box.append(em); }
