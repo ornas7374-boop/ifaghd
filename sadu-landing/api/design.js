@@ -37,7 +37,7 @@ const EMPTY_PROMPT = "Remove ALL furniture and objects from this room so it beco
   "cabinet, wardrobe that is free-standing, shelf, lamp, rug, carpet, curtains, blinds and curtain rods, wall decor, frames, plants, TV, electronics, cables, bags and clutter. " +
   "Keep exactly the same walls and wall colour, the same floor, the same ceiling and ceiling lights, the door, the window frame and glass, built-in fixtures, " +
   "and the same camera angle, perspective, framing and daylight. Fill the areas behind the removed objects with the same wall and floor, seamlessly. " +
-  "Do not add anything. No people. Photorealistic empty room, real-estate photography quality.";
+  "Do not add anything. No people. The result is a bare, unoccupied room with clean walls and an uncovered floor. Photorealistic empty room, real-estate photography quality.";
 
 function reply(res, code, body) {
   res.setHeader("Cache-Control", "no-store");

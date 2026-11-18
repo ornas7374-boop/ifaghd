@@ -1,0 +1,41 @@
+{
+  "type": "object",
+  "properties": {
+    "room_type": {"type": "string"},
+    "visible_zones": {"type": "array", "items": {"type": "string"}},
+    "fixed_elements": {"type": "array", "items": {"type": "string"}},
+    "floor_material": {"type": "string"},
+    "lighting_source": {"type": "string"},
+    "perspective_notes": {"type": "string"},
+    "blocking_rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "element_name": {"type": "string"},
+          "blocking_rule": {
+            "type": "string",
+            "enum": ["can_block", "cannot_block", "can_place_on_top"]
+          }
+        },
+        "required": ["element_name", "blocking_rule"]
+      }
+    },
+    "spatial_layout": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "subject": {"type": "string"},
+          "relation": {"type": "string"},
+          "object": {"type": "string"}
+        },
+        "required": ["subject", "relation", "object"]
+      }
+    }
+  },
+  "required": [
+    "room_type", "visible_zones", "fixed_elements", "floor_material",
+    "lighting_source", "perspective_notes", "blocking_rules", "spatial_layout"
+  ]
+}

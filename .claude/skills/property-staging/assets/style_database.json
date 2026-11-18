@@ -1,0 +1,705 @@
+{
+  "style_aliases": {
+    "japandi": "Minimalist",
+    "mid-century": "Modern",
+    "mid century": "Modern",
+    "coastal": "Scandinavian",
+    "farmhouse": "Scandinavian",
+    "contemporary": "Modern",
+    "luxury": "Modern",
+    "rustic": "Industrial",
+    "eclectic": "Boho Chic",
+    "bohemian": "Boho Chic",
+    "classic": "Mediterranean"
+  },
+  "style_database": {
+    "Modern": {
+      "Living Room": {
+        "furniture": [
+          "low-profile sectional sofa",
+          "glass coffee table",
+          "geometric area rug",
+          "arc floor lamp",
+          "media console",
+          "accent armchair"
+        ],
+        "layout_instructions": [
+          "Place sofa facing the focal point or main window.",
+          "Define the seating area with a rug \u2014 rug should anchor all seating.",
+          "Keep lines clean and horizontal; avoid ornate or curved pieces.",
+          "CRITICAL: Do not place kitchen or dining items in this space."
+        ]
+      },
+      "Kitchen": {
+        "furniture": [
+          "wooden cutting board",
+          "ceramic fruit bowl",
+          "potted herbs",
+          "runner rug",
+          "countertop vase",
+          "small cookbook stack"
+        ],
+        "layout_instructions": [
+          "Keep the center of the room OPEN and clear.",
+          "Place decor items ONLY on existing countertops.",
+          "CRITICAL: DO NOT ADD ISLANDS or tables in the middle of the floor.",
+          "CRITICAL: Never place sofas or living room furniture here."
+        ]
+      },
+      "Dining Room": {
+        "furniture": [
+          "rectangular dining table",
+          "upholstered dining chairs",
+          "pendant light",
+          "sideboard",
+          "centerpiece vase"
+        ],
+        "layout_instructions": [
+          "Center the dining table under any overhead fixture.",
+          "Allow 90 cm clearance around all sides of the table.",
+          "CRITICAL: Do not blend with kitchen island features."
+        ]
+      },
+      "Bedroom": {
+        "furniture": [
+          "platform bed",
+          "pair of nightstands",
+          "soft area rug",
+          "modern dresser",
+          "reading lamp",
+          "accent chair"
+        ],
+        "layout_instructions": [
+          "Center bed on the longest unobstructed wall.",
+          "Nightstands flank both sides symmetrically.",
+          "Rug extends under the lower two-thirds of the bed."
+        ]
+      },
+      "Bathroom": {
+        "furniture": [
+          "plush bath mat",
+          "folded towels",
+          "soap dispenser set",
+          "small potted plant",
+          "vanity tray with toiletries"
+        ],
+        "layout_instructions": [
+          "Only place movable decor items.",
+          "CRITICAL: DO NOT ADD OR CHANGE PLUMBING FIXTURES (sinks, toilets, showers, tubs).",
+          "Keep floor mostly clear for movement."
+        ]
+      },
+      "Office": {
+        "furniture": [
+          "sleek writing desk",
+          "ergonomic chair",
+          "table lamp",
+          "small bookshelf",
+          "area rug",
+          "desk plant"
+        ],
+        "layout_instructions": [
+          "Face desk towards room center or window for natural light.",
+          "CRITICAL: Do not add beds or large sofas."
+        ]
+      },
+      "Storage/Entry": {
+        "furniture": [
+          "slim console table",
+          "entryway bench",
+          "coat rack",
+          "runner rug",
+          "wall mirror"
+        ],
+        "layout_instructions": [
+          "Keep pathways completely clear.",
+          "CRITICAL: Do not block doorways or entryways.",
+          "Do not add large furniture pieces."
+        ]
+      }
+    },
+    "Scandinavian": {
+      "Living Room": {
+        "furniture": [
+          "light oak sofa with white cushions",
+          "birch wood coffee table",
+          "sheepskin throw rug",
+          "floor lamp with linen shade",
+          "minimalist bookshelf",
+          "knit throw blanket"
+        ],
+        "layout_instructions": [
+          "Maximize natural light \u2014 keep window areas clear.",
+          "Use neutral whites, greys, and natural wood tones.",
+          "Leave negative space; do not overcrowd.",
+          "Place a cozy reading nook near the window if space allows."
+        ]
+      },
+      "Kitchen": {
+        "furniture": [
+          "wooden chopping board",
+          "white ceramic pitcher with stems",
+          "small potted succulent",
+          "linen dish towel",
+          "birch wood bowl with fruit"
+        ],
+        "layout_instructions": [
+          "Keep surfaces minimal \u2014 less is more.",
+          "Place natural materials (wood, ceramic) on countertops only.",
+          "CRITICAL: DO NOT ADD ISLANDS or tables in the middle of the floor."
+        ]
+      },
+      "Dining Room": {
+        "furniture": [
+          "round birch dining table",
+          "white wishbone chairs",
+          "pendant lamp in natural materials",
+          "small vase with dried flowers"
+        ],
+        "layout_instructions": [
+          "Opt for round or oval table for intimate gatherings.",
+          "Center table in the room."
+        ]
+      },
+      "Bedroom": {
+        "furniture": [
+          "low linen-upholstered bed",
+          "pair of floating nightstands",
+          "white fluffy area rug",
+          "simple wooden dresser",
+          "pendant bedside lamps"
+        ],
+        "layout_instructions": [
+          "Use all-white or soft grey bedding.",
+          "Keep nightstands simple with minimal decor.",
+          "Rug should be light and textured (sheepskin, wool)."
+        ]
+      },
+      "Bathroom": {
+        "furniture": [
+          "fluffy white bath mat",
+          "stacked white towels",
+          "small wooden stool",
+          "potted eucalyptus",
+          "simple soap dish"
+        ],
+        "layout_instructions": [
+          "Only movable decor; no plumbing changes.",
+          "Emphasize clean, spa-like simplicity."
+        ]
+      },
+      "Office": {
+        "furniture": [
+          "light oak desk",
+          "ergonomic chair in light grey",
+          "small potted plant",
+          "minimalist desk lamp",
+          "woven storage basket"
+        ],
+        "layout_instructions": [
+          "Keep desk surface clear; only essentials visible."
+        ]
+      },
+      "Storage/Entry": {
+        "furniture": [
+          "wooden bench with cushion",
+          "minimal coat hooks",
+          "jute runner rug",
+          "potted plant",
+          "simple wall mirror"
+        ],
+        "layout_instructions": [
+          "Keep entryway light, airy, and clutter-free."
+        ]
+      }
+    },
+    "Industrial": {
+      "Living Room": {
+        "furniture": [
+          "brown leather sofa",
+          "reclaimed wood coffee table",
+          "metal floor lamp",
+          "exposed-brick-tone area rug",
+          "vintage metal bookshelf",
+          "leather accent chair"
+        ],
+        "layout_instructions": [
+          "Use raw materials \u2014 leather, metal, reclaimed wood.",
+          "Expose structural elements; don't hide them.",
+          "Darker, moodier palette: charcoal, rust, dark brown.",
+          "CRITICAL: Keep layout open; avoid cluttering with too many pieces."
+        ]
+      },
+      "Kitchen": {
+        "furniture": [
+          "cast iron pan on counter",
+          "metal utensil holder",
+          "dark ceramic bowls",
+          "industrial pendant light (if movable)",
+          "bar stool (only if island already exists)"
+        ],
+        "layout_instructions": [
+          "Dark countertop accessories only.",
+          "CRITICAL: DO NOT ADD ISLANDS or tables; only decorate existing surfaces."
+        ]
+      },
+      "Dining Room": {
+        "furniture": [
+          "reclaimed wood dining table",
+          "metal cross-back chairs",
+          "Edison bulb pendant",
+          "industrial sideboard"
+        ],
+        "layout_instructions": [
+          "Table should feel heavy and grounded.",
+          "Metal and wood contrast is key."
+        ]
+      },
+      "Bedroom": {
+        "furniture": [
+          "metal-frame bed",
+          "dark wood nightstands",
+          "industrial floor lamp",
+          "distressed leather bench",
+          "exposed-pipe clothes rack"
+        ],
+        "layout_instructions": [
+          "Use dark, moody bedding (charcoal, deep navy).",
+          "Metal frame should be visible and featured."
+        ]
+      },
+      "Bathroom": {
+        "furniture": [
+          "dark bath mat",
+          "rolled dark towels",
+          "matte black soap dispenser",
+          "small succulent",
+          "metal shelf with toiletries"
+        ],
+        "layout_instructions": [
+          "No plumbing changes; matte black accessories only."
+        ]
+      },
+      "Office": {
+        "furniture": [
+          "metal and wood desk",
+          "leather rolling chair",
+          "metal task lamp",
+          "industrial pipe shelving",
+          "concrete-look desk organizer"
+        ],
+        "layout_instructions": [
+          "Raw, functional workspace \u2014 everything has a purpose."
+        ]
+      },
+      "Storage/Entry": {
+        "furniture": [
+          "metal coat rack",
+          "reclaimed wood console",
+          "dark runner mat",
+          "vintage trunk as bench"
+        ],
+        "layout_instructions": [
+          "Keep entry functional and utilitarian."
+        ]
+      }
+    },
+    "Boho Chic": {
+      "Living Room": {
+        "furniture": [
+          "low rattan sofa with colorful cushions",
+          "macram\u00e9 wall hanging",
+          "layered area rugs",
+          "floor poufs",
+          "hanging plants",
+          "wicker side table",
+          "floor cushions"
+        ],
+        "layout_instructions": [
+          "Layer rugs of different textures and patterns.",
+          "Mix patterns freely but maintain a warm color palette (terracotta, ochre, rust).",
+          "Add plants at varying heights \u2014 hanging, floor, shelf.",
+          "Furniture should feel low and relaxed."
+        ]
+      },
+      "Kitchen": {
+        "furniture": [
+          "woven fruit basket",
+          "potted herbs in terracotta pots",
+          "colorful ceramic bowls",
+          "macram\u00e9 hanging planter",
+          "woven placemats"
+        ],
+        "layout_instructions": [
+          "Warm, earthy tones on all surfaces.",
+          "CRITICAL: DO NOT ADD ISLANDS.",
+          "Layer textures: woven, ceramic, wood."
+        ]
+      },
+      "Dining Room": {
+        "furniture": [
+          "rattan dining chairs",
+          "wooden dining table",
+          "woven table runner",
+          "eclectic centerpiece",
+          "hanging plants"
+        ],
+        "layout_instructions": [
+          "Mismatched chairs are intentional and encouraged."
+        ]
+      },
+      "Bedroom": {
+        "furniture": [
+          "low platform bed with layered bedding",
+          "rattan nightstands",
+          "macram\u00e9 headboard or wall hanging",
+          "layered rugs",
+          "hanging plants",
+          "floor cushions"
+        ],
+        "layout_instructions": [
+          "Layer bedding with different textures and patterns.",
+          "Keep it cozy and lived-in."
+        ]
+      },
+      "Bathroom": {
+        "furniture": [
+          "woven bath mat",
+          "terracotta pot plant",
+          "rolled towels in basket",
+          "wooden accessories",
+          "dried pampas grass"
+        ],
+        "layout_instructions": [
+          "Warm, organic, natural materials only."
+        ]
+      },
+      "Office": {
+        "furniture": [
+          "rattan desk",
+          "eclectic chair with cushion",
+          "hanging plants",
+          "woven rug",
+          "collection of books and plants"
+        ],
+        "layout_instructions": [
+          "Layered, personal, creative feel."
+        ]
+      },
+      "Storage/Entry": {
+        "furniture": [
+          "rattan bench",
+          "macram\u00e9 wall hanging",
+          "layered runner rug",
+          "potted snake plant",
+          "woven basket"
+        ],
+        "layout_instructions": [
+          "Warm and welcoming; personality from day one."
+        ]
+      }
+    },
+    "Minimalist": {
+      "Living Room": {
+        "furniture": [
+          "simple linen sofa in neutral tone",
+          "low square coffee table",
+          "single large area rug",
+          "one floor lamp",
+          "small side table"
+        ],
+        "layout_instructions": [
+          "Every item must earn its place \u2014 if in doubt, leave it out.",
+          "Maximum 5 furniture pieces total.",
+          "No decorative objects unless functional.",
+          "Palette: white, off-white, light grey, natural wood only."
+        ]
+      },
+      "Kitchen": {
+        "furniture": [
+          "single cutting board",
+          "small plant in white ceramic pot",
+          "one clean dish towel"
+        ],
+        "layout_instructions": [
+          "Countertops must look nearly empty.",
+          "CRITICAL: DO NOT ADD ISLANDS.",
+          "Hide everything not in immediate use."
+        ]
+      },
+      "Dining Room": {
+        "furniture": [
+          "simple rectangular table",
+          "matching chairs (no extras)",
+          "single small centerpiece"
+        ],
+        "layout_instructions": [
+          "Table should look like it seats exactly the right number of people."
+        ]
+      },
+      "Bedroom": {
+        "furniture": [
+          "low bed frame",
+          "one nightstand",
+          "minimal bedding in white or grey",
+          "small lamp"
+        ],
+        "layout_instructions": [
+          "No clutter whatsoever.",
+          "Single piece of art maximum on walls."
+        ]
+      },
+      "Bathroom": {
+        "furniture": [
+          "plain white bath mat",
+          "neatly folded white towels",
+          "single soap dispenser"
+        ],
+        "layout_instructions": [
+          "Absolute minimum \u2014 if it doesn't need to be there, remove it."
+        ]
+      },
+      "Office": {
+        "furniture": [
+          "clean white desk",
+          "simple chair",
+          "single lamp",
+          "one small plant"
+        ],
+        "layout_instructions": [
+          "Completely clear desktop except for one functional item."
+        ]
+      },
+      "Storage/Entry": {
+        "furniture": [
+          "single slim console table",
+          "one mirror",
+          "minimal runner"
+        ],
+        "layout_instructions": [
+          "Nothing on the floor except the rug."
+        ]
+      }
+    },
+    "Mediterranean": {
+      "Living Room": {
+        "furniture": [
+          "terracotta-colored sofa",
+          "mosaic-patterned coffee table",
+          "layered colorful area rugs",
+          "wrought iron floor lamp",
+          "ceramic vases",
+          "arched mirror"
+        ],
+        "layout_instructions": [
+          "Rich warm colors: terracotta, cobalt blue, ochre, deep red.",
+          "Mix patterns \u2014 tiles, stripes, florals work together.",
+          "Add plants and natural elements throughout.",
+          "Furniture should feel heavy, crafted, artisanal."
+        ]
+      },
+      "Kitchen": {
+        "furniture": [
+          "terracotta pot with herbs",
+          "colorful ceramic fruit bowl",
+          "mosaic tile trivet (on counter)",
+          "woven basket",
+          "olive oil bottles as decor"
+        ],
+        "layout_instructions": [
+          "Warm, sun-soaked accessories on countertops.",
+          "CRITICAL: DO NOT ADD ISLANDS.",
+          "Blue and white ceramics work well."
+        ]
+      },
+      "Dining Room": {
+        "furniture": [
+          "heavy wooden dining table",
+          "wrought iron chairs with cushions",
+          "ceramic centerpiece bowl",
+          "hanging iron light fixture",
+          "sideboard with pottery"
+        ],
+        "layout_instructions": [
+          "Table should feel like a gathering place for family meals.",
+          "Mix wood and iron."
+        ]
+      },
+      "Bedroom": {
+        "furniture": [
+          "carved wooden bed frame",
+          "colorful textile bedding",
+          "iron bedside lamps",
+          "mosaic side tables",
+          "arched floor mirror",
+          "potted olive tree"
+        ],
+        "layout_instructions": [
+          "Rich jewel-tone bedding: deep blues, terracottas, golds.",
+          "Bed frame should be ornate or carved."
+        ]
+      },
+      "Bathroom": {
+        "furniture": [
+          "colorful patterned bath mat",
+          "terracotta pot with plant",
+          "mosaic soap dish",
+          "decorative ceramic jars",
+          "rolled colored towels"
+        ],
+        "layout_instructions": [
+          "No plumbing changes; use colorful handmade-style accessories."
+        ]
+      },
+      "Office": {
+        "furniture": [
+          "solid wood desk",
+          "leather chair",
+          "terracotta plant pot",
+          "mosaic paperweight",
+          "woven rug"
+        ],
+        "layout_instructions": [
+          "Warm, scholarly, handcrafted feel."
+        ]
+      },
+      "Storage/Entry": {
+        "furniture": [
+          "painted tile-top console table",
+          "wrought iron coat hooks",
+          "colorful runner",
+          "large terracotta pot with plant",
+          "arched mirror"
+        ],
+        "layout_instructions": [
+          "Welcoming, warm, sun-drenched feel from the entrance."
+        ]
+      }
+    },
+    "Art Deco": {
+      "Living Room": {
+        "furniture": [
+          "velvet sofa in deep jewel tone (emerald, navy, burgundy)",
+          "geometric gold coffee table",
+          "art deco area rug with bold patterns",
+          "brass floor lamp",
+          "mirrored side table",
+          "statement art piece"
+        ],
+        "layout_instructions": [
+          "Bold geometric patterns on rug and upholstery.",
+          "Gold and brass metallic accents throughout.",
+          "Rich jewel tones: emerald green, sapphire blue, deep burgundy.",
+          "Every piece should feel glamorous and intentional."
+        ]
+      },
+      "Kitchen": {
+        "furniture": [
+          "brass fruit bowl",
+          "gold-rimmed ceramic vase",
+          "geometric canister set",
+          "black and gold kitchen accessories"
+        ],
+        "layout_instructions": [
+          "Metallic gold and black accessories on countertops.",
+          "CRITICAL: DO NOT ADD ISLANDS.",
+          "Less is more \u2014 each piece must be striking."
+        ]
+      },
+      "Dining Room": {
+        "furniture": [
+          "glossy dark wood dining table",
+          "upholstered chairs in jewel-tone velvet",
+          "geometric chandelier",
+          "mirrored sideboard",
+          "gold candle holders"
+        ],
+        "layout_instructions": [
+          "Table should look like a black tie dinner setting.",
+          "Gold accents everywhere."
+        ]
+      },
+      "Bedroom": {
+        "furniture": [
+          "upholstered bed in velvet (emerald or navy)",
+          "mirrored nightstands",
+          "brass table lamps",
+          "geometric area rug",
+          "ornate floor mirror",
+          "velvet bench at foot of bed"
+        ],
+        "layout_instructions": [
+          "Bed should be the glamorous centerpiece.",
+          "Symmetrical arrangement is key."
+        ]
+      },
+      "Bathroom": {
+        "furniture": [
+          "black and gold bath mat",
+          "gold soap dispenser",
+          "geometric marble tray",
+          "art deco candle",
+          "bold patterned towels"
+        ],
+        "layout_instructions": [
+          "No plumbing changes; gold and black accessories create the look."
+        ]
+      },
+      "Office": {
+        "furniture": [
+          "lacquered dark desk",
+          "tufted leather chair",
+          "brass desk lamp",
+          "geometric bookends",
+          "velvet rug"
+        ],
+        "layout_instructions": [
+          "Feels like a 1920s publisher's private office."
+        ]
+      },
+      "Storage/Entry": {
+        "furniture": [
+          "glossy console table",
+          "geometric brass mirror",
+          "bold patterned runner",
+          "dramatic floor plant in gold pot"
+        ],
+        "layout_instructions": [
+          "First impression should be dramatic and glamorous."
+        ]
+      }
+    }
+  },
+  "category_map": {
+    "Living room": "Living Room",
+    "Family room": "Living Room",
+    "Great room": "Living Room",
+    "Parlor": "Living Room",
+    "Sunroom": "Living Room",
+    "Den": "Living Room",
+    "Kitchen": "Kitchen",
+    "Pantry": "Kitchen",
+    "Scullery": "Kitchen",
+    "Laundry room": "Utility",
+    "Utility room": "Utility",
+    "Primary bedroom": "Bedroom",
+    "Guest room": "Bedroom",
+    "Nursery": "Bedroom",
+    "Kids room": "Bedroom",
+    "Kids' room": "Bedroom",
+    "Bathroom": "Bathroom",
+    "Powder room": "Bathroom",
+    "Dining room": "Dining Room",
+    "Home office": "Office",
+    "Study": "Office",
+    "Library": "Office",
+    "Game room": "Leisure",
+    "Home theater": "Leisure",
+    "Gym": "Gym",
+    "Exercise room": "Gym",
+    "Foyer": "Storage/Entry",
+    "Entryway": "Storage/Entry",
+    "Mudroom": "Storage/Entry",
+    "Hallway": "Storage/Entry"
+  }
+}

@@ -68,6 +68,8 @@ function renderInstructions(plan) {
   const tail = [
     ...(intent.request_en ? [`The customer asks for: ${intent.request_en.replace(/[.\s]+$/, "")}.`] : []),
     `Lighting: ${[light.monitor, light.accent, light.bias].filter(Boolean).join("; ")}; colours: ${decisions.palette.furniture} furniture, ${decisions.palette.accents.join(" and ")} accents.`,
+    // FLUX.2 ignores negative wording, so the same rules are also said affirmatively; staging rules from property-staging
+    "New pieces are grounded and scaled to this camera's perspective, with shadows matching the room's light; the door and window stay fully visible; bare floor; an unoccupied, tidy room with clean unmarked surfaces.",
     "Remove clutter (bottles, bags, trash). No people, no faces, no posters of people, no logos or readable text; screens show abstract blue wallpapers.",
     "Photorealistic, natural lighting consistent with the original photo, real-estate photography quality."
   ];
