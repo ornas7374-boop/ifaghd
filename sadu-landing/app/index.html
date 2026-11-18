@@ -8,7 +8,7 @@
 <title>sadu — صمّم سيت أبك</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Inter:wght@500;600&family=Reem+Kufi:wght@500..700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Inter:wght@500;600&family=Reem+Kufi:wght@500..700&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#000;--surface:#0D0D0D;--surface-raised:#1A1A1A;--surface-hover:#262626;
@@ -33,7 +33,7 @@ button,input{font:inherit;color:inherit}
 header{display:flex;align-items:center;justify-content:space-between;min-block-size:64px;padding-inline:16px;border-block-end:1px solid var(--border-subtle);position:sticky;top:0;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:10}
 .logo{inline-size:96px}
 .badge{font:500 13px/22px var(--font-text);color:var(--text-muted);border:1px solid var(--border-strong);border-radius:999px;padding:2px 12px}
-h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gradient(180deg,var(--silver-start),var(--silver-end));-webkit-background-clip:text;background-clip:text;color:transparent}
+h1{font:700 34px/50px "IBM Plex Sans Arabic",system-ui,sans-serif;margin:28px 0 6px;color:var(--text);letter-spacing:0}
 .sub{margin:0 0 24px;color:var(--text-secondary)}
 .step{margin-block:28px}
 .step__h{display:flex;align-items:baseline;gap:10px;margin:0 0 12px;font:600 18px/28px var(--font-display)}
@@ -115,6 +115,18 @@ h1{font:600 32px/48px var(--font-display);margin:28px 0 4px;background:linear-gr
 .linkbtn{display:block;margin:12px auto 0;min-block-size:44px;padding:0 8px;background:none;border:0;color:var(--text-secondary);text-decoration:underline;font:inherit;font-size:14px;cursor:pointer}
 
 /* طلب العميل — وصف، ميزانية، نوع التعديلات (غير مربوط بالتوليد بعد) */
+.sugHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-block-end:8px}
+.sugTitle{font-weight:600}
+.lang{display:inline-flex;border:1px solid var(--border-subtle);border-radius:999px;overflow:hidden}
+.lang button{min-block-size:36px;padding:0 14px;border:0;background:transparent;color:var(--text-muted);font:500 14px/1 inherit;cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--text);color:#000}
+.sugs{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.sug{display:block;text-align:start;padding:12px 14px;border-radius:12px;border:1px solid var(--border-subtle);background:var(--surface);color:var(--text);font:inherit;cursor:pointer;line-height:1.6}
+.sug b{display:block;font-size:15px;margin-block-end:2px}
+.sug span{display:block;font-size:13px;color:var(--text-muted)}
+.sug[aria-pressed="true"]{border-color:var(--text);box-shadow:0 0 0 1px var(--text)}
+.sug[dir="ltr"]{text-align:left}
+.prompt{white-space:pre-wrap;direction:ltr;text-align:left;font:400 13px/1.7 var(--font-latin);background:var(--surface);border:1px solid var(--border-subtle);border-radius:10px;padding:10px 12px}
 .brief{display:grid;gap:14px;margin-block-start:24px}
 .field{display:grid;gap:6px}
 .field label,.field legend{font:600 15px/24px var(--font-display);color:var(--text)}
@@ -161,11 +173,11 @@ fieldset.field{border:0;margin:0;padding:0}
 
 <main class="wrap">
   <h1>صمّم سيت أبك</h1>
-  <p class="sub">صوّر الركن أو الغرفة اللي تبغى فيها السيت أب. الذكاء الاصطناعي يختار الأسلوب الأنسب ويصمّمه، ويعطيك القطع وأسعارها.</p>
+  <p class="sub">صوّر الغرفة اللي تبغى فيها السيت أب. الذكاء الاصطناعي يختار الأسلوب الأنسب ويصمّمه، ويعطيك القطع وأسعارها.</p>
 
   <div id="editor">
     <section class="step" aria-labelledby="s1">
-      <h2 class="step__h" id="s1"><span class="step__n">01</span>صورة الركن</h2>
+      <h2 class="step__h" id="s1"><span class="step__n">01</span>صورة الغرفة</h2>
       <div class="pick" id="pick">
         <label class="btn btn--primary"><svg><use href="#i-camera"/></svg>التقط بالكاميرا
           <input class="file" id="cam" type="file" accept="image/*" capture="environment"></label>
@@ -173,10 +185,10 @@ fieldset.field{border:0;margin:0;padding:0}
           <input class="file" id="lib" type="file" accept="image/*"></label>
       </div>
       <div class="preview" id="preview" hidden>
-        <img id="previewImg" alt="صورة الركن">
+        <img id="previewImg" alt="صورة الغرفة">
         <button class="preview__change" type="button" id="change">تغيير الصورة</button>
       </div>
-      <p class="hint">للنتيجة الأفضل: صورة واسعة للركن أو الجدار كاملاً، بدون أشخاص.</p>
+      <p class="hint">للنتيجة الأفضل: صورة واسعة للغرفة كاملة، بدون أشخاص.</p>
     </section>
 
     <button class="linkbtn" type="button" id="shopOnly" hidden>عندك صورة سيت أب جاهز؟ اعرض قطعه وأسعارها</button>
@@ -187,11 +199,18 @@ fieldset.field{border:0;margin:0;padding:0}
       <div id="shopOut0"></div>
     </div>
     <section class="brief" id="brief" aria-labelledby="s2">
-      <h2 class="step__h" id="s2"><span class="step__n">02</span>طلبك (اختياري)</h2>
+      <h2 class="step__h" id="s2"><span class="step__n">02</span>ماذا تريد؟ (اختياري)</h2>
       <div class="field">
         <label for="desc">صف لنا التصميم الذي تريده</label>
         <textarea id="desc" maxlength="600" placeholder="مثال: أبغى سيت أب ألعاب بإضاءة LED زرقاء، وجدار بشرائح خشب، بدون ما نغيّر الأرضية."></textarea>
-        <small>بالعربي أو الإنجليزي.</small>
+        <small>اكتب بالعربي أو الإنجليزي، أو اختر اقتراح من تحت.</small>
+      </div>
+      <div class="field">
+        <div class="sugHead"><span class="sugTitle">اقتراحات من مراجعنا</span>
+          <div class="lang" role="group" aria-label="لغة الوصف"><button type="button" data-lang="ar" aria-pressed="true">عربي</button><button type="button" data-lang="en" aria-pressed="false">English</button></div>
+        </div>
+        <div class="sugs" id="sugs"></div>
+        <small>كل اقتراح مأخوذ من صور سيت أبات حقيقية في مراجعنا. اضغط عليه ويتعبّى الوصف، وتقدر تعدّله.</small>
       </div>
       <div class="field">
         <label for="budget">كم ميزانيتك؟</label>
@@ -214,7 +233,7 @@ fieldset.field{border:0;margin:0;padding:0}
 
   <section id="loading" class="loader" hidden aria-live="polite">
     <div class="weave" id="weave" aria-hidden="true"></div>
-    <p><span id="loadText">نحلل الركن…</span> <span class="num" id="secs">0</span> ثانية</p>
+    <p><span id="loadText">نحلل الغرفة…</span> <span class="num" id="secs">0</span> ثانية</p>
   </section>
 
   <section id="result" hidden aria-labelledby="rh">
@@ -296,9 +315,62 @@ fieldset.field{border:0;margin:0;padding:0}
   function showErr(msg){ var e = $("result").hidden ? $("err") : $("err2"); e.textContent = msg; e.hidden = false; }
   function clearErr(){ $("err").hidden = true; $("err2").hidden = true; }
   /* طلب العميل: يُرسل للتحليل (يختار الأسلوب حسبه ويترجمه) ثم للتصميم (له الأولوية على الأسلوب) */
+  /* اقتراحات الوصف: من وصفات الستايلات اللي طلعت من صور المراجع */
+  var SUGGEST = [
+    { k:"setup_gaming_real", ar:["ألعاب حقيقي أسود وأزرق","مكتب أسود، شاشتين على ذراع، كيس كمبيوتر زجاجي مضيء، كيبورد ميكانيكي وماوس باد كبير، إضاءة LED زرقاء هادئة ورا المكتب ورفوف معلّقة."],
+      en:["Real gaming, black & blue","Black desk, two monitors on arms, glowing glass PC case, mechanical keyboard on a large desk mat, soft cool-blue LED backlight and floating shelves."] },
+    { k:"setup_gaming", ar:["ألعاب بنفسجي RGB","غرفة ألعاب بإضاءة خافتة، كيس كمبيوتر زجاجي مضيء بنفسجي، شاشة كبيرة، كيبورد مضيء وماوس باد عريض، وإضاءة LED بنفسجية."],
+      en:["Purple RGB gaming","Moody low light, glass PC case glowing purple, large monitor, backlit keyboard on a wide desk mat, vivid purple LED accents."] },
+    { k:"setup_dark_gaming", ar:["ألعاب أسود مطفي","مكتب أسود مطفي، شاشة عريضة، كيبورد مخصص، كيس كمبيوتر شفاف، رفوف معلّقة فيها نباتات، وإضاءة LED مخفية ورا المكتب."],
+      en:["Matte black gaming","Matte black desk, ultrawide monitor, custom keyboard, transparent PC case, floating shelves with plants, hidden LED backlight."] },
+    { k:"setup_minimal", ar:["أبيض وخشب فاتح","مكتب خشب فاتح، ماوس باد لباد، شاشة نظيفة، أباجورة دافية، نباتات متدلية، رفوف خشب معلّقة، وبدون أسلاك ظاهرة."],
+      en:["White & light wood","Light wood desk, felt desk mat, clean monitor, warm desk lamp, trailing plants, floating wooden shelves, no visible cables."] },
+    { k:"setup_cozy", ar:["دافئ مريح","مكتب خشب فاتح مع رف للشاشة، نباتات في أصص سيراميك، أباجورة دافية، بطانية صوف على الكرسي، وإضاءة دافية هادية."],
+      en:["Cozy & warm","Light wood desk with a monitor riser, plants in ceramic pots, warm desk lamp, knitted throw on the chair, soft warm lighting."] },
+    { k:"setup_home_office", ar:["مكتب منزلي طبيعي","مكتب خشب طبيعي، كرسي مريح، شاشة عليها إضاءة، رفوف خشب معلّقة فيها نباتات، وألوان ترابية هادية للشغل والدراسة."],
+      en:["Natural home office","Natural wood desk, comfortable chair, monitor with a light bar, floating wooden shelves with plants, calm earthy colours for work and study."] },
+    { k:"night_setup", ar:["ركن ليلي","مكتب أسود بسطح رمادي، شاشتين، إضاءة LED كهرمانية دافية على الجدار، وجو هادي وغامق."],
+      en:["Night corner","Black desk with a grey top, two monitors, warm amber LED light bars on the wall, calm dark mood."] },
+    { k:"white_blue", ar:["أبيض وأزرق","مكتب أبيض، إضاءة LED زرقاء تحت المكتب وورا الشاشة، لوح تعليق أبيض للسماعات، وماوس باد بنقشة موج."],
+      en:["White & blue","White desk, royal-blue LED under the desk and behind the monitor, white pegboard for headphones, wave-pattern desk mat."] },
+    { k:"neon_purple", ar:["نيون بنفسجي","ألواح إضاءة مثلثة بنفسجي وأزرق على الجدار، شاشة عريضة منحنية، كيس كمبيوتر أبيض بمراوح بنفسجية، وكرسي ألعاب رمادي."],
+      en:["Neon purple","Purple and blue triangle light panels, curved ultrawide monitor, white PC case with purple fans, light grey gaming chair."] },
+    { k:"rgb_setup", ar:["RGB متغيّر","إضاءة RGB متعرجة فوق رف أبيض، لوح تعليق فيه سماعات وساعة، مكتب أبيض وكيبورد صغير، وكل الإضاءة بلون واحد."],
+      en:["Changing RGB","Zig-zag RGB light bars above a white shelf, pegboard with headphones and a clock, white desk, compact keyboard, one colour theme."] },
+    { k:"grey_tech", ar:["رمادي تقني","مكتب معلّق بسطح رمادي، إضاءة بيضاء سداسية على الجدار، شاشة منحنية وشاشة ثانية، لوح تعليق أبيض، ومرتب بالكامل."],
+      en:["Grey tech","Floating desk with a grey top, white hexagon light panels, curved monitor plus a second one, white pegboard, fully cable-managed."] }
+  ];
+  state.lang = "ar"; state.pick = null;
+  function renderSugs(){
+    var box = $("sugs"); box.textContent = "";
+    SUGGEST.forEach(function(s){
+      var t = s[state.lang], b = el("button", "sug"); b.type = "button"; b.dir = state.lang === "en" ? "ltr" : "rtl";
+      b.setAttribute("aria-pressed", state.pick === s.k ? "true" : "false");
+      b.append(el("b", null, t[0]), el("span", null, t[1]));
+      b.addEventListener("click", function(){
+        if(state.pick === s.k){ state.pick = null; if($("desc").value === s.ar[1] || $("desc").value === s.en[1]) $("desc").value = ""; }
+        else { state.pick = s.k; $("desc").value = t[1]; }
+        renderSugs();
+      });
+      box.append(b);
+    });
+  }
+  document.querySelectorAll(".lang button").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      state.lang = btn.getAttribute("data-lang");
+      document.querySelectorAll(".lang button").forEach(function(x){ x.setAttribute("aria-pressed", x === btn ? "true" : "false"); });
+      var cur = SUGGEST.filter(function(s){ return s.k === state.pick; })[0];
+      if(cur){ var other = state.lang === "ar" ? cur.en[1] : cur.ar[1]; if($("desc").value === other) $("desc").value = cur[state.lang][1]; }
+      renderSugs();
+    });
+  });
+
+  renderSugs();
+
   function readBrief(){
     var b = Number($("budget").value);
     return {
+      style: state.pick || undefined,
       description: $("desc").value.trim().slice(0, 600),
       budget_sar: Number.isFinite(b) && b > 0 ? Math.round(b) : null,
       changes: Array.prototype.map.call(document.querySelectorAll("#changes input:checked"), function(i){ return i.value; })
@@ -407,6 +479,7 @@ fieldset.field{border:0;margin:0;padding:0}
     clearErr(); setBusy(true); $("loadText").textContent = "نفهم المكان ونخطط…";
     var t0 = Date.now();
     try{
+      if(another && state.pick){ state.pick = null; renderSugs(); } // "another style": let the designer choose again
       state.brief = readBrief();
       // 0) empty the room first (all furniture, curtains, decor), unless the customer keeps things or only changes lighting
       var ch = state.brief.changes || [], words = String(state.brief.description || "");
@@ -486,6 +559,11 @@ fieldset.field{border:0;margin:0;padding:0}
     box.append(el("p", null, "الأسعار تقديرية لكل فئة، وليست أسعار منتجات محددة."));
     var w = plan.validation_results.warnings.filter(function(x){ return AR_WARN[x.code] || /^request_/.test(x.code); });
     if(w.length){ var wl = el("ul"); w.slice(0, 4).forEach(function(x){ var e2 = li(AR_WARN[x.code] || "طلبك فيه تعارض، وحلّيناه: " + x.message.split(" -> ")[1]); e2.className = "warn"; wl.append(e2); }); box.append(wl); }
+    if(plan.rendering_instructions && plan.rendering_instructions.prompt){
+      var pd = el("details"); pd.append(el("summary", null, "الوصف اللي وصل للمصمم (حوّلناه لأمر رسم بالإنجليزي)"));
+      pd.append(el("p", null, "الستايل: " + (STYLE_NAMES[plan.room_analysis.style] || plan.room_analysis.style) + (plan.user_requirements && plan.user_requirements.request ? " · طلبك: " + plan.user_requirements.request : "")));
+      pd.append(el("div", "prompt", plan.rendering_instructions.prompt)); box.append(pd);
+    }
     var det = el("details"); det.append(el("summary", null, "تفاصيل تفكير المصمم"));
     var dl = el("ul"); (plan.design_rationale || []).slice(0, 12).forEach(function(r){ dl.append(li(r.decision + ": " + r.why)); });
     (plan.unknowns || []).slice(0, 4).forEach(function(u2){ dl.append(li("غير معروف: " + u2)); });

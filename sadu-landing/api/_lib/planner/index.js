@@ -43,7 +43,7 @@ function planDesign(input = {}) {
   const room = understandRoom(input.observations || {}, { keepWords: intent.keep });
   const sug = input.suggested || {};
   const structure = roomStructure(input.observations || {}, room);
-  const decisions = decide(room, intent, { suggestedStyle: sug.style, styles: STYLES });
+  const decisions = decide(room, intent, { suggestedStyle: sug.style, lockedStyle: !!sug.locked, styles: STYLES });
 
   // plan -> validate -> re-plan with a concrete fix, at most MAX_ATTEMPTS times
   const attempts = [];

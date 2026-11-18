@@ -14,6 +14,7 @@ function planSecret(env = process.env) {
   return base ? crypto.createHash("sha256").update(`sadu-plan:${base}`).digest("hex") : "";
 }
 
+const { STYLES } = require("./_lib/setup");
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") return reply(res, 405, { status: "failed", error: "method" });
   const key = process.env.GEMINI_API_KEY;
@@ -26,8 +27,11 @@ module.exports = async function handler(req, res) {
     const b = body.brief && typeof body.brief === "object" ? body.brief : {};
     const brief = { description: typeof b.description === "string" ? b.description.slice(0, 600) : "", budget_sar: Number(b.budget_sar) || null,
       changes: Array.isArray(b.changes) ? b.changes.map(String).slice(0, 6) : [] };
+    // a style the customer picked from the suggestions wins over the model's pick
+    const picked = typeof b.style === "string" && STYLES[b.style] ? b.style : null;
     const exclude = Array.isArray(body.exclude) ? body.exclude.map(String).slice(0, 10) : [];
     const p = await perceive(key, image, brief, { exclude, model: process.env.GEMINI_VISION_MODEL || undefined });
+    if (picked) p.suggested = { ...(p.suggested || {}), style: picked, locked: true };
     const plan = planDesign({ ...p, brief, secret: planSecret(), amazonTag: process.env.SADU_AMAZON_TAG || "" });
     return reply(res, 200, { status: "succeeded", plan, model: p.model });
   } catch (e) {

@@ -91,7 +91,8 @@ function decide(room, intent, opts = {}) {
   // --- style: the customer's colour wins over the model's pick
   const styles = opts.styles || {};
   let style = opts.suggestedStyle && styles[opts.suggestedStyle] ? opts.suggestedStyle : Object.keys(styles)[0];
-  if (intent.accents[0] && STYLE_FOR_COLOUR[intent.accents[0]] && styles[STYLE_FOR_COLOUR[intent.accents[0]]] && STYLE_FOR_COLOUR[intent.accents[0]] !== style) {
+  if (opts.lockedStyle && styles[style]) why("style", `${style}: chosen by the customer from the suggestions`);
+  else if (intent.accents[0] && STYLE_FOR_COLOUR[intent.accents[0]] && styles[STYLE_FOR_COLOUR[intent.accents[0]]] && STYLE_FOR_COLOUR[intent.accents[0]] !== style) {
     why("style", `changed from ${style} to ${STYLE_FOR_COLOUR[intent.accents[0]]} to match the requested ${intent.accents[0]}`);
     style = STYLE_FOR_COLOUR[intent.accents[0]];
   } else why("style", `${style}: fits the room as analysed`);

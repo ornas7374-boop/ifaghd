@@ -229,3 +229,12 @@ test("Pinterest recipe styles: each one plans and renders with its style line, k
   const g = planDesign({ observations: ROOMS.small(), brief: { budget_sar: 3000 }, aiIntent: {}, suggested: { space: "gaming_room", style: "setup_gaming", why: "x" }, secret: "test-secret" });
   assert.ok(g.product_requirements.some(r => r.category === "pc_case" && r.status === "placeholder"), "recipe piece not in the plan becomes a placeholder");
 });
+
+test("a style the customer picks from the suggestions is kept, even if the words name another colour", () => {
+  const p = planDesign({ observations: ROOMS.small(), brief: { budget_sar: 3000, description: "أبغى إضاءة بنفسجية" }, aiIntent: { colors: ["purple"] },
+    suggested: { space: "setup_corner", style: "setup_cozy", locked: true, why: "x" }, secret: "test-secret" });
+  assert.equal(p.room_analysis.style, "setup_cozy");
+  const q = planDesign({ observations: ROOMS.small(), brief: { budget_sar: 3000, description: "أبغى إضاءة بنفسجية" }, aiIntent: { colors: ["purple"] },
+    suggested: { space: "setup_corner", style: "setup_cozy", why: "x" }, secret: "test-secret" });
+  assert.notEqual(q.room_analysis.style, "setup_cozy", "without a pick, the requested colour still steers the style");
+});
