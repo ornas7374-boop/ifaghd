@@ -33,7 +33,7 @@ Report ONLY this JSON:
 const yn = (v) => (YN.includes(v) ? v : "unsure");
 
 // --- structure check: is the AFTER image the same room from the same camera? (asked as specified)
-const STRUCTURE_PROMPT = "Compare these two images. Return JSON: { same_camera_angle: bool, door_preserved: bool, window_preserved: bool, walls_preserved: bool, score_0_to_10: number, issues: string[] }";
+const STRUCTURE_PROMPT = "Compare these two images. Furniture, curtains, decor and clutter are allowed to be removed or replaced; judge only the architecture: camera angle, the door, the window opening and frame (curtains may differ), the walls. Return JSON: { same_camera_angle: bool, door_preserved: bool, window_preserved: bool, walls_preserved: bool, score_0_to_10: number, issues: string[] }";
 const STRUCTURE_MIN_SCORE = 7; // below this, or any false, the design is redone once with a new seed
 
 /** Pure normalisation of the structure answer (testable without a model). */

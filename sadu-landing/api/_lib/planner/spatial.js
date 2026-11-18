@@ -66,6 +66,7 @@ function evaluateCandidate(room, intent, deskSpec, wall, seg) {
   // fixed / kept furniture and obstacles
   for (const f of room.furniture.filter(f => f.wall === wall.id && overlap(f, desk) > 0)) {
     if (!f.movable || f.keep) { score -= 100; blockers.push(`would overlap the ${f.type} that ${f.keep ? "the customer keeps" : "is fixed"}`); }
+    else if (intent.clear_room) reasons.push(`the room is emptied first, so the existing ${f.type} is removed`);
     else if (intent.changes.includes("furniture") || intent.changes.includes("full_setup")) reasons.push(`replaces the existing ${f.type}`);
     else { score -= 100; blockers.push(`would overlap the existing ${f.type} and furniture changes were not allowed`); }
   }

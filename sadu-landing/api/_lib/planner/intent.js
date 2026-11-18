@@ -76,6 +76,9 @@ function understandIntent(brief = {}, ai = {}) {
     use, accents, avoid: avoid.filter(c => !accents.includes(c)), devices, owned, minimal,
     style_words: (Array.isArray(ai.style_words) ? ai.style_words : []).map(s => text(s, 30)).filter(Boolean).slice(0, 5),
     keep, changes: [...new Set(changeOnly)], allow_wall: allowWall,
+    // empty the room first (all movable furniture, curtains, decor, clutter) and design from scratch;
+    // only what the customer said to keep stays. Architecture (walls, floor, ceiling, door, window frame) always stays.
+    clear_room: changeOnly.includes("furniture") || changeOnly.includes("full_setup"),
     budget_sar: Number.isFinite(budget) && budget > 0 ? Math.round(budget) : null,
     request_text: words, request_en: text(ai.request_en, 400),
     conflicts

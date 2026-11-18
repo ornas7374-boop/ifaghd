@@ -189,7 +189,8 @@ test("mask path: only the planned box is redrawn; the mask is the photo's size, 
   const plan = JSON.parse(JSON.stringify(planDesign({ observations: ROOMS.windowLeft(), brief: { budget_sar: 3000 }, suggested: { style: "grey_tech" }, secret: require("../../api/plan").planSecret() })));
   const ri = plan.rendering_instructions;
   assert.ok(ri.fill_prompt && /no rug/.test(ri.fill_prompt));
-  assert.ok(ri.edit_region.x0 >= 0.2, "the box stays on the desk wall, away from the window wall");
+  assert.ok(ri.edit_region.x0 === 0 && ri.edit_region.x1 === 1, "the room is emptied first, so the whole width is redrawn");
+  assert.match(ri.fill_prompt, /old furniture, curtains and decor in this area are gone/);
   const m = mockFetch((url) => url.includes("flux-fill-pro") ? { json: { id: "abcdef123456", status: "succeeded", output: "https://replicate.delivery/f.jpg" } } : { status: 500, json: {} });
   try {
     const r = mk(); await require("../../api/design")({ method: "POST", body: { image: photo, plan } }, r);
@@ -200,7 +201,7 @@ test("mask path: only the planned box is redrawn; the mask is the photo's size, 
     const meta = await sharp(mask).metadata(); assert.equal(meta.width, 400); assert.equal(meta.height, 200);
     const px = await sharp(mask).raw().toBuffer();
     const at = (x, y) => px[(y * 400 + x) * meta.channels];
-    assert.equal(at(5, 100), 0, "window side stays black (kept)");
+    assert.equal(at(5, 100), 255, "room emptied: the window side is redrawn too (old curtains go)");
     assert.equal(at(5, 5), 0, "ceiling band stays black (kept)");
     assert.equal(at(Math.round((ri.edit_region.x0 + ri.edit_region.x1) / 2 * 400), 120), 255, "inside the box is white (redrawn)");
     // a tampered fill prompt is refused
@@ -285,7 +286,7 @@ test("FLUX.2 on Cloudflare: a falsely flagged result is retried with a new seed,
 
 test("structure check: exact prompt, before + after to Gemini, pass only with score >= 7 and every part preserved", async () => {
   const { STRUCTURE_PROMPT, scoreStructure } = require("../../api/_lib/planner/evaluate");
-  assert.equal(STRUCTURE_PROMPT, "Compare these two images. Return JSON: { same_camera_angle: bool, door_preserved: bool, window_preserved: bool, walls_preserved: bool, score_0_to_10: number, issues: string[] }");
+  assert.equal(STRUCTURE_PROMPT, "Compare these two images. Furniture, curtains, decor and clutter are allowed to be removed or replaced; judge only the architecture: camera angle, the door, the window opening and frame (curtains may differ), the walls. Return JSON: { same_camera_angle: bool, door_preserved: bool, window_preserved: bool, walls_preserved: bool, score_0_to_10: number, issues: string[] }");
   const ok = { same_camera_angle: true, door_preserved: true, window_preserved: true, walls_preserved: true, score_0_to_10: 8, issues: [] };
   assert.equal(scoreStructure(ok).pass, true);
   assert.equal(scoreStructure({ ...ok, score_0_to_10: 6 }).pass, false, "low score");

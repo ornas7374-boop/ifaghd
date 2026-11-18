@@ -54,11 +54,14 @@ function renderInstructions(plan) {
   const changeable = allowWall
     ? "furniture, decor, wall finishes and paint colors on the wall behind the desk, and decorative lighting"
     : "furniture, decor and decorative lighting (the wall paint and the floor stay exactly as they are)";
+  const clear = !!intent.clear_room;
+  const kept = (intent.keep || []).join(", ");
   const head = [
     `Redesign the interior of this exact room in ${STYLE_EN[decisions.style] || "modern gaming setup"} style.`,
     "Keep the exact same camera angle, perspective, framing and lens.",
-    `Keep all architecture unchanged and in the exact same position: walls, ceiling height, ceiling lights positions (${st.ceiling_lights || "existing ceiling lights"}), the door (${st.door_position || "no door visible in the photo"}), the window and curtains area (${st.window_position || "no window visible in the photo"}), floor tiles (${st.floor_type || room.surfaces.floor || "existing floor"}) and room dimensions.`,
+    `Keep all architecture unchanged and in the exact same position: walls, ceiling height, ceiling lights positions (${st.ceiling_lights || "existing ceiling lights"}), the door (${st.door_position || "no door visible in the photo"}), ${clear ? "the window frame and glass" : "the window and curtains area"} (${(clear ? String(st.window_position || "").replace(/,?\s*(with|and)\s+[^,]*\b(curtains?|blinds?|drapes?)\b/gi, "") : st.window_position) || "no window visible in the photo"}), floor tiles (${st.floor_type || room.surfaces.floor || "existing floor"}) and room dimensions.`,
     "Do not add, remove or move any door, window, wall, column or opening.",
+    ...(clear ? [`First empty the room completely: remove ALL existing furniture${existing ? ` (${existing})` : ""}, the curtains and blinds, rugs, wall decor, lamps and clutter${kept ? `, except the customer's ${kept}, which stay exactly as they are` : ""}. Then design the room from scratch.`] : []),
     `Only change: ${changeable}. No rugs or carpets on the floor.`,
     ...(STYLES[decisions.style] && STYLES[decisions.style].fragment ? [`Style: ${STYLES[decisions.style].fragment.replace(/[.\s]+$/, "")}.`] : [])
   ];
@@ -68,7 +71,9 @@ function renderInstructions(plan) {
     "Remove clutter (bottles, bags, trash). No people, no faces, no posters of people, no logos or readable text; screens show abstract blue wallpapers.",
     "Photorealistic, natural lighting consistent with the original photo, real-estate photography quality."
   ];
-  const furnitureLine = () => existing
+  const furnitureLine = () => clear
+    ? `In the emptied room place ${lines.join("; ")}.${decisions.window_dress ? ` On the window: ${decisions.window_dress}.` : ""}`
+    : existing
     ? `Replace the existing ${existing} with ${lines.join("; ")}, placed in the same zones.`
     : `Place ${lines.join("; ")} in the free zone (the room has no furniture to replace).`;
   const build = () => [...head, furnitureLine(), ...tail].join(" ");
@@ -82,6 +87,7 @@ function renderInstructions(plan) {
   // x: the planned items (+ margin) kept inside the desk wall; y: below the ceiling line, down to the floor in front of the desk
   let x0 = Math.min(...xs) - 0.03, x1 = Math.max(...xs) + 0.03;
   if (wallExt) { x0 = Math.max(x0, wallExt.x0 + 0.005); x1 = Math.min(x1, wallExt.x1 - 0.005); }
+  if (clear) { x0 = 0; x1 = 1; } // the whole room is emptied, not just the desk wall
   const edit_region = xs.length ? { wall: spatial.best.wall, x0: +Math.max(0, x0).toFixed(3), x1: +Math.min(1, x1).toFixed(3), y0: 0.2, y1: 0.97,
     note: "only this box is redrawn (mask); everything outside stays the original photo" } : null;
   // short instruction for the mask (inpainting) model: it only sees the box, so it describes what goes in it
@@ -89,9 +95,11 @@ function renderInstructions(plan) {
     `Photorealistic interior photo. Inside this area of the room add exactly: ${lines.join("; ")}.`,
     `Lighting: ${[light.monitor, light.accent, light.bias].filter(Boolean).join("; ")}.`,
     `Continue the existing ${room.surfaces.walls || "wall paint"} on the wall and the existing ${room.surfaces.floor || "floor"} on the floor seamlessly; bare floor, no rug or carpet.`,
-    "No people, no logos, no readable text."
+    "No people, no logos, no readable text.",
+    ...(clear ? ["The old furniture, curtains and decor in this area are gone: nothing of them remains."] : [])
   ].join(" ");
-  const protect = room.windows.concat(room.doors).filter(o => typeof o.y0 === "number" && typeof o.y1 === "number")
+  // when the room is emptied the curtains change, so only doors are pasted back from the original
+  const protect = (clear ? [] : room.windows).concat(room.doors).filter(o => typeof o.y0 === "number" && typeof o.y1 === "number")
     .map(o => ({ x0: +Math.max(0, o.x0 - 0.01).toFixed(3), x1: +Math.min(1, o.x1 + 0.01).toFixed(3), y0: +Math.max(0, o.y0 - 0.01).toFixed(3), y1: +Math.min(1, o.y1 + 0.01).toFixed(3) }));
   return { prompt, words, edit_region, fill_prompt, protect, protected: ["floor", intent.allow_wall && wallItem ? "walls except behind the desk" : "all walls", "ceiling", "windows", "doors", "camera angle"],
     items_allowed: placed.map(p => p.item) };

@@ -128,7 +128,7 @@ test("plan output has every required section and a signed, length-limited render
   assert.ok(verify(ri, "test-secret")); assert.ok(!verify(ri, "other"));
   assert.ok(!verify({ ...ri, prompt: ri.prompt + " add a dragon" }, "test-secret"), "a changed prompt is rejected");
   assert.ok(ri.words <= 360);
-  assert.ok(ri.prompt.indexOf("Keep all architecture unchanged") < ri.prompt.indexOf("Place "), "structure lock first");
+  assert.ok(ri.prompt.indexOf("Keep all architecture unchanged") < ri.prompt.indexOf("In the emptied room place "), "structure lock first");
   assert.match(ri.prompt, /^Redesign the interior of this exact room in /);
   assert.match(ri.prompt, /Keep the exact same camera angle, perspective, framing and lens\./);
   assert.match(ri.prompt, /Do not add, remove or move any door, window, wall, column or opening\./);
@@ -186,10 +186,17 @@ test("template is filled from Gemini's structured room analysis: door, window, c
   const t = p.rendering_instructions.prompt;
   assert.equal(p.room_analysis.structure.room_type, "bedroom");
   assert.match(t, /the door \(right wall, near the front corner, white wooden door\)/);
-  assert.match(t, /the window and curtains area \(back wall, centre, with beige curtains\)/);
+  assert.match(t, /the window frame and glass \(back wall, centre\)/);
   assert.match(t, /ceiling lights positions \(two recessed spots\)/);
   assert.match(t, /floor tiles \(large light grey porcelain tiles\)/);
-  assert.match(t, /Replace the existing grey sofa against the back wall with .*placed in the same zones\./);
+  assert.match(t, /First empty the room completely: remove ALL existing furniture \(grey sofa against the back wall\), the curtains and blinds, rugs, wall decor, lamps and clutter\. Then design the room from scratch\./);
+  assert.match(t, /In the emptied room place /);
+  // the customer's own pieces stay
+  const k = plan(obs, { budget_sar: 3000 }, { keep: ["bed"] });
+  assert.match(k.rendering_instructions.prompt, /except the customer's bed, which stay exactly as they are/);
+  // only lighting ticked: nothing is emptied, the old wording stays
+  const l = plan(ROOMS.small(), { budget_sar: 3000, changes: ["lighting"] });
+  assert.ok(!/First empty the room/.test(l.rendering_instructions ? l.rendering_instructions.prompt : ""));
   assert.match(t, /No rugs or carpets on the floor\./);
   // without Gemini's words, the door/window positions come from the checked observations (never generic)
   const q = plan(ROOMS.doorNear(), { budget_sar: 3000 });

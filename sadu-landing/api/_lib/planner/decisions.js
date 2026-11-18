@@ -131,7 +131,16 @@ function decide(room, intent, opts = {}) {
   const examples = pickExamples(style, intent, palette);
   why("look of the items", `modelled on the owner's reference setups #${examples.refs.join(", #")}${examples.sadu ? " (with the Sadu touch the customer asked for)" : ""}`);
 
-  return { style, items, palette, lighting, rationale, examples, desk: items.find(i => i.key === "desk") ? items.find(i => i.key === "desk").spec : null };
+  // window dressing: the old curtains go with everything else; new ones suit the style and the light
+  const darkStyle = /night|dark|gaming|neon|rgb|grey/.test(style);
+  const window_dress = room.windows && room.windows.length && intent.clear_room
+    ? (darkStyle ? "simple floor-length charcoal blackout curtains on a slim black rod (cut glare on the screens)"
+      : /cozy|home_office/.test(style) ? "floor-length warm beige linen curtains on a slim wooden rod"
+      : "light white sheer linen curtains on a slim rod (soft daylight)") : null;
+  if (window_dress) why("window", `old curtains removed; new: ${window_dress}`);
+  if (intent.clear_room) why("empty the room first", `all movable furniture, curtains, decor and clutter go${intent.keep.length ? `, except what the customer keeps (${intent.keep.join(", ")})` : ""}; then the setup is designed from scratch where it fits best`);
+
+  return { style, items, palette, lighting, rationale, examples, window_dress, desk: items.find(i => i.key === "desk") ? items.find(i => i.key === "desk").spec : null };
 }
 
 module.exports = { decide, ITEMS, STYLE_FOR_COLOUR, DESK_WIDTH_CM };
