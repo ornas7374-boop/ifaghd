@@ -59,8 +59,8 @@ function pick(models, kind) {
     ? ok.filter(n => /^gemini-/.test(n) && /image/.test(n) && /flash/.test(n))
     : ok.filter(n => /^gemini-/.test(n) && /flash/.test(n) && !/(image|tts|audio|live|embed|thinking)/.test(n));
   const lite = (n) => (kind === "vision" && /lite/.test(n) ? 1 : 0);
-  // newest generation first (older ones get closed to new users), then lite for analysis, then stable over preview
-  fits.sort((a, b) => (ver(b) - ver(a)) || (lite(b) - lite(a)) || (/preview|exp/.test(a) - /preview|exp/.test(b)) || (/flash/.test(b) - /flash/.test(a)));
+  // lite first for analysis (fast, cheap, less crowded), newest generation first (older ones get closed to new users), stable over preview
+  fits.sort((a, b) => (lite(b) - lite(a)) || (ver(b) - ver(a)) || (/preview|exp/.test(a) - /preview|exp/.test(b)) || (/flash/.test(b) - /flash/.test(a)));
   return fits.filter(n => !retired.has(n));
 }
 async function listModels(key) {
