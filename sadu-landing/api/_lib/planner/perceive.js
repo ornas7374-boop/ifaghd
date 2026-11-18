@@ -32,7 +32,7 @@ Field rules:
 - existing_furniture: every existing piece with its place, e.g. "grey sofa against the back wall"; clutter (bottles, bags, trash) is NOT furniture
 - furniture_zones: the zones used by furniture, e.g. "back wall: sofa"; ceiling_lights: kind, number and positions; floor_type: material, colour and tile size
 - intent.use: gaming|streaming|work|study|mixed; intent.wall_change: true only if the customer explicitly asks to change a wall
-- intent.request_en: the customer's request as short concrete English design instructions (max 60 words), never about changing the floor; "" if none
+- intent.request_en: the customer's request as concrete English design instructions (max 90 words), keeping every item, colour, material, light and placement they name; never about changing the floor; "" if none
 
 Return ONLY valid JSON, no comments, no text around it:
 {"space":"setup_corner","style":"grey_tech","why":"...",

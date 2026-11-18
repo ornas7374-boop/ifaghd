@@ -80,7 +80,7 @@ function understandIntent(brief = {}, ai = {}) {
     // only what the customer said to keep stays. Architecture (walls, floor, ceiling, door, window frame) always stays.
     clear_room: changeOnly.includes("furniture") || changeOnly.includes("full_setup"),
     budget_sar: Number.isFinite(budget) && budget > 0 ? Math.round(budget) : null,
-    request_text: words, request_en: text(ai.request_en, 400),
+    request_text: words, request_en: text(ai.request_en, 650),
     conflicts
   };
 }

@@ -335,29 +335,63 @@ fieldset.field{border:0;margin:0;padding:0}
   function clearErr(){ $("err").hidden = true; $("err2").hidden = true; }
   /* طلب العميل: يُرسل للتحليل (يختار الأسلوب حسبه ويترجمه) ثم للتصميم (له الأولوية على الأسلوب) */
   /* اقتراحات الوصف: من وصفات الستايلات اللي طلعت من صور المراجع */
+  /* كل اقتراح: [العنوان، ملخص قصير يظهر في البطاقة، وصف كامل يُكتب في الخانة ويصل للمصمم] */
   var SUGGEST = [
-    { k:"setup_gaming_real", ar:["ألعاب حقيقي أسود وأزرق","مكتب أسود، شاشتين على ذراع، كيس كمبيوتر زجاجي مضيء، كيبورد ميكانيكي وماوس باد كبير، إضاءة LED زرقاء هادئة ورا المكتب ورفوف معلّقة."],
-      en:["Real gaming, black & blue","Black desk, two monitors on arms, glowing glass PC case, mechanical keyboard on a large desk mat, soft cool-blue LED backlight and floating shelves."] },
-    { k:"setup_gaming", ar:["ألعاب بنفسجي RGB","غرفة ألعاب بإضاءة خافتة، كيس كمبيوتر زجاجي مضيء بنفسجي، شاشة كبيرة، كيبورد مضيء وماوس باد عريض، وإضاءة LED بنفسجية."],
-      en:["Purple RGB gaming","Moody low light, glass PC case glowing purple, large monitor, backlit keyboard on a wide desk mat, vivid purple LED accents."] },
-    { k:"setup_dark_gaming", ar:["ألعاب أسود مطفي","مكتب أسود مطفي، شاشة عريضة، كيبورد مخصص، كيس كمبيوتر شفاف، رفوف معلّقة فيها نباتات، وإضاءة LED مخفية ورا المكتب."],
-      en:["Matte black gaming","Matte black desk, ultrawide monitor, custom keyboard, transparent PC case, floating shelves with plants, hidden LED backlight."] },
-    { k:"setup_minimal", ar:["أبيض وخشب فاتح","مكتب خشب فاتح، ماوس باد لباد، شاشة نظيفة، أباجورة دافية، نباتات متدلية، رفوف خشب معلّقة، وبدون أسلاك ظاهرة."],
-      en:["White & light wood","Light wood desk, felt desk mat, clean monitor, warm desk lamp, trailing plants, floating wooden shelves, no visible cables."] },
-    { k:"setup_cozy", ar:["دافئ مريح","مكتب خشب فاتح مع رف للشاشة، نباتات في أصص سيراميك، أباجورة دافية، بطانية صوف على الكرسي، وإضاءة دافية هادية."],
-      en:["Cozy & warm","Light wood desk with a monitor riser, plants in ceramic pots, warm desk lamp, knitted throw on the chair, soft warm lighting."] },
-    { k:"setup_home_office", ar:["مكتب منزلي طبيعي","مكتب خشب طبيعي، كرسي مريح، شاشة عليها إضاءة، رفوف خشب معلّقة فيها نباتات، وألوان ترابية هادية للشغل والدراسة."],
-      en:["Natural home office","Natural wood desk, comfortable chair, monitor with a light bar, floating wooden shelves with plants, calm earthy colours for work and study."] },
-    { k:"night_setup", ar:["ركن ليلي","مكتب أسود بسطح رمادي، شاشتين، إضاءة LED كهرمانية دافية على الجدار، وجو هادي وغامق."],
-      en:["Night corner","Black desk with a grey top, two monitors, warm amber LED light bars on the wall, calm dark mood."] },
-    { k:"white_blue", ar:["أبيض وأزرق","مكتب أبيض، إضاءة LED زرقاء تحت المكتب وورا الشاشة، لوح تعليق أبيض للسماعات، وماوس باد بنقشة موج."],
-      en:["White & blue","White desk, royal-blue LED under the desk and behind the monitor, white pegboard for headphones, wave-pattern desk mat."] },
-    { k:"neon_purple", ar:["نيون بنفسجي","ألواح إضاءة مثلثة بنفسجي وأزرق على الجدار، شاشة عريضة منحنية، كيس كمبيوتر أبيض بمراوح بنفسجية، وكرسي ألعاب رمادي."],
-      en:["Neon purple","Purple and blue triangle light panels, curved ultrawide monitor, white PC case with purple fans, light grey gaming chair."] },
-    { k:"rgb_setup", ar:["RGB متغيّر","إضاءة RGB متعرجة فوق رف أبيض، لوح تعليق فيه سماعات وساعة، مكتب أبيض وكيبورد صغير، وكل الإضاءة بلون واحد."],
-      en:["Changing RGB","Zig-zag RGB light bars above a white shelf, pegboard with headphones and a clock, white desk, compact keyboard, one colour theme."] },
-    { k:"grey_tech", ar:["رمادي تقني","مكتب معلّق بسطح رمادي، إضاءة بيضاء سداسية على الجدار، شاشة منحنية وشاشة ثانية، لوح تعليق أبيض، ومرتب بالكامل."],
-      en:["Grey tech","Floating desk with a grey top, white hexagon light panels, curved monitor plus a second one, white pegboard, fully cable-managed."] }
+    { k:"setup_gaming_real",
+      ar:["ألعاب حقيقي: أسود وأزرق","مكتب أسود، شاشتان على ذراع، صندوق حاسوب زجاجي مضيء، وإضاءة زرقاء هادئة.",
+        "أريد ركن ألعاب عمليًا بأسلوب واقعي: مكتب أسود أنيق بعرض مناسب للجدار، وكرسي شبكي مريح أمامه. شاشتان مثبتتان على ذراعين، والرئيسية في المنتصف بمستوى العين. صندوق حاسوب بواجهة زجاجية وإضاءة داخلية على المكتب. لوحة مفاتيح ميكانيكية وفأرة فوق لبّادة مكتب كبيرة نظيفة. إضاءة LED زرقاء باردة وخافتة خلف المكتب، ورفوف معلّقة بسيطة، والأسلاك مخفية تمامًا."],
+      en:["Real gaming: black & blue","Black desk, two monitors on arms, glowing glass PC case, calm blue backlight.",
+        "A practical, real-world gaming corner: a sleek black desk sized to the wall with an ergonomic mesh chair in front. Two monitors on arms, the main one centred at eye level. A glass-panel PC case with internal lighting on the desk. A mechanical keyboard and mouse on a large, clean desk mat. Soft cool-blue LED backlighting behind the desk, minimal floating shelves, and fully hidden cables."] },
+    { k:"setup_gaming",
+      ar:["ألعاب بنفسجي RGB","إضاءة خافتة، صندوق حاسوب زجاجي بإضاءة بنفسجية، وشاشة كبيرة.",
+        "أريد ركن ألعاب بإضاءة خافتة وأجواء حماسية: مكتب أسود بسطح خالٍ من الفوضى، وفي وسطه شاشة كبيرة أو شاشة عريضة على ذراع. صندوق حاسوب زجاجي بإضاءة داخلية بنفسجية بارزًا على المكتب. لوحة مفاتيح ميكانيكية مضيئة وفأرة ألعاب فوق لبّادة مكتب عريضة. شريط LED بنفسجي خلف الشاشة وتحت حافة المكتب، وتباين واضح بين الأسود والبنفسجي، دون إضاءة صفراء دافئة."],
+      en:["Purple RGB gaming","Low light, glass PC case glowing purple, large monitor.",
+        "A moody, high-contrast gaming corner: a black desk with a clutter-free top and a large or ultrawide monitor on an arm in the centre. A glass PC case with purple internal lighting stands out on the desk. A backlit mechanical keyboard and gaming mouse on a wide desk mat. A purple LED strip behind the monitor and under the desk edge; black and vivid purple only, no warm yellow light."] },
+    { k:"setup_dark_gaming",
+      ar:["ألعاب أسود مطفي","مكتب أسود مطفي، شاشة عريضة، صندوق حاسوب شفاف، وإضاءة مخفية.",
+        "أريد ركن ألعاب أنيقًا بطابع ناضج: مكتب أسود مطفي بخطوط نظيفة، وشاشة عريضة في المنتصف. لوحة مفاتيح ميكانيكية مخصصة فوق لبّادة مكتب داكنة، وصندوق حاسوب شفاف تظهر مكوناته المضيئة. رفوف معلّقة سوداء عليها نباتات صغيرة. إضاءة LED مخفية خلف المكتب والشاشة تعطي توهجًا ناعمًا، مع لمسة زرقاء خفيفة، والأسلاك غير ظاهرة إطلاقًا."],
+      en:["Matte black gaming","Matte black desk, ultrawide monitor, transparent PC case, hidden lighting.",
+        "A sleek, mature gaming corner: a matte black desk with clean lines and a centred ultrawide monitor. A custom mechanical keyboard on a dark desk mat, and a transparent PC tower with glowing components. Black floating shelves with small plants. Hidden LED strips behind the desk and monitor give a soft ambient glow with a subtle blue accent; cables completely hidden."] },
+    { k:"setup_minimal",
+      ar:["أبيض وخشب فاتح","مكتب خشبي فاتح، لبّادة من اللباد، نباتات متدلية، وإضاءة دافئة.",
+        "أريد مكتبًا هادئًا بسيطًا يبعث على التركيز: مكتب من الخشب الفاتح بسطح نظيف، وشاشة أنيقة في المنتصف بمستوى العين. لوحة مفاتيح وفأرة فوق لبّادة من اللباد بلون محايد. مصباح مكتب بإضاءة دافئة ناعمة، ونباتات خضراء متدلية في أصص بسيطة. رفوف خشبية معلّقة قليلة القطع، والأسلاك مخفية بالكامل، والألوان أبيض وبيج وخشب فاتح، دون أي إضاءة ملوّنة."],
+      en:["White & light wood","Light wood desk, felt mat, trailing plants, warm light.",
+        "A calm, minimalist workspace for focus: a light wood desk with a clean top and a sleek monitor centred at eye level. Keyboard and mouse on a neutral felt desk mat. A desk lamp with soft warm light, trailing green plants in simple pots, a few floating wooden shelves, and completely hidden cables. Palette of white, beige and light wood, with no coloured RGB lighting."] },
+    { k:"setup_cozy",
+      ar:["دافئ مريح","خشب فاتح، حامل للشاشة، نباتات، مصباح دافئ، وبطانية على الكرسي.",
+        "أريد ركنًا دافئًا مريحًا يشبه البيت: مكتب من الخشب الفاتح، وشاشة فوق حامل خشبي مطابق. لوحة مفاتيح ميكانيكية فوق لبّادة ناعمة. نباتات كثيفة متدلية في أصص خزفية على المكتب والرفوف. مصباح مكتب بإضاءة دافئة (نحو 2700 كلفن) وإضاءة خلفية ناعمة. بطانية صوفية محاكة على كرسي مريح، ورفوف معلّقة مرتبة عليها قطع شخصية قليلة، دون إضاءة باردة أو ألوان صارخة."],
+      en:["Cozy & warm","Light wood, monitor riser, plants, warm lamp, throw on the chair.",
+        "A cozy, homely desk corner: a light wood desk with a matching wooden monitor riser. A mechanical keyboard on a soft desk mat. Lush trailing plants in ceramic pots on the desk and shelves. A warm desk lamp (around 2700K) and soft backlighting. A knitted throw draped over a comfortable chair, and neat floating shelves with a few personal items; no cold or harsh RGB light."] },
+    { k:"setup_home_office",
+      ar:["مكتب منزلي طبيعي","خشب طبيعي، كرسي مريح، رفوف عليها نباتات، وألوان ترابية هادئة.",
+        "أريد مكتبًا منزليًا طبيعيًا للعمل والدراسة: مكتب من الخشب الطبيعي الدافئ، وكرسي مريح منجّد. شاشة عريضة فوقها شريط إضاءة، ولوحة مفاتيح وفأرة على لبّادة من اللباد. رفوف خشبية معلّقة فوق مستوى الشاشة عليها نباتات متدلية ولوحة فنية تجريدية صغيرة. إضاءة خلفية دافئة مع الاستفادة من ضوء النهار، وألوان ترابية هادئة بين الأخضر الزيتوني والبني والبيج."],
+      en:["Natural home office","Natural wood, comfortable chair, shelves with plants, calm earthy colours.",
+        "A natural home office for work and study: a warm natural wood desk and a comfortable upholstered chair. A widescreen monitor with a light bar, keyboard and mouse on a felt desk mat. Floating wooden shelves above monitor height with trailing plants and a small abstract framed print. Warm backlighting with daylight, and a calm earthy palette of olive green, brown and beige."] },
+    { k:"night_setup",
+      ar:["ركن ليلي","مكتب أسود بسطح رمادي، شاشتان، وإضاءة كهرمانية دافئة على الجدار.",
+        "أريد ركنًا ليليًا هادئًا: مكتب أسود بسطح رمادي يشبه الخرسانة، ولبّادة جلدية رمادية كبيرة. شاشة رئيسية كبيرة وشاشة ثانية عمودية، وشريط إضاءة فوق الشاشة. قضبان إضاءة LED كهرمانية دافئة بشكل هندسي على الجدار خلف المكتب. لوحة مفاتيح ميكانيكية رمادية وسوداء، وصندوق حاسوب أسود بجانب زجاجي، وقطع زينة قليلة، والأجواء خافتة ومرتبة."],
+      en:["Night corner","Black desk with a grey top, two monitors, warm amber wall lights.",
+        "A calm night corner: a black desk with a grey concrete-look top and a large grey leather desk pad. One large monitor and a second vertical monitor, with a light bar on top. Warm amber geometric LED light bars on the wall behind the desk. A grey and black mechanical keyboard, a black PC tower with a glass side, a few small decor pieces, and a dim, tidy mood."] },
+    { k:"white_blue",
+      ar:["أبيض وأزرق","مكتب أبيض، إضاءة زرقاء تحت المكتب وخلف الشاشة، ولوح تعليق أبيض.",
+        "أريد ركنًا مشرقًا بالأبيض والأزرق: مكتب أبيض، وشريط LED أزرق ملكي تحت حافة المكتب وخلف الشاشة. شاشة منحنية على ذراع فوقها شريط إضاءة. لوح تعليق أبيض على الجدار فيه سماعتان ورف صغير وساعة رقمية بيضاء. لبّادة مكتب كبيرة بنقش أمواج أزرق وأبيض، وميكروفون على ذراع، ونبتة صغيرة في أصيص أبيض، وكل شيء مرتب ونظيف."],
+      en:["White & blue","White desk, blue light under the desk and behind the monitor, white pegboard.",
+        "A bright white-and-blue setup: a white desk with a royal-blue LED strip under the desk edge and behind the monitor. A curved monitor on an arm with a light bar. A white wall pegboard holding two headphones, a small shelf and a white digital clock. A large blue-and-white wave-pattern desk mat, a microphone on a boom arm, a small plant in a white pot; clean and organised."] },
+    { k:"neon_purple",
+      ar:["نيون بنفسجي","ألواح إضاءة مثلثة، شاشة عريضة منحنية، وصندوق حاسوب بمراوح بنفسجية.",
+        "أريد ركن ألعاب جريئًا بإضاءة النيون: عمود من ألواح الإضاءة المثلثة بالبنفسجي والأزرق على الجدار. مكتب خشبي داكن عليه شاشة عريضة منحنية وشاشة ثانية عمودية ولبّادة مكتب كبيرة. صندوق حاسوب أبيض بواجهة زجاجية ومراوح بنفسجية. مصباح أرضي بغطاء بنفسجي مضيء، وكرسي ألعاب رمادي فاتح، ولوحة فنية كبيرة بالأبيض والأسود، وشجرة زيتون صناعية في أصيص."],
+      en:["Neon purple","Triangle light panels, curved ultrawide monitor, PC case with purple fans.",
+        "A bold neon gaming corner: a column of purple and blue triangular light panels on the wall. A dark wood desk with a curved ultrawide monitor, a second vertical monitor and a large desk mat. A white glass-panel PC case with purple fans. A floor lamp with a glowing purple shade, a light grey gaming chair, a large black-and-white art print, and a faux olive tree in a pot."] },
+    { k:"rgb_setup",
+      ar:["RGB متغيّر","قضبان RGB متعرجة فوق رف أبيض، لوح تعليق، ومكتب أبيض.",
+        "أريد ركنًا مرحًا منظمًا بإضاءة RGB: قضبان إضاءة على الجدار بخط متعرج يشبه الجبال فوق رف أبيض عريض معلّق، وأضواء دائرية صغيرة تحت الرف. نباتات صناعية متدلية من طرفي الرف. لوح تعليق أبيض فيه سماعات وساعة رقمية. مكتب أبيض عليه لبّادة رخامية رمادية فاتحة، ولوحة مفاتيح بيضاء صغيرة، وشاشة بيضاء فوقها شريط إضاءة، وكل الإضاءة بلون واحد متناسق."],
+      en:["Changing RGB","Zig-zag RGB bars above a white shelf, pegboard, white desk.",
+        "A playful, organised RGB corner: wall light bars in a zig-zag mountain line above a wide white floating shelf, with small puck lights under it and trailing faux plants at both ends. A white pegboard with headphones and a digital clock. A white desk with a light grey marble desk mat, a compact white keyboard and a white monitor with a light bar; all lighting in one matching colour."] },
+    { k:"grey_tech",
+      ar:["رمادي تقني","مكتب معلّق بسطح رمادي، ألواح إضاءة سداسية بيضاء، ولوح تعليق كبير.",
+        "أريد ركنًا تقنيًا راقيًا ومنظمًا: مكتب طويل معلّق على الجدار بسطح رمادي يشبه الخرسانة وحوامل معدنية. إضاءة بيضاء نقية فقط من ألواح مثلثة تشكّل نمطًا سداسيًا على الجدار. شاشة عريضة منحنية وشاشة ثانية على ذراعين، وميكروفون وخلاط صوت. صندوق حاسوب أبيض زجاجي بمراوح بيضاء، ولوح تعليق أبيض كبير لعرض لوحات المفاتيح والسماعات، وكرسي شبكي رمادي، وأسلاك مرتبة بالكامل."],
+      en:["Grey tech","Floating desk with a grey top, white hexagon light panels, large pegboard.",
+        "A premium, organised tech corner: a long wall-mounted desk with a grey concrete-look top and metal brackets. Clean white light only, from triangular panels forming a hexagon pattern on the wall. A curved ultrawide monitor and a second monitor on arms, a podcast microphone and an audio mixer. A white glass PC case with white fans, a large white pegboard displaying keyboards and headphones, a grey mesh chair; fully cable-managed."] }
   ];
   state.lang = "ar"; state.pick = null;
   function renderSugs(){
@@ -367,8 +401,8 @@ fieldset.field{border:0;margin:0;padding:0}
       b.setAttribute("aria-pressed", state.pick === s.k ? "true" : "false");
       b.append(el("b", null, t[0]), el("span", null, t[1]));
       b.addEventListener("click", function(){
-        if(state.pick === s.k){ state.pick = null; if($("desc").value === s.ar[1] || $("desc").value === s.en[1]) $("desc").value = ""; }
-        else { state.pick = s.k; $("desc").value = t[1]; }
+        if(state.pick === s.k){ state.pick = null; if($("desc").value === s.ar[2] || $("desc").value === s.en[2]) $("desc").value = ""; }
+        else { state.pick = s.k; $("desc").value = t[2]; }
         renderSugs();
       });
       box.append(b);
@@ -379,7 +413,7 @@ fieldset.field{border:0;margin:0;padding:0}
       state.lang = btn.getAttribute("data-lang");
       document.querySelectorAll(".lang button").forEach(function(x){ x.setAttribute("aria-pressed", x === btn ? "true" : "false"); });
       var cur = SUGGEST.filter(function(s){ return s.k === state.pick; })[0];
-      if(cur){ var other = state.lang === "ar" ? cur.en[1] : cur.ar[1]; if($("desc").value === other) $("desc").value = cur[state.lang][1]; }
+      if(cur){ var other = state.lang === "ar" ? cur.en[2] : cur.ar[2]; if($("desc").value === other) $("desc").value = cur[state.lang][2]; }
       renderSugs();
     });
   });

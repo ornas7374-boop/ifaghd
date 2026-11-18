@@ -127,7 +127,7 @@ test("plan output has every required section and a signed, length-limited render
   const ri = p.rendering_instructions;
   assert.ok(verify(ri, "test-secret")); assert.ok(!verify(ri, "other"));
   assert.ok(!verify({ ...ri, prompt: ri.prompt + " add a dragon" }, "test-secret"), "a changed prompt is rejected");
-  assert.ok(ri.words <= 360);
+  assert.ok(ri.words <= 380);
   assert.ok(ri.prompt.indexOf("Keep all architecture unchanged") < ri.prompt.indexOf("In the emptied room place "), "structure lock first");
   assert.match(ri.prompt, /^Redesign the interior of this exact room in /);
   assert.match(ri.prompt, /Keep the exact same camera angle, perspective, framing and lens\./);
@@ -170,7 +170,7 @@ test("owner's reference setups shape the look: details per style, the Sadu touch
   assert.equal(sadu.inspiration.sadu_touch, true);
   assert.match(sadu.rendering_instructions.prompt, /Sadu-pattern/);
   assert.equal(blue.inspiration.sadu_touch, false);
-  assert.ok(blue.rendering_instructions.words <= 360);
+  assert.ok(blue.rendering_instructions.words <= 380);
 });
 
 test("every setup reference image (51-76) is used by some style or the Sadu touch", () => {

@@ -5,7 +5,7 @@
 // go) so the Preservation Engine can restrict generation to it with a mask.
 const { protectionLines, SPACES, STYLES } = require("../setup");
 
-const MAX_WORDS = 360;
+const MAX_WORDS = 380;
 const STYLE_EN = { night_setup: "dark, calm night gaming setup", white_blue: "bright white and royal blue gaming setup", neon_purple: "bold neon purple gaming",
   rgb_setup: "organised RGB gaming setup", grey_tech: "clean grey technical desk setup" };
 for (const [k, r] of Object.entries(require("../setupRecipes").RECIPES)) STYLE_EN[k] = r.en; // image-model prompts are read only up to a limited length
@@ -63,7 +63,8 @@ function renderInstructions(plan) {
     "Do not add, remove or move any door, window, wall, column or opening.",
     ...(clear ? [`First empty the room completely: remove ALL existing furniture${existing ? ` (${existing})` : ""}, the curtains and blinds, rugs, wall decor, lamps and clutter${kept ? `, except the customer's ${kept}, which stay exactly as they are` : ""}. Then design the room from scratch.`] : []),
     `Only change: ${changeable}. No rugs or carpets on the floor.`,
-    ...(STYLES[decisions.style] && STYLES[decisions.style].fragment ? [`Style: ${STYLES[decisions.style].fragment.replace(/[.\s]+$/, "")}.`] : [])
+    // the style line is skipped when the customer described the look themselves (their words say it, in more detail)
+    ...(!intent.request_en && STYLES[decisions.style] && STYLES[decisions.style].fragment ? [`Style: ${STYLES[decisions.style].fragment.replace(/[.\s]+$/, "")}.`] : [])
   ];
   const tail = [
     ...(intent.request_en ? [`The customer asks for: ${intent.request_en.replace(/[.\s]+$/, "")}.`] : []),
