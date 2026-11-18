@@ -34,6 +34,14 @@ module.exports = async (req, res) => {
     if (req.query.cfschema) {
       return res.status(200).json({ mode: "cloudflare_schema", ...(await require("../_lib/cloudflare").schema(process.env.CLOUDFLARE_API_TOKEN, String(req.query.cfschema))) });
     }
+    if (req.query.repcheck === "1") {
+      // free: is the Replicate token valid? (account lookup only, no drawing, no cost)
+      const t = process.env.REPLICATE_API_TOKEN;
+      if (!t) return res.status(500).json({ error: "missing_replicate_token" });
+      const r = await fetch("https://api.replicate.com/v1/account", { headers: { Authorization: `Bearer ${t}` } });
+      const j = await r.json().catch(() => ({}));
+      return res.status(200).json({ mode: "replicate_check", http: r.status, valid: r.ok, account_type: j.type || null, detail: r.ok ? null : String(j.detail || j.title || "").slice(0, 200) });
+    }
     if (req.query.cfcheck === "1") {
       // free: token valid? account? inpainting model listed? (no drawing)
       if (!process.env.CLOUDFLARE_API_TOKEN) return res.status(500).json({ error: "missing_cloudflare_token" });
