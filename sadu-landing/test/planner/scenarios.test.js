@@ -127,7 +127,7 @@ test("plan output has every required section and a signed, length-limited render
   const ri = p.rendering_instructions;
   assert.ok(verify(ri, "test-secret")); assert.ok(!verify(ri, "other"));
   assert.ok(!verify({ ...ri, prompt: ri.prompt + " add a dragon" }, "test-secret"), "a changed prompt is rejected");
-  assert.ok(ri.words <= 380);
+  assert.ok(ri.words <= 440);
   assert.ok(ri.prompt.indexOf("Keep all architecture unchanged") < ri.prompt.indexOf("In the emptied room place "), "structure lock first");
   assert.match(ri.prompt, /^Redesign the interior of this exact room in /);
   assert.match(ri.prompt, /Keep the exact same camera angle, perspective, framing and lens\./);
@@ -170,7 +170,7 @@ test("owner's reference setups shape the look: details per style, the Sadu touch
   assert.equal(sadu.inspiration.sadu_touch, true);
   assert.match(sadu.rendering_instructions.prompt, /Sadu-pattern/);
   assert.equal(blue.inspiration.sadu_touch, false);
-  assert.ok(blue.rendering_instructions.words <= 380);
+  assert.ok(blue.rendering_instructions.words <= 440);
 });
 
 test("every setup reference image (51-76) is used by some style or the Sadu touch", () => {
@@ -189,7 +189,7 @@ test("template is filled from Gemini's structured room analysis: door, window, c
   assert.match(t, /the window frame and glass \(back wall, centre\)/);
   assert.match(t, /ceiling lights positions \(two recessed spots\)/);
   assert.match(t, /floor tiles \(large light grey porcelain tiles\)/);
-  assert.match(t, /First empty the room completely: remove ALL existing furniture \(grey sofa against the back wall\), the curtains and blinds, rugs, wall decor, lamps and clutter\. Then design the room from scratch\./);
+  assert.match(t, /First empty the room completely: remove ALL existing furniture \(grey sofa against the back wall\), the curtains and blinds, rugs, wall decor, lamps and clutter\. Then design the whole room from scratch\./);
   assert.match(t, /In the emptied room place /);
   // the customer's own pieces stay
   const k = plan(obs, { budget_sar: 3000 }, { keep: ["bed"] });
@@ -252,4 +252,27 @@ test("build plan: 2/3/4/5/7 days, day 1 = empty + order, every build step once a
     assert.ok(s.flatMap(x => x.steps.flatMap(y => y.tasks)).every(t => typeof t === "string" && t.length > 5));
   }
   assert.match(JSON.stringify(p.build_schedules[3]), /3000 ريال/, "uses the customer's budget");
+});
+
+test("whole room: every other wall is furnished, tall pieces never at a window or door, kept pieces not bought, no rugs", () => {
+  const { CATALOG, FILLERS } = require("../../api/_lib/planner/roomFill");
+  const tall = new Set([...Object.values(CATALOG).flat(), ...FILLERS].filter(x => x.tall).map(x => x.key));
+  for (const space of ["setup_corner", "gaming_room", "home_office"]) for (const room of ["windowLeft", "doorNear", "small", "large"]) {
+    const p = planDesign({ observations: ROOMS[room](), brief: { budget_sar: 3000 }, aiIntent: {}, suggested: { space, style: "grey_tech", why: "x" }, secret: "test-secret" });
+    if (!p.validation_results.passed) continue;
+    const f = p.room_fill; assert.ok(f && f.items.length >= 3, `${space}/${room}: room filled`);
+    const deskWall = p.spatial_plan.desk.wall;
+    for (const w of p.room_analysis.walls.filter(w => w.visible !== false && w.id !== deskWall)) assert.ok(f.items.some(x => x.wall === w.id), `${space}/${room}: ${w.id} wall used`);
+    for (const x of f.items.filter(x => tall.has(x.key) && x.wall && x.wall !== deskWall)) {
+      assert.ok(!p.room_analysis.windows.some(o => o.wall === x.wall), `${x.key} not on a window wall`);
+      assert.ok(!p.room_analysis.doors.some(o => o.wall === x.wall), `${x.key} not on a door wall`);
+    }
+    assert.match(p.rendering_instructions.prompt, /Furnish the whole room, no empty areas:/);
+    assert.ok(!/\brug\b/i.test(f.items.map(x => x.en).join(" ")));
+    assert.ok(p.product_requirements.filter(r => r.status === "room").every(r => r.links.some(l => /amazon\.sa/.test(l.url))));
+  }
+  const kept = planDesign({ observations: ROOMS.windowLeft(), brief: { budget_sar: 3000 }, aiIntent: { keep: ["bed"] }, suggested: { space: "setup_corner", style: "grey_tech", why: "x" }, secret: "test-secret" });
+  assert.ok(!kept.room_fill || !kept.room_fill.items.some(x => x.key === "bed"), "the customer's own bed is not bought again");
+  const light = planDesign({ observations: ROOMS.windowLeft(), brief: { budget_sar: 3000, changes: ["lighting"] }, aiIntent: {}, suggested: { space: "setup_corner", style: "grey_tech", why: "x" }, secret: "test-secret" });
+  assert.equal(light.room_fill, null, "lighting only: the room is not refurnished");
 });

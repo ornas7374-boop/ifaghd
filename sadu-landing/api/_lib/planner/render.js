@@ -5,7 +5,7 @@
 // go) so the Preservation Engine can restrict generation to it with a mask.
 const { protectionLines, SPACES, STYLES } = require("../setup");
 
-const MAX_WORDS = 380;
+const MAX_WORDS = 440; // the whole room is described now (desk setup + the rest of the room)
 const STYLE_EN = { night_setup: "dark, calm night gaming setup", white_blue: "bright white and royal blue gaming setup", neon_purple: "bold neon purple gaming",
   rgb_setup: "organised RGB gaming setup", grey_tech: "clean grey technical desk setup" };
 for (const [k, r] of Object.entries(require("../setupRecipes").RECIPES)) STYLE_EN[k] = r.en; // image-model prompts are read only up to a limited length
@@ -34,7 +34,7 @@ function itemPhrase(p, palette, decisions, desk) {
  */
 function renderInstructions(plan) {
   if (!plan.validation_results || !plan.validation_results.passed) throw new Error("plan_not_validated");
-  const { decisions, room, intent, spatial } = plan._internal;
+  const { decisions, room, intent, spatial, fill } = plan._internal;
   const space = SPACES[plan.room_analysis.space] || SPACES.setup_corner;
   const wallItem = decisions.items.find(i => i.key === "wall_treatment");
   const prot = protectionLines({ keep: room.surfaces, allowWall: !!(intent.allow_wall && wallItem), wallTreatment: STYLES[decisions.style] && STYLES[decisions.style].wall });
@@ -46,6 +46,7 @@ function renderInstructions(plan) {
   const deskRef = { x0: spatial.best.desk.x0, x1: spatial.best.desk.x1, cm: spatial.best.desk_cm,
     share: wallExt ? (spatial.best.desk.x1 - spatial.best.desk.x0) / Math.max(0.01, wallExt.x1 - wallExt.x0) : 1 };
   const lines = placed.map(p => itemPhrase(p, decisions.palette, decisions, deskRef));
+  const prio = placed.map(p => p.key === "own_device" || ((decisions.items.find(i => i.key === p.key) || {}).priority === "essential"));
   const light = decisions.lighting;
   // structure-locked template, filled from Gemini's structured room analysis (never a generic prompt)
   const st = plan.room_analysis.structure || {};
@@ -61,7 +62,7 @@ function renderInstructions(plan) {
     "Keep the exact same camera angle, perspective, framing and lens.",
     `Keep all architecture unchanged and in the exact same position: walls, ceiling height, ceiling lights positions (${st.ceiling_lights || "existing ceiling lights"}), the door (${st.door_position || "no door visible in the photo"}), ${clear ? "the window frame and glass" : "the window and curtains area"} (${(clear ? String(st.window_position || "").replace(/,?\s*(with|and)\s+[^,]*\b(curtains?|blinds?|drapes?)\b/gi, "") : st.window_position) || "no window visible in the photo"}), floor tiles (${st.floor_type || room.surfaces.floor || "existing floor"}) and room dimensions.`,
     "Do not add, remove or move any door, window, wall, column or opening.",
-    ...(clear ? [`First empty the room completely: remove ALL existing furniture${existing ? ` (${existing})` : ""}, the curtains and blinds, rugs, wall decor, lamps and clutter${kept ? `, except the customer's ${kept}, which stay exactly as they are` : ""}. Then design the room from scratch.`] : []),
+    ...(clear ? [`First empty the room completely: remove ALL existing furniture${existing ? ` (${existing})` : ""}, the curtains and blinds, rugs, wall decor, lamps and clutter${kept ? `, except the customer's ${kept}, which stay exactly as they are` : ""}. Then design the whole room from scratch.`] : []),
     `Only change: ${changeable}. No rugs or carpets on the floor.`,
     // the style line is skipped when the customer described the look themselves (their words say it, in more detail)
     ...(!intent.request_en && STYLES[decisions.style] && STYLES[decisions.style].fragment ? [`Style: ${STYLES[decisions.style].fragment.replace(/[.\s]+$/, "")}.`] : [])
@@ -70,7 +71,7 @@ function renderInstructions(plan) {
     ...(intent.request_en ? [`The customer asks for: ${intent.request_en.replace(/[.\s]+$/, "")}.`] : []),
     `Lighting: ${[light.monitor, light.accent, light.bias].filter(Boolean).join("; ")}; colours: ${decisions.palette.furniture} furniture, ${decisions.palette.accents.join(" and ")} accents.`,
     // FLUX.2 ignores negative wording, so the same rules are also said affirmatively; staging rules from property-staging
-    "New pieces are grounded and scaled to this camera's perspective, with shadows matching the room's light; the door and window stay fully visible; bare floor; an unoccupied, tidy room with clean unmarked surfaces.",
+    "Every piece grounded and scaled to this perspective, shadows matching the room's light; door and window fully visible; bare floor; unoccupied, tidy room.",
     "Remove clutter (bottles, bags, trash). No people, no faces, no posters of people, no logos or readable text; screens show abstract blue wallpapers.",
     "Photorealistic, natural lighting consistent with the original photo, real-estate photography quality."
   ];
@@ -79,11 +80,16 @@ function renderInstructions(plan) {
     : existing
     ? `Replace the existing ${existing} with ${lines.join("; ")}, placed in the same zones.`
     : `Place ${lines.join("; ")} in the free zone (the room has no furniture to replace).`;
-  const build = () => [...head, furnitureLine(), ...tail].join(" ");
+  const fillLine = fill && fill.line ? [fill.line] : [];
+  const build = () => [...head, furnitureLine(), ...fillLine, ...tail].join(" ");
   let prompt = build();
   // keep within the length the image model reads: drop the least important items first (decor), never the structure lines
   let words = prompt.split(/\s+/).length;
-  while (words > MAX_WORDS && lines.length > 3) { lines.pop(); prompt = build(); words = prompt.split(/\s+/).length; }
+  // over the limit: drop the last optional item first (decor), essentials only when nothing optional is left
+  while (words > MAX_WORDS && lines.length > 3) {
+    const i = prio.lastIndexOf(false), at = i >= 0 ? i : lines.length - 1;
+    lines.splice(at, 1); prio.splice(at, 1); prompt = build(); words = prompt.split(/\s+/).length;
+  }
 
   const xs = placed.map(p => [p.x0, p.x1]).flat();
   // the mask: only this box is redrawn; every pixel outside stays the original photo.

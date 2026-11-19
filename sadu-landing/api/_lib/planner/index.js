@@ -77,6 +77,10 @@ function planDesign(input = {}) {
 
   const products = matchProducts(decisions.items, budget, decisions.palette, spatial.placement, { catalog: input.catalog, amazonTag: input.amazonTag, styleCategories: (STYLES[decisions.style] || {}).categories });
   const best = spatial.best;
+  // the rest of the room: every other wall and empty corner is furnished too (no empty areas)
+  const space = SPACES[sug.space] ? sug.space : "setup_corner";
+  const fill = require("./roomFill").planRoomFill(room, intent, decisions, spatial, space, { amazonTag: input.amazonTag });
+  products.requirements.push(...fill.requirements);
   const plan = {
     version: VERSION,
     room_analysis: {
@@ -99,6 +103,7 @@ function planDesign(input = {}) {
     color_palette: decisions.palette,
     inspiration: decisions.examples ? { style: decisions.examples.style, reference_images: decisions.examples.refs, mood: decisions.examples.mood,
       sadu_touch: decisions.examples.sadu, item_details: decisions.examples.items, note: "details distilled from the owner's private reference images; the images themselves are never sent" } : null,
+    room_fill: fill.items.length ? { items: fill.items, note: "the rest of the room is furnished too, so no area is left empty; these pieces are listed with their own price ranges, outside the setup budget" } : null,
     product_requirements: products.requirements,
     budget_allocation: budget,
     design_rationale: [...decisions.rationale, ...(best ? best.reasons.map(r => ({ decision: `desk on the ${best.wall} wall`, why: r })) : [])],
@@ -106,7 +111,7 @@ function planDesign(input = {}) {
     rendering_instructions: null,
     notes: { products: products.note, prices: budget.note, measurements: `positions are relative to the photo; lengths in metres are estimates (${room.scale.from})` }
   };
-  Object.defineProperty(plan, "_internal", { value: { room, intent, decisions, spatial }, enumerable: false });
+  Object.defineProperty(plan, "_internal", { value: { room, intent, decisions, spatial, fill }, enumerable: false });
   if (validation.passed) {
     const instr = renderInstructions(plan);
     plan.rendering_instructions = { ...instr, signature: input.secret ? sign(instr, input.secret) : null };

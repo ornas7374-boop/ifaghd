@@ -5,7 +5,7 @@ const { NAME } = require("./products");
 
 const DAY_OPTIONS = [2, 3, 4, 5, 7];
 const WALL_AR = { left: "الجدار الأيسر", back: "الجدار المقابل", right: "الجدار الأيمن" };
-const ar = (r) => (NAME[r.category] || [r.label])[0];
+const ar = (r) => r.label_ar || (NAME[r.category] || [r.label])[0];
 const list = (reqs) => reqs.map(ar).filter((v, i, a) => a.indexOf(v) === i).join("، ");
 
 /** Steps in build order; each has a weight (rough hours) used to spread them over the days. */
@@ -37,6 +37,12 @@ function steps(plan) {
     `ركّب ${list(furn)}.`,
     desk ? `حط المكتب على ${WALL_AR[desk.wall] || "الجدار"} في المكان المعلّم، واترك ٩٠ سم على الأقل ورا الكرسي.` : "حط المكتب بحيث الشباك على جنب الشاشة.",
     "اضبط ارتفاع الكرسي: الكوع بزاوية ٩٠ درجة والرجلين على الأرض."] });
+
+  const fillItems = ((plan.room_fill || {}).items || []);
+  if (fillItems.length) out.push({ w: 3, title: "أثّث باقي الغرفة", tasks: [
+    `ركّب ${fillItems.map(x => x.ar).filter((v, i, a) => a.indexOf(v) === i).join("، ")}.`,
+    "القطع الطويلة بعيد عن الشباك والباب، وخل ممر واضح للباب.",
+    "ابدأ بالقطع الكبيرة (سرير، كنبة، دولاب) وبعدها الصغيرة."] });
 
   const screen = has("monitor", "second_monitor", "monitor_arm", "keyboard", "mouse", "mousepad", "monitor_light", "webcam", "microphone");
   if (screen.length) out.push({ w: 2, title: "الشاشة والأجهزة", tasks: [

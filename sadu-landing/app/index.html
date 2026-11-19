@@ -629,12 +629,18 @@ fieldset.field{border:0;margin:0;padding:0}
     if(why.childNodes.length) box.append(why);
     if(plan.inspiration && plan.inspiration.reference_images && plan.inspiration.reference_images.length)
       box.append(el("p", null, "شكل القطع مستوحى من سيت أبات حقيقية في مراجعنا" + (plan.inspiration.sadu_touch ? "، مع لمسة السدو اللي طلبتها" : "") + "."));
+    if(plan.room_fill && plan.room_fill.items && plan.room_fill.items.length){
+      box.append(el("p", null, "وصمّمنا باقي الغرفة كاملة بدون فراغات:"));
+      var AR_W = { left:"الجدار الأيسر", back:"الجدار المقابل", right:"الجدار الأيمن" }, rf = el("ul");
+      plan.room_fill.items.forEach(function(x){ rf.append(li(x.ar + (x.wall ? " — " + AR_W[x.wall] : ""))); });
+      box.append(rf);
+    }
     var b = plan.budget_allocation;
     var t = el("table", "btable");
     b.lines.forEach(function(l){ var tr = el("tr", l.included ? "" : "out"); tr.append(el("td", null, (AR_CAT[l.category] || l.label) + (l.priority === "essential" ? "" : " (إضافي)")), el("td", "num", l.included ? SAR(l.planned_sar) + " ريال" : "خارج الميزانية")); t.append(tr); });
     box.append(t);
     box.append(el("p", null, b.budget_sar ? ("المجموع التقريبي " + SAR(b.total_planned_sar) + " من " + SAR(b.budget_sar) + " ريال (احتياطي " + SAR(b.reserve_sar) + ")") : "ما حددت ميزانية، فهذي تقديرات متوسطة."));
-    box.append(el("p", null, "الأسعار تقديرية لكل فئة، وليست أسعار منتجات محددة."));
+    box.append(el("p", null, "الأسعار تقديرية لكل فئة، وليست أسعار منتجات محددة." + (plan.room_fill ? " قطع باقي الغرفة أسعارها في «قطع التصميم» خارج ميزانية السيت أب." : "")));
     var w = plan.validation_results.warnings.filter(function(x){ return AR_WARN[x.code] || /^request_/.test(x.code); });
     if(w.length){ var wl = el("ul"); w.slice(0, 4).forEach(function(x){ var e2 = li(AR_WARN[x.code] || "طلبك فيه تعارض، وحلّيناه: " + x.message.split(" -> ")[1]); e2.className = "warn"; wl.append(e2); }); box.append(wl); }
     if(plan.rendering_instructions && plan.rendering_instructions.prompt){
@@ -738,7 +744,7 @@ fieldset.field{border:0;margin:0;padding:0}
     out.append(ul);
     if(r.total_max){
       var t = el("div", "total");
-      t.append(el("span", null, "التكلفة التقريبية للسيت أب"), el("span", "num", SAR(r.total_min) + " – " + SAR(r.total_max) + " ريال"));
+      t.append(el("span", null, "التكلفة التقريبية للتصميم كامل"), el("span", "num", SAR(r.total_min) + " – " + SAR(r.total_max) + " ريال"));
       out.append(t);
     }
     var note = el("p", "shop__note", "الأسعار تقديرية من الذكاء الاصطناعي وقد تختلف في المتجر.");
@@ -765,7 +771,7 @@ fieldset.field{border:0;margin:0;padding:0}
     var reqs = plan.product_requirements || [], tmin = 0, tmax = 0;
     var items = reqs.map(function(r){
       var lo = r.range_sar ? r.range_sar[0] : r.budget_sar, hi = r.range_sar ? r.range_sar[1] : r.budget_sar; tmin += lo; tmax += hi;
-      return { name_ar: (AR_CAT[r.category] || r.label) + (r.status === "verified" ? "" : r.status === "placeholder" ? " (من الستايل)" : " (مقترح)"), quantity: 1, material_ar: r.spec && r.spec.width_cm ? r.spec.width_cm + " سم" : "", color_ar: AR_COL[r.spec && r.spec.colour] || "",
+      return { name_ar: (r.label_ar || AR_CAT[r.category] || r.label) + (r.status === "verified" ? "" : r.status === "placeholder" ? " (من الستايل)" : r.status === "room" ? " (" + (r.where_ar || "باقي الغرفة") + ")" : " (مقترح)"), quantity: 1, material_ar: r.spec && r.spec.width_cm ? r.spec.width_cm + " سم" : "", color_ar: AR_COL[r.spec && r.spec.colour] || "",
         price_min_sar: r.status === "verified" ? r.product.price_sar : lo, price_max_sar: r.status === "verified" ? r.product.price_sar : hi, links: r.status === "verified" ? [{ store: r.product.store || "المتجر", url: r.product.url }] : r.links };
     });
     return { items: items, total_min: tmin, total_max: tmax };
