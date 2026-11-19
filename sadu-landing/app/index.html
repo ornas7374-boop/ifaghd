@@ -632,8 +632,9 @@ fieldset.field{border:0;margin:0;padding:0}
     if(plan.room_fill && plan.room_fill.items && plan.room_fill.items.length){
       box.append(el("p", null, "وصمّمنا باقي الغرفة كاملة بدون فراغات:"));
       var AR_W = { left:"الجدار الأيسر", back:"الجدار المقابل", right:"الجدار الأيمن" }, rf = el("ul");
-      plan.room_fill.items.forEach(function(x){ rf.append(li(x.ar + (x.wall ? " — " + AR_W[x.wall] : ""))); });
+      plan.room_fill.items.forEach(function(x){ rf.append(li(x.ar + (x.product ? " (" + x.product.name.split(",")[0] + " من ايكيا)" : "") + (x.wall ? " — " + AR_W[x.wall] : ""))); });
       box.append(rf);
+      if(plan.real_products) box.append(el("p", null, "القطع اللي عليها اسم منتج حقيقية من ايكيا السعودية، وأرسلنا صورها للمصمم عشان يرسمها نفسها في غرفتك."));
     }
     var b = plan.budget_allocation;
     var t = el("table", "btable");
@@ -771,7 +772,7 @@ fieldset.field{border:0;margin:0;padding:0}
     var reqs = plan.product_requirements || [], tmin = 0, tmax = 0;
     var items = reqs.map(function(r){
       var lo = r.range_sar ? r.range_sar[0] : r.budget_sar, hi = r.range_sar ? r.range_sar[1] : r.budget_sar; tmin += lo; tmax += hi;
-      return { name_ar: (r.label_ar || AR_CAT[r.category] || r.label) + (r.status === "verified" ? "" : r.status === "placeholder" ? " (من الستايل)" : r.status === "room" ? " (" + (r.where_ar || "باقي الغرفة") + ")" : " (مقترح)"), quantity: 1, material_ar: r.spec && r.spec.width_cm ? r.spec.width_cm + " سم" : "", color_ar: AR_COL[r.spec && r.spec.colour] || "",
+      return { name_ar: (r.label_ar || AR_CAT[r.category] || r.label) + (r.status === "verified" ? "" : r.status === "placeholder" ? " (من الستايل)" : r.status === "room" ? " (" + (r.where_ar || "باقي الغرفة") + ")" : " (مقترح)"), quantity: 1, material_ar: r.status === "verified" && r.product ? r.product.name : r.spec && r.spec.width_cm ? r.spec.width_cm + " سم" : "", color_ar: AR_COL[r.spec && r.spec.colour] || "",
         price_min_sar: r.status === "verified" ? r.product.price_sar : lo, price_max_sar: r.status === "verified" ? r.product.price_sar : hi, links: r.status === "verified" ? [{ store: r.product.store || "المتجر", url: r.product.url }] : r.links };
     });
     return { items: items, total_min: tmin, total_max: tmax };

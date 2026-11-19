@@ -34,6 +34,18 @@ module.exports = async (req, res) => {
     if (req.query.cfschema) {
       return res.status(200).json({ mode: "cloudflare_schema", ...(await require("../_lib/cloudflare").schema(process.env.CLOUDFLARE_API_TOKEN, String(req.query.cfschema))) });
     }
+    if (req.query.refcheck === "1") {
+      // free: can the server download the real product photos? (no drawing)
+      const cat = require("../_lib/catalog");
+      const ids = cat.PRODUCTS.slice(0, 3).map(p => p.id);
+      const out = [];
+      for (const id of ids) {
+        const p = cat.byId(id);
+        try { const r = await fetch(p.image_url, { signal: AbortSignal.timeout(8000) }); const b = Buffer.from(await r.arrayBuffer()); out.push({ id, http: r.status, bytes: b.length, type: r.headers.get("content-type") }); }
+        catch (e) { out.push({ id, error: e.message }); }
+      }
+      return res.status(200).json({ mode: "product_photo_check", results: out });
+    }
     if (req.query.repcheck === "1") {
       // free: is the Replicate token valid? (account lookup only, no drawing, no cost)
       const t = process.env.REPLICATE_API_TOKEN;

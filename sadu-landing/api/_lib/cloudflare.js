@@ -152,12 +152,14 @@ async function cfFlux2(token, image, region, prompt, opts = {}) {
   // the safety filter sometimes flags harmless rooms: try a new random seed, then the other FLUX.2 size
   const first = opts.model || EDIT_MODEL;
   const plan = opts.once ? [first] : [first, first, first.includes("9b") ? first.replace("9b", "4b") : first];
-  let b64 = null, model = first, lastErr = null;
+  let b64 = null, model = first, lastErr = null, useRefs = true;
   for (let i = 0; i < plan.length && !b64; i++) {
     model = plan[i];
     const form = new FormData();
     form.append("prompt", String(prompt).slice(0, 3000));
     form.append("input_image_0", new Blob([input], { type: "image/jpeg" }), "room.jpg");
+    const refs = useRefs ? (opts.refs || []) : [];
+    refs.forEach((buf, k) => form.append(`input_image_${k + 1}`, new Blob([buf], { type: "image/jpeg" }), `product${k + 1}.jpg`));
     form.append("width", String(w)); form.append("height", String(h));
     form.append("seed", String(Math.floor(Math.random() * 2147483647)));
     if (opts.safety != null) form.append("safety_tolerance", String(opts.safety));
@@ -167,6 +169,8 @@ async function cfFlux2(token, image, region, prompt, opts = {}) {
     const txt = JSON.stringify(d.errors || d);
     const flagged = /flagged|3030/.test(txt), passing = r.status >= 500;
     lastErr = new Error(flagged ? "cloudflare_flagged" : `cloudflare_${r.status}`); lastErr.detail = txt.slice(0, 300);
+    // the model refused the extra product photos: try once more with the room photo only
+    if (!flagged && !passing && useRefs && (opts.refs || []).length && r.status === 400) { useRefs = false; i--; continue; }
     if (!flagged && !passing) break; // a real error (bad key, quota...): do not retry
     if (passing) await new Promise(ok => setTimeout(ok, 1200));
   }
@@ -179,7 +183,7 @@ async function cfFlux2(token, image, region, prompt, opts = {}) {
   if (kept.changed_share != null && kept.changed_share > 0.4) {
     kept = { buf: await sharp(gen).resize(W, H, { fit: "fill" }).jpeg({ quality: 90 }).toBuffer(), changed_share: kept.changed_share, whole: true };
   }
-  const res = { status: "succeeded", output: `data:image/jpeg;base64,${kept.buf.toString("base64")}`, model, changed_share: kept.changed_share, whole_image: !!kept.whole };
+  const res = { status: "succeeded", output: `data:image/jpeg;base64,${kept.buf.toString("base64")}`, model, changed_share: kept.changed_share, whole_image: !!kept.whole, product_refs: useRefs ? (opts.refs || []).length : 0 };
   if (opts.debug) res.raw = (await sharp(gen).resize(512).jpeg({ quality: 75 }).toBuffer()).toString("base64");
   return res;
 }

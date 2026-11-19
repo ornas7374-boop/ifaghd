@@ -20,7 +20,7 @@ const PLACEMENT_ERRORS = new Set(["no_desk_position", "blocks_door", "window_beh
 
 /** Sign the render instruction so the design endpoint only draws plans made by this server. */
 function sign(instr, secret) {
-  return crypto.createHmac("sha256", String(secret || "")).update(JSON.stringify({ p: instr.prompt, r: instr.edit_region, f: instr.fill_prompt || null, k: instr.protect || null })).digest("hex");
+  return crypto.createHmac("sha256", String(secret || "")).update(JSON.stringify({ p: instr.prompt, r: instr.edit_region, f: instr.fill_prompt || null, k: instr.protect || null, x: instr.references && instr.references.length ? instr.references : null })).digest("hex");
 }
 function verify(instr, secret) {
   if (!instr || typeof instr.prompt !== "string" || typeof instr.signature !== "string" || !secret) return false;
@@ -79,8 +79,21 @@ function planDesign(input = {}) {
   const best = spatial.best;
   // the rest of the room: every other wall and empty corner is furnished too (no empty areas)
   const space = SPACES[sug.space] ? sug.space : "setup_corner";
-  const fill = require("./roomFill").planRoomFill(room, intent, decisions, spatial, space, { amazonTag: input.amazonTag });
+  const fill = require("./roomFill").planRoomFill(room, intent, decisions, spatial, space, { amazonTag: input.amazonTag, style: decisions.style, budget: intent.budget_sar });
   products.requirements.push(...fill.requirements);
+  // the planned curtains become a real product too (dark styles: block-out grey; light styles: white sheer)
+  if (decisions.window_dress) {
+    const cat = require("../catalog");
+    const dark = /blackout|charcoal/.test(decisions.window_dress);
+    const cur = cat.pick("curtain", { prefer: dark ? ["grey", "black", "beige"] : /beige/.test(decisions.window_dress) ? ["beige", "white"] : ["white", "beige"], style: decisions.style, budget: intent.budget_sar });
+    if (cur) {
+      decisions.window_dress = `${cat.phrase(cur)} on a slim rod`;
+      const pr = cat.asProduct(cur);
+      products.requirements.push({ key: "room_curtain", label: cur.name, label_ar: "ستارة", category: "curtain", priority: "room", spec: {}, budget_sar: pr.price_sar, range_sar: [pr.price_sar, pr.price_sar],
+        search: { ar: "ستارة", en: cur.name }, status: "verified", product: pr, where_ar: "الشباك", links: [{ store: "ايكيا", url: pr.url }] });
+      fill.refs.push({ id: cur.id, label: cat.phrase(cur).replace(/^IKEA /, "") });
+    }
+  }
   const plan = {
     version: VERSION,
     room_analysis: {
@@ -103,6 +116,7 @@ function planDesign(input = {}) {
     color_palette: decisions.palette,
     inspiration: decisions.examples ? { style: decisions.examples.style, reference_images: decisions.examples.refs, mood: decisions.examples.mood,
       sadu_touch: decisions.examples.sadu, item_details: decisions.examples.items, note: "details distilled from the owner's private reference images; the images themselves are never sent" } : null,
+    real_products: fill.refs.length ? { references: fill.refs.slice(0, 3), note: "real IKEA Saudi products; their photos are sent to the image model as references" } : null,
     room_fill: fill.items.length ? { items: fill.items, note: "the rest of the room is furnished too, so no area is left empty; these pieces are listed with their own price ranges, outside the setup budget" } : null,
     product_requirements: products.requirements,
     budget_allocation: budget,

@@ -5,7 +5,7 @@
 // go) so the Preservation Engine can restrict generation to it with a mask.
 const { protectionLines, SPACES, STYLES } = require("../setup");
 
-const MAX_WORDS = 440; // the whole room is described now (desk setup + the rest of the room)
+const MAX_WORDS = 460; // the whole room is described now (desk setup + the rest of the room)
 const STYLE_EN = { night_setup: "dark, calm night gaming setup", white_blue: "bright white and royal blue gaming setup", neon_purple: "bold neon purple gaming",
   rgb_setup: "organised RGB gaming setup", grey_tech: "clean grey technical desk setup" };
 for (const [k, r] of Object.entries(require("../setupRecipes").RECIPES)) STYLE_EN[k] = r.en; // image-model prompts are read only up to a limited length
@@ -80,7 +80,10 @@ function renderInstructions(plan) {
     : existing
     ? `Replace the existing ${existing} with ${lines.join("; ")}, placed in the same zones.`
     : `Place ${lines.join("; ")} in the free zone (the room has no furniture to replace).`;
-  const fillLine = fill && fill.line ? [fill.line] : [];
+  // real products: their photos go to the image model after the room photo (image 1), in this order
+  const refs = fill && fill.refs ? fill.refs.slice(0, 3) : [];
+  const refLine = refs.length ? [`Use the exact real products shown in the reference images, same shape, colour and material: ${refs.map((r, i) => `image ${i + 2} is the ${r.label}`).join("; ")}.`] : [];
+  const fillLine = fill && fill.line ? [fill.line, ...refLine] : [];
   const build = () => [...head, furnitureLine(), ...fillLine, ...tail].join(" ");
   let prompt = build();
   // keep within the length the image model reads: drop the least important items first (decor), never the structure lines
@@ -110,7 +113,7 @@ function renderInstructions(plan) {
   // when the room is emptied the curtains change, so only doors are pasted back from the original
   const protect = (clear ? [] : room.windows).concat(room.doors).filter(o => typeof o.y0 === "number" && typeof o.y1 === "number")
     .map(o => ({ x0: +Math.max(0, o.x0 - 0.01).toFixed(3), x1: +Math.min(1, o.x1 + 0.01).toFixed(3), y0: +Math.max(0, o.y0 - 0.01).toFixed(3), y1: +Math.min(1, o.y1 + 0.01).toFixed(3) }));
-  return { prompt, words, edit_region, fill_prompt, protect, protected: ["floor", intent.allow_wall && wallItem ? "walls except behind the desk" : "all walls", "ceiling", "windows", "doors", "camera angle"],
+  return { prompt, words, edit_region, fill_prompt, protect, references: refs.map(r => r.id), protected: ["floor", intent.allow_wall && wallItem ? "walls except behind the desk" : "all walls", "ceiling", "windows", "doors", "camera angle"],
     items_allowed: placed.map(p => p.item) };
 }
 

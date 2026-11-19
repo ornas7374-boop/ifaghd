@@ -24,7 +24,7 @@ function promptFor(b) {
   if (b.plan) {
     const ri = b.plan.rendering_instructions;
     if (!ri || !verify(ri, planSecret())) return { error: "plan_not_signed" };
-    return { prompt: ri.prompt, fill: ri.fill_prompt || null, region: ri.edit_region || null, protect: ri.protect || [] };
+    return { prompt: ri.prompt, fill: ri.fill_prompt || null, region: ri.edit_region || null, protect: ri.protect || [], references: Array.isArray(ri.references) ? ri.references.slice(0, 3) : [] };
   }
   if (!STYLES[b.style]) return { error: "bad_style" };
   return { prompt: buildPrompt(b.style, b.room, { keep: keepOf(b.keep), ...briefOf(b) }) };
@@ -38,6 +38,23 @@ const EMPTY_PROMPT = "Remove ALL furniture and objects from this room so it beco
   "Keep exactly the same walls and wall colour, the same floor, the same ceiling and ceiling lights, the door, the window frame and glass, built-in fixtures, " +
   "and the same camera angle, perspective, framing and daylight. Fill the areas behind the removed objects with the same wall and floor, seamlessly. " +
   "Do not add anything. No people. The result is a bare, unoccupied room with clean walls and an uncovered floor. Photorealistic empty room, real-estate photography quality.";
+
+// photos of the real products in the plan (catalogue ids only: never a URL from the request)
+async function productRefs(ids) {
+  const cat = require("./_lib/catalog"), sharp = require("sharp");
+  const out = [];
+  for (const id of ids || []) {
+    const p = cat.byId(String(id));
+    if (!p || !/^https:\/\/www\.ikea\.com\/sa\//.test(p.image_url)) continue;
+    try {
+      const r = await fetch(p.image_url, { signal: AbortSignal.timeout(8000) });
+      if (!r.ok) continue;
+      const buf = Buffer.from(await r.arrayBuffer());
+      out.push(await sharp(buf).resize(512, 512, { fit: "inside" }).flatten({ background: "#ffffff" }).jpeg({ quality: 88 }).toBuffer());
+    } catch (_) { /* a missing photo only means one reference less */ }
+  }
+  return out;
+}
 
 function reply(res, code, body) {
   res.setHeader("Cache-Control", "no-store");
@@ -72,7 +89,8 @@ module.exports = async function handler(req, res) {
         const cfl = require("./_lib/cloudflare");
         // FLUX.2 edits with the full instruction; only the planned box is pasted onto the original photo
         if (process.env.SADU_CF_MODE === "inpaint") return reply(res, 200, await cfl.cfInpaint(token, b.image, pr.region, pr.fill));
-        return reply(res, 200, await cfl.cfFlux2(token, b.image, pr.region, pr.prompt, { protect: pr.protect }));
+        const refs = await productRefs(pr.references);
+        return reply(res, 200, await cfl.cfFlux2(token, b.image, pr.region, pr.prompt, { protect: pr.protect, refs }));
       }
       if (useRep) {
         const rd = require("./_lib/replicateDesign");

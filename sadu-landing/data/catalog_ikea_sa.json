@@ -1,0 +1,1876 @@
+{
+ "source": "IKEA Saudi Arabia (ikea.com/sa) - category pages",
+ "collected_at": "2026-11-19",
+ "currency": "SAR",
+ "note": "Owner-supplied real IKEA Saudi products. Rugs removed (floor is never changed). in_stock not checked.",
+ "count": 101,
+ "products": [
+  {
+   "id": "ikea-sa-29509007",
+   "store": "IKEA Saudi Arabia",
+   "category": "sofa",
+   "category_ar": "كنب",
+   "type": "3-seat sofa",
+   "name": "EKTORP 3-seat sofa, Kilanda dark blue",
+   "price_sar": 2545.0,
+   "price_tier": "premium",
+   "colors": [
+    "blue"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/ektorp-3-seat-sofa-kilanda-dark-blue-s29509007/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/ektorp-3-seat-sofa-kilanda-dark-blue__1194843_pe902111_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-59508983",
+   "store": "IKEA Saudi Arabia",
+   "category": "sofa",
+   "category_ar": "كنب",
+   "type": "corner sofa",
+   "name": "EKTORP Corner sofa 4-seat, Hakebo grey-green",
+   "price_sar": 4895.0,
+   "price_tier": "premium",
+   "colors": [
+    "grey-green"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/ektorp-corner-sofa-4-seat-hakebo-grey-green-s59508983/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/ektorp-corner-sofa-4-seat-hakebo-grey-green__1577715_pe1033465_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-10596995",
+   "store": "IKEA Saudi Arabia",
+   "category": "sofa",
+   "category_ar": "كنب",
+   "type": "2-seat sofa",
+   "name": "SALTMYRAN 2-seat sofa, Oreryd grey-beige",
+   "price_sar": 995.0,
+   "price_tier": "mid",
+   "colors": [
+    "beige",
+    "grey"
+   ],
+   "style_tags": [
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/saltmyran-2-seat-sofa-oereryd-grey-beige-10596995/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/saltmyran-2-seat-sofa-oereryd-grey-beige__1576105_pe1032229_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-40573285",
+   "store": "IKEA Saudi Arabia",
+   "category": "sofa",
+   "category_ar": "كنب",
+   "type": "3-seat sofa",
+   "name": "GLOSTAD 3-seat sofa, Knisa dark grey",
+   "price_sar": 995.0,
+   "price_tier": "mid",
+   "colors": [
+    "dark grey"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/glostad-3-seat-sofa-knisa-dark-grey-40573285/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/glostad-3-seat-sofa-knisa-dark-grey__1234948_pe917261_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-49509025",
+   "store": "IKEA Saudi Arabia",
+   "category": "sofa",
+   "category_ar": "كنب",
+   "type": "2-seat sofa",
+   "name": "EKTORP 2-seat sofa, Kilanda light beige",
+   "price_sar": 2295.0,
+   "price_tier": "premium",
+   "colors": [
+    "beige"
+   ],
+   "style_tags": [
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/ektorp-2-seat-sofa-kilanda-light-beige-s49509025/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/ektorp-2-seat-sofa-kilanda-light-beige__1577714_pe1033461_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-89305615",
+   "store": "IKEA Saudi Arabia",
+   "category": "sofa",
+   "category_ar": "كنب",
+   "type": "3-seat section",
+   "name": "SODERHAMN 3-seat section, Viarp beige/brown",
+   "price_sar": 2795.0,
+   "price_tier": "premium",
+   "colors": [
+    "beige",
+    "brown"
+   ],
+   "style_tags": [
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/soederhamn-3-seat-section-viarp-beige-brown-s89305615/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/soederhamn-3-seat-section-viarp-beige-brown__1577095_pe1032932_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-50489012",
+   "store": "IKEA Saudi Arabia",
+   "category": "sofa",
+   "category_ar": "كنب",
+   "type": "2-seat sofa",
+   "name": "GLOSTAD 2-seat sofa, Knisa dark grey",
+   "price_sar": 895.0,
+   "price_tier": "mid",
+   "colors": [
+    "dark grey"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/glostad-2-seat-sofa-knisa-dark-grey-50489012/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/glostad-2-seat-sofa-knisa-dark-grey__1577178_pe1033002_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-59270306",
+   "store": "IKEA Saudi Arabia",
+   "category": "sofa",
+   "category_ar": "كنب",
+   "type": "3-seat sofa",
+   "name": "LANDSKRONA 3-seat sofa, Gunnared dark grey/metal",
+   "price_sar": 2795.0,
+   "price_tier": "premium",
+   "colors": [
+    "dark grey",
+    "red"
+   ],
+   "style_tags": [
+    "colorful",
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/landskrona-3-seat-sofa-gunnared-dark-grey-metal-s59270306/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/landskrona-3-seat-sofa-gunnared-dark-grey-metal__1576950_pe1032845_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-39574295",
+   "store": "IKEA Saudi Arabia",
+   "category": "sofa",
+   "category_ar": "كنب",
+   "type": "3-seat sofa",
+   "name": "STOCKHOLM 2025 3-seat sofa, Alhamn dark brown",
+   "price_sar": 5645.0,
+   "price_tier": "premium",
+   "colors": [
+    "dark brown"
+   ],
+   "style_tags": [
+    "luxury-classic"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/stockholm-2025-3-seat-sofa-alhamn-dark-brown-s39574295/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/stockholm-2025-3-seat-sofa-alhamn-dark-brown__1577930_pe1033676_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-30618519",
+   "store": "IKEA Saudi Arabia",
+   "category": "sofa",
+   "category_ar": "كنب",
+   "type": "3-seat sofa",
+   "name": "SALTMYRAN 3-seat sofa, Oreryd blue",
+   "price_sar": 1195.0,
+   "price_tier": "mid",
+   "colors": [
+    "blue"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/saltmyran-3-seat-sofa-oereryd-blue-30618519/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/saltmyran-3-seat-sofa-oereryd-blue__1578447_pe1034090_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-99306643",
+   "store": "IKEA Saudi Arabia",
+   "category": "sofa",
+   "category_ar": "كنب",
+   "type": "3-seat sofa",
+   "name": "VIMLE 3-seat sofa, Grann/Bomstad black",
+   "price_sar": 5400.0,
+   "price_tier": "premium",
+   "colors": [
+    "black"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/vimle-3-seat-sofa-grann-bomstad-black-s99306643/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/vimle-3-seat-sofa-grann-bomstad-black__0817362_pe773988_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-49615323",
+   "store": "IKEA Saudi Arabia",
+   "category": "sofa",
+   "category_ar": "كنب",
+   "type": "2-seat sofa",
+   "name": "VALNAS 2-seat sofa, Alhamn dark grey-blue",
+   "price_sar": 2995.0,
+   "price_tier": "premium",
+   "colors": [
+    "grey-blue",
+    "dark grey"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/valnaes-2-seat-sofa-alhamn-dark-grey-blue-s49615323/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/valnaes-2-seat-sofa-alhamn-dark-grey-blue__1489763_pe1003959_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-59508860",
+   "store": "IKEA Saudi Arabia",
+   "category": "sofa",
+   "category_ar": "كنب",
+   "type": "2-seat sofa",
+   "name": "ROCKSJON 2-seat sofa, Kilanda light beige",
+   "price_sar": 1095.0,
+   "price_tier": "mid",
+   "colors": [
+    "beige"
+   ],
+   "style_tags": [
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/rocksjoen-2-seat-sofa-kilanda-light-beige-s59508860/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/rocksjoen-2-seat-sofa-kilanda-light-beige__1247376_pe922644_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-80541589",
+   "store": "IKEA Saudi Arabia",
+   "category": "sofa",
+   "category_ar": "كنب",
+   "type": "3-seat sofa-bed",
+   "name": "BARSLOV 3-seat sofa-bed, Tibbleby beige/grey",
+   "price_sar": 3195.0,
+   "price_tier": "premium",
+   "colors": [
+    "beige",
+    "grey"
+   ],
+   "style_tags": [
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/barsloev-3-seat-sofa-bed-tibbleby-beige-grey-80541589/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/barsloev-3-seat-sofa-bed-tibbleby-beige-grey__1213685_pe911212_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-80245051",
+   "store": "IKEA Saudi Arabia",
+   "category": "sofa",
+   "category_ar": "كنب",
+   "type": "3-seat sofa",
+   "name": "STOCKHOLM 3-seat sofa, Seglora natural",
+   "price_sar": 9695.0,
+   "price_tier": "premium",
+   "colors": [
+    "natural"
+   ],
+   "style_tags": [
+    "luxury-classic",
+    "warm-natural"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/stockholm-three-seat-sofa-seglora-natural-80245051/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/stockholm-three-seat-sofa-seglora-natural__0183763_pe334809_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-10591752",
+   "store": "IKEA Saudi Arabia",
+   "category": "sofa",
+   "category_ar": "كنب",
+   "type": "1-seat section",
+   "name": "STOCKHOLM 2025 1-seat section, Alhamn dark brown",
+   "price_sar": 1650.0,
+   "price_tier": "premium",
+   "colors": [
+    "dark brown"
+   ],
+   "style_tags": [
+    "luxury-classic"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/stockholm-2025-1-seat-section-alhamn-dark-brown-10591752/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/stockholm-2025-1-seat-section-alhamn-dark-brown__1577926_pe1033672_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-49270284",
+   "store": "IKEA Saudi Arabia",
+   "category": "sofa",
+   "category_ar": "كنب",
+   "type": "2-seat sofa",
+   "name": "LANDSKRONA 2-seat sofa, Gunnared light green/metal",
+   "price_sar": 2345.0,
+   "price_tier": "premium",
+   "colors": [
+    "green",
+    "red"
+   ],
+   "style_tags": [
+    "colorful",
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/landskrona-2-seat-sofa-gunnared-light-green-metal-s49270284/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/landskrona-2-seat-sofa-gunnared-light-green-metal__1576947_pe1032846_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-39305892",
+   "store": "IKEA Saudi Arabia",
+   "category": "sofa",
+   "category_ar": "كنب",
+   "type": "corner sofa",
+   "name": "SODERHAMN Corner sofa 6-seat, Viarp beige/brown",
+   "price_sar": 8135.0,
+   "price_tier": "premium",
+   "colors": [
+    "beige",
+    "brown"
+   ],
+   "style_tags": [
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/soederhamn-corner-sofa-6-seat-viarp-beige-brown-s39305892/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/soederhamn-corner-sofa-6-seat-viarp-beige-brown__1577088_pe1032926_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-39443252",
+   "store": "IKEA Saudi Arabia",
+   "category": "sofa",
+   "category_ar": "كنب",
+   "type": "2-seat sofa",
+   "name": "VISKAFORS 2-seat sofa, Lejde anthracite/brown",
+   "price_sar": 4845.0,
+   "price_tier": "premium",
+   "colors": [
+    "anthracite",
+    "brown"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/viskafors-2-seat-sofa-lejde-anthracite-brown-s39443252/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/viskafors-2-seat-sofa-lejde-anthracite-brown__1578000_pe1033706_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-29535596",
+   "store": "IKEA Saudi Arabia",
+   "category": "sofa",
+   "category_ar": "كنب",
+   "type": "3-seat sofa",
+   "name": "EKHOLMA 3-seat sofa, Kilanda brown-red",
+   "price_sar": 2595.0,
+   "price_tier": "premium",
+   "colors": [
+    "brown-red"
+   ],
+   "style_tags": [
+    "colorful"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/ekholma-3-seat-sofa-kilanda-brown-red-s29535596/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/ekholma-3-seat-sofa-kilanda-brown-red__1577917_pe1033663_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-70613398",
+   "store": "IKEA Saudi Arabia",
+   "category": "sofa",
+   "category_ar": "كنب",
+   "type": "2-seat sofa",
+   "name": "GULLVALLA 2-seat sofa, Silkeryd grey-green",
+   "price_sar": 995.0,
+   "price_tier": "mid",
+   "colors": [
+    "grey-green"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/gullvalla-2-seat-sofa-silkeryd-grey-green-70613398/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/gullvalla-2-seat-sofa-silkeryd-grey-green__1576773_pe1032703_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-69305697",
+   "store": "IKEA Saudi Arabia",
+   "category": "sofa",
+   "category_ar": "كنب",
+   "type": "3-seat sofa",
+   "name": "SODERHAMN 3-seat sofa, Viarp beige/brown",
+   "price_sar": 3445.0,
+   "price_tier": "premium",
+   "colors": [
+    "beige",
+    "brown"
+   ],
+   "style_tags": [
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/soederhamn-3-seat-sofa-viarp-beige-brown-s69305697/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/soederhamn-3-seat-sofa-viarp-beige-brown__1577083_pe1032920_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-30512235",
+   "store": "IKEA Saudi Arabia",
+   "category": "sofa",
+   "category_ar": "كنب",
+   "type": "sofa with chaise longue",
+   "name": "LINANAS 3-seat sofa with chaise longue, Vissle beige",
+   "price_sar": 1495.0,
+   "price_tier": "mid",
+   "colors": [
+    "beige"
+   ],
+   "style_tags": [
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/linanaes-3-seat-sofa-with-chaise-longue-vissle-beige-30512235/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/linanaes-3-seat-sofa-with-chaise-longue-vissle-beige__1013903_pe829455_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-59535590",
+   "store": "IKEA Saudi Arabia",
+   "category": "sofa",
+   "category_ar": "كنب",
+   "type": "2-seat sofa",
+   "name": "EKHOLMA 2-seat sofa, Kilanda brown-red",
+   "price_sar": 1995.0,
+   "price_tier": "premium",
+   "colors": [
+    "brown-red"
+   ],
+   "style_tags": [
+    "colorful"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/ekholma-2-seat-sofa-kilanda-brown-red-s59535590/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/ekholma-2-seat-sofa-kilanda-brown-red__1577918_pe1033668_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-50341148",
+   "store": "IKEA Saudi Arabia",
+   "category": "sofa",
+   "category_ar": "كنب",
+   "type": "3-seat sofa-bed",
+   "name": "FRIHETEN 3-seat sofa-bed, Skiftebo dark grey",
+   "price_sar": 2445.0,
+   "price_tier": "premium",
+   "colors": [
+    "dark grey"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/friheten-three-seat-sofa-bed-skiftebo-dark-grey-50341148/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/friheten-three-seat-sofa-bed-skiftebo-dark-grey__0525504_pe644868_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-90586092",
+   "store": "IKEA Saudi Arabia",
+   "category": "sofa",
+   "category_ar": "كنب",
+   "type": "3-seat sofa",
+   "name": "STOCKHOLM 2025 3-seat sofa, Sundhamn beige",
+   "price_sar": 7995.0,
+   "price_tier": "premium",
+   "colors": [
+    "beige"
+   ],
+   "style_tags": [
+    "luxury-classic",
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/stockholm-2025-3-seat-sofa-sundhamn-beige-90586092/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/stockholm-2025-3-seat-sofa-sundhamn-beige__1577934_pe1033680_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-20506225",
+   "store": "IKEA Saudi Arabia",
+   "category": "sofa",
+   "category_ar": "كنب",
+   "type": "2-seat sofa",
+   "name": "APPLARYD 2-seat sofa, Lejde grey/black",
+   "price_sar": 3195.0,
+   "price_tier": "premium",
+   "colors": [
+    "black",
+    "grey"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/aepplaryd-2-seat-sofa-lejde-grey-black-20506225/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/aepplaryd-2-seat-sofa-lejde-grey-black__1577349_pe1033130_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-00613170",
+   "store": "IKEA Saudi Arabia",
+   "category": "armchair",
+   "category_ar": "كراسي مفردة",
+   "type": "wing chair",
+   "name": "STRANDMON Wing chair, Sulviken blue/beige",
+   "price_sar": 995.0,
+   "price_tier": "mid",
+   "colors": [
+    "beige",
+    "blue"
+   ],
+   "style_tags": [
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/strandmon-wing-chair-sulviken-blue-beige-00613170/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/strandmon-wing-chair-sulviken-blue-beige__1478944_pe999899_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-09551605",
+   "store": "IKEA Saudi Arabia",
+   "category": "armchair",
+   "category_ar": "كراسي مفردة",
+   "type": "armchair",
+   "name": "POANG Low-back armchair, natural/beige",
+   "price_sar": 499.0,
+   "price_tier": "mid",
+   "colors": [
+    "beige",
+    "natural"
+   ],
+   "style_tags": [
+    "neutral-minimal",
+    "warm-natural"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/poaeng-low-back-armchair-natural-colour-beige-katorp-natural-colour-beige-s09551605/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/poaeng-low-back-armchair-natural-colour-beige-katorp-natural-colour-beige__1315067_pe940386_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-20262878",
+   "store": "IKEA Saudi Arabia",
+   "category": "armchair",
+   "category_ar": "كراسي مفردة",
+   "type": "armchair",
+   "name": "EKERO Armchair, Skiftebo dark blue",
+   "price_sar": 699.0,
+   "price_tier": "mid",
+   "colors": [
+    "blue"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/ekeroe-armchair-skiftebo-dark-blue-20262878/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/ekeroe-armchair-skiftebo-dark-blue__0204749_pe359788_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-00581918",
+   "store": "IKEA Saudi Arabia",
+   "category": "armchair",
+   "category_ar": "كراسي مفردة",
+   "type": "swivel chair",
+   "name": "DYVLINGE Swivel easy chair, Kelinge orange",
+   "price_sar": 995.0,
+   "price_tier": "mid",
+   "colors": [
+    "orange"
+   ],
+   "style_tags": [
+    "colorful"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/dyvlinge-swivel-easy-chair-kelinge-orange-00581918/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/dyvlinge-swivel-easy-chair-kelinge-orange__1322501_pe942192_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-19590362",
+   "store": "IKEA Saudi Arabia",
+   "category": "armchair",
+   "category_ar": "كراسي مفردة",
+   "type": "wing chair + footstool",
+   "name": "STRANDMON Wing chair with footstool, Tommaboda brown-red",
+   "price_sar": 1444.0,
+   "price_tier": "mid",
+   "colors": [
+    "brown-red"
+   ],
+   "style_tags": [
+    "colorful"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/strandmon-wing-chair-with-footstool-tommaboda-brown-red-s19590362/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/strandmon-wing-chair-with-footstool-tommaboda-brown-red__1478914_pe999886_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-99552101",
+   "store": "IKEA Saudi Arabia",
+   "category": "armchair",
+   "category_ar": "كراسي مفردة",
+   "type": "armchair",
+   "name": "EKTORP Armchair, Kilanda light beige",
+   "price_sar": 1595.0,
+   "price_tier": "premium",
+   "colors": [
+    "beige"
+   ],
+   "style_tags": [
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/ektorp-armchair-kilanda-light-beige-s99552101/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/ektorp-armchair-kilanda-light-beige__1242736_pe920364_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-19616951",
+   "store": "IKEA Saudi Arabia",
+   "category": "armchair",
+   "category_ar": "كراسي مفردة",
+   "type": "rocking armchair",
+   "name": "NORDKROKEN Rocking swivel armchair, Gransel natural",
+   "price_sar": 1595.0,
+   "price_tier": "premium",
+   "colors": [
+    "natural"
+   ],
+   "style_tags": [
+    "warm-natural"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/nordkroken-rocking-and-swivel-armchair-gransel-natural-s19616951/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/nordkroken-rocking-and-swivel-armchair-gransel-natural__1543934_pe1018997_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-70515109",
+   "store": "IKEA Saudi Arabia",
+   "category": "armchair",
+   "category_ar": "كراسي مفردة",
+   "type": "swivel chair",
+   "name": "HAVBERG Swivel easy chair, golden-brown",
+   "price_sar": 1995.0,
+   "price_tier": "premium",
+   "colors": [
+    "brown",
+    "gold"
+   ],
+   "style_tags": [
+    "luxury-classic"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/havberg-swivel-easy-chair-grann-bomstad-golden-brown-70515109/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/havberg-swivel-easy-chair-grann-bomstad-golden-brown__1070880_pe854782_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-90554388",
+   "store": "IKEA Saudi Arabia",
+   "category": "armchair",
+   "category_ar": "كراسي مفردة",
+   "type": "armchair",
+   "name": "SKALBODA Armchair, black",
+   "price_sar": 329.0,
+   "price_tier": "mid",
+   "colors": [
+    "black"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/skalboda-armchair-black-90554388/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/skalboda-armchair-black__1180834_pe896474_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-19625842",
+   "store": "IKEA Saudi Arabia",
+   "category": "armchair",
+   "category_ar": "كراسي مفردة",
+   "type": "rocking chair",
+   "name": "POANG Rocking-chair, walnut effect/Kelinge beige",
+   "price_sar": 779.0,
+   "price_tier": "mid",
+   "colors": [
+    "beige",
+    "walnut"
+   ],
+   "style_tags": [
+    "luxury-classic",
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/poaeng-rocking-chair-walnut-effect-kelinge-beige-s19625842/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/poaeng-rocking-chair-walnut-effect-kelinge-beige__1507379_pe1009304_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-00494638",
+   "store": "IKEA Saudi Arabia",
+   "category": "armchair",
+   "category_ar": "كراسي مفردة",
+   "type": "wing chair",
+   "name": "STRANDMON Wing chair, Grann/Bomstad dark brown",
+   "price_sar": 1895.0,
+   "price_tier": "premium",
+   "colors": [
+    "dark brown"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/strandmon-wing-chair-grann-bomstad-dark-brown-00494638/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/strandmon-wing-chair-grann-bomstad-dark-brown__0998383_pe823013_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-80425641",
+   "store": "IKEA Saudi Arabia",
+   "category": "armchair",
+   "category_ar": "كراسي مفردة",
+   "type": "easy chair",
+   "name": "FROSET Easy chair, white stained oak veneer",
+   "price_sar": 429.0,
+   "price_tier": "mid",
+   "colors": [
+    "white",
+    "oak"
+   ],
+   "style_tags": [
+    "luxury-classic",
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/froeset-easy-chair-white-stained-oak-veneer-80425641/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/froeset-easy-chair-white-stained-oak-veneer__0824154_pe776005_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-90508551",
+   "store": "IKEA Saudi Arabia",
+   "category": "armchair",
+   "category_ar": "كراسي مفردة",
+   "type": "armchair",
+   "name": "HOLMSTA Armchair, handmade beige",
+   "price_sar": 899.0,
+   "price_tier": "mid",
+   "colors": [
+    "beige"
+   ],
+   "style_tags": [
+    "neutral-minimal",
+    "warm-natural"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/holmsta-armchair-handmade-beige-90508551/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/holmsta-armchair-handmade-beige__1086020_pe860308_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-89443278",
+   "store": "IKEA Saudi Arabia",
+   "category": "armchair",
+   "category_ar": "كراسي مفردة",
+   "type": "armchair",
+   "name": "VISKAFORS 1.5-seat armchair, Lejde light beige/birch",
+   "price_sar": 3295.0,
+   "price_tier": "premium",
+   "colors": [
+    "beige",
+    "birch"
+   ],
+   "style_tags": [
+    "neutral-minimal",
+    "warm-natural"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/viskafors-1-5-seat-armchair-lejde-light-beige-birch-s89443278/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/viskafors-1-5-seat-armchair-lejde-light-beige-birch__1088077_pe861049_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-70578451",
+   "store": "IKEA Saudi Arabia",
+   "category": "table",
+   "category_ar": "طاولات قهوة وجانبية",
+   "type": "tray table",
+   "name": "GLADOM Tray table, dark grey-green, 45x53 cm",
+   "price_sar": 79.95,
+   "price_tier": "budget",
+   "colors": [
+    "grey-green",
+    "dark grey"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/gladom-tray-table-dark-grey-green-70578451/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/gladom-tray-table-dark-grey-green__1344610_pe949913_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-50319029",
+   "store": "IKEA Saudi Arabia",
+   "category": "table",
+   "category_ar": "طاولات قهوة وجانبية",
+   "type": "coffee table",
+   "name": "LACK Coffee table, white stained oak effect, 90x55 cm",
+   "price_sar": 149.0,
+   "price_tier": "budget",
+   "colors": [
+    "white",
+    "oak"
+   ],
+   "style_tags": [
+    "luxury-classic",
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/lack-coffee-table-white-stained-oak-effect-50319029/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/lack-coffee-table-white-stained-oak-effect__0411538_pe570463_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-30449908",
+   "store": "IKEA Saudi Arabia",
+   "category": "table",
+   "category_ar": "طاولات قهوة وجانبية",
+   "type": "side table",
+   "name": "LACK Side table, white, 55x55 cm",
+   "price_sar": 69.95,
+   "price_tier": "budget",
+   "colors": [
+    "white"
+   ],
+   "style_tags": [
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/lack-side-table-white-30449908/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/lack-side-table-white__0702210_pe724345_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-80215332",
+   "store": "IKEA Saudi Arabia",
+   "category": "table",
+   "category_ar": "طاولات قهوة وجانبية",
+   "type": "nest of tables",
+   "name": "VITTSJO Nest of tables set of 2, black-brown/glass",
+   "price_sar": 399.0,
+   "price_tier": "mid",
+   "colors": [
+    "black",
+    "brown"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/vittsjoe-nest-of-tables-set-of-2-black-brown-glass-80215332/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/vittsjoe-nest-of-tables-set-of-2-black-brown-glass__1419821_pe977132_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-80213309",
+   "store": "IKEA Saudi Arabia",
+   "category": "table",
+   "category_ar": "طاولات قهوة وجانبية",
+   "type": "coffee table",
+   "name": "VITTSJO Coffee table, black-brown/glass, 75 cm",
+   "price_sar": 299.0,
+   "price_tier": "budget",
+   "colors": [
+    "black",
+    "brown"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/vittsjoe-coffee-table-black-brown-glass-80213309/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/vittsjoe-coffee-table-black-brown-glass__0135348_pe292039_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-80449901",
+   "store": "IKEA Saudi Arabia",
+   "category": "table",
+   "category_ar": "طاولات قهوة وجانبية",
+   "type": "coffee table",
+   "name": "LACK Coffee table, white, 118x78 cm",
+   "price_sar": 249.0,
+   "price_tier": "budget",
+   "colors": [
+    "white"
+   ],
+   "style_tags": [
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/lack-coffee-table-white-80449901/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/lack-coffee-table-white__0750651_pe746801_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-20538721",
+   "store": "IKEA Saudi Arabia",
+   "category": "table",
+   "category_ar": "طاولات قهوة وجانبية",
+   "type": "side table",
+   "name": "HOLMERUD Side table, dark brown, 80x31 cm",
+   "price_sar": 229.0,
+   "price_tier": "budget",
+   "colors": [
+    "dark brown"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/holmerud-side-table-dark-brown-20538721/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/holmerud-side-table-dark-brown__1193661_pe901561_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-00530066",
+   "store": "IKEA Saudi Arabia",
+   "category": "table",
+   "category_ar": "طاولات قهوة وجانبية",
+   "type": "coffee table",
+   "name": "OSTAVALL Adjustable coffee table, white, 90 cm",
+   "price_sar": 649.0,
+   "price_tier": "mid",
+   "colors": [
+    "white"
+   ],
+   "style_tags": [
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/oestavall-adjustable-coffee-table-white-00530066/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/oestavall-adjustable-coffee-table-white__1213713_pe911232_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-90540706",
+   "store": "IKEA Saudi Arabia",
+   "category": "table",
+   "category_ar": "طاولات قهوة وجانبية",
+   "type": "coffee table",
+   "name": "HOLMERUD Coffee table, oak effect, 90x55 cm",
+   "price_sar": 279.0,
+   "price_tier": "budget",
+   "colors": [
+    "oak"
+   ],
+   "style_tags": [
+    "luxury-classic"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/holmerud-coffee-table-oak-effect-90540706/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/holmerud-coffee-table-oak-effect__1193663_pe901563_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-50586555",
+   "store": "IKEA Saudi Arabia",
+   "category": "table",
+   "category_ar": "طاولات قهوة وجانبية",
+   "type": "coffee table",
+   "name": "STOCKHOLM 2025 Coffee table, oak veneer dark brown",
+   "price_sar": 899.0,
+   "price_tier": "mid",
+   "colors": [
+    "dark brown",
+    "oak"
+   ],
+   "style_tags": [
+    "luxury-classic"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/stockholm-2025-coffee-table-oak-veneer-dark-brown-50586555/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/stockholm-2025-coffee-table-oak-veneer-dark-brown__1362695_pe955295_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-20525356",
+   "store": "IKEA Saudi Arabia",
+   "category": "table",
+   "category_ar": "طاولات قهوة وجانبية",
+   "type": "side table",
+   "name": "OLSEROD Side table, anthracite/birch, 53x50 cm",
+   "price_sar": 179.0,
+   "price_tier": "budget",
+   "colors": [
+    "anthracite",
+    "birch"
+   ],
+   "style_tags": [
+    "modern",
+    "warm-natural"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/olseroed-side-table-anthracite-birch-effect-dark-yellow-20525356/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/olseroed-side-table-anthracite-birch-effect-dark-yellow__1150822_pe884680_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-50590406",
+   "store": "IKEA Saudi Arabia",
+   "category": "table",
+   "category_ar": "طاولات قهوة وجانبية",
+   "type": "coffee table",
+   "name": "TORSJO Coffee table, gold effect/glass, 88 cm",
+   "price_sar": 499.0,
+   "price_tier": "mid",
+   "colors": [
+    "gold"
+   ],
+   "style_tags": [
+    "luxury-classic",
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/torsjoe-coffee-table-gold-effect-glass-50590406/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/torsjoe-coffee-table-gold-effect-glass__1362929_pe955365_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-20487873",
+   "store": "IKEA Saudi Arabia",
+   "category": "table",
+   "category_ar": "طاولات قهوة وجانبية",
+   "type": "coffee table",
+   "name": "IDANAS Coffee table, white, 107x55 cm",
+   "price_sar": 995.0,
+   "price_tier": "mid",
+   "colors": [
+    "white"
+   ],
+   "style_tags": [
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/idanaes-coffee-table-white-20487873/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/idanaes-coffee-table-white__1161069_pe889277_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-10239713",
+   "store": "IKEA Saudi Arabia",
+   "category": "table",
+   "category_ar": "طاولات قهوة وجانبية",
+   "type": "nest of tables",
+   "name": "STOCKHOLM Nest of tables set of 2, walnut veneer",
+   "price_sar": 995.0,
+   "price_tier": "mid",
+   "colors": [
+    "walnut"
+   ],
+   "style_tags": [
+    "luxury-classic"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/stockholm-nest-of-tables-set-of-2-walnut-veneer-10239713/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/stockholm-nest-of-tables-set-of-2-walnut-veneer__0735683_pe740088_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-80621067",
+   "store": "IKEA Saudi Arabia",
+   "category": "table",
+   "category_ar": "طاولات قهوة وجانبية",
+   "type": "side table",
+   "name": "IKEA PS 2026 Side table, dark red, 50x40 cm",
+   "price_sar": 199.0,
+   "price_tier": "budget",
+   "colors": [
+    "red"
+   ],
+   "style_tags": [
+    "colorful"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/ikea-ps-2026-side-table-dark-red-80621067/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/ikea-ps-2026-side-table-dark-red__1480770_pe1000254_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-50437810",
+   "store": "IKEA Saudi Arabia",
+   "category": "lamp",
+   "category_ar": "إضاءة أرضية",
+   "type": "floor lamp",
+   "name": "BARLAST Floor lamp, black/white",
+   "price_sar": 49.95,
+   "price_tier": "budget",
+   "colors": [
+    "white",
+    "black"
+   ],
+   "style_tags": [
+    "modern",
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/barlast-floor-lamp-black-white-50437810/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/barlast-floor-lamp-black-white__0957676_pe805130_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-20464051",
+   "store": "IKEA Saudi Arabia",
+   "category": "lamp",
+   "category_ar": "إضاءة أرضية",
+   "type": "floor uplighter",
+   "name": "TAGARP Floor uplighter, black/white",
+   "price_sar": 59.95,
+   "price_tier": "budget",
+   "colors": [
+    "white",
+    "black"
+   ],
+   "style_tags": [
+    "modern",
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/tagarp-floor-uplighter-black-white-20464051/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/tagarp-floor-uplighter-black-white__0810840_pe771436_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-70594837",
+   "store": "IKEA Saudi Arabia",
+   "category": "lamp",
+   "category_ar": "إضاءة أرضية",
+   "type": "floor lamp",
+   "name": "STRANDAD Floor lamp, white/black",
+   "price_sar": 54.95,
+   "price_tier": "budget",
+   "colors": [
+    "white",
+    "black"
+   ],
+   "style_tags": [
+    "modern",
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/strandad-floor-lamp-white-black-70594837/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/strandad-floor-lamp-white-black__1403319_pe969302_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-70608537",
+   "store": "IKEA Saudi Arabia",
+   "category": "lamp",
+   "category_ar": "إضاءة أرضية",
+   "type": "floor uplighter",
+   "name": "IKEA PS 2026 Floor uplighter, yellow",
+   "price_sar": 249.0,
+   "price_tier": "budget",
+   "colors": [
+    "yellow"
+   ],
+   "style_tags": [
+    "colorful"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/ikea-ps-2026-floor-uplighter-yellow-70608537/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/ikea-ps-2026-floor-uplighter-yellow__1418680_pe976687_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-30559261",
+   "store": "IKEA Saudi Arabia",
+   "category": "lamp",
+   "category_ar": "إضاءة أرضية",
+   "type": "floor lamp",
+   "name": "KINNAHULT Floor lamp, ash/white",
+   "price_sar": 349.0,
+   "price_tier": "mid",
+   "colors": [
+    "white"
+   ],
+   "style_tags": [
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/kinnahult-floor-lamp-ash-white-30559261/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/kinnahult-floor-lamp-ash-white__1170759_pe892939_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-40486392",
+   "store": "IKEA Saudi Arabia",
+   "category": "lamp",
+   "category_ar": "إضاءة أرضية",
+   "type": "floor lamp",
+   "name": "TAGARP Floor uplighter/reading lamp, black/white",
+   "price_sar": 99.0,
+   "price_tier": "budget",
+   "colors": [
+    "white",
+    "black"
+   ],
+   "style_tags": [
+    "modern",
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/tagarp-floor-uplighter-reading-lamp-black-white-40486392/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/tagarp-floor-uplighter-reading-lamp-black-white__0965083_pe809330_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-80563576",
+   "store": "IKEA Saudi Arabia",
+   "category": "lamp",
+   "category_ar": "إضاءة أرضية",
+   "type": "floor lamp",
+   "name": "RODFLIK Floor/reading lamp, grey-green",
+   "price_sar": 149.0,
+   "price_tier": "budget",
+   "colors": [
+    "grey-green"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/roedflik-floor-reading-lamp-grey-green-80563576/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/roedflik-floor-reading-lamp-grey-green__1232722_pe916583_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-90163865",
+   "store": "IKEA Saudi Arabia",
+   "category": "lamp",
+   "category_ar": "إضاءة أرضية",
+   "type": "floor lamp",
+   "name": "ARSTID Floor lamp, nickel-plated/white",
+   "price_sar": 299.0,
+   "price_tier": "budget",
+   "colors": [
+    "white"
+   ],
+   "style_tags": [
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/arstid-floor-lamp-nickel-plated-white-90163865/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/arstid-floor-lamp-nickel-plated-white__0684004_pe720967_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-40585924",
+   "store": "IKEA Saudi Arabia",
+   "category": "lamp",
+   "category_ar": "إضاءة أرضية",
+   "type": "floor lamp",
+   "name": "STOCKHOLM 2025 Floor lamp, white textile/brass",
+   "price_sar": 499.0,
+   "price_tier": "mid",
+   "colors": [
+    "white",
+    "brass"
+   ],
+   "style_tags": [
+    "luxury-classic",
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/stockholm-2025-floor-lamp-white-textile-brass-plated-40585924/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/stockholm-2025-floor-lamp-white-textile-brass-plated__1285165_pe933236_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-20601227",
+   "store": "IKEA Saudi Arabia",
+   "category": "lamp",
+   "category_ar": "إضاءة أرضية",
+   "type": "floor lamp",
+   "name": "VARPTROSS Floor lamp, bamboo",
+   "price_sar": 399.0,
+   "price_tier": "mid",
+   "colors": [
+    "bamboo"
+   ],
+   "style_tags": [
+    "warm-natural"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/varptross-floor-lamp-bamboo-20601227/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/varptross-floor-lamp-bamboo__1509475_pe1009725_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-70504752",
+   "store": "IKEA Saudi Arabia",
+   "category": "lamp",
+   "category_ar": "إضاءة أرضية",
+   "type": "floor lamp",
+   "name": "PILSKOTT LED floor lamp smart, black",
+   "price_sar": 499.0,
+   "price_tier": "mid",
+   "colors": [
+    "black"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/pilskott-led-floor-lamp-smart-black-70504752/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/pilskott-led-floor-lamp-smart-black__1077629_pe856958_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-20573559",
+   "store": "IKEA Saudi Arabia",
+   "category": "lamp",
+   "category_ar": "إضاءة أرضية",
+   "type": "floor lamp",
+   "name": "KLOVING Floor lamp, anthracite",
+   "price_sar": 149.0,
+   "price_tier": "budget",
+   "colors": [
+    "anthracite"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/kloeving-floor-lamp-anthracite-20573559/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/kloeving-floor-lamp-anthracite__1341867_pe948915_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-70562087",
+   "store": "IKEA Saudi Arabia",
+   "category": "tv",
+   "category_ar": "طاولات تلفزيون",
+   "type": "TV bench",
+   "name": "KALLAX TV bench, white, 147x60 cm",
+   "price_sar": 449.0,
+   "price_tier": "mid",
+   "colors": [
+    "white"
+   ],
+   "style_tags": [
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/kallax-tv-bench-white-70562087/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/kallax-tv-bench-white__1238898_pe918671_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-70474062",
+   "store": "IKEA Saudi Arabia",
+   "category": "tv",
+   "category_ar": "طاولات تلفزيون",
+   "type": "TV bench",
+   "name": "BESTA TV bench, black-brown, 180x40x38 cm",
+   "price_sar": 645.0,
+   "price_tier": "mid",
+   "colors": [
+    "black",
+    "brown"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/besta-tv-bench-black-brown-70474062/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/besta-tv-bench-black-brown__0316226_pe516834_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-20498904",
+   "store": "IKEA Saudi Arabia",
+   "category": "tv",
+   "category_ar": "طاولات تلفزيون",
+   "type": "TV bench",
+   "name": "LACK TV bench, black-brown, 160x35x36 cm",
+   "price_sar": 449.0,
+   "price_tier": "mid",
+   "colors": [
+    "black",
+    "brown"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/lack-tv-bench-black-brown-20498904/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/lack-tv-bench-black-brown__0955264_pe803706_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-50409874",
+   "store": "IKEA Saudi Arabia",
+   "category": "tv",
+   "category_ar": "طاولات تلفزيون",
+   "type": "TV bench",
+   "name": "BRIMNES TV bench, white, 180x41x53 cm",
+   "price_sar": 949.0,
+   "price_tier": "mid",
+   "colors": [
+    "white"
+   ],
+   "style_tags": [
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/brimnes-tv-bench-white-50409874/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/brimnes-tv-bench-white__0601754_pe681623_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-29560675",
+   "store": "IKEA Saudi Arabia",
+   "category": "tv",
+   "category_ar": "طاولات تلفزيون",
+   "type": "TV storage",
+   "name": "KALLAX TV storage combination, white",
+   "price_sar": 929.0,
+   "price_tier": "mid",
+   "colors": [
+    "white"
+   ],
+   "style_tags": [
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/kallax-tv-storage-combination-white-s29560675/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/kallax-tv-storage-combination-white__1277927_pe931113_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-30269129",
+   "store": "IKEA Saudi Arabia",
+   "category": "tv",
+   "category_ar": "طاولات تلفزيون",
+   "type": "TV bench",
+   "name": "BESTA BURS TV bench, high-gloss white, 180 cm",
+   "price_sar": 1490.0,
+   "price_tier": "mid",
+   "colors": [
+    "white"
+   ],
+   "style_tags": [
+    "modern",
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/besta-burs-tv-bench-high-gloss-white-30269129/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/besta-burs-tv-bench-high-gloss-white__65138_pe175906_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-80489303",
+   "store": "IKEA Saudi Arabia",
+   "category": "tv",
+   "category_ar": "طاولات تلفزيون",
+   "type": "TV bench",
+   "name": "TONSTAD TV bench, brown stained oak veneer",
+   "price_sar": 1595.0,
+   "price_tier": "premium",
+   "colors": [
+    "brown",
+    "oak"
+   ],
+   "style_tags": [
+    "luxury-classic"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/tonstad-tv-bench-brown-stained-oak-veneer-80489303/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/tonstad-tv-bench-brown-stained-oak-veneer__1328114_pe944673_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-89330691",
+   "store": "IKEA Saudi Arabia",
+   "category": "tv",
+   "category_ar": "طاولات تلفزيون",
+   "type": "TV bench",
+   "name": "BESTA TV bench with doors, white/Lappviken white",
+   "price_sar": 1245.0,
+   "price_tier": "mid",
+   "colors": [
+    "white"
+   ],
+   "style_tags": [
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/besta-tv-bench-with-doors-white-lappviken-white-s89330691/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/besta-tv-bench-with-doors-white-lappviken-white__0719188_pe731908_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-70508934",
+   "store": "IKEA Saudi Arabia",
+   "category": "tv",
+   "category_ar": "طاولات تلفزيون",
+   "type": "TV bench",
+   "name": "JATTESTA TV bench, black, 160 cm",
+   "price_sar": 799.0,
+   "price_tier": "mid",
+   "colors": [
+    "black"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/jaettesta-tv-bench-black-70508934/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/jaettesta-tv-bench-black__1154960_pe886376_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-80227797",
+   "store": "IKEA Saudi Arabia",
+   "category": "tv",
+   "category_ar": "طاولات تلفزيون",
+   "type": "TV bench",
+   "name": "BYAS TV bench, high-gloss white, 160 cm",
+   "price_sar": 649.0,
+   "price_tier": "mid",
+   "colors": [
+    "white"
+   ],
+   "style_tags": [
+    "modern",
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/byas-tv-bench-high-gloss-white-80227797/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/byas-tv-bench-high-gloss-white__0644411_pe702653_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-10070262",
+   "store": "IKEA Saudi Arabia",
+   "category": "curtain",
+   "category_ar": "ستائر",
+   "type": "sheer curtain",
+   "name": "LILL Net curtains 1 pair, white, 280x300 cm",
+   "price_sar": 19.95,
+   "price_tier": "budget",
+   "colors": [
+    "white"
+   ],
+   "style_tags": [
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/lill-net-curtains-1-pair-white-with-rod-pocket-10070262/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/lill-net-curtains-1-pair-white-with-rod-pocket__0598717_pe677784_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-00386549",
+   "store": "IKEA Saudi Arabia",
+   "category": "curtain",
+   "category_ar": "ستائر",
+   "type": "sheer curtain",
+   "name": "HILDRUN Sheer curtains 1 pair, white dotted, 145x300 cm",
+   "price_sar": 39.95,
+   "price_tier": "budget",
+   "colors": [
+    "white"
+   ],
+   "style_tags": [
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/hildrun-sheer-curtains-1-pair-white-dotted-with-rod-pocket-00386549/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/hildrun-sheer-curtains-1-pair-white-dotted-with-rod-pocket__0527350_pe645417_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-20602496",
+   "store": "IKEA Saudi Arabia",
+   "category": "curtain",
+   "category_ar": "ستائر",
+   "type": "light-filtering curtain",
+   "name": "MASTERROT Curtains 1 pair, white grid, 145x300 cm",
+   "price_sar": 79.95,
+   "price_tier": "budget",
+   "colors": [
+    "white"
+   ],
+   "style_tags": [
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/maesterrot-curtains-1-pair-white-white-grid-with-heading-tape-20602496/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/maesterrot-curtains-1-pair-white-white-grid-with-heading-tape__1343349_pe949564_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-30602090",
+   "store": "IKEA Saudi Arabia",
+   "category": "curtain",
+   "category_ar": "ستائر",
+   "type": "block-out curtain",
+   "name": "BENGTA Block-out curtain 1 piece, beige, 210x300 cm",
+   "price_sar": 89.0,
+   "price_tier": "budget",
+   "colors": [
+    "beige"
+   ],
+   "style_tags": [
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/bengta-block-out-curtain-1-piece-beige-with-heading-tape-30602090/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/bengta-block-out-curtain-1-piece-beige-with-heading-tape__1341494_pe948758_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-70556374",
+   "store": "IKEA Saudi Arabia",
+   "category": "curtain",
+   "category_ar": "ستائر",
+   "type": "block-out curtain",
+   "name": "LONNSTAVMAL Block-out curtains 1 pair, beige, 145x300 cm",
+   "price_sar": 299.0,
+   "price_tier": "budget",
+   "colors": [
+    "beige"
+   ],
+   "style_tags": [
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/loennstaevmal-block-out-curtains-1-pair-beige-with-heading-tape-70556374/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/loennstaevmal-block-out-curtains-1-pair-beige-with-heading-tape__1166547_pe891165_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-80417815",
+   "store": "IKEA Saudi Arabia",
+   "category": "curtain",
+   "category_ar": "ستائر",
+   "type": "block-out curtain",
+   "name": "MAJGULL Block-out curtains 1 pair, grey, 145x300 cm",
+   "price_sar": 199.0,
+   "price_tier": "budget",
+   "colors": [
+    "grey"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/majgull-block-out-curtains-1-pair-grey-with-heading-tape-80417815/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/majgull-block-out-curtains-1-pair-grey-with-heading-tape__0597001_pe676987_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-80262187",
+   "store": "IKEA Saudi Arabia",
+   "category": "cushion",
+   "category_ar": "مخدات وتكايات",
+   "type": "cushion pad",
+   "name": "FJADRAR Cushion pad, off-white",
+   "price_sar": 60.0,
+   "price_tier": "budget",
+   "colors": [
+    "off-white"
+   ],
+   "style_tags": [
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/fjaedrar-cushion-pad-off-white-80262187/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/fjaedrar-cushion-pad-off-white__0243140_pe382470_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-50561809",
+   "store": "IKEA Saudi Arabia",
+   "category": "cushion",
+   "category_ar": "مخدات وتكايات",
+   "type": "cushion cover",
+   "name": "LAGERPOPPEL Cushion cover, yellow-beige",
+   "price_sar": 15.95,
+   "price_tier": "budget",
+   "colors": [
+    "beige",
+    "yellow"
+   ],
+   "style_tags": [
+    "colorful",
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/lagerpoppel-cushion-cover-yellow-beige-50561809/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/lagerpoppel-cushion-cover-yellow-beige__1265209_pe927527_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-80614199",
+   "store": "IKEA Saudi Arabia",
+   "category": "cushion",
+   "category_ar": "مخدات وتكايات",
+   "type": "cushion",
+   "name": "PROFETBLOMMA Cushion, grey-blue",
+   "price_sar": 17.95,
+   "price_tier": "budget",
+   "colors": [
+    "grey-blue"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/profetblomma-cushion-grey-blue-80614199/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/profetblomma-cushion-grey-blue__1402416_pe969152_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-30561805",
+   "store": "IKEA Saudi Arabia",
+   "category": "cushion",
+   "category_ar": "مخدات وتكايات",
+   "type": "cushion cover",
+   "name": "LAGERPOPPEL Cushion cover, anthracite",
+   "price_sar": 15.95,
+   "price_tier": "budget",
+   "colors": [
+    "anthracite"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/lagerpoppel-cushion-cover-anthracite-30561805/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/lagerpoppel-cushion-cover-anthracite__1319971_pe941030_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-40590930",
+   "store": "IKEA Saudi Arabia",
+   "category": "cushion",
+   "category_ar": "مخدات وتكايات",
+   "type": "cushion cover",
+   "name": "SANELA Cushion cover, blue",
+   "price_sar": 34.95,
+   "price_tier": "budget",
+   "colors": [
+    "blue"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/sanela-cushion-cover-blue-40590930/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/sanela-cushion-cover-blue__1284654_pe933062_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-90613260",
+   "store": "IKEA Saudi Arabia",
+   "category": "cushion",
+   "category_ar": "مخدات وتكايات",
+   "type": "cushion cover",
+   "name": "ASVEIG Cushion cover, light beige",
+   "price_sar": 39.95,
+   "price_tier": "budget",
+   "colors": [
+    "beige"
+   ],
+   "style_tags": [
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/asveig-cushion-cover-light-beige-90613260/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/asveig-cushion-cover-light-beige__1409636_pe972283_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-60262193",
+   "store": "IKEA Saudi Arabia",
+   "category": "cushion",
+   "category_ar": "مخدات وتكايات",
+   "type": "cushion pad",
+   "name": "INNER Cushion pad, white",
+   "price_sar": 25.0,
+   "price_tier": "budget",
+   "colors": [
+    "white"
+   ],
+   "style_tags": [
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/inner-cushion-pad-white-60262193/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/inner-cushion-pad-white__0243163_pe382484_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-20548292",
+   "store": "IKEA Saudi Arabia",
+   "category": "cushion",
+   "category_ar": "مخدات وتكايات",
+   "type": "cushion cover",
+   "name": "IDALINNEA Cushion cover, anthracite",
+   "price_sar": 19.95,
+   "price_tier": "budget",
+   "colors": [
+    "anthracite"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/idalinnea-cushion-cover-anthracite-20548292/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/idalinnea-cushion-cover-anthracite__1138431_pe879959_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-50570955",
+   "store": "IKEA Saudi Arabia",
+   "category": "cushion",
+   "category_ar": "مخدات وتكايات",
+   "type": "cushion cover",
+   "name": "VALLKRASSING Cushion cover, grey-green",
+   "price_sar": 29.95,
+   "price_tier": "budget",
+   "colors": [
+    "grey-green"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/vallkrassing-cushion-cover-grey-green-50570955/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/vallkrassing-cushion-cover-grey-green__1204906_pe906875_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-10610091",
+   "store": "IKEA Saudi Arabia",
+   "category": "mirror",
+   "category_ar": "مرايا",
+   "type": "mirror",
+   "name": "PINGSTSYREN Mirror, white, 60x80 cm",
+   "price_sar": 249.0,
+   "price_tier": "budget",
+   "colors": [
+    "white"
+   ],
+   "style_tags": [
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/pingstsyren-mirror-white-10610091/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/pingstsyren-mirror-white__1419644_pe977053_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-90439218",
+   "store": "IKEA Saudi Arabia",
+   "category": "mirror",
+   "category_ar": "مرايا",
+   "type": "mirror",
+   "name": "LINDBYN Mirror, black, 110 cm round",
+   "price_sar": 349.0,
+   "price_tier": "mid",
+   "colors": [
+    "black"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/lindbyn-mirror-black-90439218/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/lindbyn-mirror-black__0798815_pe767395_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-30458610",
+   "store": "IKEA Saudi Arabia",
+   "category": "mirror",
+   "category_ar": "مرايا",
+   "type": "mirror",
+   "name": "LINDBYN Mirror, black, 60x120 cm",
+   "price_sar": 249.0,
+   "price_tier": "budget",
+   "colors": [
+    "black"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/lindbyn-mirror-black-30458610/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/lindbyn-mirror-black__0798821_pe767397_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-70590448",
+   "store": "IKEA Saudi Arabia",
+   "category": "mirror",
+   "category_ar": "مرايا",
+   "type": "mirror",
+   "name": "LINDBYN Mirror, black, 50 cm round",
+   "price_sar": 119.0,
+   "price_tier": "budget",
+   "colors": [
+    "black"
+   ],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/lindbyn-mirror-black-70590448/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/lindbyn-mirror-black__1314762_pe940239_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-70601772",
+   "store": "IKEA Saudi Arabia",
+   "category": "mirror",
+   "category_ar": "مرايا",
+   "type": "mirror",
+   "name": "LARBRO Mirror, 20x120 cm",
+   "price_sar": 29.95,
+   "price_tier": "budget",
+   "colors": [],
+   "style_tags": [
+    "modern"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/laerbro-mirror-70601772/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/laerbro-mirror__1419639_pe977049_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-30433747",
+   "store": "IKEA Saudi Arabia",
+   "category": "mirror",
+   "category_ar": "مرايا",
+   "type": "mirror",
+   "name": "SVANSELE Mirror, gold-colour, 78x78 cm",
+   "price_sar": 429.0,
+   "price_tier": "mid",
+   "colors": [
+    "gold"
+   ],
+   "style_tags": [
+    "luxury-classic"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/svansele-mirror-gold-colour-30433747/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/svansele-mirror-gold-colour__0898215_pe813215_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-60641405",
+   "store": "IKEA Saudi Arabia",
+   "category": "mirror",
+   "category_ar": "مرايا",
+   "type": "mirror",
+   "name": "TOFTBYN Mirror, white, 75x165 cm",
+   "price_sar": 399.0,
+   "price_tier": "mid",
+   "colors": [
+    "white"
+   ],
+   "style_tags": [
+    "neutral-minimal"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/toftbyn-mirror-white-60641405/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/toftbyn-mirror-white__0833086_pe777947_s5.jpg?f=s"
+  },
+  {
+   "id": "ikea-sa-30446896",
+   "store": "IKEA Saudi Arabia",
+   "category": "mirror",
+   "category_ar": "مرايا",
+   "type": "mirror",
+   "name": "STOCKHOLM Mirror, walnut veneer, 60 cm",
+   "price_sar": 249.0,
+   "price_tier": "budget",
+   "colors": [
+    "walnut"
+   ],
+   "style_tags": [
+    "luxury-classic"
+   ],
+   "product_url": "https://www.ikea.com/sa/en/p/stockholm-mirror-walnut-veneer-30446896/",
+   "image_url": "https://www.ikea.com/sa/en/images/products/stockholm-mirror-walnut-veneer__0633570_pe695904_s5.jpg?f=s"
+  }
+ ]
+}

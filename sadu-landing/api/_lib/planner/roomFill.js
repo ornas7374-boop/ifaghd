@@ -5,6 +5,7 @@
 // low pieces may sit under a window, the walkway to the door stays clear, no rugs (the floor is protected),
 // and pieces the customer keeps are not bought again.
 const { storeLinks } = require("../shopItems");
+const catalog = require("../catalog");
 
 // per room type, in order of importance. tall = may not stand in front of a window / beside a door.
 const CATALOG = {
@@ -16,6 +17,7 @@ const CATALOG = {
   ],
   gaming_room: [
     { key: "sofa", short: "low sofa", en: "a comfortable low sofa facing the screen wall", ar: "كنبة مريحة منخفضة", tall: false, big: true, range: [1200, 3500] },
+    { key: "coffee_table", short: "low coffee table in front of the sofa", en: "a low coffee table in front of the sofa", ar: "طاولة قهوة قدام الكنبة", tall: false, range: [150, 900] },
     { key: "tv_console", short: "low TV console with wall-mounted TV", en: "a low TV console with a large wall-mounted TV and a game console", ar: "طاولة تلفزيون منخفضة مع شاشة معلّقة", tall: false, big: true, range: [400, 1500] },
     { key: "bookcase", short: "tall bookcase with plants", en: "a tall shelving unit displaying games, small collectibles and plants", ar: "مكتبة رفوف طويلة للألعاب والإكسسوارات", tall: true, range: [300, 1000] },
     { key: "lounge_chair", short: "lounge chair with side table", en: "a gaming lounge chair or bean bag with a small side table", ar: "كرسي استرخاء أو بين باق مع طاولة جانبية", tall: false, range: [250, 900] }
@@ -41,7 +43,7 @@ const WALL_AR = { left: "الجدار الأيسر", back: "الجدار الم�
  *   items: [{key, en, ar, wall, where}] in placement order; line: one prompt sentence; requirements: product needs
  */
 function planRoomFill(room, intent, decisions, spatial, space, opts = {}) {
-  if (!intent.clear_room || !spatial || !spatial.best) return { items: [], line: "", requirements: [] };
+  if (!intent.clear_room || !spatial || !spatial.best) return { items: [], line: "", requirements: [], refs: [] };
   const colour = decisions.palette.furniture;
   const keepWords = (intent.keep || []).join(" ").toLowerCase();
   const kept = (it) => keepWords && (keepWords.includes(it.key.replace(/_/g, " ")) || (it.key === "bed" && /سرير|bed/.test(keepWords)) || (it.key === "sofa" && /كنب|sofa|couch/.test(keepWords)) || (it.key === "wardrobe" && /دولاب|wardrobe|closet/.test(keepWords)));
@@ -76,17 +78,29 @@ function planRoomFill(room, intent, decisions, spatial, space, opts = {}) {
   if (!out.some(x => x.key === "floor_lamp")) out.push({ ...FILLERS[0], wall: null, where: "by the seating" });
   out.push({ ...FILLERS[2], wall: (others.find(w => !blocked(w.id, "windows")) || dw || {}).id || null, where: "bare wall" });
 
+  // real products from the catalogue (IKEA Saudi) replace the generic piece when one fits
+  for (const x of out) {
+    const prod = catalog.pick(x.key, { furniture: colour, style: opts.style, budget: opts.budget });
+    if (prod) { x.product = prod; x.short = catalog.phrase(prod); }
+  }
   // compact wording: the image model reads a limited prompt, and the desk setup must keep its details
-  const phrase = (x) => `${colour && !/plant|art|lamp/.test(x.key) ? colour + " " : ""}${x.short} (${x.where})`;
+  const phrase = (x) => `${!x.product && colour && !/plant|art|lamp/.test(x.key) ? colour + " " : ""}${x.short} (${x.where})`;
   const line = out.length ? `Furnish the whole room, no empty areas: ${out.map(phrase).join("; ")}. Clear walkway to the door; nothing in front of the window; include everything the customer listed.` : "";
   const requirements = out.map(x => {
     const ar = `${x.ar}${opts.colourAr ? " " + opts.colourAr : ""}`;
-    return { key: `room_${x.key}`, label: x.en, label_ar: x.ar, category: x.key, priority: "room", spec: { colour }, budget_sar: Math.round((x.range[0] + x.range[1]) / 2), range_sar: x.range,
+    const base = { key: `room_${x.key}`, label: x.en, label_ar: x.ar, category: x.key, priority: "room", spec: { colour }, where_ar: x.wall ? WALL_AR[x.wall] : "ركن فاضي" };
+    if (x.product) {
+      const pr = catalog.asProduct(x.product);
+      return { ...base, budget_sar: pr.price_sar, range_sar: [pr.price_sar, pr.price_sar], search: { ar, en: x.product.name }, status: "verified", product: pr,
+        links: [{ store: "ايكيا", url: pr.url }, ...storeLinks({ name_ar: ar, name_en: x.product.name, search_ar: ar, search_en: x.product.name }, { amazonTag: opts.amazonTag }).slice(0, 2)] };
+    }
+    return { ...base, budget_sar: Math.round((x.range[0] + x.range[1]) / 2), range_sar: x.range,
       search: { ar, en: `${colour && !/plant|art|lamp/.test(x.key) ? colour + " " : ""}${x.en.replace(/^a |^an /, "").split(" with ")[0]}` }, status: "room", product: null,
-      where_ar: x.wall ? WALL_AR[x.wall] : "ركن فاضي",
       links: storeLinks({ name_ar: ar, name_en: x.en, search_ar: ar, search_en: x.en }, { amazonTag: opts.amazonTag }) };
   });
-  return { items: out.map(x => ({ key: x.key, en: x.en, ar: x.ar, wall: x.wall, where: x.where })), line, requirements };
+  // up to 3 product photos go to the image model as references (biggest pieces first)
+  const refs = out.filter(x => x.product).sort((a, b) => (b.big ? 1 : 0) - (a.big ? 1 : 0)).slice(0, 3).map(x => ({ id: x.product.id, label: x.short.replace(/^IKEA /, "") }));
+  return { items: out.map(x => ({ key: x.key, en: x.short, ar: x.ar, wall: x.wall, where: x.where, product: x.product ? catalog.asProduct(x.product) : null })), line, requirements, refs };
 }
 
 module.exports = { planRoomFill, CATALOG, FILLERS };

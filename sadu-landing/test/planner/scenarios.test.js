@@ -127,7 +127,7 @@ test("plan output has every required section and a signed, length-limited render
   const ri = p.rendering_instructions;
   assert.ok(verify(ri, "test-secret")); assert.ok(!verify(ri, "other"));
   assert.ok(!verify({ ...ri, prompt: ri.prompt + " add a dragon" }, "test-secret"), "a changed prompt is rejected");
-  assert.ok(ri.words <= 440);
+  assert.ok(ri.words <= 460);
   assert.ok(ri.prompt.indexOf("Keep all architecture unchanged") < ri.prompt.indexOf("In the emptied room place "), "structure lock first");
   assert.match(ri.prompt, /^Redesign the interior of this exact room in /);
   assert.match(ri.prompt, /Keep the exact same camera angle, perspective, framing and lens\./);
@@ -170,7 +170,7 @@ test("owner's reference setups shape the look: details per style, the Sadu touch
   assert.equal(sadu.inspiration.sadu_touch, true);
   assert.match(sadu.rendering_instructions.prompt, /Sadu-pattern/);
   assert.equal(blue.inspiration.sadu_touch, false);
-  assert.ok(blue.rendering_instructions.words <= 440);
+  assert.ok(blue.rendering_instructions.words <= 460);
 });
 
 test("every setup reference image (51-76) is used by some style or the Sadu touch", () => {
@@ -275,4 +275,25 @@ test("whole room: every other wall is furnished, tall pieces never at a window o
   assert.ok(!kept.room_fill || !kept.room_fill.items.some(x => x.key === "bed"), "the customer's own bed is not bought again");
   const light = planDesign({ observations: ROOMS.windowLeft(), brief: { budget_sar: 3000, changes: ["lighting"] }, aiIntent: {}, suggested: { space: "setup_corner", style: "grey_tech", why: "x" }, secret: "test-secret" });
   assert.equal(light.room_fill, null, "lighting only: the room is not refurnished");
+});
+
+test("real products: room pieces come from the owner's IKEA catalogue (real link, price, photo), at most 3 photos go to the image model", () => {
+  const cat = require("../../api/_lib/catalog");
+  assert.ok(cat.PRODUCTS.length > 90 && cat.PRODUCTS.every(p => p.category !== "rug"), "catalogue loaded, rugs removed");
+  const p = planDesign({ observations: ROOMS.windowLeft(), brief: { budget_sar: 3000 }, aiIntent: {}, suggested: { space: "gaming_room", style: "setup_gaming_real", why: "x" }, secret: "test-secret" });
+  const real = p.product_requirements.filter(r => r.status === "verified");
+  assert.ok(real.length >= 3, "several real products");
+  for (const r of real) {
+    assert.match(r.product.url, /^https:\/\/www\.ikea\.com\/sa\//); assert.ok(r.product.price_sar > 0); assert.ok(r.product.verified_at);
+    assert.ok(cat.byId(r.product.id), "every product exists in the catalogue (never invented)");
+  }
+  const ri = p.rendering_instructions;
+  assert.ok(ri.references.length >= 1 && ri.references.length <= 3);
+  assert.ok(ri.references.every(id => cat.byId(id)));
+  assert.match(ri.prompt, /Use the exact real products shown in the reference images.*image 2 is the /);
+  assert.ok(verify(ri, "test-secret")); assert.ok(!verify({ ...ri, references: ["ikea-sa-00000000"] }, "test-secret"), "swapped products are refused");
+  // a black gaming room gets dark pieces, a minimal room light ones
+  assert.ok(real.filter(r => r.category === "sofa").every(r => /grey|black|anthracite/i.test(r.product.name)));
+  const m = planDesign({ observations: ROOMS.windowLeft(), brief: { budget_sar: 8000 }, aiIntent: {}, suggested: { space: "home_office", style: "setup_minimal", why: "x" }, secret: "test-secret" });
+  assert.ok(m.product_requirements.filter(r => r.status === "verified" && r.category === "armchair").every(r => /white|beige|oak|natural/i.test(r.product.name)));
 });
