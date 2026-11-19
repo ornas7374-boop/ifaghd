@@ -34,6 +34,23 @@ module.exports = async (req, res) => {
     if (req.query.cfschema) {
       return res.status(200).json({ mode: "cloudflare_schema", ...(await require("../_lib/cloudflare").schema(process.env.CLOUDFLARE_API_TOKEN, String(req.query.cfschema))) });
     }
+    if (req.query.credits === "1") {
+      // free: which Replicate keys are valid and have credit? An empty input is refused before anything runs:
+      // 422 = key works and the account can create predictions; 402 = no credit; 401 = bad key. Nothing is drawn.
+      const keys = String(process.env.REPLICATE_CANDIDATE_KEYS || "").split(",").map(k => k.trim()).filter(Boolean).slice(0, 10);
+      const out = [];
+      for (const k of keys) {
+        const tag = k.slice(0, 7) + "…";
+        try {
+          const a = await fetch("https://api.replicate.com/v1/account", { headers: { Authorization: `Bearer ${k}` } });
+          if (!a.ok) { out.push({ key: tag, valid: false, http: a.status }); continue; }
+          const p = await fetch("https://api.replicate.com/v1/models/black-forest-labs/flux-kontext-pro/predictions", { method: "POST", headers: { Authorization: `Bearer ${k}`, "Content-Type": "application/json" }, body: JSON.stringify({ input: {} }) });
+          const j = await p.json().catch(() => ({}));
+          out.push({ key: tag, valid: true, prediction_http: p.status, detail: String(j.detail || j.title || "").slice(0, 160) });
+        } catch (e) { out.push({ key: tag, error: e.message }); }
+      }
+      return res.status(200).json({ mode: "replicate_credits", results: out });
+    }
     if (req.query.refcheck === "1") {
       // free: can the server download the real product photos? (no drawing)
       const cat = require("../_lib/catalog");
