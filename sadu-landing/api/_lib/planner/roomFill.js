@@ -8,32 +8,19 @@ const { storeLinks } = require("../shopItems");
 const catalog = require("../catalog");
 
 // per room type, in order of importance. tall = may not stand in front of a window / beside a door.
-const CATALOG = {
-  setup_corner: [ // bedroom with a desk setup
-    { key: "bed", short: "double bed with padded headboard", en: "a double bed with a padded headboard and neat neutral bedding", ar: "سرير مزدوج بلوح رأس منجّد", tall: false, big: true, range: [900, 2500] },
-    { key: "nightstand", short: "nightstand with lamp", en: "a matching nightstand with a small lamp", ar: "كومودينو مع أباجورة صغيرة", tall: false, range: [150, 450] },
-    { key: "wardrobe", short: "tall flat-door wardrobe", en: "a tall wardrobe with flat doors", ar: "دولاب ملابس", tall: true, big: true, range: [900, 2500] },
-    { key: "dresser", short: "low dresser with mirror", en: "a low dresser with a framed mirror above it", ar: "تسريحة منخفضة مع مرآة", tall: false, range: [400, 1200] }
-  ],
-  gaming_room: [
-    { key: "sofa", short: "low sofa", en: "a comfortable low sofa facing the screen wall", ar: "كنبة مريحة منخفضة", tall: false, big: true, range: [1200, 3500] },
-    { key: "coffee_table", short: "low coffee table in front of the sofa", en: "a low coffee table in front of the sofa", ar: "طاولة قهوة قدام الكنبة", tall: false, range: [150, 900] },
-    { key: "tv_console", short: "low TV console with wall-mounted TV", en: "a low TV console with a large wall-mounted TV and a game console", ar: "طاولة تلفزيون منخفضة مع شاشة معلّقة", tall: false, big: true, range: [400, 1500] },
-    { key: "bookcase", short: "tall bookcase with plants", en: "a tall shelving unit displaying games, small collectibles and plants", ar: "مكتبة رفوف طويلة للألعاب والإكسسوارات", tall: true, range: [300, 1000] },
-    { key: "lounge_chair", short: "lounge chair with side table", en: "a gaming lounge chair or bean bag with a small side table", ar: "كرسي استرخاء أو بين باق مع طاولة جانبية", tall: false, range: [250, 900] }
-  ],
-  home_office: [
-    { key: "bookcase", short: "tall bookcase with plants", en: "a tall bookcase with books, boxes and small plants", ar: "مكتبة كتب طويلة", tall: true, big: true, range: [300, 1200] },
-    { key: "armchair", short: "reading armchair with side table", en: "a reading armchair with a side table", ar: "كرسي قراءة مع طاولة جانبية", tall: false, big: true, range: [500, 1500] },
-    { key: "cabinet", short: "low storage cabinet", en: "a low storage cabinet with closed doors", ar: "خزانة تخزين منخفضة", tall: false, range: [300, 900] },
-    { key: "sofa", short: "low sofa", en: "a compact two-seat sofa", ar: "كنبة صغيرة لشخصين", tall: false, range: [900, 2500] }
-  ]
-};
+// sadu is gaming setups only: the rest of the room gets gaming pieces (no bed, wardrobe or dresser)
+const GAMING = [
+  { key: "lounge_chair", short: "gaming lounge chair with side table", en: "a gaming lounge chair with a small side table", ar: "كرسي ألعاب للاسترخاء مع طاولة جانبية", tall: false, big: true, range: [250, 900] },
+  { key: "tv_console", short: "low TV console with wall-mounted TV and game console", en: "a low TV console with a large wall-mounted TV and a game console", ar: "طاولة تلفزيون منخفضة مع شاشة معلّقة وجهاز ألعاب", tall: false, big: true, range: [400, 1500] },
+  { key: "bookcase", short: "tall shelving with games, controllers and LED", en: "a tall shelving unit with games, controllers, headsets and LED strip lighting", ar: "رفوف طويلة للألعاب والإكسسوارات", tall: true, range: [300, 1000] },
+  { key: "sofa", short: "low gaming sofa", en: "a low sofa for couch gaming facing the TV", ar: "كنبة ألعاب منخفضة", tall: false, big: true, range: [1200, 3500] }
+];
+const CATALOG = { setup_corner: GAMING, gaming_room: GAMING, home_office: GAMING };
 // small pieces that finish any empty stretch
 const FILLERS = [
   { key: "floor_lamp", short: "slim floor lamp", en: "a slim floor lamp with a warm shade", ar: "أباجورة أرضية", tall: true, range: [120, 400] },
   { key: "tall_plant", short: "tall potted plant", en: "a tall indoor plant in a ceramic pot", ar: "نبتة طويلة في أصيص", tall: true, range: [80, 300] },
-  { key: "wall_art_set", short: "two framed abstract prints", en: "a set of two framed abstract prints", ar: "لوحتان تجريديتان", tall: false, wall: true, range: [120, 400] }
+  { key: "wall_art_set", short: "two framed abstract gaming-style neon prints", en: "a set of two framed abstract gaming-style prints", ar: "لوحتان تجريديتان", tall: false, wall: true, range: [120, 400] }
 ];
 const WALL_EN = { left: "left wall", back: "back wall", right: "right wall" };
 const WALL_AR = { left: "الجدار الأيسر", back: "الجدار المقابل", right: "الجدار الأيمن" };
@@ -43,7 +30,7 @@ const WALL_AR = { left: "الجدار الأيسر", back: "الجدار الم�
  *   items: [{key, en, ar, wall, where}] in placement order; line: one prompt sentence; requirements: product needs
  */
 function planRoomFill(room, intent, decisions, spatial, space, opts = {}) {
-  if (!intent.clear_room || !spatial || !spatial.best) return { items: [], line: "", requirements: [], refs: [] };
+  if (!intent.clear_room || !spatial || !spatial.best) return { items: [], line: "", lineShort: "", requirements: [], refs: [] };
   const colour = decisions.palette.furniture;
   const keepWords = (intent.keep || []).join(" ").toLowerCase();
   const kept = (it) => keepWords && (keepWords.includes(it.key.replace(/_/g, " ")) || (it.key === "bed" && /سرير|bed/.test(keepWords)) || (it.key === "sofa" && /كنب|sofa|couch/.test(keepWords)) || (it.key === "wardrobe" && /دولاب|wardrobe|closet/.test(keepWords)));
@@ -85,7 +72,10 @@ function planRoomFill(room, intent, decisions, spatial, space, opts = {}) {
   }
   // compact wording: the image model reads a limited prompt, and the desk setup must keep its details
   const phrase = (x) => `${!x.product && colour && !/plant|art|lamp/.test(x.key) ? colour + " " : ""}${x.short} (${x.where})`;
-  const line = out.length ? `Furnish the whole room, no empty areas: ${out.map(phrase).join("; ")}. Clear walkway to the door; nothing in front of the window; include everything the customer listed.` : "";
+  const sentence = (list) => list.length ? `Furnish the whole room, no empty areas: ${list.map(phrase).join("; ")}. Clear walkway to the door; nothing in front of the window; include everything the customer listed.` : "";
+  const line = sentence(out);
+  // shorter version (main pieces only) used when the prompt is too long, so the desk setup keeps its details
+  const lineShort = sentence(out.filter(x => !FILLERS.some(f => f.key === x.key)));
   const requirements = out.map(x => {
     const ar = `${x.ar}${opts.colourAr ? " " + opts.colourAr : ""}`;
     const base = { key: `room_${x.key}`, label: x.en, label_ar: x.ar, category: x.key, priority: "room", spec: { colour }, where_ar: x.wall ? WALL_AR[x.wall] : "ركن فاضي" };
@@ -99,8 +89,8 @@ function planRoomFill(room, intent, decisions, spatial, space, opts = {}) {
       links: storeLinks({ name_ar: ar, name_en: x.en, search_ar: ar, search_en: x.en }, { amazonTag: opts.amazonTag }) };
   });
   // up to 3 product photos go to the image model as references (biggest pieces first)
-  const refs = out.filter(x => x.product).sort((a, b) => (b.big ? 1 : 0) - (a.big ? 1 : 0)).slice(0, 3).map(x => ({ id: x.product.id, label: x.short.replace(/^IKEA /, "") }));
-  return { items: out.map(x => ({ key: x.key, en: x.short, ar: x.ar, wall: x.wall, where: x.where, product: x.product ? catalog.asProduct(x.product) : null })), line, requirements, refs };
+  const refs = out.filter(x => x.product && !FILLERS.some(f => f.key === x.key)).sort((a, b) => (b.big ? 1 : 0) - (a.big ? 1 : 0)).slice(0, 3).map(x => ({ id: x.product.id, label: x.short.replace(/^IKEA /, "") }));
+  return { items: out.map(x => ({ key: x.key, en: x.short, ar: x.ar, wall: x.wall, where: x.where, product: x.product ? catalog.asProduct(x.product) : null })), line, lineShort, requirements, refs };
 }
 
 module.exports = { planRoomFill, CATALOG, FILLERS };

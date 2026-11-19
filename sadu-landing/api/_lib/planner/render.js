@@ -56,17 +56,20 @@ function renderInstructions(plan) {
     ? "furniture, decor, wall finishes and paint colors on the wall behind the desk, and decorative lighting"
     : "furniture, decor and decorative lighting (the wall paint and the floor stay exactly as they are)";
   const clear = !!intent.clear_room;
+  let styleOn = true; // the style line is the first thing dropped when the prompt is too long (the items carry the look)
   const kept = (intent.keep || []).join(", ");
-  const head = [
+  const headLines = () => [
     `Redesign the interior of this exact room in ${STYLE_EN[decisions.style] || "modern gaming setup"} style.`,
     "Keep the exact same camera angle, perspective, framing and lens.",
     `Keep all architecture unchanged and in the exact same position: walls, ceiling height, ceiling lights positions (${st.ceiling_lights || "existing ceiling lights"}), the door (${st.door_position || "no door visible in the photo"}), ${clear ? "the window frame and glass" : "the window and curtains area"} (${(clear ? String(st.window_position || "").replace(/,?\s*(with|and)\s+[^,]*\b(curtains?|blinds?|drapes?)\b/gi, "") : st.window_position) || "no window visible in the photo"}), floor tiles (${st.floor_type || room.surfaces.floor || "existing floor"}) and room dimensions.`,
     "Do not add, remove or move any door, window, wall, column or opening.",
+    `The walls keep their exact current colour (${room.surfaces.walls || "as in the photo"}) with no paint, wallpaper or accent wall${allowWall ? " except the planned treatment behind the desk" : ""}.`,
     ...(clear ? [`First empty the room completely: remove ALL existing furniture${existing ? ` (${existing})` : ""}, the curtains and blinds, rugs, wall decor, lamps and clutter${kept ? `, except the customer's ${kept}, which stay exactly as they are` : ""}. Then design the whole room from scratch.`] : []),
     `Only change: ${changeable}. No rugs or carpets on the floor.`,
     // the style line is skipped when the customer described the look themselves (their words say it, in more detail)
-    ...(!intent.request_en && STYLES[decisions.style] && STYLES[decisions.style].fragment ? [`Style: ${STYLES[decisions.style].fragment.replace(/[.\s]+$/, "")}.`] : [])
+    ...(styleOn && !intent.request_en && STYLES[decisions.style] && STYLES[decisions.style].fragment ? [`Style: ${STYLES[decisions.style].fragment.replace(/[.\s]+$/, "")}.`] : [])
   ];
+  const head = headLines();
   const tail = [
     ...(intent.request_en ? [`The customer asks for: ${intent.request_en.replace(/[.\s]+$/, "")}.`] : []),
     `Lighting: ${[light.monitor, light.accent, light.bias].filter(Boolean).join("; ")}; colours: ${decisions.palette.furniture} furniture, ${decisions.palette.accents.join(" and ")} accents.`,
@@ -83,11 +86,14 @@ function renderInstructions(plan) {
   // real products: their photos go to the image model after the room photo (image 1), in this order
   const refs = fill && fill.refs ? fill.refs.slice(0, 3) : [];
   const refLine = refs.length ? [`Use the exact real products shown in the reference images, same shape, colour and material: ${refs.map((r, i) => `image ${i + 2} is the ${r.label}`).join("; ")}.`] : [];
-  const fillLine = fill && fill.line ? [fill.line, ...refLine] : [];
+  let fillLine = fill && fill.line ? [fill.line, ...refLine] : [];
   const build = () => [...head, furnitureLine(), ...fillLine, ...tail].join(" ");
   let prompt = build();
   // keep within the length the image model reads: drop the least important items first (decor), never the structure lines
   let words = prompt.split(/\s+/).length;
+  // over the limit: first the shorter room line (the desk setup is the product), then optional desk items
+  if (words > MAX_WORDS && fill && fill.lineShort) { fillLine = [fill.lineShort, ...refLine]; prompt = build(); words = prompt.split(/\s+/).length; }
+  if (words > MAX_WORDS && styleOn && STYLES[decisions.style] && STYLES[decisions.style].fragment) { styleOn = false; head.splice(0, head.length, ...headLines()); prompt = build(); words = prompt.split(/\s+/).length; }
   // over the limit: drop the last optional item first (decor), essentials only when nothing optional is left
   while (words > MAX_WORDS && lines.length > 3) {
     const i = prio.lastIndexOf(false), at = i >= 0 ? i : lines.length - 1;

@@ -7,7 +7,7 @@
 const SPACES = {
   setup_corner: {
     ar: "ركن سيت أب",
-    prompt: "a desk setup corner inside a bedroom",
+    prompt: "a gaming setup corner",
     hint: "a corner or wall inside a bedroom (a bed or bedroom furniture is visible or likely) where a gaming / desk setup is or will be"
   },
   gaming_room: {
@@ -17,7 +17,7 @@ const SPACES = {
   },
   home_office: {
     ar: "مكتب منزلي",
-    prompt: "a home office desk setup",
+    prompt: "a gaming and streaming desk setup",
     hint: "a study or work space at home: desk for work or study, shelves, a calmer and more professional use"
   }
 };
@@ -74,7 +74,9 @@ const STYLES = {
 
 // the 5 styles distilled from the owner's 100 Pinterest references (text recipes only)
 const { RECIPES } = require("./setupRecipes");
-for (const [k, r] of Object.entries(RECIPES)) STYLES[k] = { ar: r.ar, hint: r.hint, prompt: r.prompt, wall: r.wall, fragment: r.fragment, palette: r.palette, categories: r.categories, recipe: true };
+// sadu is gaming setups only: the calm recipes (minimal / cozy / home office) are kept as data, not offered
+const NOT_GAMING = new Set(["setup_minimal", "setup_cozy", "setup_home_office"]);
+for (const [k, r] of Object.entries(RECIPES)) if (!NOT_GAMING.has(k)) STYLES[k] = { ar: r.ar, hint: r.hint, prompt: r.prompt, wall: r.wall, fragment: r.fragment, palette: r.palette, categories: r.categories, recipe: true };
 
 /**
  * The protection rules shared by every design prompt (legacy style prompt and the planning engine).

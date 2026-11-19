@@ -207,7 +207,9 @@ test("Pinterest recipe styles: each one plans and renders with its style line, k
   const { RECIPES } = require("../../api/_lib/setupRecipes");
   const { STYLES } = require("../../api/_lib/setup");
   assert.equal(Object.keys(RECIPES).length, 6);
-  for (const key of Object.keys(RECIPES)) {
+  // sadu is gaming only: the calm recipes are kept as data but never offered
+  for (const k of ["setup_minimal", "setup_cozy", "setup_home_office"]) assert.ok(!STYLES[k], `${k} not offered`);
+  for (const key of Object.keys(RECIPES).filter(k => STYLES[k])) {
     assert.ok(STYLES[key] && STYLES[key].ar && STYLES[key].hint && STYLES[key].fragment, key);
     assert.ok(!/\brug\b|carpet/i.test(STYLES[key].fragment), `${key} fragment has no rug`);
     assert.ok(STYLES[key].fragment.split(/\s+/).length <= 60, `${key} fragment <= 60 words`);
@@ -216,8 +218,10 @@ test("Pinterest recipe styles: each one plans and renders with its style line, k
       assert.equal(p.validation_results.passed, true, JSON.stringify(p.validation_results.errors));
       const ri = p.rendering_instructions;
       assert.match(ri.prompt, /Keep all architecture unchanged/);
-      assert.match(ri.prompt, /Style: /, `${key} style line`);
-      assert.ok(ri.prompt.indexOf("Keep all architecture unchanged") < ri.prompt.indexOf("Style: "), "structure lock first");
+      // the style line is dropped first when the whole room makes the prompt long; the style name always leads
+      assert.match(ri.prompt, new RegExp(`^Redesign the interior of this exact room in ${require("../../api/_lib/setupRecipes").RECIPES[key].en.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")} style`), `${key} style named`);
+      if (/Style: /.test(ri.prompt)) assert.ok(ri.prompt.indexOf("Keep all architecture unchanged") < ri.prompt.indexOf("Style: "), "structure lock first");
+      assert.ok(ri.words <= 460);
       assert.match(ri.prompt, /No rugs or carpets on the floor/);
       assert.ok(verify(ri, "test-secret"));
       const reqs = p.product_requirements;
@@ -232,11 +236,11 @@ test("Pinterest recipe styles: each one plans and renders with its style line, k
 
 test("a style the customer picks from the suggestions is kept, even if the words name another colour", () => {
   const p = planDesign({ observations: ROOMS.small(), brief: { budget_sar: 3000, description: "أبغى إضاءة بنفسجية" }, aiIntent: { colors: ["purple"] },
-    suggested: { space: "setup_corner", style: "setup_cozy", locked: true, why: "x" }, secret: "test-secret" });
-  assert.equal(p.room_analysis.style, "setup_cozy");
+    suggested: { space: "setup_corner", style: "setup_dark_gaming", locked: true, why: "x" }, secret: "test-secret" });
+  assert.equal(p.room_analysis.style, "setup_dark_gaming");
   const q = planDesign({ observations: ROOMS.small(), brief: { budget_sar: 3000, description: "أبغى إضاءة بنفسجية" }, aiIntent: { colors: ["purple"] },
-    suggested: { space: "setup_corner", style: "setup_cozy", why: "x" }, secret: "test-secret" });
-  assert.notEqual(q.room_analysis.style, "setup_cozy", "without a pick, the requested colour still steers the style");
+    suggested: { space: "setup_corner", style: "setup_dark_gaming", why: "x" }, secret: "test-secret" });
+  assert.notEqual(q.room_analysis.style, "setup_dark_gaming", "without a pick, the requested colour still steers the style");
 });
 
 test("build plan: 2/3/4/5/7 days, day 1 = empty + order, every build step once and in order", () => {
@@ -294,6 +298,6 @@ test("real products: room pieces come from the owner's IKEA catalogue (real link
   assert.ok(verify(ri, "test-secret")); assert.ok(!verify({ ...ri, references: ["ikea-sa-00000000"] }, "test-secret"), "swapped products are refused");
   // a black gaming room gets dark pieces, a minimal room light ones
   assert.ok(real.filter(r => r.category === "sofa").every(r => /grey|black|anthracite/i.test(r.product.name)));
-  const m = planDesign({ observations: ROOMS.windowLeft(), brief: { budget_sar: 8000 }, aiIntent: {}, suggested: { space: "home_office", style: "setup_minimal", why: "x" }, secret: "test-secret" });
+  const m = planDesign({ observations: ROOMS.windowLeft(), brief: { budget_sar: 8000 }, aiIntent: {}, suggested: { space: "home_office", style: "white_blue", why: "x" }, secret: "test-secret" });
   assert.ok(m.product_requirements.filter(r => r.status === "verified" && r.category === "armchair").every(r => /white|beige|oak|natural/i.test(r.product.name)));
 });
