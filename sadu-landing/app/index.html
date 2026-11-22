@@ -416,12 +416,6 @@ fieldset.field{border:0;margin:0;padding:0}
   });
 
   renderSugs();
-  // coming from the landing page with a style: start with that style's description filled in
-  (function(){
-    var k = new URLSearchParams(location.search).get("style");
-    var hit = SUGGEST.filter(function(x){ return x.k === k; })[0];
-    if(hit){ state.pick = hit.k; $("desc").value = hit.ar[2]; renderSugs(); }
-  })();
   $("sugBtn").addEventListener("click", function(){
     var open = $("sugPanel").hidden; $("sugPanel").hidden = !open; this.setAttribute("aria-expanded", open ? "true" : "false");
   });
