@@ -8,7 +8,7 @@
 <title>sadu — صمّم سيت أبك</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Handjet:wght@400..800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Inter:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Inter:wght@500;600&display=swap" rel="stylesheet">
 <style>
 :root{
   /* سدو: ليل نيلي، صوف طبيعي، أحمر الفوّة، زعفران */
@@ -21,7 +21,7 @@
   --silver-start:var(--wool);--silver-end:var(--saffron);
   --error:#F2A09A;--error-bg:#2E1110;--whatsapp:#25D366;
   --glow-sm:0 0 0 1px #FFFFFF2E;
-  --font-display:Handjet,"IBM Plex Sans Arabic",system-ui,sans-serif;
+  --font-display:"IBM Plex Sans Arabic",system-ui,sans-serif;
   --font-text:"IBM Plex Sans Arabic",Inter,system-ui,sans-serif;
   --font-latin:Inter,system-ui,sans-serif;
 }
@@ -36,11 +36,11 @@ button,input{font:inherit;color:inherit}
 header{display:flex;align-items:center;justify-content:space-between;min-block-size:64px;padding-inline:16px;border-block-end:1px solid var(--border-subtle);position:sticky;top:0;background:rgba(11,19,38,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:10}
 .logo{inline-size:96px}
 .badge{font:500 13px/22px var(--font-text);color:var(--text-muted);border:1px solid var(--border-strong);border-radius:999px;padding:2px 12px}
-h1{font:700 46px/1.15 var(--font-display);margin:32px 0 10px;color:var(--wool);letter-spacing:0}
+h1{font:700 32px/1.4 var(--font-display);margin:28px 0 8px;color:var(--wool);letter-spacing:0}
 .sub{margin:0 0 24px;color:var(--text-secondary)}
 .step{margin-block:28px}
-.step__h{display:flex;align-items:baseline;gap:10px;margin:0 0 12px;font:600 26px/1.2 var(--font-display)}
-.step__n{font:600 18px/1 var(--font-display);color:var(--saffron)}
+.step__h{display:flex;align-items:baseline;gap:10px;margin:0 0 12px;font:700 20px/1.5 var(--font-display)}
+.step__n{font:600 14px/1 var(--font-latin);color:var(--saffron)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-block-size:48px;padding:0 20px;border-radius:12px;border:1px solid transparent;font:600 16px/1 var(--font-text);cursor:pointer;text-decoration:none;transition:background-color .15s,transform .08s}
 .btn:active{transform:scale(.98)}
 .btn--primary{background:var(--action);color:var(--on-action)}
@@ -109,7 +109,7 @@ h1{font:700 46px/1.15 var(--font-display);margin:32px 0 10px;color:var(--wool);l
 
 /* shop the look — قطع التصميم */
 .shop{margin-block-start:20px}
-.shop__h{margin:0 0 4px;font:600 22px/1.3 var(--font-display)}
+.shop__h{margin:0 0 4px;font:700 18px/1.5 var(--font-display)}
 .shop__note{margin:0 0 12px;font-size:13px;line-height:22px;color:var(--text-muted)}
 .shop__wait{margin:12px 0 0;color:var(--text-secondary);text-align:center}
 .items{display:grid;gap:10px;list-style:none;margin:0;padding:0}
@@ -170,7 +170,7 @@ fieldset.field{border:0;margin:0;padding:0}
 
 /* خطة المصمم + التقييم */
 .plan,.evalbox{margin:0 0 16px;padding:14px 16px;border-radius:14px;background:var(--surface);border:1px solid var(--border-subtle)}
-.plan h3,.evalbox h3{margin:0 0 8px;font:600 22px/1.3 var(--font-display);color:var(--wool)}
+.plan h3,.evalbox h3{margin:0 0 8px;font:700 18px/1.5 var(--font-display);color:var(--wool)}
 .plan p,.evalbox p{margin:4px 0;font-size:14px;line-height:24px;color:var(--text-secondary)}
 .plan ul,.evalbox ul{margin:6px 0;padding-inline-start:18px;font-size:14px;line-height:24px;color:var(--text-secondary)}
 .btable{width:100%;border-collapse:collapse;margin:8px 0;font-size:13px}
