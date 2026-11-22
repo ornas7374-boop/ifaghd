@@ -4,36 +4,36 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#000000">
+<meta name="theme-color" content="#F6F6F1">
 <title>sadu — صمّم سيت أبك</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Inter:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400..900&family=Noto+Naskh+Arabic:wght@400..700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
   /* سدو: ليل نيلي، صوف طبيعي، أحمر الفوّة، زعفران */
-  /* Runway-inspired: black, white, cool slate; flat, no shadows, small radii */
-  --night:#000000;--indigo:#767d88;--wool:#ffffff;--madder:#3f3f3f;--saffron:#ffffff;
-  --bg:var(--night);--surface:#1a1a1a;--surface-raised:#1a1a1a;--surface-hover:#27272a;
-  --border-subtle:#27272a;--border-strong:#3f3f3f;
-  --text:var(--wool);--text-secondary:#a7a7a7;--text-muted:#7d848e;
-  --action:#ffffff;--action-hover:#e9ecf2;--on-action:#000000;--focus-ring:#ffffff;--overlay:rgba(0,0,0,.72);
+  /* Agentic: warm paper, white surfaces, ink text, one bold orange */
+  --night:#F6F6F1;--indigo:#FF5701;--wool:#111827;--madder:#111827;--saffron:#FF5701;
+  --bg:var(--night);--surface:#FFFFFF;--surface-raised:#FFFFFF;--surface-hover:#EFEEE7;
+  --border-subtle:#E5E3DA;--border-strong:#C9C6BA;
+  --text:var(--wool);--text-secondary:#4B5563;--text-muted:#6B7280;
+  --action:#FF5701;--action-hover:#E64E00;--on-action:#111827;--focus-ring:#111827;--overlay:rgba(17,24,39,.72);
   --silver-start:var(--wool);--silver-end:var(--saffron);
-  --error:#F2A09A;--error-bg:#2E1110;--whatsapp:#25D366;
+  --error:#DC2626;--error-bg:#FEF2F2;--whatsapp:#25D366;
   --glow-sm:0 0 0 1px #FFFFFF2E;
-  --font-display:"IBM Plex Sans Arabic",system-ui,sans-serif;
-  --font-text:"IBM Plex Sans Arabic",Inter,system-ui,sans-serif;
-  --font-latin:Inter,system-ui,sans-serif;
+  --font-display:"Playfair Display","Noto Naskh Arabic",Georgia,serif;
+  --font-text:"Playfair Display","Noto Naskh Arabic",Georgia,serif;
+  --font-latin:"JetBrains Mono",ui-monospace,monospace;
 }
 *,*::before,*::after{box-sizing:border-box}
-body{margin:0;background:#000;color:var(--text);font:400 16px/28px var(--font-text);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body{margin:0;background:var(--bg);color:var(--text);font:400 16px/28px var(--font-text);-webkit-font-smoothing:antialiased;overflow-x:hidden}
 img,svg{display:block;max-inline-size:100%}
 button,input{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px}
 [hidden]{display:none!important}
 .num{font-family:var(--font-latin);font-variant-numeric:tabular-nums;unicode-bidi:isolate}
 .wrap{max-inline-size:640px;margin-inline:auto;padding:0 16px 120px}
-header{display:flex;align-items:center;justify-content:space-between;min-block-size:64px;padding-inline:16px;border-block-end:1px solid var(--border-subtle);position:sticky;top:0;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:10}
+header{display:flex;align-items:center;justify-content:space-between;min-block-size:64px;padding-inline:16px;border-block-end:1px solid var(--border-subtle);position:sticky;top:0;background:rgba(246,246,241,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:10}
 .logo{inline-size:96px}
 .badge{font:500 13px/22px var(--font-text);color:var(--text-muted);border:1px solid var(--border-strong);border-radius:999px;padding:2px 12px}
 h1{font:700 32px/1.4 var(--font-display);margin:28px 0 8px;color:var(--wool);letter-spacing:0}
@@ -45,7 +45,7 @@ h1{font:700 32px/1.4 var(--font-display);margin:28px 0 8px;color:var(--wool);let
 .btn:active{transform:scale(.98)}
 .btn--primary{background:var(--action);color:var(--on-action)}
 .btn--primary:hover{background:var(--action-hover)}
-.btn--primary:disabled{background:#1a1a1a;color:#7d848e;cursor:not-allowed;transform:none}
+.btn--primary:disabled{background:#E5E3DA;color:#6B7280;cursor:not-allowed;transform:none}
 .btn--secondary{background:transparent;border-color:var(--border-strong);color:var(--text)}
 .btn--secondary:hover{background:var(--surface-hover)}
 .btn--wa{background:var(--whatsapp);color:#0B2A17}
@@ -66,7 +66,7 @@ h1{font:700 32px/1.4 var(--font-display);margin:28px 0 8px;color:var(--wool);let
 .style span{font-size:13px;line-height:20px;color:var(--text-muted)}
 .style[aria-checked="true"]{border:1px solid transparent;background:linear-gradient(var(--surface-raised),var(--surface-raised)) padding-box,linear-gradient(180deg,var(--silver-start),var(--silver-end)) border-box;box-shadow:var(--glow-sm)}
 .style[aria-checked="true"]::after{content:"";position:absolute;inset-block-start:10px;inset-inline-end:10px;inline-size:10px;block-size:10px;background:var(--text)}
-.go{position:fixed;inset-inline:0;inset-block-end:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(to top,#000 65%,#0000);z-index:20}
+.go{position:fixed;inset-inline:0;inset-block-end:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(to top,#F6F6F1 65%,#F6F6F100);z-index:20}
 .go .btn{max-inline-size:608px;margin-inline:auto;display:flex}
 .hint{margin:8px 0 0;font-size:13px;line-height:22px;color:var(--text-muted);text-align:center}
 .err{margin-block-start:16px;padding:12px 16px;border-radius:12px;background:var(--error-bg);border:1px solid var(--error);color:var(--error);font-size:15px;line-height:24px}
@@ -91,7 +91,7 @@ h1{font:700 32px/1.4 var(--font-display);margin:28px 0 8px;color:var(--wool);let
 .tag--b{inset-inline-start:12px}.tag--a{inset-inline-end:12px}
 #result,#s3{scroll-margin-top:80px}
 .sadu{display:block;inline-size:100%;block-size:18px;margin-block-start:10px;color:var(--madder)}
-.sadu rect.w{fill:var(--wool)}.sadu rect.s{fill:var(--saffron)}.sadu rect.r{fill:var(--madder)}
+.sadu rect.w{fill:#FFFFFF}.sadu rect.s{fill:var(--saffron)}.sadu rect.r{fill:var(--madder)}
 #result .sadu{animation:weaveIn 1.1s steps(18,end) both}
 @keyframes weaveIn{from{clip-path:inset(0 0 0 100%)}to{clip-path:inset(0 0 0 0)}}
 @media (prefers-reduced-motion:reduce){#result .sadu{animation:none}}
@@ -126,20 +126,20 @@ h1{font:700 32px/1.4 var(--font-display);margin:28px 0 8px;color:var(--wool);let
 /* طلب العميل — وصف، ميزانية، نوع التعديلات (غير مربوط بالتوليد بعد) */
 .descHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-block-end:6px}
 .descHead label{margin:0}
-.sugBtn{min-block-size:40px;padding:0 14px;border-radius:999px;border:1px solid var(--text);background:transparent;color:var(--text);font:600 15px/1 "IBM Plex Sans Arabic",system-ui,sans-serif;cursor:pointer;white-space:nowrap}
+.sugBtn{min-block-size:40px;padding:0 14px;border-radius:999px;border:1px solid var(--text);background:transparent;color:var(--text);font:600 15px/1 "Playfair Display","Noto Naskh Arabic",Georgia,serif;cursor:pointer;white-space:nowrap}
 .sugBtn[aria-expanded="true"]{background:var(--text);color:var(--bg)}
 .sugBtn[aria-expanded="true"] span{display:inline-block;transform:rotate(180deg)}
 .sugPanel{padding:12px;border-radius:14px;border:1px solid var(--border-subtle);background:var(--bg)}
-.sug b{font:600 16px/1.6 "IBM Plex Sans Arabic",system-ui,sans-serif}
-.sug span{font:400 14px/1.7 "IBM Plex Sans Arabic",system-ui,sans-serif !important;color:var(--text-secondary) !important}
+.sug b{font:600 16px/1.6 "Playfair Display","Noto Naskh Arabic",Georgia,serif}
+.sug span{font:400 14px/1.7 "Playfair Display","Noto Naskh Arabic",Georgia,serif !important;color:var(--text-secondary) !important}
 /* خطة التنفيذ */
 .build h3{margin:0 0 4px}
 .days{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 12px}
-.days button{min-block-size:40px;padding:0 16px;border-radius:999px;border:1px solid var(--border-strong);background:transparent;color:var(--text);font:600 15px/1 "IBM Plex Sans Arabic",system-ui,sans-serif;cursor:pointer}
+.days button{min-block-size:40px;padding:0 16px;border-radius:999px;border:1px solid var(--border-strong);background:transparent;color:var(--text);font:600 15px/1 "Playfair Display","Noto Naskh Arabic",Georgia,serif;cursor:pointer}
 .days button[aria-pressed="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
 .day{margin:0 0 12px;padding:12px 14px;border-radius:12px;border:1px solid var(--border-subtle);background:var(--bg)}
-.day h4{margin:0 0 6px;font:700 16px/1.6 "IBM Plex Sans Arabic",system-ui,sans-serif}
-.day h5{margin:8px 0 2px;font:600 15px/1.6 "IBM Plex Sans Arabic",system-ui,sans-serif;color:var(--text)}
+.day h4{margin:0 0 6px;font:700 16px/1.6 "Playfair Display","Noto Naskh Arabic",Georgia,serif}
+.day h5{margin:8px 0 2px;font:600 15px/1.6 "Playfair Display","Noto Naskh Arabic",Georgia,serif;color:var(--text)}
 .day ul{margin:0;padding-inline-start:18px;font-size:14px;line-height:24px;color:var(--text-secondary)}
 .sugHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-block-end:8px}
 .sugTitle{font-weight:600}
@@ -180,22 +180,28 @@ fieldset.field{border:0;margin:0;padding:0}
 .plan details{margin-top:8px;font-size:13px;color:var(--text-muted)}
 .plan summary{cursor:pointer;min-block-size:32px;display:flex;align-items:center}
 .warn{color:var(--text)}
-/* Runway-inspired: flat surfaces, hairline borders, small radii, 400-600 weights */
-.btn{border-radius:4px;font-weight:600}
+/* Agentic: light paper, white cards, ink text, orange only for the main action; serif voice */
+.btn{border-radius:4px;font-weight:700}
+.btn--secondary{background:#FFFFFF}
 .plan,.evalbox,.why,.item,.total,.sugPanel,.preview,.compare{border-radius:8px;box-shadow:none}
-.compare__knob{box-shadow:none}
-.field textarea,.field input[type=number]{border-radius:4px;background:#000;border-color:var(--border-strong)}
+.compare__knob{box-shadow:none;background:#FFFFFF;color:#111827}
+.compare__line{background:#FFFFFF}
+.field textarea,.field input[type=number]{border-radius:4px;background:#FFFFFF;border-color:var(--border-strong)}
 .sug{border-radius:8px}
-.day{background:#000;border-radius:8px}
-.chip,.sugBtn,.days button,.lang,.item__links a,.badge,.tag{border-radius:4px}
-h1{font-weight:500;line-height:1.3}
-.step__h,.plan h3,.evalbox h3,.shop__h{font-weight:600}
+.day{background:#F6F6F1;border-radius:8px}
+.chip,.sugBtn,.days button,.lang,.item__links a,.badge{border-radius:4px}
+.tag,.preview__change{color:#FFFFFF}
+.chip:has(input:checked),.days button[aria-pressed="true"],.lang button[aria-pressed="true"],.sugBtn[aria-expanded="true"]{background:#111827;color:#FFFFFF;border-color:#111827}
+.step__n{color:var(--saffron)}
+h1{font-weight:800;line-height:1.45}
+.step__h,.plan h3,.evalbox h3,.shop__h{font-weight:700}
+body{line-height:1.85}
 </style>
 </head>
 <body>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <defs><linearGradient id="sv" gradientUnits="userSpaceOnUse" x1="0" y1="115.2" x2="0" y2="199.2"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#6E6E6E"/></linearGradient></defs>
+  <defs><linearGradient id="sv" gradientUnits="userSpaceOnUse" x1="0" y1="115.2" x2="0" y2="199.2"><stop offset="0" stop-color="#111827"/><stop offset="1" stop-color="#4B5563"/></linearGradient></defs>
   <symbol id="lockup" viewBox="111 111 383 92"><g fill="url(#sv)"><rect x="151.583" y="116.167" width="9.917" height="9.917"/><rect x="139.778" y="127.972" width="9.917" height="9.917"/><rect x="151.583" y="127.972" width="9.917" height="9.917"/><rect x="163.389" y="127.972" width="9.917" height="9.917"/><rect x="127.972" y="139.778" width="9.917" height="9.917"/><rect x="139.778" y="139.778" width="9.917" height="9.917"/><rect x="163.389" y="139.778" width="9.917" height="9.917"/><rect x="175.194" y="139.778" width="9.917" height="9.917"/><rect x="116.167" y="151.583" width="9.917" height="9.917"/><rect x="127.972" y="151.583" width="9.917" height="9.917"/><rect x="151.583" y="151.583" width="9.917" height="9.917"/><rect x="175.194" y="151.583" width="9.917" height="9.917"/><rect x="187.000" y="151.583" width="9.917" height="9.917"/><rect x="127.972" y="163.389" width="9.917" height="9.917"/><rect x="139.778" y="163.389" width="9.917" height="9.917"/><rect x="163.389" y="163.389" width="9.917" height="9.917"/><rect x="175.194" y="163.389" width="9.917" height="9.917"/><rect x="139.778" y="175.194" width="9.917" height="9.917"/><rect x="151.583" y="175.194" width="9.917" height="9.917"/><rect x="163.389" y="175.194" width="9.917" height="9.917"/><rect x="151.583" y="187.000" width="9.917" height="9.917"/><path d="M 264.390625 199.140625 C 280.03125 199.140625 291.015625 191.042969 291.015625 179.285156 C 291.015625 170.574219 285.414062 165.03125 273.65625 162.535156 L 263.117188 160.316406 C 256.792969 158.929688 254.296875 156.65625 254.296875 153.050781 C 254.296875 148.835938 258.957031 145.839844 265.058594 145.839844 C 271.714844 145.839844 275.261719 149.277344 276.703125 153.605469 L 289.570312 151.054688 C 287.078125 141.457031 278.921875 135.078125 264.890625 135.078125 C 250.027344 135.078125 239.878906 142.457031 239.878906 153.9375 C 239.878906 163.03125 245.589844 168.746094 257.292969 171.296875 L 267.886719 173.570312 C 273.542969 174.789062 276.261719 177.066406 276.261719 180.667969 C 276.261719 184.886719 271.769531 188.101562 264.667969 188.101562 C 257.625 188.101562 253.300781 185.164062 251.636719 179.007812 L 238.160156 181.558594 C 240.320312 192.816406 250.136719 199.140625 264.390625 199.140625 Z M 319.496094 199.140625 C 329.144531 199.140625 335.023438 194.644531 337.742188 189.320312 L 338.296875 189.320312 L 338.296875 197.863281 L 352.105469 197.863281 L 352.105469 156.433594 C 352.105469 139.90625 338.464844 135.078125 326.816406 135.078125 C 314.394531 135.078125 304.1875 140.347656 300.527344 151.273438 L 313.894531 153.992188 C 315.390625 149.886719 319.660156 146.171875 326.871094 146.171875 C 333.914062 146.171875 337.6875 149.722656 337.6875 155.765625 L 337.6875 156.042969 C 337.6875 160.316406 333.140625 160.480469 322.378906 161.644531 C 310.398438 162.921875 298.753906 166.472656 298.753906 180.449219 C 298.753906 192.648438 307.679688 199.140625 319.496094 199.140625 Z M 323.210938 188.433594 C 317.109375 188.433594 312.730469 185.660156 312.730469 180.28125 C 312.730469 174.625 317.609375 172.238281 324.097656 171.351562 C 327.816406 170.851562 335.855469 169.855469 337.796875 168.300781 L 337.796875 175.621094 C 337.796875 182.5 332.085938 188.433594 323.210938 188.433594 Z M 389.128906 198.972656 C 399.832031 198.972656 404.601562 192.539062 406.878906 188.046875 L 407.765625 188.046875 L 407.765625 197.863281 L 421.90625 197.863281 L 421.90625 115.222656 L 407.488281 115.222656 L 407.488281 146.117188 L 406.878906 146.117188 C 404.660156 141.734375 400.109375 135.078125 389.074219 135.078125 C 374.765625 135.078125 363.5625 146.339844 363.5625 166.96875 C 363.5625 187.324219 374.433594 198.972656 389.128906 198.972656 Z M 393.066406 187.101562 C 383.417969 187.101562 378.3125 178.5625 378.3125 166.914062 C 378.3125 155.378906 383.304688 146.949219 393.066406 146.949219 C 402.550781 146.949219 407.765625 154.824219 407.765625 166.914062 C 407.765625 179.007812 402.441406 187.101562 393.066406 187.101562 Z M 457.265625 198.640625 C 466.25 198.640625 472.738281 194.3125 476.457031 185.441406 L 476.566406 197.863281 L 490.265625 197.863281 L 490.265625 135.855469 L 475.789062 135.855469 L 475.789062 172.183594 C 475.789062 181.167969 470.242188 186.382812 462.589844 186.382812 C 455.046875 186.382812 450.445312 181.390625 450.445312 173.070312 L 450.445312 135.855469 L 436.023438 135.855469 L 436.023438 175.289062 C 436.023438 190.210938 444.507812 198.640625 457.265625 198.640625 Z"/></g></symbol>
   <symbol id="i-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3.5"/></symbol>
   <symbol id="i-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></symbol>
