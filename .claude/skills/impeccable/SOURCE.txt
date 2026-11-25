@@ -1,0 +1,6 @@
+Skill: impeccable
+Source: https://github.com/pbakaus/impeccable
+Path: .claude/skills/impeccable
+Commit: b49177d32788f2dc585c42831d845dacf1ebed2c (2026-11-18)
+License: see LICENSE file in this folder
+Copied unchanged from the source repository.
