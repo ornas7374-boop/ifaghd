@@ -1,0 +1,6 @@
+Skill: grilling
+Source: https://github.com/mattpocock/skills
+Path: skills/productivity/grilling
+Commit: d65391149dbb5fe76478e76fa8d5122b2aa5a70e (2026-11-24)
+License: see LICENSE file in this folder
+Copied unchanged from the source repository.

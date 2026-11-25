@@ -1,0 +1,6 @@
+Skill: writing-plans
+Source: https://github.com/obra/superpowers
+Path: skills/writing-plans
+Commit: 22f0b463e7a5e579904dd6211a520321035526f7 (2026-11-03)
+License: see LICENSE file in this folder
+Copied unchanged from the source repository.
