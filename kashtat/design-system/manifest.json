@@ -1,0 +1,115 @@
+{
+  "manifestVersion": 3,
+  "name": "كشتات",
+  "namespace": "Kashtat",
+  "files": [
+    "components/AngledSection/README.md",
+    "components/Button/README.md",
+    "components/CampCard/README.md",
+    "components/Field/README.md",
+    "components/StatTile/README.md",
+    "components/StatusBadge/README.md",
+    "components/bundle.css",
+    "tokens.css"
+  ],
+  "libraries": [],
+  "components": [
+    {
+      "name": "AngledSection",
+      "group": "Layout",
+      "summary": "شريحة عريضة بحافة مائلة بلون band أو band-alt، لصفحات الهبوط: الهيرو، شرح الزبون، شرح المالك."
+    },
+    {
+      "name": "Button",
+      "group": "Actions",
+      "summary": "زر كبسولة للإجراء الرئيسي في كل شاشة: إرسال طلب الحجز، قبول، تسجيل مخيم."
+    },
+    {
+      "name": "CampCard",
+      "group": "Cards",
+      "summary": "بطاقة مخيم أو جلسة في نتائج البحث: صورة، اسم، حي، سعر، وزر طلب حجز."
+    },
+    {
+      "name": "Field",
+      "group": "Forms",
+      "summary": "حقل إدخال كبسولة مع label فوقه، تلميح وخطأ نصي."
+    },
+    {
+      "name": "StatTile",
+      "group": "Dashboard",
+      "summary": "بطاقة رقم في لوحة المالك: طلبات جديدة، دخل الشهر، نسبة الإشغال."
+    },
+    {
+      "name": "StatusBadge",
+      "group": "Status",
+      "summary": "شارة حالة الطلب في لوحة المالك وصفحة الزبون، دائمًا أيقونة وكلمة معًا."
+    }
+  ],
+  "assetGroups": [
+    {
+      "name": "ا",
+      "files": [
+        {
+          "path": "assets/ا/kashtat-stage1-test.pdf",
+          "id": "25cabc74c4d34bade70378a3857aafab"
+        },
+        {
+          "path": "assets/ا/مرجع-تصميم-02-Solid-State-.pdf",
+          "id": "c4c767e77a40944fcfe4b7fc5731326e"
+        },
+        {
+          "path": "assets/ا/مرجع-تصميم-03-Creative-.pdf",
+          "id": "59906f86b3ba1d5070acbc0b0cd96471"
+        },
+        {
+          "path": "assets/ا/مرجع-تصميم-07-Now-UI-Landing-.pdf",
+          "id": "6078883a9dcf84d4742da6236f66ea6a"
+        },
+        {
+          "path": "assets/ا/مرجع-تصميم-21-Corona-.pdf",
+          "id": "b1a3ec46830ab94fe268f43564b30067"
+        }
+      ]
+    }
+  ],
+  "storage": {
+    "files": {
+      "assets/ا/kashtat-stage1-test.pdf": {
+        "store": "blob",
+        "id": "25cabc74c4d34bade70378a3857aafab",
+        "sha256": "7edabff7f0764914fa31bead55ffd21117867f3e63f1a7511a9b8dff359444b1",
+        "bytes": 115951,
+        "type": "application/pdf"
+      },
+      "assets/ا/مرجع-تصميم-02-Solid-State-.pdf": {
+        "store": "blob",
+        "id": "c4c767e77a40944fcfe4b7fc5731326e",
+        "sha256": "3c32d6a4362c99344c33dbd3315ee094af50ffe413241a7f3280406e1c239ff1",
+        "bytes": 461391,
+        "type": "application/pdf"
+      },
+      "assets/ا/مرجع-تصميم-03-Creative-.pdf": {
+        "store": "blob",
+        "id": "59906f86b3ba1d5070acbc0b0cd96471",
+        "sha256": "7227d85a00e0d8544a94b73ac1c50a9126e9ee137a5a9f4f29d22019dc54f36e",
+        "bytes": 535407,
+        "type": "application/pdf"
+      },
+      "assets/ا/مرجع-تصميم-07-Now-UI-Landing-.pdf": {
+        "store": "blob",
+        "id": "6078883a9dcf84d4742da6236f66ea6a",
+        "sha256": "4e0a7ec6c93087a2aec6b87484b9d298cfcf1dc7d505e09805bb9d2b6f3a7b7e",
+        "bytes": 668168,
+        "type": "application/pdf"
+      },
+      "assets/ا/مرجع-تصميم-21-Corona-.pdf": {
+        "store": "blob",
+        "id": "b1a3ec46830ab94fe268f43564b30067",
+        "sha256": "7f5f324733f371d67daec1cb944ee7642d3d7978bd3218f4e17fda7bbb2d688b",
+        "bytes": 441136,
+        "type": "application/pdf"
+      }
+    },
+    "blobBytesUsed": 2222053
+  }
+}

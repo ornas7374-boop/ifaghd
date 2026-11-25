@@ -1,0 +1,19 @@
+<!-- @dsCard group="Dashboard" height=210 subtitle="أرقام لوحة المالك مع عدّاد متحرك" -->
+<!doctype html><html lang="ar" dir="rtl"><body style="margin:0">
+<div class="k-root" style="padding:32px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;max-width:760px">
+  <div class="k-stat k-rise" style="--i:0"><div><div class="k-stat__value"><span data-count="14">14</span></div><div class="k-stat__label">طلبات جديدة</div><div class="k-stat__delta k-stat__delta--up">▲ +3 هذا الأسبوع</div></div><div class="k-stat__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16M6 20l6-14 6 14M9 14h6"/></svg></div></div>
+  <div class="k-stat k-rise" style="--i:1"><div><div class="k-stat__value"><span data-count="8200">8200</span><small class="k-stat__label">ر.س</small></div><div class="k-stat__label">دخل الشهر</div><div class="k-stat__delta k-stat__delta--down">▼ -4% عن الشهر الماضي</div></div><div class="k-stat__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M9.5 10h5"/></svg></div></div>
+</div>
+<script>
+(function(){
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.querySelectorAll('[data-count]').forEach(function(el){
+    var end = +el.dataset.count, t0 = performance.now(), d = 900;
+    (function tick(t){
+      var p = Math.min(1, (t - t0) / d), e = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(end * e).toLocaleString('en-US');
+      if (p < 1) requestAnimationFrame(tick);
+    })(t0);
+  });
+})();
+</script></body></html>
