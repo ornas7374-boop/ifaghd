@@ -1,0 +1,6 @@
+Skill: site-architecture
+Source: https://github.com/coreyhaines31/marketingskills
+Path: skills/site-architecture
+Commit: 8fd2fcade2fd6629026e9dfe6d133b55b36968b9 (2026-11-23)
+License: see LICENSE file in this folder
+Copied unchanged from the source repository.
