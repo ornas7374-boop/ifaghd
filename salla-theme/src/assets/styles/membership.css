@@ -48,7 +48,7 @@
 }
 .afq-btn:active { transform: scale(0.98); }
 .afq-btn--primary { background: var(--color-ink); color: var(--color-on-primary); }
-.afq-btn--primary:hover { text-decoration: underline; text-underline-offset: 4px; }
+.afq-btn--primary:hover { transform: translateY(-1px); }
 .afq-btn--secondary { background: var(--color-soft-cloud); color: var(--color-ink); }
 .afq-btn--secondary:hover { background: var(--color-hairline-soft); }
 
@@ -77,7 +77,7 @@
   font-size: var(--text-heading-md-size); line-height: 1.5; font-weight: 500;
 }
 .afq-disclosure summary::-webkit-details-marker { display: none; }
-.afq-disclosure summary:hover { text-decoration: underline; text-underline-offset: 4px; }
+.afq-disclosure summary:hover { color: var(--color-charcoal); }
 .afq-disclosure p { padding-block-end: var(--space-xl); max-width: 68ch; color: var(--color-charcoal); }
 .m-chev { flex: none; width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.5; transition: transform var(--duration-base) var(--ease-standard); }
 .afq-disclosure[open] .m-chev { transform: rotate(180deg); }
@@ -144,7 +144,7 @@
   .m-book__link:hover .m-cover { transform: translateY(-6px) rotate(-1.2deg); box-shadow: 0 30px 34px -16px rgb(17 17 17 / 0.5), 0 4px 8px rgb(17 17 17 / 0.12); }
   .m-book__link:hover .m-book__img { transform: translateY(-6px) rotate(-1.2deg); }
   .m-book__link:hover .m-dot { transform: scale(1.5); }
-  .m-book__link:hover .m-book__name { text-decoration: underline; text-underline-offset: 4px; }
+  .m-book__link:hover .m-book__name { color: var(--color-charcoal); }
 }
 
 .m-hero__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-xl) 48px; margin-block-start: 40px; padding-block-start: var(--space-xl); border-block-start: 1px solid var(--color-hairline); }
