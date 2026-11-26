@@ -1,0 +1,660 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-26T17:30:52+00:00",
+  "title": "Design System: آفاق الفكر",
+  "extensions": {
+    "colorMeta": {
+      "ink": {
+        "role": "primary",
+        "displayName": "Ink",
+        "tonalRamp": [
+          "oklch(15% 0.000 90)",
+          "oklch(26% 0.000 90)",
+          "oklch(38% 0.000 90)",
+          "oklch(49% 0.000 90)",
+          "oklch(61% 0.000 90)",
+          "oklch(72% 0.000 90)",
+          "oklch(84% 0.000 90)",
+          "oklch(95% 0.000 90)"
+        ]
+      },
+      "on-primary": {
+        "role": "primary",
+        "displayName": "On Primary",
+        "tonalRamp": [
+          "oklch(15% 0.000 90)",
+          "oklch(26% 0.000 90)",
+          "oklch(38% 0.000 90)",
+          "oklch(49% 0.000 90)",
+          "oklch(61% 0.000 90)",
+          "oklch(72% 0.000 90)",
+          "oklch(84% 0.000 90)",
+          "oklch(95% 0.000 90)"
+        ]
+      },
+      "canvas": {
+        "role": "neutral",
+        "displayName": "Canvas",
+        "tonalRamp": [
+          "oklch(15% 0.000 90)",
+          "oklch(26% 0.000 90)",
+          "oklch(38% 0.000 90)",
+          "oklch(49% 0.000 90)",
+          "oklch(61% 0.000 90)",
+          "oklch(72% 0.000 90)",
+          "oklch(84% 0.000 90)",
+          "oklch(95% 0.000 90)"
+        ]
+      },
+      "soft-cloud": {
+        "role": "secondary",
+        "displayName": "Soft Cloud",
+        "tonalRamp": [
+          "oklch(15% 0.000 90)",
+          "oklch(26% 0.000 90)",
+          "oklch(38% 0.000 90)",
+          "oklch(49% 0.000 90)",
+          "oklch(61% 0.000 90)",
+          "oklch(72% 0.000 90)",
+          "oklch(84% 0.000 90)",
+          "oklch(95% 0.000 90)"
+        ]
+      },
+      "charcoal": {
+        "role": "neutral",
+        "displayName": "Charcoal",
+        "tonalRamp": [
+          "oklch(15% 0.000 286)",
+          "oklch(26% 0.000 286)",
+          "oklch(38% 0.000 286)",
+          "oklch(49% 0.000 286)",
+          "oklch(61% 0.000 286)",
+          "oklch(72% 0.000 286)",
+          "oklch(84% 0.000 286)",
+          "oklch(95% 0.000 286)"
+        ]
+      },
+      "ash": {
+        "role": "neutral",
+        "displayName": "Ash",
+        "tonalRamp": [
+          "oklch(15% 0.000 286)",
+          "oklch(26% 0.000 286)",
+          "oklch(38% 0.000 286)",
+          "oklch(49% 0.000 286)",
+          "oklch(61% 0.000 286)",
+          "oklch(72% 0.000 286)",
+          "oklch(84% 0.000 286)",
+          "oklch(95% 0.000 286)"
+        ]
+      },
+      "mute": {
+        "role": "neutral",
+        "displayName": "Mute",
+        "tonalRamp": [
+          "oklch(15% 0.000 286)",
+          "oklch(26% 0.000 286)",
+          "oklch(38% 0.000 286)",
+          "oklch(49% 0.000 286)",
+          "oklch(61% 0.000 286)",
+          "oklch(72% 0.000 286)",
+          "oklch(84% 0.000 286)",
+          "oklch(95% 0.000 286)"
+        ]
+      },
+      "stone": {
+        "role": "neutral",
+        "displayName": "Stone",
+        "tonalRamp": [
+          "oklch(15% 0.000 286)",
+          "oklch(26% 0.000 286)",
+          "oklch(38% 0.000 286)",
+          "oklch(49% 0.000 286)",
+          "oklch(61% 0.000 286)",
+          "oklch(72% 0.000 286)",
+          "oklch(84% 0.000 286)",
+          "oklch(95% 0.000 286)"
+        ]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "tonalRamp": [
+          "oklch(15% 0.000 286)",
+          "oklch(26% 0.000 286)",
+          "oklch(38% 0.000 286)",
+          "oklch(49% 0.000 286)",
+          "oklch(61% 0.000 286)",
+          "oklch(72% 0.000 286)",
+          "oklch(84% 0.000 286)",
+          "oklch(95% 0.000 286)"
+        ]
+      },
+      "hairline-soft": {
+        "role": "neutral",
+        "displayName": "Hairline Soft",
+        "tonalRamp": [
+          "oklch(15% 0.000 90)",
+          "oklch(26% 0.000 90)",
+          "oklch(38% 0.000 90)",
+          "oklch(49% 0.000 90)",
+          "oklch(61% 0.000 90)",
+          "oklch(72% 0.000 90)",
+          "oklch(84% 0.000 90)",
+          "oklch(95% 0.000 90)"
+        ]
+      },
+      "bronze": {
+        "role": "secondary",
+        "displayName": "Bronze",
+        "tonalRamp": [
+          "oklch(15% 0.018 79)",
+          "oklch(26% 0.024 79)",
+          "oklch(38% 0.030 79)",
+          "oklch(49% 0.036 79)",
+          "oklch(61% 0.036 79)",
+          "oklch(72% 0.030 79)",
+          "oklch(84% 0.024 79)",
+          "oklch(95% 0.018 79)"
+        ]
+      },
+      "sale": {
+        "role": "semantic",
+        "displayName": "Sale",
+        "tonalRamp": [
+          "oklch(15% 0.101 29)",
+          "oklch(26% 0.136 29)",
+          "oklch(38% 0.171 29)",
+          "oklch(49% 0.206 29)",
+          "oklch(61% 0.206 29)",
+          "oklch(72% 0.171 29)",
+          "oklch(84% 0.136 29)",
+          "oklch(95% 0.101 29)"
+        ]
+      },
+      "sale-deep": {
+        "role": "semantic",
+        "displayName": "Sale Deep",
+        "tonalRamp": [
+          "oklch(15% 0.066 30)",
+          "oklch(26% 0.088 30)",
+          "oklch(38% 0.110 30)",
+          "oklch(49% 0.133 30)",
+          "oklch(61% 0.133 30)",
+          "oklch(72% 0.110 30)",
+          "oklch(84% 0.088 30)",
+          "oklch(95% 0.066 30)"
+        ]
+      },
+      "success": {
+        "role": "semantic",
+        "displayName": "Success",
+        "tonalRamp": [
+          "oklch(15% 0.057 156)",
+          "oklch(26% 0.077 156)",
+          "oklch(38% 0.097 156)",
+          "oklch(49% 0.116 156)",
+          "oklch(61% 0.116 156)",
+          "oklch(72% 0.097 156)",
+          "oklch(84% 0.077 156)",
+          "oklch(95% 0.057 156)"
+        ]
+      },
+      "success-bright": {
+        "role": "semantic",
+        "displayName": "Success Bright",
+        "tonalRamp": [
+          "oklch(15% 0.077 150)",
+          "oklch(26% 0.104 150)",
+          "oklch(38% 0.130 150)",
+          "oklch(49% 0.157 150)",
+          "oklch(61% 0.157 150)",
+          "oklch(72% 0.130 150)",
+          "oklch(84% 0.104 150)",
+          "oklch(95% 0.077 150)"
+        ]
+      },
+      "info": {
+        "role": "semantic",
+        "displayName": "Info",
+        "tonalRamp": [
+          "oklch(15% 0.119 264)",
+          "oklch(26% 0.160 264)",
+          "oklch(38% 0.201 264)",
+          "oklch(49% 0.242 264)",
+          "oklch(61% 0.242 264)",
+          "oklch(72% 0.201 264)",
+          "oklch(84% 0.160 264)",
+          "oklch(95% 0.119 264)"
+        ]
+      },
+      "info-deep": {
+        "role": "semantic",
+        "displayName": "Info Deep",
+        "tonalRamp": [
+          "oklch(15% 0.118 264)",
+          "oklch(26% 0.159 264)",
+          "oklch(38% 0.199 264)",
+          "oklch(49% 0.240 264)",
+          "oklch(61% 0.240 264)",
+          "oklch(72% 0.199 264)",
+          "oklch(84% 0.159 264)",
+          "oklch(95% 0.118 264)"
+        ]
+      },
+      "accent-pink": {
+        "role": "tertiary",
+        "displayName": "Accent Pink",
+        "tonalRamp": [
+          "oklch(15% 0.115 349)",
+          "oklch(26% 0.155 349)",
+          "oklch(38% 0.194 349)",
+          "oklch(49% 0.234 349)",
+          "oklch(61% 0.234 349)",
+          "oklch(72% 0.194 349)",
+          "oklch(84% 0.155 349)",
+          "oklch(95% 0.115 349)"
+        ]
+      },
+      "accent-pink-soft": {
+        "role": "tertiary",
+        "displayName": "Accent Pink Soft",
+        "tonalRamp": [
+          "oklch(15% 0.049 344)",
+          "oklch(26% 0.066 344)",
+          "oklch(38% 0.082 344)",
+          "oklch(49% 0.099 344)",
+          "oklch(61% 0.099 344)",
+          "oklch(72% 0.082 344)",
+          "oklch(84% 0.066 344)",
+          "oklch(95% 0.049 344)"
+        ]
+      },
+      "accent-purple-soft": {
+        "role": "tertiary",
+        "displayName": "Accent Purple Soft",
+        "tonalRamp": [
+          "oklch(15% 0.050 293)",
+          "oklch(26% 0.067 293)",
+          "oklch(38% 0.084 293)",
+          "oklch(49% 0.101 293)",
+          "oklch(61% 0.101 293)",
+          "oklch(72% 0.084 293)",
+          "oklch(84% 0.067 293)",
+          "oklch(95% 0.050 293)"
+        ]
+      },
+      "accent-purple-pale": {
+        "role": "tertiary",
+        "displayName": "Accent Purple Pale",
+        "tonalRamp": [
+          "oklch(15% 0.029 290)",
+          "oklch(26% 0.039 290)",
+          "oklch(38% 0.048 290)",
+          "oklch(49% 0.058 290)",
+          "oklch(61% 0.058 290)",
+          "oklch(72% 0.048 290)",
+          "oklch(84% 0.039 290)",
+          "oklch(95% 0.029 290)"
+        ]
+      },
+      "accent-teal": {
+        "role": "tertiary",
+        "displayName": "Accent Teal",
+        "tonalRamp": [
+          "oklch(15% 0.039 211)",
+          "oklch(26% 0.052 211)",
+          "oklch(38% 0.066 211)",
+          "oklch(49% 0.079 211)",
+          "oklch(61% 0.079 211)",
+          "oklch(72% 0.066 211)",
+          "oklch(84% 0.052 211)",
+          "oklch(95% 0.039 211)"
+        ]
+      },
+      "accent-pink-deep": {
+        "role": "tertiary",
+        "displayName": "Accent Pink Deep",
+        "tonalRamp": [
+          "oklch(15% 0.051 352)",
+          "oklch(26% 0.068 352)",
+          "oklch(38% 0.086 352)",
+          "oklch(49% 0.103 352)",
+          "oklch(61% 0.103 352)",
+          "oklch(72% 0.086 352)",
+          "oklch(84% 0.068 352)",
+          "oklch(95% 0.051 352)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display-campaign": {
+        "displayName": "Display Campaign",
+        "purpose": "Latin campaign headline inside hero imagery, uppercase. 64px tablet, 48px mobile."
+      },
+      "display-campaign-ar": {
+        "displayName": "Display Campaign Arabic",
+        "purpose": "Arabic campaign headline inside imagery or on a typographic cover stand-in; 1.25 leading so letters never clip."
+      },
+      "heading-xl": {
+        "displayName": "Heading XL",
+        "purpose": "Section headers, product-page title block."
+      },
+      "heading-lg": {
+        "displayName": "Heading LG",
+        "purpose": "Subsections, member-benefit titles, product-page price, section lede."
+      },
+      "heading-md": {
+        "displayName": "Heading MD",
+        "purpose": "Card titles, FAQ row labels, filter group headers, tier names."
+      },
+      "body-md": {
+        "displayName": "Body MD",
+        "purpose": "Default body, search placeholder, book description."
+      },
+      "body-strong": {
+        "displayName": "Body Strong",
+        "purpose": "Book name on cards, filter labels, primary nav links."
+      },
+      "link-md": {
+        "displayName": "Link MD",
+        "purpose": "Underlined inline link."
+      },
+      "button-lg": {
+        "displayName": "Button LG",
+        "purpose": "Hero CTA."
+      },
+      "button-md": {
+        "displayName": "Button MD",
+        "purpose": "Standard pills and chips."
+      },
+      "button-sm": {
+        "displayName": "Button SM",
+        "purpose": "Compact pill, geo selector."
+      },
+      "caption-md": {
+        "displayName": "Caption MD",
+        "purpose": "Author, category, release label, footer link."
+      },
+      "caption-sm": {
+        "displayName": "Caption SM",
+        "purpose": "Badges, utility bar, chip counts, footnotes."
+      },
+      "utility-xs": {
+        "displayName": "Utility XS",
+        "purpose": "Legal fine-print row only."
+      }
+    },
+    "shadows": [
+      {
+        "name": "shadow-inset-hairline",
+        "value": "inset 0 -1px 0 #e5e5e5",
+        "purpose": "Bottom edge of sticky utility and nav bars; the only shadow on chrome."
+      },
+      {
+        "name": "shadow-focus-halo",
+        "value": "0 0 0 12px #f5f5f5",
+        "purpose": "Soft halo around the focused search pill, with a 2px Ink border."
+      }
+    ],
+    "motion": [
+      {
+        "name": "duration-instant",
+        "value": "100ms",
+        "purpose": "Press feedback, swatch ring, chip colour flip."
+      },
+      {
+        "name": "duration-fast",
+        "value": "200ms",
+        "purpose": "Hover colour, focus halo, nav underline, icon nudge."
+      },
+      {
+        "name": "duration-base",
+        "value": "320ms",
+        "purpose": "Accordion open, label swap."
+      },
+      {
+        "name": "duration-slow",
+        "value": "600ms",
+        "purpose": "Book-cover tilt on hover, section reveal."
+      },
+      {
+        "name": "duration-reveal",
+        "value": "900ms",
+        "purpose": "Campaign headline and shelf reveal."
+      },
+      {
+        "name": "duration-stagger",
+        "value": "70ms",
+        "purpose": "Delay step between siblings in a staggered reveal."
+      },
+      {
+        "name": "duration-marquee",
+        "value": "24s",
+        "purpose": "One loop of the kinetic text ticker."
+      },
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.2, 0, 0, 1)",
+        "purpose": "Anything that changes state in place."
+      },
+      {
+        "name": "ease-enter",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Arrivals: reveals, drawers, cover tilt."
+      },
+      {
+        "name": "ease-exit",
+        "value": "cubic-bezier(0.4, 0, 1, 1)",
+        "purpose": "Departures only; never entrances."
+      },
+      {
+        "name": "ease-press",
+        "value": "cubic-bezier(0.3, 0, 0.5, 1)",
+        "purpose": "Press-down and release on buttons."
+      },
+      {
+        "name": "ease-linear",
+        "value": "linear",
+        "purpose": "Marquee and shimmer loops only."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "all durations 0ms",
+        "purpose": "Under prefers-reduced-motion: reduce."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "ultrawide",
+        "value": "1920px"
+      },
+      {
+        "name": "desktop",
+        "value": "1440px"
+      },
+      {
+        "name": "tablet",
+        "value": "1023px"
+      },
+      {
+        "name": "tablet-narrow",
+        "value": "960px"
+      },
+      {
+        "name": "mobile",
+        "value": "599px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Ink pill; the one primary action per screen.",
+      "html": "<div dir=\"rtl\"><a class=\"ds-btn ds-btn-primary\" href=\"#\">اختر خطتك</a></div>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 12px 28px; border-radius: 9999px; border: 1px solid transparent; font-family: var(--font-sans, \"Inter\", \"IBM Plex Sans Arabic\", \"Helvetica Neue\", Helvetica, Arial, sans-serif); font-size: 16px; font-weight: 500; line-height: 1.2; text-decoration: none; cursor: pointer; white-space: nowrap; transition: background-color var(--duration-fast, 200ms) var(--ease-standard, cubic-bezier(0.2, 0, 0, 1)), transform var(--duration-instant, 100ms) var(--ease-press, cubic-bezier(0.3, 0, 0.5, 1)); } .ds-btn:active { transform: scale(0.98); } .ds-btn:focus-visible { outline: 2px solid var(--color-ink, #111111); outline-offset: 2px; } .ds-btn-primary { background: var(--color-ink, #111111); color: var(--color-on-primary, #ffffff); }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Soft Cloud pill; at most one beside the primary.",
+      "html": "<div dir=\"rtl\"><a class=\"ds-btn ds-btn-secondary\" href=\"#\">أنشئ حسابك المجاني</a></div>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 12px 28px; border-radius: 9999px; border: 1px solid transparent; font-family: var(--font-sans, \"Inter\", \"IBM Plex Sans Arabic\", \"Helvetica Neue\", Helvetica, Arial, sans-serif); font-size: 16px; font-weight: 500; line-height: 1.2; text-decoration: none; cursor: pointer; white-space: nowrap; transition: background-color var(--duration-fast, 200ms) var(--ease-standard, cubic-bezier(0.2, 0, 0, 1)), transform var(--duration-instant, 100ms) var(--ease-press, cubic-bezier(0.3, 0, 0.5, 1)); } .ds-btn:active { transform: scale(0.98); } .ds-btn:focus-visible { outline: 2px solid var(--color-ink, #111111); outline-offset: 2px; } .ds-btn-secondary { background: var(--color-soft-cloud, #f5f5f5); color: var(--color-ink, #111111); } .ds-btn-secondary:hover { background: var(--color-hairline-soft, #e5e5e5); }"
+    },
+    {
+      "name": "On-Image Button",
+      "kind": "button",
+      "refersTo": "button-on-image",
+      "description": "Canvas pill at the bottom inline-start of a campaign tile.",
+      "html": "<div dir=\"rtl\" class=\"ds-tile\"><a class=\"ds-btn ds-btn-onimage\" href=\"#\">استكشف</a></div>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 12px 28px; border-radius: 9999px; border: 1px solid transparent; font-family: var(--font-sans, \"Inter\", \"IBM Plex Sans Arabic\", \"Helvetica Neue\", Helvetica, Arial, sans-serif); font-size: 16px; font-weight: 500; line-height: 1.2; text-decoration: none; cursor: pointer; white-space: nowrap; transition: background-color var(--duration-fast, 200ms) var(--ease-standard, cubic-bezier(0.2, 0, 0, 1)), transform var(--duration-instant, 100ms) var(--ease-press, cubic-bezier(0.3, 0, 0.5, 1)); } .ds-btn:active { transform: scale(0.98); } .ds-btn:focus-visible { outline: 2px solid var(--color-ink, #111111); outline-offset: 2px; } .ds-tile { display: flex; align-items: flex-end; aspect-ratio: 16 / 9; max-width: 360px; padding: 18px; background: var(--color-accent-pink-deep, #4c012d); } .ds-btn-onimage { background: var(--color-canvas, #ffffff); color: var(--color-ink, #111111); }"
+    },
+    {
+      "name": "Filter Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Round radio-style choice; Ash outline at rest, Ink fill when selected.",
+      "html": "<fieldset dir=\"rtl\" class=\"ds-chips\"><label class=\"ds-chip\"><input type=\"radio\" name=\"ds-n\"><span>كتاب واحد</span></label><label class=\"ds-chip\"><input type=\"radio\" name=\"ds-n\" checked><span>كتابان</span></label><label class=\"ds-chip\"><input type=\"radio\" name=\"ds-n\"><span>3 كتب</span></label></fieldset>",
+      "css": ".ds-chips { display: flex; flex-wrap: wrap; gap: 8px; border: 0; margin: 0; padding: 0; } .ds-chip { position: relative; display: inline-flex; } .ds-chip input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; } .ds-chip span { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 24px; border-radius: 9999px; border: 1px solid var(--color-ash, #4b4b4d); background: var(--color-canvas, #ffffff); color: var(--color-ink, #111111); font-family: var(--font-sans, \"Inter\", \"IBM Plex Sans Arabic\", \"Helvetica Neue\", Helvetica, Arial, sans-serif); font-size: 16px; font-weight: 500; transition: background-color var(--duration-instant, 100ms) var(--ease-standard, cubic-bezier(0.2, 0, 0, 1)), color var(--duration-instant, 100ms) var(--ease-standard, cubic-bezier(0.2, 0, 0, 1)); } .ds-chip:hover span { background: var(--color-soft-cloud, #f5f5f5); } .ds-chip input:checked + span { background: var(--color-ink, #111111); border-color: var(--color-ink, #111111); color: var(--color-on-primary, #ffffff); } .ds-chip input:focus-visible + span { outline: 2px solid var(--color-ink, #111111); outline-offset: 2px; }"
+    },
+    {
+      "name": "Search Pill",
+      "kind": "input",
+      "refersTo": "search-pill",
+      "description": "Soft Cloud search field; focus adds a 2px Ink border and the 12px Soft Cloud halo.",
+      "html": "<div dir=\"rtl\" class=\"ds-search-wrap\"><input class=\"ds-search\" type=\"search\" placeholder=\"ابحث عن كتاب أو مؤلف\" aria-label=\"بحث\"></div>",
+      "css": ".ds-search-wrap { padding: 16px; } .ds-search { width: 280px; height: 44px; padding: 0 18px; border: 2px solid transparent; border-radius: 24px; background: var(--color-soft-cloud, #f5f5f5); color: var(--color-ink, #111111); font-family: var(--font-sans, \"Inter\", \"IBM Plex Sans Arabic\", \"Helvetica Neue\", Helvetica, Arial, sans-serif); font-size: 16px; font-weight: 400; transition: border-color var(--duration-fast, 200ms) var(--ease-standard, cubic-bezier(0.2, 0, 0, 1)), box-shadow var(--duration-fast, 200ms) var(--ease-standard, cubic-bezier(0.2, 0, 0, 1)); } .ds-search::placeholder { color: var(--color-mute, #707072); } .ds-search:hover { border-color: var(--color-hairline, #cacacb); } .ds-search:focus-visible { outline: none; border-color: var(--color-ink, #111111); box-shadow: var(--shadow-focus-halo, 0 0 0 12px #f5f5f5); }"
+    },
+    {
+      "name": "Primary Nav",
+      "kind": "nav",
+      "refersTo": "navigation",
+      "description": "Text wordmark at inline-start, Body Strong links, active item underlined, inset hairline below.",
+      "html": "<nav dir=\"rtl\" class=\"ds-nav\" aria-label=\"القائمة الرئيسية\"><b>آفاق الفكر</b><a href=\"#\">الكتب</a><a href=\"#\">جديد</a><a href=\"#\">الأكثر مبيعاً</a><a href=\"#\" aria-current=\"page\">آفاق+</a></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; gap: 32px; padding: 18px 24px; background: var(--color-canvas, #ffffff); color: var(--color-ink, #111111); box-shadow: var(--shadow-inset-hairline, inset 0 -1px 0 #e5e5e5); font-family: var(--font-sans, \"Inter\", \"IBM Plex Sans Arabic\", \"Helvetica Neue\", Helvetica, Arial, sans-serif); font-size: 16px; font-weight: 500; } .ds-nav b { font-weight: 700; font-size: 20px; margin-inline-end: auto; } .ds-nav a { color: inherit; text-decoration: none; transition: color var(--duration-fast, 200ms) var(--ease-standard, cubic-bezier(0.2, 0, 0, 1)); } .ds-nav a:hover { color: var(--color-charcoal, #39393b); } .ds-nav a[aria-current] { text-decoration: underline; text-underline-offset: 6px; } .ds-nav a:focus-visible { outline: 2px solid var(--color-ink, #111111); outline-offset: 2px; }"
+    },
+    {
+      "name": "Badge",
+      "kind": "chip",
+      "refersTo": "badge",
+      "description": "Small outlined round label beside a name.",
+      "html": "<div dir=\"rtl\"><span class=\"ds-badge\">سنوي</span></div>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 9999px; border: 1px solid var(--color-ink, #111111); color: var(--color-ink, #111111); font-family: var(--font-sans, \"Inter\", \"IBM Plex Sans Arabic\", \"Helvetica Neue\", Helvetica, Arial, sans-serif); font-size: 12px; font-weight: 500; line-height: 1.5; white-space: nowrap; }"
+    },
+    {
+      "name": "Disclosure Row",
+      "kind": "custom",
+      "refersTo": "disclosure-row",
+      "description": "Hairline-divided FAQ or detail row with an outlined chevron that turns on open.",
+      "html": "<div dir=\"rtl\" class=\"ds-faq\"><details class=\"ds-disc\" open><summary>كيف أستخدم الخصم؟<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m6 9 6 6 6-6\"/></svg></summary><p>يظهر الخصم في السلة على كل كتاب بعد تفعيل العضوية.</p></details><details class=\"ds-disc\"><summary>هل أقدر أبدأ مجاناً؟<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m6 9 6 6 6-6\"/></svg></summary><p>نعم. أنشئ حسابك المجاني الآن.</p></details></div>",
+      "css": ".ds-faq { border-top: 1px solid var(--color-hairline, #cacacb); color: var(--color-ink, #111111); font-family: var(--font-sans, \"Inter\", \"IBM Plex Sans Arabic\", \"Helvetica Neue\", Helvetica, Arial, sans-serif); } .ds-disc { border-bottom: 1px solid var(--color-hairline, #cacacb); } .ds-disc summary { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-block: 24px; list-style: none; cursor: pointer; font-size: 16px; line-height: 1.5; font-weight: 500; } .ds-disc summary::-webkit-details-marker { display: none; } .ds-disc summary:focus-visible { outline: 2px solid var(--color-ink, #111111); outline-offset: 2px; } .ds-disc svg { flex: none; width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.5; transition: transform var(--duration-base, 320ms) var(--ease-standard, cubic-bezier(0.2, 0, 0, 1)); } .ds-disc[open] svg { transform: rotate(180deg); } .ds-disc p { margin: 0; padding-block-end: 24px; max-width: 68ch; color: var(--color-charcoal, #39393b); font-size: 16px; line-height: 1.5; }"
+    },
+    {
+      "name": "Editions Shelf Book",
+      "kind": "card",
+      "refersTo": "book-stage",
+      "description": "Signature: a 4:5 Soft Cloud stage on an Ink shelf line; the cover alone tilts on hover, and an 8px Bronze dot marks the release.",
+      "html": "<ul dir=\"rtl\" class=\"ds-shelf\"><li><a class=\"ds-book\" href=\"#\"><span class=\"ds-stage\"><span class=\"ds-cover\"><span class=\"ds-cover-title\">عادات الانتباه</span><span class=\"ds-cover-mark\">آفاق الفكر</span></span></span><span class=\"ds-book-name\">عادات الانتباه</span><span class=\"ds-release\"><span class=\"ds-dot\" aria-hidden=\"true\"></span>قريباً</span></a></li></ul>",
+      "css": ".ds-shelf { list-style: none; margin: 0; padding: 12px 16px 8px; display: flex; gap: 24px; background: linear-gradient(var(--color-ink, #111111), var(--color-ink, #111111)) no-repeat; background-size: 100% 1px; background-position: 0 262px; } .ds-shelf li { flex: 0 0 200px; } .ds-book { display: flex; flex-direction: column; gap: 8px; color: var(--color-ink, #111111); text-decoration: none; font-family: var(--font-sans, \"Inter\", \"IBM Plex Sans Arabic\", \"Helvetica Neue\", Helvetica, Arial, sans-serif); } .ds-book:focus-visible { outline: 2px solid var(--color-ink, #111111); outline-offset: 2px; } .ds-stage { display: grid; place-items: center; aspect-ratio: 4 / 5; padding: 14% 16%; overflow: hidden; background: var(--color-soft-cloud, #f5f5f5); } .ds-cover { display: flex; flex-direction: column; justify-content: space-between; width: 100%; height: 100%; padding: 14% 12% 10%; background: var(--color-ink, #111111); color: var(--color-on-primary, #ffffff); transition: transform var(--duration-slow, 600ms) var(--ease-enter, cubic-bezier(0.16, 1, 0.3, 1)); } .ds-cover-title { font-family: var(--font-display, \"Bebas Neue\", \"Noto Kufi Arabic\", \"Inter\", Helvetica, Arial, sans-serif); font-weight: 800; font-size: 18px; line-height: 1.3; color: var(--color-bronze, #897a62); } .ds-cover-mark { font-size: 10px; font-weight: 700; padding-top: 8px; border-top: 1px solid currentColor; } .ds-book-name { margin-top: 4px; font-size: 16px; font-weight: 500; line-height: 1.5; } .ds-release { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; } .ds-dot { width: 8px; height: 8px; border-radius: 9999px; background: var(--color-bronze, #897a62); transition: transform var(--duration-fast, 200ms) var(--ease-standard, cubic-bezier(0.2, 0, 0, 1)); } .ds-book:hover .ds-cover { transform: translateY(-6px) rotate(-1.2deg); } .ds-book:hover .ds-dot { transform: scale(1.5); } @media (prefers-reduced-motion: reduce) { .ds-cover, .ds-dot { transition: none; } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Monochrome Stage",
+    "overview": "آفاق الفكر is a bookshop that gets out of the way of its books. The interface is a quiet stage in black, white and one studio grey; every book cover sits on that grey like a product shot in a photographer's sweep, and the covers carry all the colour on the page. Navigation, filters, buttons, cards and footer stay monochrome. The result reads like a well-kept shelf card in a good bookshop, not a retail ad: dense but orderly, confident without hype.\n\nThe system is Arabic first and right-to-left. Layout is written in logical properties so it mirrors cleanly, and Arabic text is given room to breathe (display leading opens to 1.25 so letters never clip). Containers are square and flat; controls are round. Depth comes from tone and hairlines, never from shadows under cards. Type is a billboard-and-catalogue pairing: a condensed display face appears only for campaign lines set inside imagery, and a neutral sans carries everything else at a deliberate jump from 32px headers down to 16px catalogue text.\n\nMotion is restrained and functional: state changes are fast and in place, entrances land softly, and the only showpiece is a book cover that tilts toward the reader on hover. All motion collapses to zero under reduced-motion preferences.",
+    "keyCharacteristics": [
+      "Canvas and Soft Cloud cover about 95% of every screen; colour lives in book covers and editorial imagery.",
+      "Every book image sits on Soft Cloud at 4:5, edge to edge in its card.",
+      "Black pill buttons, one primary per screen.",
+      "Square, shadowless containers; fully round controls.",
+      "An 8px spacing grid, with section rhythm stepping 48 / 32 / 24px across desktop, tablet and mobile.",
+      "RTL and Arabic first; logical properties only."
+    ],
+    "rules": [
+      {
+        "name": "The Monochrome Stage Rule",
+        "body": "Chrome is Ink, Canvas and Soft Cloud. If a nav, filter, button, card or footer carries a hue, it is wrong; the colour belongs to the covers.",
+        "section": "colors"
+      },
+      {
+        "name": "The Price-Line Red Rule",
+        "body": "Sale red appears on the price line and nowhere else: never a background, never a badge fill, never a heading.",
+        "section": "colors"
+      },
+      {
+        "name": "The Bronze Belongs to Books Rule",
+        "body": "Bronze marks book-cover moments only. It is never chrome and never a CTA.",
+        "section": "colors"
+      },
+      {
+        "name": "The Stone-on-Ink Rule",
+        "body": "Stone is legible only on Ink. On a light ground, use Mute.",
+        "section": "colors"
+      },
+      {
+        "name": "The Zero-Tracking Rule",
+        "body": "Letter spacing is always 0.",
+        "section": "typography"
+      },
+      {
+        "name": "The Display-In-Image Rule",
+        "body": "Display faces are for campaign headlines inside imagery (or a cover stand-in), never a section title or a book name. Uppercase applies only to Latin display lines.",
+        "section": "typography"
+      },
+      {
+        "name": "The Billboard-and-Catalogue Rule",
+        "body": "The jump from 32px headers to 16px catalogue text is deliberate. Don't fill it with intermediate sizes.",
+        "section": "typography"
+      },
+      {
+        "name": "The Two-Shadow Rule",
+        "body": "If a shadow is not the inset hairline or the search focus halo, it does not belong. Emphasis comes from an Ink outline or a tonal band, not from elevation.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Square Container, Round Control Rule",
+        "body": "If it holds content, its corners are square. If you press it, it is a pill or a circle.",
+        "section": "shapes"
+      },
+      {
+        "name": "The One Primary Rule",
+        "body": "One Ink pill per screen, plus at most one Soft Cloud pill. There is no third button shape.",
+        "section": "components"
+      },
+      {
+        "name": "The Still Card Rule",
+        "body": "Cards and stages never move or cast shadows. On a book, only the cover itself may tilt.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "**Do** put every book image on Soft Cloud (#f5f5f5) at 4:5, filling its card edge to edge.",
+      "**Do** use one Ink (#111111) primary pill per screen, with at most one Soft Cloud secondary pill.",
+      "**Do** keep Canvas and Soft Cloud at roughly 95% of the interface and let covers and editorial imagery carry the colour.",
+      "**Do** keep containers square (0px) and controls fully round (9999px).",
+      "**Do** space on the 8px grid and step section gaps 48 / 32 / 24px across desktop, tablet and mobile.",
+      "**Do** write layout in logical properties so RTL and LTR mirror cleanly.",
+      "**Do** set Arabic display at a 1.25 line height so letters never clip.",
+      "**Do** show focus as a 2px Ink outline at a 2px offset, Canvas on Ink.",
+      "**Do** pair Success green with a word or icon, and give every tick or cross an accessible label.",
+      "**Do** set the name آفاق الفكر as a text wordmark in the sans at weight 700, in Ink on light grounds or Canvas on Ink."
+    ],
+    "donts": [
+      "**Don't** put shadows or lift on cards; the only shadows are the inset hairline and the search focus halo.",
+      "**Don't** use sale red or the collection accents in base UI; red belongs to the price line only.",
+      "**Don't** use Bronze for chrome or a CTA.",
+      "**Don't** use accent colours for text or for a primary button.",
+      "**Don't** use Charcoal as a button fill.",
+      "**Don't** set Stone (#9e9ea0) on a light ground.",
+      "**Don't** let a Hairline (#cacacb) border be the only boundary of a control.",
+      "**Don't** use a display face for a section title or a book name, and don't uppercase Arabic or body text.",
+      "**Don't** track letters; letter spacing stays 0.",
+      "**Don't** underline anything but inline links and the active nav indicator.",
+      "**Don't** invent, draw or generate a logo mark, set the wordmark in the display font, or add effects to it.",
+      "**Don't** use emoji in the interface, or illustrations in place of photography and covers.",
+      "**Don't** use left or right in layout; use inline-start and inline-end."
+    ]
+  }
+}

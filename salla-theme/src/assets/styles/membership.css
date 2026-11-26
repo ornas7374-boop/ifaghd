@@ -48,7 +48,7 @@
 }
 .afq-btn:active { transform: scale(0.98); }
 .afq-btn--primary { background: var(--color-ink); color: var(--color-on-primary); }
-.afq-btn--primary:hover { background: var(--color-charcoal); }
+.afq-btn--primary:hover { text-decoration: underline; text-underline-offset: 4px; }
 .afq-btn--secondary { background: var(--color-soft-cloud); color: var(--color-ink); }
 .afq-btn--secondary:hover { background: var(--color-hairline-soft); }
 
