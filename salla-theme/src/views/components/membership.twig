@@ -1,0 +1,197 @@
+{#
+  آفاق+ membership page — Salla Twilight component.
+  Settings come from twilight.json (see salla-theme/README.md). Every setting has a default,
+  except unconfirmed policy text: when a policy setting is empty, its line or FAQ row is not rendered.
+#}
+{% set c = component|default({}) %}
+{% set monthly = c.monthly_price|default(29) %}
+{% set yearly = c.yearly_price|default(290) %}
+{% set discount = c.discount|default(10) %}
+{% set saving = monthly * 12 - yearly %}
+{% set per_month = (yearly / 12)|number_format(2, '.', '') %}
+{% set monthly_url = c.monthly_url|default('#') %}
+{% set yearly_url = c.yearly_url|default('#') %}
+{% set signup_url = c.signup_url|default('/account') %}
+{% set ref = 'ref=membership-page' %}
+{% set sep_m = '?' in monthly_url ? '&' : '?' %}
+{% set sep_y = '?' in yearly_url ? '&' : '?' %}
+{% set sep_s = '?' in signup_url ? '&' : '?' %}
+{% set release_default = c.release_label|default('قريباً') %}
+{% set covers = ['ink', 'teal', 'blush', 'pink-deep', 'pale'] %}
+
+<div class="afq afq-membership" dir="rtl" lang="ar"
+     data-monthly="{{ monthly }}" data-yearly="{{ yearly }}" data-discount="{{ discount }}"
+     data-avg-book="{{ c.avg_book_price|default('') }}" data-avg-shipping="{{ c.avg_shipping_fee|default('') }}">
+
+  {# 1. Shelf: the store's coming editions #}
+  <section class="m-hero" aria-labelledby="m-hero-title">
+    <div class="m-wrap">
+      <h1 id="m-hero-title" class="m-display">اقرأها قبل الجميع</h1>
+      <p class="m-hero__lede">إصدارات آفاق الفكر القادمة تصل أعضاء آفاق+ أولاً.</p>
+    </div>
+
+    <ul class="m-shelf" aria-label="إصدارات آفاق الفكر القادمة">
+      {% for p in c.products|default([]) %}
+        <li class="m-book" style="--i: {{ loop.index0 }}">
+          <a class="m-book__link" href="{{ p.url|default('#') }}">
+            <span class="m-book__stage">
+              {% if p.image and p.image.url %}
+                <img class="m-book__img" src="{{ p.image.url }}" alt="غلاف {{ p.name }}" loading="{{ loop.index0 < 3 ? 'eager' : 'lazy' }}" width="400" height="500">
+              {% else %}
+                <span class="m-cover m-cover--{{ covers[loop.index0 % 5] }}" aria-hidden="true">
+                  <span class="m-cover__title">{{ p.name }}</span>
+                  <span class="m-cover__author">{{ p.author|default('') }}</span>
+                  <span class="m-cover__mark">آفاق الفكر</span>
+                </span>
+              {% endif %}
+            </span>
+            <span class="m-book__name">{{ p.name }}</span>
+            <span class="m-book__release"><span class="m-dot" aria-hidden="true"></span>{{ p.release_label|default(release_default) }}</span>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+
+    <div class="m-wrap m-hero__foot">
+      <p class="m-hero__sub">اشتراك آفاق+ يعطيك خصم {{ discount }}% على كل كتاب وشحناً مجانياً، ويصلك كل إصدار جديد قبل نزوله للجميع. يبدأ من {{ monthly }} ر.س شهرياً.</p>
+      <a class="afq-btn afq-btn--primary" href="#m-plans" data-track="hero">اختر خطتك</a>
+    </div>
+  </section>
+
+  {# 2. Benefits #}
+  <section class="m-benefits" aria-labelledby="m-benefits-title">
+    <div class="m-wrap">
+      <h2 id="m-benefits-title" class="m-visually-hidden">مزايا آفاق+</h2>
+      <dl class="m-benefits__list">
+        <div class="m-benefit">
+          <dt><svg class="m-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5 12.5 4H20v7.5L11.5 20z"/><circle cx="16" cy="8" r="1.4"/></svg>خصم {{ discount }}% على كل كتاب</dt>
+          <dd>يظهر الخصم في السلة على كل طلب بعد تفعيل عضويتك.</dd>
+        </div>
+        <div class="m-benefit">
+          <dt><svg class="m-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h11v10H3zM14 9.5h4l3 3.5v3h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17.5" cy="17.5" r="1.8"/></svg>شحن مجاني</dt>
+          <dd>{{ c.shipping_note|default('على كل طلب، حتى لو كان كتاباً واحداً.') }}</dd>
+        </div>
+        <div class="m-benefit">
+          <dt><svg class="m-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h10"/></svg>الإصدارات الجديدة أولاً</dt>
+          <dd>{% if c.early_access_note %}{{ c.early_access_note }}{% else %}يصلك إشعار بكل إصدار جديد قبل نزوله في المتجر، وتطلبه قبل غيرك.{% endif %}
+            <a class="m-link" href="{{ c.new_url|default('/new') }}">شاهد آخر الإصدارات</a></dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  {# 3. Plans #}
+  <section class="m-plans" id="m-plans" aria-labelledby="m-plans-title">
+    <div class="m-wrap">
+      <h2 id="m-plans-title" class="m-h2">اختر خطتك</h2>
+      <div class="m-plans__grid">
+
+        <article class="m-plan m-plan--yearly" aria-labelledby="m-plan-y">
+          <div class="m-plan__head">
+            <h3 id="m-plan-y" class="m-plan__name">سنوي</h3>
+            <span class="afq-badge">وفّر {{ saving }} ر.س</span>
+          </div>
+          <p class="m-plan__price"><span class="m-num">{{ yearly }}</span> ر.س <span class="m-plan__per">/ سنوياً</span></p>
+          <p class="m-plan__note">أي {{ per_month }} ر.س في الشهر</p>
+          <p class="m-plan__line">كل مزايا آفاق+، وشهران مجاناً.</p>
+          <a class="afq-btn afq-btn--primary m-plan__cta" href="{{ yearly_url ~ sep_y ~ ref }}&amp;plan=yearly" data-track="yearly">اشترك سنوياً</a>
+        </article>
+
+        <article class="m-plan" aria-labelledby="m-plan-m">
+          <div class="m-plan__head"><h3 id="m-plan-m" class="m-plan__name">شهري</h3></div>
+          <p class="m-plan__price"><span class="m-num">{{ monthly }}</span> ر.س <span class="m-plan__per">/ شهرياً</span></p>
+          <p class="m-plan__note">تدفع شهراً بشهر</p>
+          <p class="m-plan__line">كل مزايا آفاق+ بدفعة شهرية.</p>
+          <a class="afq-btn afq-btn--secondary m-plan__cta" href="{{ monthly_url ~ sep_m ~ ref }}&amp;plan=monthly" data-track="monthly">اشترك شهرياً</a>
+        </article>
+
+        <article class="m-plan m-plan--free" aria-labelledby="m-plan-f">
+          <div class="m-plan__head"><h3 id="m-plan-f" class="m-plan__name">مجاني</h3></div>
+          <p class="m-plan__price"><span class="m-num">0</span> ر.س</p>
+          <p class="m-plan__note">بدون اشتراك</p>
+          <p class="m-plan__line">حساب في آفاق الفكر، ونرسل لك العروض والإصدارات الجديدة بالبريد.</p>
+          <a class="afq-btn afq-btn--secondary m-plan__cta" href="{{ signup_url ~ sep_s ~ ref }}&amp;plan=free" data-track="free">أنشئ حسابك المجاني</a>
+        </article>
+      </div>
+
+      <table class="m-compare">
+        <caption class="m-visually-hidden">مقارنة المزايا بين الخطة المجانية وآفاق+</caption>
+        <thead><tr><th scope="col">الميزة</th><th scope="col">مجاني</th><th scope="col">آفاق+</th></tr></thead>
+        <tbody>
+          {% set rows = [
+            ['تنبيهات العروض والإصدارات بالبريد', true],
+            ['خصم ' ~ discount ~ '% على كل كتاب', false],
+            ['شحن مجاني على كل طلب', false],
+            ['الإصدارات الجديدة قبل نزولها', false]
+          ] %}
+          {% for r in rows %}
+            <tr>
+              <th scope="row">{{ r[0] }}</th>
+              <td>{% if r[1] %}<svg class="m-tick" viewBox="0 0 24 24" role="img" aria-label="متاح"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>{% else %}<svg class="m-cross" viewBox="0 0 24 24" role="img" aria-label="غير متاح"><path d="M7 7l10 10M17 7 7 17"/></svg>{% endif %}</td>
+              <td><svg class="m-tick" viewBox="0 0 24 24" role="img" aria-label="متاح"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {% if c.renewal_note %}<p class="m-plans__renewal">{{ c.renewal_note }}</p>{% endif %}
+    </div>
+  </section>
+
+  {# 4. Savings calculator #}
+  <section class="m-calc" aria-labelledby="m-calc-title">
+    <div class="m-wrap m-calc__inner">
+      <h2 id="m-calc-title" class="m-h3">كم كتاباً تشتري في الشهر؟</h2>
+      <fieldset class="m-chips">
+        <legend class="m-visually-hidden">عدد الكتب في الشهر</legend>
+        {% for n in [1, 2, 3, 4] %}
+          <label class="afq-chip">
+            <input type="radio" name="m-books" value="{{ n }}" {{ n == 2 ? 'checked' }}>
+            <span>{{ ['كتاب واحد', 'كتابان', '3 كتب', '4 أو أكثر'][n - 1] }}</span>
+          </label>
+        {% endfor %}
+      </fieldset>
+      <p class="m-calc__result" aria-live="polite" data-calc-result>
+        اختر عدد الكتب لتعرف توفيرك.
+      </p>
+      <p class="m-calc__foot" data-calc-foot hidden>
+        تقدير مبني على متوسط سعر الكتاب (<span data-avg-book></span> ر.س) ومتوسط رسوم الشحن (<span data-avg-ship></span> ر.س).
+      </p>
+    </div>
+  </section>
+
+  {# 5. FAQ: rows without a confirmed answer are not rendered #}
+  <section class="m-faq" aria-labelledby="m-faq-title">
+    <div class="m-wrap m-faq__inner">
+      <h2 id="m-faq-title" class="m-h2">الأسئلة الشائعة</h2>
+      <div class="m-faq__list">
+        {% set faq = [
+          ['كيف أستخدم الخصم؟', c.faq_discount|default('بعد تفعيل عضويتك يظهر خصم ' ~ discount ~ '% في السلة على كل كتاب.')],
+          ['هل يتجدد الاشتراك تلقائياً؟', c.renewal_note|default('')],
+          ['كيف ألغي اشتراكي؟', c.faq_cancel|default('')],
+          ['هل الشحن المجاني يشمل كل المدن؟', c.faq_shipping|default('')],
+          ['متى تصلني الإصدارات الجديدة؟', c.early_access_note|default('')],
+          ['هل أقدر أبدأ مجاناً وأشترك لاحقاً؟', 'نعم. أنشئ حسابك المجاني الآن، واشترك في آفاق+ من هذه الصفحة متى أردت.']
+        ] %}
+        {% for q in faq %}
+          {% if q[1] %}
+            <details class="afq-disclosure" data-faq="{{ loop.index }}">
+              <summary>{{ q[0] }}<svg class="m-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+              <p>{{ q[1] }}</p>
+            </details>
+          {% endif %}
+        {% endfor %}
+      </div>
+      <p class="m-faq__more">باقي الأسئلة في <a class="m-link" href="{{ c.faq_url|default('/help/faq') }}">صفحة المساعدة</a>، وتفاصيل الإلغاء في <a class="m-link" href="{{ c.returns_url|default('/help/returns') }}">سياسة الاسترجاع والإلغاء</a>.</p>
+    </div>
+  </section>
+
+  {# 6. Final CTA #}
+  <section class="m-close" aria-labelledby="m-close-title">
+    <div class="m-wrap m-close__inner">
+      <h2 id="m-close-title" class="m-h2">ابدأ من طلبك القادم</h2>
+      <p>اشترك اليوم، ويطبّق الخصم والشحن المجاني على أول طلب بعد التفعيل.</p>
+      <a class="afq-btn afq-btn--primary" href="#m-plans" data-track="final">اشترك في آفاق+</a>
+    </div>
+  </section>
+</div>
