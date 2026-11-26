@@ -1,0 +1,164 @@
+/* آفاق الفكر — generated from the design system tokens.json. Do not edit by hand. */
+
+:root {
+  /* Color — primitive */
+  --color-ink: #111111;
+  --color-on-primary: #ffffff;
+  --color-canvas: #ffffff;
+  --color-soft-cloud: #f5f5f5;
+  --color-charcoal: #39393b;
+  --color-ash: #4b4b4d;
+  --color-mute: #707072;
+  --color-stone: #9e9ea0;
+  --color-hairline: #cacacb;
+  --color-hairline-soft: #e5e5e5;
+  --color-bronze: #897a62;
+  --color-sale: #d30005;
+  --color-sale-deep: #780700;
+  --color-success: #007d48;
+  --color-success-bright: #1eaa52;
+  --color-info: #1151ff;
+  --color-info-deep: #0034e3;
+  --color-accent-pink: #ed1aa0;
+  --color-accent-pink-soft: #ffb0dd;
+  --color-accent-purple-soft: #beaffd;
+  --color-accent-purple-pale: #d6d1ff;
+  --color-accent-teal: #0a7281;
+  --color-accent-pink-deep: #4c012d;
+
+  /* Color — semantic */
+  --color-primary: var(--color-ink);
+  --color-background: var(--color-canvas);
+  --color-surface: var(--color-soft-cloud);
+  --color-text: var(--color-ink);
+  --color-text-soft: var(--color-charcoal);
+  --color-text-muted: var(--color-mute);
+  --color-text-muted-on-dark: var(--color-stone);
+  --color-border: var(--color-hairline);
+  --color-border-soft: var(--color-hairline-soft);
+  --color-price: var(--color-ink);
+  --color-price-sale: var(--color-sale);
+  --color-success-on-dark: var(--color-success-bright);
+  --color-editorial: var(--color-bronze);
+  --color-focus: var(--color-ink);
+
+  /* Font families */
+  --font-display: "Bebas Neue", "Noto Kufi Arabic", "Inter", Helvetica, Arial, sans-serif;
+  --font-sans: "Inter", "IBM Plex Sans Arabic", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  /* Type styles */
+  --text-display-campaign-family: var(--font-display);
+  --text-display-campaign-size: 96px;
+  --text-display-campaign-line-height: 0.9;
+  --text-display-campaign-weight: 500;
+  --text-display-campaign-ar-family: var(--font-display);
+  --text-display-campaign-ar-size: 96px;
+  --text-display-campaign-ar-line-height: 1.25;
+  --text-display-campaign-ar-weight: 800;
+  --text-heading-xl-family: var(--font-sans);
+  --text-heading-xl-size: 32px;
+  --text-heading-xl-line-height: 1.2;
+  --text-heading-xl-weight: 500;
+  --text-heading-lg-family: var(--font-sans);
+  --text-heading-lg-size: 24px;
+  --text-heading-lg-line-height: 1.2;
+  --text-heading-lg-weight: 500;
+  --text-heading-md-family: var(--font-sans);
+  --text-heading-md-size: 16px;
+  --text-heading-md-line-height: 1.75;
+  --text-heading-md-weight: 500;
+  --text-body-md-family: var(--font-sans);
+  --text-body-md-size: 16px;
+  --text-body-md-line-height: 1.5;
+  --text-body-md-weight: 400;
+  --text-body-strong-family: var(--font-sans);
+  --text-body-strong-size: 16px;
+  --text-body-strong-line-height: 1.5;
+  --text-body-strong-weight: 500;
+  --text-link-md-family: var(--font-sans);
+  --text-link-md-size: 16px;
+  --text-link-md-line-height: 1.75;
+  --text-link-md-weight: 500;
+  --text-button-lg-family: var(--font-sans);
+  --text-button-lg-size: 24px;
+  --text-button-lg-line-height: 1.2;
+  --text-button-lg-weight: 500;
+  --text-button-md-family: var(--font-sans);
+  --text-button-md-size: 16px;
+  --text-button-md-line-height: 1.5;
+  --text-button-md-weight: 500;
+  --text-button-sm-family: var(--font-sans);
+  --text-button-sm-size: 14px;
+  --text-button-sm-line-height: 1.5;
+  --text-button-sm-weight: 500;
+  --text-caption-md-family: var(--font-sans);
+  --text-caption-md-size: 14px;
+  --text-caption-md-line-height: 1.5;
+  --text-caption-md-weight: 500;
+  --text-caption-sm-family: var(--font-sans);
+  --text-caption-sm-size: 12px;
+  --text-caption-sm-line-height: 1.5;
+  --text-caption-sm-weight: 500;
+  --text-utility-xs-family: var(--font-sans);
+  --text-utility-xs-size: 9px;
+  --text-utility-xs-line-height: 1.75;
+  --text-utility-xs-weight: 500;
+
+  /* Spacing (8px grid) */
+  --space-xxs: 2px;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 18px;
+  --space-xl: 24px;
+  --space-xxl: 30px;
+  --space-section: 48px;
+
+  /* Radius */
+  --radius-none: 0px;
+  --radius-sm: 18px;
+  --radius-md: 24px;
+  --radius-lg: 30px;
+  --radius-full: 9999px;
+
+  /* Shadow */
+  --shadow-inset-hairline: inset 0 -1px 0 #e5e5e5;
+  --shadow-focus-halo: 0 0 0 12px #f5f5f5;
+
+  /* Motion */
+  --duration-instant: 100ms;
+  --duration-fast: 200ms;
+  --duration-base: 320ms;
+  --duration-slow: 600ms;
+  --duration-reveal: 900ms;
+  --duration-stagger: 70ms;
+  --duration-marquee: 24s;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --ease-press: cubic-bezier(0.3, 0, 0.5, 1);
+  --ease-linear: linear;
+
+  /* Layout */
+  --layout-max-width: 1440px;
+  --layout-filter-sidebar: 220px;
+}
+
+@media (max-width: 1023px) {
+  :root { --space-section: 32px; }
+}
+@media (max-width: 599px) {
+  :root { --space-section: 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-instant: 0ms;
+    --duration-fast: 0ms;
+    --duration-base: 0ms;
+    --duration-slow: 0ms;
+    --duration-reveal: 0ms;
+    --duration-stagger: 0ms;
+    --duration-marquee: 0ms;
+  }
+}

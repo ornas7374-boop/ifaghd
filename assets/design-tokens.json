@@ -1,0 +1,591 @@
+{
+  "brand": "آفاق الفكر",
+  "version": "1.0.0",
+  "$description": "Generated from the آفاق الفكر design system (project/tokens.json). Edit the design system, then regenerate; do not run sync-brand-to-tokens.cjs on this file.",
+  "primitive": {
+    "color": {
+      "ink": {
+        "$value": "#111111",
+        "$type": "color",
+        "$description": "Primary text, primary CTA fill, active filter chip, campaign overlay. Text on `canvas` (18.9:1) and `soft-cloud` (17.3:1)."
+      },
+      "on-primary": {
+        "$value": "#ffffff",
+        "$type": "color",
+        "$description": "Text and icons on `ink` fills (primary CTA, active chip, member-benefit card)."
+      },
+      "canvas": {
+        "$value": "#ffffff",
+        "$type": "color",
+        "$description": "Page background, product-card container, on-image CTA fill."
+      },
+      "soft-cloud": {
+        "$value": "#f5f5f5",
+        "$type": "color",
+        "$description": "The studio gray: book-image backdrop, search pill, secondary CTA, utility bar."
+      },
+      "charcoal": {
+        "$value": "#39393b",
+        "$type": "color",
+        "$description": "Softer body text where `ink` is too heavy. On `canvas` 11.5:1."
+      },
+      "ash": {
+        "$value": "#4b4b4d",
+        "$type": "color",
+        "$description": "Low-emphasis utility text on `canvas` (8.7:1); disabled border on dark surfaces."
+      },
+      "mute": {
+        "$value": "#707072",
+        "$type": "color",
+        "$description": "Book subtitles (author, category), footer links, metadata, strike-through price. On `canvas` 4.94:1, on `soft-cloud` 4.53:1."
+      },
+      "stone": {
+        "$value": "#9e9ea0",
+        "$type": "color",
+        "$description": "Secondary text on `ink` only (7.1:1). Fails on `canvas` (2.67:1): never use it on light grounds."
+      },
+      "hairline": {
+        "$value": "#cacacb",
+        "$type": "color",
+        "$description": "1px dividers: filter rows, footer columns, disclosure rows, chip and badge outlines. Source value: only 1.64:1 on `canvas`, so it is decorative, never the sole boundary of a control."
+      },
+      "hairline-soft": {
+        "$value": "#e5e5e5",
+        "$type": "color",
+        "$description": "Inset 1px bottom line under sticky bars and tab strips."
+      },
+      "bronze": {
+        "$value": "#897a62",
+        "$type": "color",
+        "$description": "Sampled from the gold title on the book cover in Assets. Editorial accent for book-cover moments only; never chrome or CTA. On `ink` 4.52:1 (body text passes; prefer 24px+)."
+      },
+      "sale": {
+        "$value": "#d30005",
+        "$type": "color",
+        "$description": "Discounted price and the % off text, the only red in retail chrome. On `canvas` 5.57:1."
+      },
+      "sale-deep": {
+        "$value": "#780700",
+        "$type": "color",
+        "$description": "Pressed sale price; sale anchor on dark."
+      },
+      "success": {
+        "$value": "#007d48",
+        "$type": "color",
+        "$description": "Confirmations, in-stock, eligibility ticks; always with a word or icon. On `canvas` 5.21:1."
+      },
+      "success-bright": {
+        "$value": "#1eaa52",
+        "$type": "color",
+        "$description": "Success on `ink` (6.2:1)."
+      },
+      "info": {
+        "$value": "#1151ff",
+        "$type": "color",
+        "$description": "Informational link or badge in member callouts. On `canvas` 5.76:1."
+      },
+      "info-deep": {
+        "$value": "#0034e3",
+        "$type": "color",
+        "$description": "Pressed info accent."
+      },
+      "accent-pink": {
+        "$value": "#ed1aa0",
+        "$type": "color",
+        "$description": "Collection accent: small chip fills and swatch dots only."
+      },
+      "accent-pink-soft": {
+        "$value": "#ffb0dd",
+        "$type": "color",
+        "$description": "Soft tile tint in member tiles."
+      },
+      "accent-purple-soft": {
+        "$value": "#beaffd",
+        "$type": "color",
+        "$description": "Editorial swatch dot, soft category chip."
+      },
+      "accent-purple-pale": {
+        "$value": "#d6d1ff",
+        "$type": "color",
+        "$description": "Lightest soft-tile fill."
+      },
+      "accent-teal": {
+        "$value": "#0a7281",
+        "$type": "color",
+        "$description": "Editorial accent in collection lockups."
+      },
+      "accent-pink-deep": {
+        "$value": "#4c012d",
+        "$type": "color",
+        "$description": "Deep editorial wash over heritage tiles."
+      }
+    },
+    "font": {
+      "display": {
+        "$value": "\"Bebas Neue\", \"Noto Kufi Arabic\", \"Inter\", Helvetica, Arial, sans-serif",
+        "$type": "fontFamily"
+      },
+      "sans": {
+        "$value": "\"Inter\", \"IBM Plex Sans Arabic\", \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+        "$type": "fontFamily"
+      }
+    },
+    "spacing": {
+      "space-xxs": {
+        "$value": "2px",
+        "$type": "dimension",
+        "$description": "Hairline gaps, icon nudges."
+      },
+      "space-xs": {
+        "$value": "4px",
+        "$type": "dimension",
+        "$description": "Mobile grid gutters, badge vertical padding."
+      },
+      "space-sm": {
+        "$value": "8px",
+        "$type": "dimension",
+        "$description": "Grid gutters; gap between name, subtitle and price under a book card."
+      },
+      "space-md": {
+        "$value": "12px",
+        "$type": "dimension",
+        "$description": "Badge horizontal padding, on-image CTA vertical padding."
+      },
+      "space-lg": {
+        "$value": "18px",
+        "$type": "dimension",
+        "$description": "Gap between filter groups."
+      },
+      "space-xl": {
+        "$value": "24px",
+        "$type": "dimension",
+        "$description": "Disclosure and FAQ row vertical padding; mobile section gap."
+      },
+      "space-xxl": {
+        "$value": "30px",
+        "$type": "dimension",
+        "$description": "Large inner gaps."
+      },
+      "space-section": {
+        "$value": "48px",
+        "$type": "dimension",
+        "$description": "Vertical gap between major page sections (desktop); 32 tablet, 24 mobile."
+      }
+    },
+    "radius": {
+      "radius-none": {
+        "$value": "0px",
+        "$type": "dimension",
+        "$description": "Every container: cards, tiles, book images, nav, footer."
+      },
+      "radius-sm": {
+        "$value": "18px",
+        "$type": "dimension",
+        "$description": "Avatar or icon container in member-benefit lockups."
+      },
+      "radius-md": {
+        "$value": "24px",
+        "$type": "dimension",
+        "$description": "Search pill and search input."
+      },
+      "radius-lg": {
+        "$value": "30px",
+        "$type": "dimension",
+        "$description": "CTA pill corner as the source writes it in prose."
+      },
+      "radius-full": {
+        "$value": "9999px",
+        "$type": "dimension",
+        "$description": "Pill CTAs, chips, badges, swatch dots, circular icon buttons."
+      }
+    },
+    "shadow": {
+      "shadow-inset-hairline": {
+        "$value": "inset 0 -1px 0 #e5e5e5",
+        "$type": "shadow",
+        "$description": "Bottom edge of sticky utility and sub-nav bars, the only shadow in the system."
+      },
+      "shadow-focus-halo": {
+        "$value": "0 0 0 12px #f5f5f5",
+        "$type": "shadow",
+        "$description": "Soft 12px halo around the focused search pill (with a 2px `ink` border)."
+      }
+    },
+    "duration": {
+      "duration-instant": {
+        "$value": "100ms",
+        "$type": "duration",
+        "$description": "Press feedback, swatch ring, chip colour flip."
+      },
+      "duration-fast": {
+        "$value": "200ms",
+        "$type": "duration",
+        "$description": "Hover colour, focus halo, nav underline, icon nudge."
+      },
+      "duration-base": {
+        "$value": "320ms",
+        "$type": "duration",
+        "$description": "Accordion open, card lift, add-to-cart label swap."
+      },
+      "duration-slow": {
+        "$value": "600ms",
+        "$type": "duration",
+        "$description": "Book-cover zoom and tilt on hover, section reveal."
+      },
+      "duration-reveal": {
+        "$value": "900ms",
+        "$type": "duration",
+        "$description": "Campaign headline line reveal and hero image settle."
+      },
+      "duration-stagger": {
+        "$value": "70ms",
+        "$type": "duration",
+        "$description": "Delay step between siblings in a staggered reveal (cards in a grid, headline lines)."
+      },
+      "duration-marquee": {
+        "$value": "24s",
+        "$type": "duration",
+        "$description": "One full loop of the kinetic text ticker."
+      }
+    },
+    "easing": {
+      "ease-standard": {
+        "$value": "cubic-bezier(0.2, 0, 0, 1)",
+        "$type": "cubicBezier",
+        "$description": "Default for anything that changes state in place: colour, size, underline."
+      },
+      "ease-enter": {
+        "$value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "$type": "cubicBezier",
+        "$description": "Things arriving: reveals, headline lines, drawers. Fast start, long soft landing."
+      },
+      "ease-exit": {
+        "$value": "cubic-bezier(0.4, 0, 1, 1)",
+        "$type": "cubicBezier",
+        "$description": "Things leaving: closing drawers, dismissed toasts. Never for entrances."
+      },
+      "ease-press": {
+        "$value": "cubic-bezier(0.3, 0, 0.5, 1)",
+        "$type": "cubicBezier",
+        "$description": "Press-down and release on buttons and icon buttons."
+      },
+      "ease-linear": {
+        "$value": "linear",
+        "$type": "cubicBezier",
+        "$description": "Marquee and shimmer loops only."
+      }
+    }
+  },
+  "semantic": {
+    "color": {
+      "primary": {
+        "$value": "{primitive.color.ink}",
+        "$type": "color",
+        "$description": "Only brand colour: primary CTA, headings, text."
+      },
+      "on-primary": {
+        "$value": "{primitive.color.on-primary}",
+        "$type": "color"
+      },
+      "background": {
+        "$value": "{primitive.color.canvas}",
+        "$type": "color"
+      },
+      "surface": {
+        "$value": "{primitive.color.soft-cloud}",
+        "$type": "color",
+        "$description": "Book-image backdrop, secondary CTA, search."
+      },
+      "text": {
+        "$value": "{primitive.color.ink}",
+        "$type": "color"
+      },
+      "text-soft": {
+        "$value": "{primitive.color.charcoal}",
+        "$type": "color"
+      },
+      "text-muted": {
+        "$value": "{primitive.color.mute}",
+        "$type": "color",
+        "$description": "On canvas / soft-cloud only."
+      },
+      "text-muted-on-dark": {
+        "$value": "{primitive.color.stone}",
+        "$type": "color",
+        "$description": "On ink only."
+      },
+      "border": {
+        "$value": "{primitive.color.hairline}",
+        "$type": "color",
+        "$description": "Decorative 1px dividers, never the sole control boundary."
+      },
+      "border-soft": {
+        "$value": "{primitive.color.hairline-soft}",
+        "$type": "color"
+      },
+      "price": {
+        "$value": "{primitive.color.ink}",
+        "$type": "color"
+      },
+      "price-sale": {
+        "$value": "{primitive.color.sale}",
+        "$type": "color",
+        "$description": "Price line only."
+      },
+      "success": {
+        "$value": "{primitive.color.success}",
+        "$type": "color"
+      },
+      "success-on-dark": {
+        "$value": "{primitive.color.success-bright}",
+        "$type": "color"
+      },
+      "info": {
+        "$value": "{primitive.color.info}",
+        "$type": "color"
+      },
+      "editorial": {
+        "$value": "{primitive.color.bronze}",
+        "$type": "color",
+        "$description": "Book-cover moments only."
+      },
+      "focus": {
+        "$value": "{primitive.color.ink}",
+        "$type": "color",
+        "$description": "2px outline, 2px offset; canvas on ink."
+      }
+    }
+  },
+  "component": {
+    "button": {
+      "radius": {
+        "$value": "{primitive.radius.radius-full}",
+        "$type": "dimension"
+      },
+      "primary": {
+        "bg": {
+          "$value": "{semantic.color.primary}",
+          "$type": "color"
+        },
+        "text": {
+          "$value": "{semantic.color.on-primary}",
+          "$type": "color"
+        }
+      },
+      "secondary": {
+        "bg": {
+          "$value": "{semantic.color.surface}",
+          "$type": "color"
+        },
+        "text": {
+          "$value": "{semantic.color.text}",
+          "$type": "color"
+        }
+      },
+      "on-image": {
+        "bg": {
+          "$value": "{primitive.color.canvas}",
+          "$type": "color"
+        },
+        "text": {
+          "$value": "{semantic.color.text}",
+          "$type": "color"
+        }
+      }
+    },
+    "card": {
+      "radius": {
+        "$value": "{primitive.radius.radius-none}",
+        "$type": "dimension"
+      },
+      "padding": {
+        "$value": "0px",
+        "$type": "dimension"
+      },
+      "shadow": {
+        "$value": "none",
+        "$type": "shadow"
+      }
+    },
+    "search": {
+      "radius": {
+        "$value": "{primitive.radius.radius-md}",
+        "$type": "dimension"
+      },
+      "bg": {
+        "$value": "{semantic.color.surface}",
+        "$type": "color"
+      },
+      "focus-shadow": {
+        "$value": "{primitive.shadow.shadow-focus-halo}",
+        "$type": "shadow"
+      }
+    },
+    "layout": {
+      "max-width": {
+        "$value": "1440px",
+        "$type": "dimension"
+      },
+      "filter-sidebar": {
+        "$value": "220px",
+        "$type": "dimension"
+      }
+    }
+  },
+  "typography": {
+    "display-campaign": {
+      "$value": {
+        "fontFamily": "{primitive.font.display}",
+        "fontSize": "96px",
+        "lineHeight": "0.9",
+        "fontWeight": 500,
+        "letterSpacing": "0px"
+      },
+      "$type": "typography",
+      "$description": "Campaign headline burned into hero imagery. Latin: uppercase. Desktop 96, tablet 64, mobile 48."
+    },
+    "display-campaign-ar": {
+      "$value": {
+        "fontFamily": "{primitive.font.display}",
+        "fontSize": "96px",
+        "lineHeight": "1.25",
+        "fontWeight": 800,
+        "letterSpacing": "0px"
+      },
+      "$type": "typography",
+      "$description": "Arabic campaign headline. Same size; leading opened to 1.25 so Arabic letters are not clipped."
+    },
+    "heading-xl": {
+      "$value": {
+        "fontFamily": "{primitive.font.sans}",
+        "fontSize": "32px",
+        "lineHeight": "1.2",
+        "fontWeight": 500,
+        "letterSpacing": "0px"
+      },
+      "$type": "typography",
+      "$description": "Section headers, book title block on the product page."
+    },
+    "heading-lg": {
+      "$value": {
+        "fontFamily": "{primitive.font.sans}",
+        "fontSize": "24px",
+        "lineHeight": "1.2",
+        "fontWeight": 500,
+        "letterSpacing": "0px"
+      },
+      "$type": "typography",
+      "$description": "Subsection, member-benefit title, product-page price."
+    },
+    "heading-md": {
+      "$value": {
+        "fontFamily": "{primitive.font.sans}",
+        "fontSize": "16px",
+        "lineHeight": "1.75",
+        "fontWeight": 500,
+        "letterSpacing": "0px"
+      },
+      "$type": "typography",
+      "$description": "Card title, FAQ row label, filter group header."
+    },
+    "body-md": {
+      "$value": {
+        "fontFamily": "{primitive.font.sans}",
+        "fontSize": "16px",
+        "lineHeight": "1.5",
+        "fontWeight": 400,
+        "letterSpacing": "0px"
+      },
+      "$type": "typography",
+      "$description": "Body copy, search placeholder, book description."
+    },
+    "body-strong": {
+      "$value": {
+        "fontFamily": "{primitive.font.sans}",
+        "fontSize": "16px",
+        "lineHeight": "1.5",
+        "fontWeight": 500,
+        "letterSpacing": "0px"
+      },
+      "$type": "typography",
+      "$description": "Book name on cards, filter labels, primary nav links."
+    },
+    "link-md": {
+      "$value": {
+        "fontFamily": "{primitive.font.sans}",
+        "fontSize": "16px",
+        "lineHeight": "1.75",
+        "fontWeight": 500,
+        "letterSpacing": "0px"
+      },
+      "$type": "typography",
+      "$description": "Underlined inline link."
+    },
+    "button-lg": {
+      "$value": {
+        "fontFamily": "{primitive.font.sans}",
+        "fontSize": "24px",
+        "lineHeight": "1.2",
+        "fontWeight": 500,
+        "letterSpacing": "0px"
+      },
+      "$type": "typography",
+      "$description": "Large CTA inside hero blocks."
+    },
+    "button-md": {
+      "$value": {
+        "fontFamily": "{primitive.font.sans}",
+        "fontSize": "16px",
+        "lineHeight": "1.5",
+        "fontWeight": 500,
+        "letterSpacing": "0px"
+      },
+      "$type": "typography",
+      "$description": "Standard pill CTAs and filter chips."
+    },
+    "button-sm": {
+      "$value": {
+        "fontFamily": "{primitive.font.sans}",
+        "fontSize": "14px",
+        "lineHeight": "1.5",
+        "fontWeight": 500,
+        "letterSpacing": "0px"
+      },
+      "$type": "typography",
+      "$description": "Compact pill CTA, geo selector."
+    },
+    "caption-md": {
+      "$value": {
+        "fontFamily": "{primitive.font.sans}",
+        "fontSize": "14px",
+        "lineHeight": "1.5",
+        "fontWeight": 500,
+        "letterSpacing": "0px"
+      },
+      "$type": "typography",
+      "$description": "Book subtitle (author, category), filter count, footer link."
+    },
+    "caption-sm": {
+      "$value": {
+        "fontFamily": "{primitive.font.sans}",
+        "fontSize": "12px",
+        "lineHeight": "1.5",
+        "fontWeight": 500,
+        "letterSpacing": "0px"
+      },
+      "$type": "typography",
+      "$description": "Badge text, utility bar, chip count."
+    },
+    "utility-xs": {
+      "$value": {
+        "fontFamily": "{primitive.font.sans}",
+        "fontSize": "9px",
+        "lineHeight": "1.75",
+        "fontWeight": 500,
+        "letterSpacing": "0px"
+      },
+      "$type": "typography",
+      "$description": "Legal fine print row only."
+    }
+  }
+}
