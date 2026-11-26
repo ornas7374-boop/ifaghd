@@ -100,7 +100,11 @@
 }
 @media (min-width: 1024px) {
   /* Shelf starts at the content gutter and runs off the inline-end edge */
-  .afq-membership { --book-w: clamp(190px, 16.5vw, 250px); }
+  .afq-membership { --book-w: clamp(200px, 19vw, 290px); }
+  .m-hero { padding-block-start: var(--space-xl); }
+  .m-hero__lede { margin-block-start: var(--space-md); }
+  .m-shelf { margin-block-start: 32px; }
+  .m-hero__foot { margin-block-start: 32px; }
   .m-shelf { padding-inline-start: max(var(--gutter), calc((100vw - var(--layout-max-width)) / 2 + var(--gutter))); padding-inline-end: 0; scroll-padding-inline-start: max(var(--gutter), calc((100vw - var(--layout-max-width)) / 2 + var(--gutter))); gap: 32px; }
 }
 .m-shelf::-webkit-scrollbar { height: 4px; }
@@ -152,8 +156,16 @@
 @keyframes m-rise { from { opacity: 0; transform: translateY(24px); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
 
 
+/* 2. Benefits row */
+.m-points { padding-block: 0 var(--space-section); }
+.m-points__list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-block: 1px solid var(--color-hairline); }
+.m-points__list > div { padding: var(--space-xl) 0; padding-inline-end: 32px; }
+.m-points__list > div + div { padding-inline-start: 32px; border-inline-start: 1px solid var(--color-hairline); }
+.m-points dt { font-size: var(--text-heading-md-size); font-weight: 500; line-height: 1.5; }
+.m-points dd { margin-block-start: var(--space-xs); color: var(--color-charcoal); max-width: 40ch; }
+
 /* 3. Plans */
-.m-plans { padding-block: calc(var(--space-section) * 1.5) var(--space-section); scroll-margin-block-start: var(--space-xl); }
+.m-plans { padding-block: var(--space-section); scroll-margin-block-start: var(--space-xl); }
 .m-plans__grid { display: grid; grid-template-columns: 1.15fr 1fr 1fr; margin-block-start: 32px; border: 1px solid var(--color-hairline); }
 .m-plan { display: flex; flex-direction: column; padding: 32px; border-inline-start: 1px solid var(--color-hairline); }
 .m-plan:first-child { border-inline-start: 0; }
@@ -202,6 +214,9 @@
   .m-plan { border-inline-start: 0; border-block-start: 1px solid var(--color-hairline); }
   .m-plan:first-child { border-block-start: 0; }
   .m-calc__inner, .m-faq__inner { grid-template-columns: 1fr; }
+  .m-points__list { grid-template-columns: 1fr; }
+  .m-points__list > div, .m-points__list > div + div { padding-inline: 0; border-inline-start: 0; }
+  .m-points__list > div + div { border-block-start: 1px solid var(--color-hairline); }
   .m-calc__result, .m-faq__more { grid-column: 1; grid-row: auto; }
 }
 @media (max-width: 599px) {
