@@ -1,0 +1,6 @@
+Skill: brand
+Source: https://github.com/nextlevelbuilder/ui-ux-pro-max-skill
+Path: .claude/skills/brand
+Commit: 3442615dcc7dcb3f70a1c9f69d5c287f37db023e (2026-11-26)
+License: see LICENSE file in this folder
+Copied unchanged from the source repository.
